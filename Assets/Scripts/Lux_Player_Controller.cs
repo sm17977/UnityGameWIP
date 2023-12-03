@@ -18,6 +18,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private float moveSpeed = 3.3f;
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
+    public float attackRange = 10f;
 
     // Projectile
     public GameObject projectile;
@@ -25,7 +26,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private Vector3 projectileSpawnPos;
     private Vector3 projectileTargetPosition;
 
-//
+
     // Hitbox
     public GameObject hitboxGameObj;
     private SphereCollider hitboxCollider;
@@ -54,6 +55,8 @@ public class Lux_Player_Controller : MonoBehaviour
     private Vector3 lastClickPosition;
 
     // AA Range Indicator
+    public GameObject AARangeIndicatorPrefab;
+    private GameObject AARangeIndicator;
     private bool isAARangeIndicatorOn = false;
 
     void Awake(){
@@ -147,6 +150,18 @@ public class Lux_Player_Controller : MonoBehaviour
         ToggleAARange();
     }
 
+      private void ToggleAARange(){
+        if(!isAARangeIndicatorOn){
+            isAARangeIndicatorOn = true;
+            AARangeIndicator = Instantiate(AARangeIndicatorPrefab, transform);
+        }
+        else{
+            Destroy(AARangeIndicator);
+            isAARangeIndicatorOn = false;
+        }
+
+    }
+
     public void PrintQueue(){
         string output = "Queue: [";
 
@@ -214,15 +229,6 @@ public class Lux_Player_Controller : MonoBehaviour
         }
     }
 
-    private void ToggleAARange(){
-        if(!isAARangeIndicatorOn){
-
-
-
-        }
-
-    }
-
     private void AddInputToQueue(InputCommand input){
         inputQueue.Enqueue(input);
     }
@@ -279,7 +285,7 @@ public class Lux_Player_Controller : MonoBehaviour
                 Destroy(movementIndicator);
             }
 
-            movementIndicator = Instantiate(movementIndicatorPrefab, position, Quaternion.Euler(90, 0, 0));
+            movementIndicator = Instantiate(movementIndicatorPrefab, new Vector3(position.x, 0.51f, position.z), Quaternion.Euler(90, 0, 0));
             isNewClick = false;
         }
     }
@@ -322,7 +328,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
         if (hasProjectile) {
             float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
-            projectileSpawnPos = transform.position + direction * worldRadius;
+            projectileSpawnPos = new Vector3(transform.position.x, 0.51f, transform.position.z) + direction * worldRadius;
             
             Vector3 eulerAngles = transform.rotation.eulerAngles;
             eulerAngles.x = 90;

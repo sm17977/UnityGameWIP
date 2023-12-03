@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2123.1116, g: 2257.0627, b: 3346.1997, a: 1}
+  m_IndirectSpecularColor: {r: 2120.8772, g: 2255.2385, b: 3344.7505, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -814,6 +814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07052d477ced37b4a99245f4238af22b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackRange: 10
   projectile: {fileID: 6197774755375270932, guid: a61d016d001d6f440b44f0872182bcc6,
     type: 3}
   hitboxGameObj: {fileID: 1700967548}
@@ -824,6 +825,8 @@ MonoBehaviour:
   isCastingText: {fileID: 1730084131}
   isRunningText: {fileID: 214670865}
   debugDistance: 0
+  AARangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
+    type: 3}
 --- !u!54 &641275150
 Rigidbody:
   m_ObjectHideFlags: 0
