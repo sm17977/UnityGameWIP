@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class RangeIndicator_Controller : MonoBehaviour
 {
-
     public Material AARangeIndicatorMaterial;
-    public float radius = 0.5f;
+    private float radius = 0.4f;
+    public float size;
     public float borderWidth = 0.01f; 
     private float initialRadius;
+    public GameObject player;
+    private Lux_Player_Controller playerScript;
 
     void Start(){
+        //playerScript = player.GetComponent<Lux_Player_Controller>();
+        //radius = playerScript.GetAttackRange();
         initialRadius = radius;
     }
 
@@ -21,8 +25,6 @@ public class RangeIndicator_Controller : MonoBehaviour
             AARangeIndicatorMaterial.SetFloat("_radius", radius);
             AARangeIndicatorMaterial.SetFloat("_borderWidth", borderWidth);
         }
-
-        float scaleFactor = radius/initialRadius;
-        transform.localScale = new Vector3(scaleFactor, 1f, scaleFactor);
+        transform.localScale = new Vector3(size, 1f, size);
     }
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.InputSystem;
+using NUnit.Framework;
 
 public class Lux_Player_Controller : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class Lux_Player_Controller : MonoBehaviour
     // Flags
     private bool isRunning;
     private bool isCasting;
+    private bool isAttacking;
+    private bool isAttackClick = false;
+    private bool isMoveClick = false;
     private bool hasProjectile = false;
     private bool isNewClick;
 
@@ -18,7 +22,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private float moveSpeed = 3.3f;
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
-    public float attackRange = 10f;
+    public float attackRange = 0.4f;
 
     // Projectile
     public GameObject projectile;
@@ -67,6 +71,7 @@ public class Lux_Player_Controller : MonoBehaviour
         controls.Player.Q.performed += OnQ;
         controls.Player.A.performed += OnA;
     }
+
 
 
     // Start is called before the first frame update
@@ -150,7 +155,7 @@ public class Lux_Player_Controller : MonoBehaviour
         ToggleAARange();
     }
 
-      private void ToggleAARange(){
+    private void ToggleAARange(){
         if(!isAARangeIndicatorOn){
             isAARangeIndicatorOn = true;
             AARangeIndicator = Instantiate(AARangeIndicatorPrefab, transform);
@@ -238,7 +243,21 @@ public class Lux_Player_Controller : MonoBehaviour
         float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, hitboxPos.y, 0));
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        RaycastHit hit;
+        
+        // Detect attack click
+        if(Physics.Raycast(ray, out hit)){
+            if(hit.collider.name == "Lux_AI"){
+                isAttackClick = true;
+                Vector3 diff = hit.point - hitboxPos;
+                float dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
+                lastClickPosition = hit.transform.position;
+                isRunning = true;
+                return lastClickPosition;
+            }
+        }
 
+        // Detect move click
         if (plane.Raycast(ray, out float enter)) {
             Vector3 hitPoint = ray.GetPoint(enter);
 
@@ -247,10 +266,14 @@ public class Lux_Player_Controller : MonoBehaviour
             
             if (dist > worldRadius){
                 // Mouse click is outside the hitbox.
+                isMoveClick = true;
                 lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
                 isRunning = true;
             }
         }
+
+
+
         return lastClickPosition;
     }
 
@@ -258,12 +281,13 @@ public class Lux_Player_Controller : MonoBehaviour
     private void MoveToCursor(){
 
         isCastingText.text = "isCasting: " + isCasting;
-
         hitboxPos = hitboxGameObj.transform.position;
         animator.SetBool("isRunning", isRunning);
   
         Vector3 direction = (lastClickPosition - transform.position).normalized;
         direction.y = 0f;
+
+        
 
         ShowMovementIndicator(lastClickPosition);
 
@@ -271,10 +295,22 @@ public class Lux_Player_Controller : MonoBehaviour
         transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
         RotateTowardsTarget(direction);
         debugDistance = Vector3.Distance(transform.position, lastClickPosition);
-        if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
-            isRunning = false;
-            animator.SetBool("isRunning", isRunning);
-        }        
+
+        if(isMoveClick){
+            if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
+                isRunning = false;
+                animator.SetBool("isRunning", isRunning);
+                isMoveClick = false;
+            }        
+        }
+        else if(isAttackClick){
+            if (Vector3.Distance(transform.position, lastClickPosition) <= (attackRange/2) + hitboxCollider.radius){
+                Debug.Log(Vector3.Distance(transform.position, lastClickPosition));
+                isRunning = false;
+                animator.SetBool("isRunning", isRunning);
+                isAttackClick = false;
+            }    
+        }
     }
 
     // Renders a quick animation on the terrain whenever the right mouse is clicked 
@@ -368,11 +404,11 @@ public class Lux_Player_Controller : MonoBehaviour
         }
     }
 
-    void OnDrawGizmos(){
-        // Draw a yellow sphere at the transform's position
-        Gizmos.color = Color.black;
-        Gizmos.DrawSphere(projectileSpawnPos, 0.3f);
-    }
+    // void OnDrawGizmos(){
+
+    //     Gizmos.color = Color.black;
+    //     Gizmos.DrawSphere(projectileSpawnPos, 0.3f);
+    // }
 
     private void HandleProjectiles(){
         if(projectiles.Count >= 1){
@@ -387,6 +423,10 @@ public class Lux_Player_Controller : MonoBehaviour
                 }
             }
         }
+    }
+
+    public float GetAttackRange(){
+        return attackRange;
     }
 
 }

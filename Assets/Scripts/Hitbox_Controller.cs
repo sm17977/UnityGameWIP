@@ -19,7 +19,6 @@ public class Hitbox : MonoBehaviour
     }
 
     void OnDrawGizmos(){
-        // Draw a yellow sphere at the transform's position
         Gizmos.color = Color.black;
         Gizmos.DrawSphere(centerPos, 0.3f);
     }

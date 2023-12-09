@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2120.8772, g: 2255.2385, b: 3344.7505, a: 1}
+  m_IndirectSpecularColor: {r: 2120.885, g: 2255.2385, b: 3344.7505, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -490,6 +490,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 214670863}
   m_CullTransparentMesh: 1
+--- !u!1 &264938294 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7157309607397930224, guid: 458163394b1b81746828f5eedf2ee10a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1783552371}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &264938297
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264938294}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,7 +842,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07052d477ced37b4a99245f4238af22b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 10
   projectile: {fileID: 6197774755375270932, guid: a61d016d001d6f440b44f0872182bcc6,
     type: 3}
   hitboxGameObj: {fileID: 1700967548}
@@ -1264,7 +1291,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.2
+  m_Radius: 0.3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1730084129
 GameObject:
@@ -1490,7 +1517,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 458163394b1b81746828f5eedf2ee10a,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1783552376}
+      addedObject: {fileID: 1783552379}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 458163394b1b81746828f5eedf2ee10a,
         type: 3}
       insertIndex: -1
@@ -1499,6 +1526,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1783552378}
+    - targetCorrespondingSourceObject: {fileID: 7157309607397930224, guid: 458163394b1b81746828f5eedf2ee10a,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 264938297}
   m_SourcePrefab: {fileID: 100100000, guid: 458163394b1b81746828f5eedf2ee10a, type: 3}
 --- !u!1 &1783552372 stripped
 GameObject:
@@ -1534,27 +1565,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!65 &1783552376
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1783552372}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1783552377
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1580,7 +1590,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 1
-  m_Constraints: 94
+  m_Constraints: 126
   m_CollisionDetection: 2
 --- !u!114 &1783552378
 MonoBehaviour:
@@ -1603,6 +1613,29 @@ MonoBehaviour:
     type: 3}
   movementIndicatorPrefab: {fileID: 0}
   debugDistance: 0
+--- !u!136 &1783552379
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1783552372}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &1823688464
 GameObject:
   m_ObjectHideFlags: 0
