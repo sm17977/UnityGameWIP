@@ -1,5 +1,5 @@
 
-public enum InputCommandType { Movement, CastSpell};
+public enum InputCommandType { Movement, CastSpell, Attack, None};
 public class InputCommand {
 
     public InputCommandType type;

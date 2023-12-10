@@ -30,7 +30,6 @@ public class Lux_Player_Controller : MonoBehaviour
     private Vector3 projectileSpawnPos;
     private Vector3 projectileTargetPosition;
 
-
     // Hitbox
     public GameObject hitboxGameObj;
     private SphereCollider hitboxCollider;
@@ -49,12 +48,16 @@ public class Lux_Player_Controller : MonoBehaviour
     // Debug Text
     public TMP_Text isCastingText;
     public TMP_Text isRunningText;
+    public TMP_Text isAttackingText;
+    public TMP_Text previousInputTypeText;
+    public TMP_Text nextPreviousInputTypeText;
     public float debugDistance;
 
     // Input Data
     private Controls controls;
     public Queue<InputCommand> inputQueue;
     private InputCommand previousInput = null;
+    private InputCommand nextPreviousInput = null;
     private InputCommand currentInput;
     private Vector3 lastClickPosition;
 
@@ -86,6 +89,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
         isCastingText.text = "isCasting: ";
         isRunningText.text = "isRunning: ";
+        isAttackingText.text = "isAttacking: ";
+        previousInputTypeText.text = "previousInputType: ";
+        nextPreviousInputTypeText.text = "nextPreviousInputType: ";
 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -144,7 +150,9 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void OnRightClick (InputAction.CallbackContext context){
-        AddInputToQueue(new InputCommand{type = InputCommandType.Movement, time = context.time});
+        isNewClick = true;
+        InputCommandType inputType = GetMouseClickPosition();
+        AddInputToQueue(new InputCommand{type = inputType, time = context.time});
     }
 
     public void OnQ(InputAction.CallbackContext context){
@@ -182,7 +190,7 @@ public class Lux_Player_Controller : MonoBehaviour
     // Read the input queue to handle movement and casting input commands
     private void HandleInput(){
 
-        // Check the queue for any unconsume input commands
+        // Check the queue for any unconsumed input commands
         if(inputQueue.Count > 0){
 
             // Get the next input command
@@ -191,21 +199,30 @@ public class Lux_Player_Controller : MonoBehaviour
             // Set previous input to null on first function call
             if(previousInput == null){
                 previousInput = currentInput;
+                previousInputTypeText.text = "previousInputType: " +  previousInput.type.ToString();
             }
 
             switch(currentInput.type){
 
-                // Process the movement input command
+                // Process the movement command
                 case InputCommandType.Movement:
-                    lastClickPosition = getMouseClickPosition();
-                    isNewClick = true;
+                    isRunning = true;
                     break;
 
-                // Process the casting (basically a skillshot) input command
+                // Process the attack command
+                case InputCommandType.Attack:
+                    isAttackClick = true;
+                    break;
+
+                // Process the cast spell command
                 case InputCommandType.CastSpell:
                     if(projectiles.Count == 0 && !isCasting){
+                        isCasting = true;
                         StartCasting();
                     }
+                    break;
+
+                case InputCommandType.None:
                     break;
 
             } 
@@ -229,8 +246,11 @@ public class Lux_Player_Controller : MonoBehaviour
                 }
             }
 
-            // Store the previous input for conflict resolution and remove it from the queue
+            nextPreviousInput = previousInput;
+            nextPreviousInputTypeText.text = "nextPreviousInputType: " +  nextPreviousInput.type.ToString();
+
             previousInput = inputQueue.Dequeue();
+            previousInputTypeText.text = "previousInputType: " +  previousInput.type.ToString();
         }
     }
 
@@ -238,8 +258,8 @@ public class Lux_Player_Controller : MonoBehaviour
         inputQueue.Enqueue(input);
     }
 
-    // Return the right mouse click position and check the click is valid
-    private Vector3 getMouseClickPosition(){
+    // Process the right mouse click, are we attacking or moving, then return the click position
+    private InputCommandType GetMouseClickPosition(){
         float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, hitboxPos.y, 0));
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -248,17 +268,16 @@ public class Lux_Player_Controller : MonoBehaviour
         // Detect attack click
         if(Physics.Raycast(ray, out hit)){
             if(hit.collider.name == "Lux_AI"){
-                isAttackClick = true;
-                Vector3 diff = hit.point - hitboxPos;
-                float dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
+                Debug.Log("Attack");
                 lastClickPosition = hit.transform.position;
                 isRunning = true;
-                return lastClickPosition;
+                return InputCommandType.Attack;
             }
         }
 
         // Detect move click
         if (plane.Raycast(ray, out float enter)) {
+            Debug.Log("Move");
             Vector3 hitPoint = ray.GetPoint(enter);
 
             Vector3 diff = hitPoint - hitboxPos;
@@ -268,13 +287,12 @@ public class Lux_Player_Controller : MonoBehaviour
                 // Mouse click is outside the hitbox.
                 isMoveClick = true;
                 lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
-                isRunning = true;
+                return InputCommandType.Movement;
             }
         }
 
-
-
-        return lastClickPosition;
+        // Default to None type
+        return InputCommandType.None;
     }
 
    // Show the movement indicator and move our player towards the last mouse click position
@@ -287,8 +305,6 @@ public class Lux_Player_Controller : MonoBehaviour
         Vector3 direction = (lastClickPosition - transform.position).normalized;
         direction.y = 0f;
 
-        
-
         ShowMovementIndicator(lastClickPosition);
 
         // Move player towards last mouse click 
@@ -296,22 +312,24 @@ public class Lux_Player_Controller : MonoBehaviour
         RotateTowardsTarget(direction);
         debugDistance = Vector3.Distance(transform.position, lastClickPosition);
 
-        if(isMoveClick){
-            if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
-                isRunning = false;
-                animator.SetBool("isRunning", isRunning);
-                isMoveClick = false;
-            }        
-        }
-        else if(isAttackClick){
+        if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
-            Debug.Log("calc: " + calculatedAttackRange);
             if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
-                Debug.Log(Vector3.Distance(transform.position, lastClickPosition));
+                isAttackClick = false;
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
-                isAttackClick = false;
+                
             }    
+        }
+
+        // Process move click
+        else if(isMoveClick){
+            if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
+                isMoveClick = false;
+                isRunning = false;
+                animator.SetBool("isRunning", isRunning);
+                
+            }        
         }
     }
 
@@ -351,7 +369,7 @@ public class Lux_Player_Controller : MonoBehaviour
                          
         // If casting interrupted moving, finish moving to target location
         // Previous input command will be casting by this point because the movement command is already consumed by the time we interrupt it (this might cause issues?)
-        if(previousInput.type == InputCommandType.CastSpell){
+        if(nextPreviousInput.type == InputCommandType.Movement){
             isRunning = true;
         }
     }
@@ -384,7 +402,6 @@ public class Lux_Player_Controller : MonoBehaviour
     private void StartCasting (){
 
         hasProjectile = true;
-        isCasting = true;
         animator.SetBool("isQCast", isCasting);
         isCastingText.text = "isCasting: " + isCasting;
         projectileTargetPosition = transform.position;
