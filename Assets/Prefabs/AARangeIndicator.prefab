@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.1, z: 0}
-  m_LocalScale: {x: 4, y: 1, z: 4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -100,6 +100,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AARangeIndicatorMaterial: {fileID: 2100000, guid: e09292d2390ba874495c2b480b2ab79c,
     type: 2}
-  size: 0.5
+  size: 0.6
   borderWidth: 0.01
   player: {fileID: 8278035178701963260, guid: 63aa808a8a5d571408068b11a0d197f5, type: 3}

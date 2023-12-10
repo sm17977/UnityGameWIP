@@ -5,17 +5,17 @@ using UnityEngine;
 public class RangeIndicator_Controller : MonoBehaviour
 {
     public Material AARangeIndicatorMaterial;
-    private float radius = 0.4f;
-    public float size;
-    public float borderWidth = 0.01f; 
-    private float initialRadius;
     public GameObject player;
+    public float size;
+    public float borderWidth;
+
+    // Keep radius 0.5 so the range indicator circle fills the quad
+    private float radius = 0.5f;
     private Lux_Player_Controller playerScript;
 
     void Start(){
-        //playerScript = player.GetComponent<Lux_Player_Controller>();
-        //radius = playerScript.GetAttackRange();
-        initialRadius = radius;
+        playerScript = player.GetComponent<Lux_Player_Controller>();
+        size = playerScript.GetAttackRange();
     }
 
 

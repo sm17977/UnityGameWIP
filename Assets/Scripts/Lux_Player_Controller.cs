@@ -22,7 +22,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private float moveSpeed = 3.3f;
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
-    public float attackRange = 0.4f;
+    private float attackRange = 0.6f;
 
     // Projectile
     public GameObject projectile;
@@ -304,7 +304,9 @@ public class Lux_Player_Controller : MonoBehaviour
             }        
         }
         else if(isAttackClick){
-            if (Vector3.Distance(transform.position, lastClickPosition) <= (attackRange/2) + hitboxCollider.radius){
+            float calculatedAttackRange = ((attackRange * 10) / 2);
+            Debug.Log("calc: " + calculatedAttackRange);
+            if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
                 Debug.Log(Vector3.Distance(transform.position, lastClickPosition));
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
