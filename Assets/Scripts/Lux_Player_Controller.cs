@@ -51,6 +51,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public TMP_Text isAttackingText;
     public TMP_Text previousInputTypeText;
     public TMP_Text nextPreviousInputTypeText;
+    public TMP_Text inputQueueSizeText;
     public float debugDistance;
 
     // Input Data
@@ -92,6 +93,7 @@ public class Lux_Player_Controller : MonoBehaviour
         isAttackingText.text = "isAttacking: ";
         previousInputTypeText.text = "previousInputType: ";
         nextPreviousInputTypeText.text = "nextPreviousInputType: ";
+        inputQueueSizeText.text = "inputQueueSize: ";
 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -135,6 +137,7 @@ public class Lux_Player_Controller : MonoBehaviour
     void Update(){
 
         isRunningText.text = "isRunning: " + isRunning;
+        inputQueueSizeText.text = "inputQueueSize: " + inputQueue.Count.ToString();
 
         HandleInput();
        
@@ -172,7 +175,6 @@ public class Lux_Player_Controller : MonoBehaviour
             Destroy(AARangeIndicator);
             isAARangeIndicatorOn = false;
         }
-
     }
 
     public void PrintQueue(){
@@ -206,6 +208,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 // Process the movement command
                 case InputCommandType.Movement:
+                    isMoveClick = true;
                     isRunning = true;
                     break;
 
@@ -246,6 +249,7 @@ public class Lux_Player_Controller : MonoBehaviour
                 }
             }
 
+            // Store penultimate input, used when we interrupt a move command with a cast command so we can still finish the move command
             nextPreviousInput = previousInput;
             nextPreviousInputTypeText.text = "nextPreviousInputType: " +  nextPreviousInput.type.ToString();
 
@@ -268,7 +272,6 @@ public class Lux_Player_Controller : MonoBehaviour
         // Detect attack click
         if(Physics.Raycast(ray, out hit)){
             if(hit.collider.name == "Lux_AI"){
-                Debug.Log("Attack");
                 lastClickPosition = hit.transform.position;
                 isRunning = true;
                 return InputCommandType.Attack;
@@ -277,15 +280,12 @@ public class Lux_Player_Controller : MonoBehaviour
 
         // Detect move click
         if (plane.Raycast(ray, out float enter)) {
-            Debug.Log("Move");
             Vector3 hitPoint = ray.GetPoint(enter);
-
             Vector3 diff = hitPoint - hitboxPos;
             float dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
             
             if (dist > worldRadius){
                 // Mouse click is outside the hitbox.
-                isMoveClick = true;
                 lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
                 return InputCommandType.Movement;
             }
@@ -312,13 +312,13 @@ public class Lux_Player_Controller : MonoBehaviour
         RotateTowardsTarget(direction);
         debugDistance = Vector3.Distance(transform.position, lastClickPosition);
 
+        // Process attack click
         if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
             if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
                 isAttackClick = false;
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
-                
             }    
         }
 
@@ -328,7 +328,6 @@ public class Lux_Player_Controller : MonoBehaviour
                 isMoveClick = false;
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
-                
             }        
         }
     }
@@ -368,7 +367,6 @@ public class Lux_Player_Controller : MonoBehaviour
         animator.SetBool("isQCast", isCasting);
                          
         // If casting interrupted moving, finish moving to target location
-        // Previous input command will be casting by this point because the movement command is already consumed by the time we interrupt it (this might cause issues?)
         if(nextPreviousInput.type == InputCommandType.Movement){
             isRunning = true;
         }
