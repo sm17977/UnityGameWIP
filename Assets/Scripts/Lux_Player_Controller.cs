@@ -14,6 +14,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private bool isAttackClick = false;
     private bool isMoveClick = false;
     private bool hasProjectile = false;
+    private bool incompleteMovement = false;
     private bool isNewClick;
 
     // Lux Stats
@@ -87,6 +88,7 @@ public class Lux_Player_Controller : MonoBehaviour
         
         isRunning = false;
         isCasting = false;
+        isAttacking = false;
 
         isCastingText.text = "isCasting: ";
         isRunningText.text = "isRunning: ";
@@ -137,6 +139,7 @@ public class Lux_Player_Controller : MonoBehaviour
     void Update(){
 
         isRunningText.text = "isRunning: " + isRunning;
+        isAttackingText.text = "isAttacking: " + isAttacking;
         inputQueueSizeText.text = "inputQueueSize: " + inputQueue.Count.ToString();
 
         HandleInput();
@@ -147,6 +150,10 @@ public class Lux_Player_Controller : MonoBehaviour
 
         if(isCasting){
             Q_Ability();
+        }
+
+        if(isAttacking){
+            Attack();
         }
 
         HandleProjectiles();
@@ -164,29 +171,6 @@ public class Lux_Player_Controller : MonoBehaviour
 
     public void OnA(InputAction.CallbackContext context){
         ToggleAARange();
-    }
-
-    private void ToggleAARange(){
-        if(!isAARangeIndicatorOn){
-            isAARangeIndicatorOn = true;
-            AARangeIndicator = Instantiate(AARangeIndicatorPrefab, transform);
-        }
-        else{
-            Destroy(AARangeIndicator);
-            isAARangeIndicatorOn = false;
-        }
-    }
-
-    public void PrintQueue(){
-        string output = "Queue: [";
-
-        foreach(InputCommand input in inputQueue){
-            output += input.type + ", ";
-        }
-
-        output += "]";
-        Debug.Log(output);
-
     }
 
     // Read the input queue to handle movement and casting input commands
@@ -234,7 +218,7 @@ public class Lux_Player_Controller : MonoBehaviour
             if(isCasting && isRunning){
                           
                 // Casting Interrupt     
-                 // If we input a movement command while casting, interrupt the cast animation so we can transition to moving/idle
+                // If we input a movement command while casting, interrupt the cast animation so we can transition to moving/idle
                 if(previousInput.type == InputCommandType.CastSpell){
                     isCasting = false;
                     animator.SetBool("isQCast", isCasting);
@@ -248,6 +232,18 @@ public class Lux_Player_Controller : MonoBehaviour
                     animator.SetBool("isRunning", isRunning);
                 }
             }
+
+            if(isAttacking && isRunning){
+
+                // Attacking Interrupt
+                // If we input a movement command while attacking, interrupt the attack animation so we can transition to moving/idle
+                if(previousInput.type == InputCommandType.Attack){
+                    isAttacking = false;
+                    animator.SetBool("isAttacking", isAttacking);
+                }
+
+            }
+
 
             // Store penultimate input, used when we interrupt a move command with a cast command so we can still finish the move command
             nextPreviousInput = previousInput;
@@ -316,6 +312,7 @@ public class Lux_Player_Controller : MonoBehaviour
         if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
             if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
+                isAttacking = true;
                 isAttackClick = false;
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
@@ -324,9 +321,11 @@ public class Lux_Player_Controller : MonoBehaviour
 
         // Process move click
         else if(isMoveClick){
+            incompleteMovement = true;
             if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
                 isMoveClick = false;
                 isRunning = false;
+                incompleteMovement = false;
                 animator.SetBool("isRunning", isRunning);
             }        
         }
@@ -360,15 +359,20 @@ public class Lux_Player_Controller : MonoBehaviour
         }
     }
 
-    // Set casting state false, handle any left over movement commands
-    private void FinishCasting(){
-        isCasting = false;
-        isCastingText.text = "isCasting: " + isCasting;
+    // Initiate the casting process
+    private void StartCasting (){
+
+        hasProjectile = true;
         animator.SetBool("isQCast", isCasting);
-                         
-        // If casting interrupted moving, finish moving to target location
-        if(nextPreviousInput.type == InputCommandType.Movement){
-            isRunning = true;
+        isCastingText.text = "isCasting: " + isCasting;
+        projectileTargetPosition = transform.position;
+
+        Plane plane = new Plane(Vector3.up, new Vector3(0, hitboxPos.y, 0));
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (plane.Raycast(ray, out float enter)) {
+            Vector3 hitPoint = ray.GetPoint(enter);
+            projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
         }
     }
 
@@ -396,22 +400,37 @@ public class Lux_Player_Controller : MonoBehaviour
         }
     }
 
-    // Initiate the casting process
-    private void StartCasting (){
-
-        hasProjectile = true;
-        animator.SetBool("isQCast", isCasting);
+    // Set casting state false, handle any left over movement commands
+    private void FinishCasting(){
+        isCasting = false;
         isCastingText.text = "isCasting: " + isCasting;
-        projectileTargetPosition = transform.position;
-
-        Plane plane = new Plane(Vector3.up, new Vector3(0, hitboxPos.y, 0));
-        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-        if (plane.Raycast(ray, out float enter)) {
-            Vector3 hitPoint = ray.GetPoint(enter);
-            projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
+        animator.SetBool("isQCast", isCasting);
+                         
+        // If casting interrupted moving, finish moving to target location
+        if(nextPreviousInput.type == InputCommandType.Movement && incompleteMovement){
+            isRunning = true;
         }
     }
+
+    private void Attack(){
+
+        Vector3 direction = (lastClickPosition - transform.position).normalized;
+        animator.SetBool("isAttacking", isAttacking);
+        RotateTowardsTarget(direction);
+        
+
+
+
+
+
+
+
+
+
+
+
+    }
+
 
     private void RotateTowardsTarget(Vector3 direction){
         if (direction != Vector3.zero){
@@ -420,12 +439,6 @@ public class Lux_Player_Controller : MonoBehaviour
             transform.rotation = Quaternion.Slerp(fromRotation, toRotation, turnSpeed * Time.deltaTime);
         }
     }
-
-    // void OnDrawGizmos(){
-
-    //     Gizmos.color = Color.black;
-    //     Gizmos.DrawSphere(projectileSpawnPos, 0.3f);
-    // }
 
     private void HandleProjectiles(){
         if(projectiles.Count >= 1){
@@ -440,6 +453,29 @@ public class Lux_Player_Controller : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void ToggleAARange(){
+        if(!isAARangeIndicatorOn){
+            isAARangeIndicatorOn = true;
+            AARangeIndicator = Instantiate(AARangeIndicatorPrefab, transform);
+        }
+        else{
+            Destroy(AARangeIndicator);
+            isAARangeIndicatorOn = false;
+        }
+    }
+
+    public void PrintQueue(){
+        string output = "Queue: [";
+
+        foreach(InputCommand input in inputQueue){
+            output += input.type + ", ";
+        }
+
+        output += "]";
+        Debug.Log(output);
+
     }
 
     public float GetAttackRange(){
