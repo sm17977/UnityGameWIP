@@ -222,15 +222,15 @@ public class Lux_Player_Controller : MonoBehaviour
                 // Casting interrupts walk into range 
                 // If we input a casting command while walking into attack range, interrupt the movement to transition to casting
                 // Resume moving into attack range and attack
-                if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
-                    Debug.Log("c");
-                    isRunning = false;
-                    animator.SetBool("isRunning", isRunning);
-                }
+                // if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
+                //     Debug.Log("c, input: " + previousInput.type.ToString() + " prevInput: " + nextPreviousInput.type.ToString());
+                //     isRunning = false;
+                //     animator.SetBool("isRunning", isRunning);
+                // }
                           
                 // Movement interrupts casting     
                 // If we input a movement command while casting, interrupt the cast animation so we can transition to moving/idle
-                else if(previousInput.type == InputCommandType.CastSpell){
+                if(previousInput.type == InputCommandType.CastSpell){
                     Debug.Log("a");
                     isCasting = false;
                     animator.SetBool("isQCast", isCasting);
@@ -260,7 +260,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 
                 if(previousInput.type == InputCommandType.Movement){
-
+                    Debug.Log("movement interrupting attack");
+                    isAttacking = false;
+                    animator.SetBool("isAttacking", isAttacking);
                 }
             }
 
@@ -351,6 +353,8 @@ public class Lux_Player_Controller : MonoBehaviour
         // Process attack click
         if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
+             nextPreviousInput = previousInput;
+             previousInput = new InputCommand{type = InputCommandType.Movement};
             // When we reach max auto range, attack
             if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
                 isAttacking = true;
@@ -448,14 +452,18 @@ public class Lux_Player_Controller : MonoBehaviour
         animator.SetBool("isQCast", isCasting);
                          
         // If casting interrupted moving, finish moving to target location
-        if(nextPreviousInput.type == InputCommandType.Movement && incompleteMovement){
+        if(nextPreviousInput.type == InputCommandType.Movement && previousInput.type == InputCommandType.CastSpell && incompleteMovement){
+             Debug.Log("continue moving to target loc");
             isRunning = true;
         }
 
         // If casting interrupted walking into attack range, finish moving to attack range
-        if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
-            isRunning = true;
-        }
+        // if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.Movement && incompleteMovement)){
+        //     Debug.Log("continue moving to attack range");
+        //     isRunning = true;
+        // }
+    
+
     }
 
     private void Attack(){
