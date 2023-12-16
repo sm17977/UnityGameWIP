@@ -216,18 +216,31 @@ public class Lux_Player_Controller : MonoBehaviour
 
             // Go through a sort of "conflict resolution" for when a new input command occurrs while an animation is currently playing
             if(isCasting && isRunning){
+
+                Debug.Log("running and casting");
+
+                // Casting interrupts walk into range 
+                // If we input a casting command while walking into attack range, interrupt the movement to transition to casting
+                // Resume moving into attack range and attack
+                if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
+                    Debug.Log("c");
+                    isRunning = false;
+                    animator.SetBool("isRunning", isRunning);
+                }
                           
-                // Casting Interrupt     
+                // Movement interrupts casting     
                 // If we input a movement command while casting, interrupt the cast animation so we can transition to moving/idle
-                if(previousInput.type == InputCommandType.CastSpell){
+                else if(previousInput.type == InputCommandType.CastSpell){
+                    Debug.Log("a");
                     isCasting = false;
                     animator.SetBool("isQCast", isCasting);
                 }
 
-                // Moving Interrupt
+                // Casting interrupts movement
                 // If we input a casting command while moving, interrupt the movement animation so we can transition to casting
                 // If the interrupted movement command did not complete (a.k.a target pos was not reached), we have specific handling to continue moving in FinishCasting()
                 else if(previousInput.type == InputCommandType.Movement){
+                    Debug.Log("b");
                     isRunning = false;
                     animator.SetBool("isRunning", isRunning);
                 }
@@ -235,13 +248,38 @@ public class Lux_Player_Controller : MonoBehaviour
 
             if(isAttacking && isRunning){
 
-                // Attacking Interrupt
+                Debug.Log("running and attacking");
+
+                // Movement interupts attacking
                 // If we input a movement command while attacking, interrupt the attack animation so we can transition to moving/idle
-                if(previousInput.type == InputCommandType.Attack){
+                if(previousInput.type == InputCommandType.Attack || previousInput.type == InputCommandType.CastSpell){
+                    Debug.Log("movement interrupting attack");
                     isAttacking = false;
                     animator.SetBool("isAttacking", isAttacking);
                 }
 
+                
+                if(previousInput.type == InputCommandType.Movement){
+
+                }
+            }
+
+            if(isAttacking && isCasting){
+                
+                // Casting interrupts attacking
+                // If we input a casting command while attacking (or moving to attack), interrupt the attack/move animation so we can transition to attacking
+                // if(previousInput.type == InputCommandType.Attack){
+                //     Debug.Log("casting interrupts attacking");
+                //     isAttacking = false;
+                //     animator.SetBool("isAttacking", isAttacking);
+                // }
+
+                // Attacking interrupts casting
+                // else if(previousInput.type == InputCommandType.CastSpell){
+                //     isCasting = false;
+                //     animator.SetBool("isCasting", isCasting);
+
+                // }
             }
 
 
@@ -283,6 +321,7 @@ public class Lux_Player_Controller : MonoBehaviour
             if (dist > worldRadius){
                 // Mouse click is outside the hitbox.
                 lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
+                isAttackClick = false;
                 return InputCommandType.Movement;
             }
         }
@@ -294,6 +333,7 @@ public class Lux_Player_Controller : MonoBehaviour
    // Show the movement indicator and move our player towards the last mouse click position
     private void MoveToCursor(){
 
+        incompleteMovement = true;
         isCastingText.text = "isCasting: " + isCasting;
         hitboxPos = hitboxGameObj.transform.position;
         animator.SetBool("isRunning", isRunning);
@@ -311,17 +351,18 @@ public class Lux_Player_Controller : MonoBehaviour
         // Process attack click
         if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
+            // When we reach max auto range, attack
             if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
                 isAttacking = true;
                 isAttackClick = false;
                 isRunning = false;
                 animator.SetBool("isRunning", isRunning);
+                incompleteMovement = false;
             }    
         }
 
         // Process move click
         else if(isMoveClick){
-            incompleteMovement = true;
             if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
                 isMoveClick = false;
                 isRunning = false;
@@ -408,6 +449,11 @@ public class Lux_Player_Controller : MonoBehaviour
                          
         // If casting interrupted moving, finish moving to target location
         if(nextPreviousInput.type == InputCommandType.Movement && incompleteMovement){
+            isRunning = true;
+        }
+
+        // If casting interrupted walking into attack range, finish moving to attack range
+        if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
             isRunning = true;
         }
     }
