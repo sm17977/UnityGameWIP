@@ -8,19 +8,20 @@ public class Lux_Player_Controller : MonoBehaviour
 {
 
     // Flags
-    private bool isRunning;
+    public bool isRunning;
     private bool isCasting;
-    private bool isAttacking;
-    private bool isAttackClick = false;
-    private bool isMoveClick = false;
+    public bool isAttacking;
+    public bool isAttackClick = false;
     private bool hasProjectile = false;
     private bool incompleteMovement = false;
     private bool isNewClick;
+    public bool targetReached = false;
+    public bool inAttackRange = false;
 
     // Lux Stats
     public Dictionary<string, object> luxAbilityData;
     public Dictionary<string, object> qData;
-    private float moveSpeed = 3.3f;
+    public float moveSpeed = 3.3f;
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
     private float attackRange = 0.6f;
@@ -35,6 +36,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public GameObject hitboxGameObj;
     private SphereCollider hitboxCollider;
     private Vector3 hitboxPos;
+    private Vector3 direction;
 
     // Movement Indicator
     public GameObject movementIndicatorPrefab;
@@ -53,6 +55,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public TMP_Text previousInputTypeText;
     public TMP_Text nextPreviousInputTypeText;
     public TMP_Text inputQueueSizeText;
+    public TMP_Text currentStateText;
     public float debugDistance;
 
     // Input Data
@@ -67,6 +70,16 @@ public class Lux_Player_Controller : MonoBehaviour
     public GameObject AARangeIndicatorPrefab;
     private GameObject AARangeIndicator;
     private bool isAARangeIndicatorOn = false;
+
+
+    // State Management
+    private StateManager stateManager;
+    private MovingState movingState;
+    private AttackingState attackingState;
+    private IdleState idleState;
+    private CastingState castingState;
+
+
 
     void Awake(){
         // Initiate Input Actions/Events
@@ -83,19 +96,19 @@ public class Lux_Player_Controller : MonoBehaviour
     void Start()
     {
 
+        InitStates();
+        stateManager.ChangeState(idleState);
+
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         hitboxPos = hitboxGameObj.transform.position;
         
-        isRunning = false;
-        isCasting = false;
-        isAttacking = false;
-
         isCastingText.text = "isCasting: ";
         isRunningText.text = "isRunning: ";
         isAttackingText.text = "isAttacking: ";
         previousInputTypeText.text = "previousInputType: ";
         nextPreviousInputTypeText.text = "nextPreviousInputType: ";
         inputQueueSizeText.text = "inputQueueSize: ";
+        currentStateText.text = "currentState: ";
 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -138,30 +151,25 @@ public class Lux_Player_Controller : MonoBehaviour
     // Update is called once per frame
     void Update(){
 
-        isRunningText.text = "isRunning: " + isRunning;
         isAttackingText.text = "isAttacking: " + isAttacking;
-        inputQueueSizeText.text = "inputQueueSize: " + inputQueue.Count.ToString();
+
+        hitboxPos = hitboxGameObj.transform.position;
+
+        //temp log
+        inputQueueSizeText.text = "inputQueue count: " + inputQueue.Count;
 
         HandleInput();
-       
-        if(isRunning){
-            MoveToCursor();
-        }
 
-        if(isCasting){
-            Q_Ability();
-        }
+        stateManager.Update();
 
-        if(isAttacking){
-            Attack();
-        }
-
+        currentStateText.text = "currentState: " + stateManager.GetCurrentState();
+  
         HandleProjectiles();
     }
 
     public void OnRightClick (InputAction.CallbackContext context){
         isNewClick = true;
-        InputCommandType inputType = GetMouseClickPosition();
+        InputCommandType inputType = GetClickInput();
         AddInputToQueue(new InputCommand{type = inputType, time = context.time});
     }
 
@@ -172,6 +180,14 @@ public class Lux_Player_Controller : MonoBehaviour
     public void OnA(InputAction.CallbackContext context){
         ToggleAARange();
     }
+
+
+    private void InitStates(){
+        stateManager = new StateManager();
+        idleState = new IdleState();
+        castingState = new CastingState();
+    }
+
 
     // Read the input queue to handle movement and casting input commands
     private void HandleInput(){
@@ -192,13 +208,30 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 // Process the movement command
                 case InputCommandType.Movement:
-                    isMoveClick = true;
-                    isRunning = true;
+                    ShowMovementIndicator(lastClickPosition);
+                    // If the state is already moving, update the target location
+                    if(stateManager.GetCurrentState() == "MovingState"){
+                        movingState.UpdateTargetLocation(lastClickPosition);
+                    }
+                    else{
+                        movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
+                        stateManager.ChangeState(movingState);
+                    }
+                    inputQueue.Dequeue();
                     break;
 
-                // Process the attack command
+                //Process the attack command
                 case InputCommandType.Attack:
-                    isAttackClick = true;
+                    direction = (lastClickPosition - transform.position).normalized;
+                    // If the player is not within attack range, move until they are
+                    if(!IsInAttackRange(lastClickPosition, GetStoppingDistance())){
+                        stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, true));
+                    }
+                    // If they are in attack range, transition to attack state
+                    else{
+                        stateManager.ChangeState(new AttackingState(this, direction));
+                    }
+                    inputQueue.Dequeue();
                     break;
 
                 // Process the cast spell command
@@ -210,87 +243,10 @@ public class Lux_Player_Controller : MonoBehaviour
                     break;
 
                 case InputCommandType.None:
+                    inputQueue.Dequeue();
                     break;
 
             } 
-
-            // Go through a sort of "conflict resolution" for when a new input command occurrs while an animation is currently playing
-            if(isCasting && isRunning){
-
-                Debug.Log("running and casting");
-
-                // Casting interrupts walk into range 
-                // If we input a casting command while walking into attack range, interrupt the movement to transition to casting
-                // Resume moving into attack range and attack
-                // if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.CastSpell && incompleteMovement)){
-                //     Debug.Log("c, input: " + previousInput.type.ToString() + " prevInput: " + nextPreviousInput.type.ToString());
-                //     isRunning = false;
-                //     animator.SetBool("isRunning", isRunning);
-                // }
-                          
-                // Movement interrupts casting     
-                // If we input a movement command while casting, interrupt the cast animation so we can transition to moving/idle
-                if(previousInput.type == InputCommandType.CastSpell){
-                    Debug.Log("a");
-                    isCasting = false;
-                    animator.SetBool("isQCast", isCasting);
-                }
-
-                // Casting interrupts movement
-                // If we input a casting command while moving, interrupt the movement animation so we can transition to casting
-                // If the interrupted movement command did not complete (a.k.a target pos was not reached), we have specific handling to continue moving in FinishCasting()
-                else if(previousInput.type == InputCommandType.Movement){
-                    Debug.Log("b");
-                    isRunning = false;
-                    animator.SetBool("isRunning", isRunning);
-                }
-            }
-
-            if(isAttacking && isRunning){
-
-                Debug.Log("running and attacking");
-
-                // Movement interupts attacking
-                // If we input a movement command while attacking, interrupt the attack animation so we can transition to moving/idle
-                if(previousInput.type == InputCommandType.Attack || previousInput.type == InputCommandType.CastSpell){
-                    Debug.Log("movement interrupting attack");
-                    isAttacking = false;
-                    animator.SetBool("isAttacking", isAttacking);
-                }
-
-                
-                if(previousInput.type == InputCommandType.Movement){
-                    Debug.Log("movement interrupting attack");
-                    isAttacking = false;
-                    animator.SetBool("isAttacking", isAttacking);
-                }
-            }
-
-            if(isAttacking && isCasting){
-                
-                // Casting interrupts attacking
-                // If we input a casting command while attacking (or moving to attack), interrupt the attack/move animation so we can transition to attacking
-                // if(previousInput.type == InputCommandType.Attack){
-                //     Debug.Log("casting interrupts attacking");
-                //     isAttacking = false;
-                //     animator.SetBool("isAttacking", isAttacking);
-                // }
-
-                // Attacking interrupts casting
-                // else if(previousInput.type == InputCommandType.CastSpell){
-                //     isCasting = false;
-                //     animator.SetBool("isCasting", isCasting);
-
-                // }
-            }
-
-
-            // Store penultimate input, used when we interrupt a move command with a cast command so we can still finish the move command
-            nextPreviousInput = previousInput;
-            nextPreviousInputTypeText.text = "nextPreviousInputType: " +  nextPreviousInput.type.ToString();
-
-            previousInput = inputQueue.Dequeue();
-            previousInputTypeText.text = "previousInputType: " +  previousInput.type.ToString();
         }
     }
 
@@ -298,18 +254,19 @@ public class Lux_Player_Controller : MonoBehaviour
         inputQueue.Enqueue(input);
     }
 
-    // Process the right mouse click, are we attacking or moving, then return the click position
-    private InputCommandType GetMouseClickPosition(){
+    // Detect if the player has clicked on the ground (movement commmand) or an enemy (attack command)
+    // Store the position of the click in lastClickPosition
+    // Return the input command type
+    private InputCommandType GetClickInput(){
         float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, hitboxPos.y, 0));
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        RaycastHit hit;
-        
+
         // Detect attack click
-        if(Physics.Raycast(ray, out hit)){
-            if(hit.collider.name == "Lux_AI"){
+        if (Physics.Raycast(ray, out RaycastHit hit)){
+            if (hit.collider.name == "Lux_AI"){
+                isAttackClick = true;
                 lastClickPosition = hit.transform.position;
-                isRunning = true;
                 return InputCommandType.Attack;
             }
         }
@@ -321,7 +278,7 @@ public class Lux_Player_Controller : MonoBehaviour
             float dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
             
             if (dist > worldRadius){
-                // Mouse click is outside the hitbox.
+                // Move click is valid (outside the players hitbox)
                 lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
                 isAttackClick = false;
                 return InputCommandType.Movement;
@@ -332,52 +289,31 @@ public class Lux_Player_Controller : MonoBehaviour
         return InputCommandType.None;
     }
 
-   // Show the movement indicator and move our player towards the last mouse click position
-    private void MoveToCursor(){
+   // Get the minimum distance the player must move to reach the target location
+    private float GetStoppingDistance(){
 
-        incompleteMovement = true;
-        isCastingText.text = "isCasting: " + isCasting;
-        hitboxPos = hitboxGameObj.transform.position;
-        animator.SetBool("isRunning", isRunning);
-  
-        Vector3 direction = (lastClickPosition - transform.position).normalized;
-        direction.y = 0f;
+        float distance = stoppingDistance;
 
-        ShowMovementIndicator(lastClickPosition);
-
-        // Move player towards last mouse click 
-        transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
-        RotateTowardsTarget(direction);
-        debugDistance = Vector3.Distance(transform.position, lastClickPosition);
-
-        // Process attack click
+        // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if(isAttackClick){
             float calculatedAttackRange = ((attackRange * 10) / 2);
-             nextPreviousInput = previousInput;
-             previousInput = new InputCommand{type = InputCommandType.Movement};
-            // When we reach max auto range, attack
-            if (Vector3.Distance(transform.position, lastClickPosition) <= calculatedAttackRange + hitboxCollider.radius){
-                isAttacking = true;
-                isAttackClick = false;
-                isRunning = false;
-                animator.SetBool("isRunning", isRunning);
-                incompleteMovement = false;
-            }    
+            distance = calculatedAttackRange + hitboxCollider.radius;
         }
 
-        // Process move click
-        else if(isMoveClick){
-            if (Vector3.Distance(transform.position, lastClickPosition) <= stoppingDistance){
-                isMoveClick = false;
-                isRunning = false;
-                incompleteMovement = false;
-                animator.SetBool("isRunning", isRunning);
-            }        
-        }
+        return distance;
+    }
+
+    private bool IsInAttackRange(Vector3 targetLocation, float stoppingDistance){
+
+        if (Vector3.Distance(transform.position, targetLocation) <= stoppingDistance){
+            return true;
+        }      
+
+        return false;
     }
 
     // Renders a quick animation on the terrain whenever the right mouse is clicked 
-    private void ShowMovementIndicator(Vector3 position){
+    public void ShowMovementIndicator(Vector3 position){
 
         if(isNewClick){
             if(movementIndicator != null){
@@ -388,6 +324,15 @@ public class Lux_Player_Controller : MonoBehaviour
             isNewClick = false;
         }
     }
+
+    public void TransitionToIdle(){
+        stateManager.ChangeState(idleState);
+    }
+
+    public void TransitionToAttack(){
+        stateManager.ChangeState(new AttackingState(this, direction));
+    }
+
 
     // Casts the Q skillshot projectile 
     private void Q_Ability(){
@@ -456,14 +401,6 @@ public class Lux_Player_Controller : MonoBehaviour
              Debug.Log("continue moving to target loc");
             isRunning = true;
         }
-
-        // If casting interrupted walking into attack range, finish moving to attack range
-        // if(previousInput.type == InputCommandType.Attack || (previousInput.type == InputCommandType.Movement && incompleteMovement)){
-        //     Debug.Log("continue moving to attack range");
-        //     isRunning = true;
-        // }
-    
-
     }
 
     private void Attack(){
@@ -486,7 +423,7 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
 
-    private void RotateTowardsTarget(Vector3 direction){
+    public void RotateTowardsTarget(Vector3 direction){
         if (direction != Vector3.zero){
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             Quaternion fromRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
