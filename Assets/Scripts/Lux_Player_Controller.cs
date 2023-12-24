@@ -12,10 +12,9 @@ public class Lux_Player_Controller : MonoBehaviour
     public bool isCasting;
     public bool isAttacking;
     public bool isAttackClick = false;
-    public bool hasProjectile = false;
+    public bool canCast = false;
     public bool incompleteMovement = false;
     private bool isNewClick;
-    public bool targetReached = false;
     public bool inAttackRange = false;
 
     // Lux Stats
@@ -49,11 +48,6 @@ public class Lux_Player_Controller : MonoBehaviour
     public Camera mainCamera;
  
     // Debug Text
-    public TMP_Text isCastingText;
-    public TMP_Text isRunningText;
-    public TMP_Text isAttackingText;
-    public TMP_Text previousInputTypeText;
-    public TMP_Text nextPreviousInputTypeText;
     public TMP_Text inputQueueSizeText;
     public TMP_Text currentStateText;
     public float debugDistance;
@@ -71,15 +65,12 @@ public class Lux_Player_Controller : MonoBehaviour
     private GameObject AARangeIndicator;
     private bool isAARangeIndicatorOn = false;
 
-
     // State Management
     private StateManager stateManager;
     private MovingState movingState;
     private AttackingState attackingState;
     private IdleState idleState;
     private CastingState castingState;
-
-
 
     void Awake(){
         // Initiate Input Actions/Events
@@ -90,11 +81,8 @@ public class Lux_Player_Controller : MonoBehaviour
         controls.Player.A.performed += OnA;
     }
 
-
-
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
 
         InitStates();
         stateManager.ChangeState(idleState);
@@ -102,12 +90,6 @@ public class Lux_Player_Controller : MonoBehaviour
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         hitboxPos = hitboxGameObj.transform.position;
         
-        isCastingText.text = "isCasting: ";
-        isRunningText.text = "isRunning: ";
-        isAttackingText.text = "isAttacking: ";
-        previousInputTypeText.text = "previousInputType: ";
-        nextPreviousInputTypeText.text = "nextPreviousInputType: ";
-        inputQueueSizeText.text = "inputQueueSize: ";
         currentStateText.text = "currentState: ";
 
         inputQueue = new Queue<InputCommand>();
@@ -151,12 +133,7 @@ public class Lux_Player_Controller : MonoBehaviour
     // Update is called once per frame
     void Update(){
 
-        isAttackingText.text = "isAttacking: " + isAttacking;
-
         hitboxPos = hitboxGameObj.transform.position;
-
-        //temp log
-        inputQueueSizeText.text = "inputQueue count: " + inputQueue.Count;
 
         HandleInput();
 
@@ -200,18 +177,16 @@ public class Lux_Player_Controller : MonoBehaviour
             // Set previous input to null on first function call
             if(previousInput == null){
                 previousInput = currentInput;
-                previousInputTypeText.text = "previousInputType: " +  previousInput.type.ToString();
             }
 
             switch(currentInput.type){
 
                 // Process the movement command
                 case InputCommandType.Movement:
+
                     ShowMovementIndicator(lastClickPosition);
-                    // If the state is already moving, update the target location
-                
-                        movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
-                        stateManager.ChangeState(movingState);
+                    movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
+                    stateManager.ChangeState(movingState);
                     
                     inputQueue.Dequeue();
                     break;
@@ -243,7 +218,6 @@ public class Lux_Player_Controller : MonoBehaviour
                 case InputCommandType.None:
                     inputQueue.Dequeue();
                     break;
-
             } 
         }
     }
@@ -342,70 +316,9 @@ public class Lux_Player_Controller : MonoBehaviour
         stateManager.ChangeState(new AttackingState(this, direction));
     }
 
-    // public void TransitionToMove(){
-    //     stateManager.ChangeState(new MovingState(this, direction));
-    // }
-
-
-    // Casts the Q skillshot projectile 
-    private void Q_Ability(){
-
-        // Check if the casting animation has finished
-        bool castingFinished = animator.GetCurrentAnimatorStateInfo(0).IsName("Q_Ability") && 
-            animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
-
-        if(isCasting){
-            UpdateCasting();
-            if(castingFinished){
-                FinishCasting();
-            }
-        }
+    public void TransitionToMove(){
+        stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, isAttackClick));
     }
-
-    // Initiate the casting process
-    private void StartCasting (){
-
-
-    }
-
-    // Instantiates the projectile, rotates the player towards its target (Generic_Projectile_Controller handles the movement)
-    private void UpdateCasting(){
-
-
-    }
-
-    // Set casting state false, handle any left over movement commands
-    private void FinishCasting(){
-        isCasting = false;
-        isCastingText.text = "isCasting: " + isCasting;
-        animator.SetBool("isQCast", isCasting);
-                         
-        // If casting interrupted moving, finish moving to target location
-        if(nextPreviousInput.type == InputCommandType.Movement && previousInput.type == InputCommandType.CastSpell && incompleteMovement){
-             Debug.Log("continue moving to target loc");
-            isRunning = true;
-        }
-    }
-
-    private void Attack(){
-
-        Vector3 direction = (lastClickPosition - transform.position).normalized;
-        animator.SetBool("isAttacking", isAttacking);
-        RotateTowardsTarget(direction);
-        
-
-
-
-
-
-
-
-
-
-
-
-    }
-
 
     public void RotateTowardsTarget(Vector3 direction){
         if (direction != Vector3.zero){
@@ -450,11 +363,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
         output += "]";
         Debug.Log(output);
-
     }
 
     public float GetAttackRange(){
         return attackRange;
     }
-
 }

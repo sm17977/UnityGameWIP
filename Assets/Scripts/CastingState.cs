@@ -6,16 +6,14 @@ public class CastingState : State
     private Lux_Player_Controller playerController;
     private GameObject player;
 
-
     public CastingState (Lux_Player_Controller controller,  GameObject gameObject){
         playerController = controller;
         player = gameObject;
     }
 
-
     public override void Enter() {
         playerController.isCasting = true;
-        playerController.hasProjectile = true;
+        playerController.canCast = true;
         playerController.animator.SetBool("isQCast", playerController.isCasting);
     }
 
@@ -32,10 +30,12 @@ public class CastingState : State
 
         playerController.RotateTowardsTarget(direction);
 
-        if (playerController.hasProjectile) {
+        if (playerController.canCast) {
+            // Set the spawn position of the projectile
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
             playerController.projectileSpawnPos = new Vector3(player.transform.position.x, 0.51f, player.transform.position.z) + direction * worldRadius;
             
+            // Set rotation
             Vector3 eulerAngles = player.transform.rotation.eulerAngles;
             eulerAngles.x = 90;
             Quaternion rotation = Quaternion.Euler(eulerAngles);
@@ -45,24 +45,27 @@ public class CastingState : State
             playerController.projectiles.Add(newProjectile);
             Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
             projectile_Controller.setParams((Dictionary<string, object>)playerController.luxAbilityData["Q"]);
-            playerController.hasProjectile = false;
+            playerController.canCast = false;
         }
-
+        
         if(castingFinished){
-            playerController.TransitionToIdle();
+            // Finish any incomplete movement commands
+            if(playerController.incompleteMovement){
+                playerController.TransitionToMove();
+            }
+            // Return to attacking
+            else if(playerController.isAttackClick){
+                playerController.TransitionToAttack();
+            }
+            // Deafult to idle
+            else{
+                playerController.TransitionToIdle();
+            }
         }
-
-
     }
 
     public override void Exit() {
         playerController.isCasting = false;
         playerController.animator.SetBool("isQCast", playerController.isCasting);
-
-        // If casting interrupted moving, finish moving to target location
-        // if(playerController.nextPreviousInput.type == InputCommandType.Movement && playerController.previousInput.type == InputCommandType.CastSpell && playerController.incompleteMovement){
-        //     Debug.Log("continue moving to target loc");
-        //     playerController.isRunning = true;
-        // }
     }
 }

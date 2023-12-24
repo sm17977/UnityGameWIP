@@ -5,7 +5,6 @@ using System;
 
 public class Generic_Projectile_Controller : MonoBehaviour
 {
-
     private Dictionary<string, object> abilityData;
     private Vector3 direction;
     private float speed;

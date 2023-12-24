@@ -18,7 +18,7 @@ public class MovingState : State
     }
 
     public override void Enter() {
-        playerController.targetReached = false;
+        playerController.incompleteMovement = true;
         playerController.isRunning = true;
         playerController.animator.SetBool("isRunning", true);
     }
@@ -35,6 +35,8 @@ public class MovingState : State
 
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
+            playerController.incompleteMovement = false;
+
             // If we are walking in range to attack, transition to attack state
             if(movingToAttack){
                 playerController.TransitionToAttack();
