@@ -72,6 +72,10 @@ public class Lux_Player_Controller : MonoBehaviour
     private IdleState idleState;
     private CastingState castingState;
 
+    // AI
+
+    public GameObject Lux_AI;
+
     void Awake(){
         // Initiate Input Actions/Events
         controls = new Controls();
@@ -237,6 +241,8 @@ public class Lux_Player_Controller : MonoBehaviour
         // Detect attack click
         if (Physics.Raycast(ray, out RaycastHit hit)){
             if (hit.collider.name == "Lux_AI"){
+                GameObject Lux_AI = hit.rigidbody.gameObject;
+                ToggleOutlineShader(Lux_AI, "Default");
                 isAttackClick = true;
                 lastClickPosition = hit.transform.position;
                 return InputCommandType.Attack;
@@ -245,6 +251,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
         // Detect move click
         if (plane.Raycast(ray, out float enter)) {
+            ToggleOutlineShader(Lux_AI, "Selection");
             Vector3 hitPoint = ray.GetPoint(enter);
             Vector3 diff = hitPoint - hitboxPos;
             float dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
@@ -259,6 +266,20 @@ public class Lux_Player_Controller : MonoBehaviour
 
         // Default to None type
         return InputCommandType.None;
+    }
+
+    // Set the AI gameobject layet to default so the outline renders ('Selection' layer = outline off)
+    void ToggleOutlineShader(GameObject Lux_AI, string mask){
+        ChangeLayerRecursively(Lux_AI, LayerMask.NameToLayer(mask));
+    }
+
+    void ChangeLayerRecursively(GameObject obj, int newLayer) {
+        if (obj == null) return;
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform) {
+            ChangeLayerRecursively(child.gameObject, newLayer);
+        }
     }
 
     private void GetCastingTargetPosition(){
@@ -291,7 +312,6 @@ public class Lux_Player_Controller : MonoBehaviour
         if (Vector3.Distance(transform.position, targetLocation) <= stoppingDistance){
             return true;
         }      
-
         return false;
     }
 

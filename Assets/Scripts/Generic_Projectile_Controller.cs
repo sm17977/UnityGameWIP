@@ -9,7 +9,6 @@ public class Generic_Projectile_Controller : MonoBehaviour
     private Vector3 direction;
     private float speed;
     private float range;
-
     public float remainingDistance = Mathf.Infinity;
 
     private Vector3 initialPosition;

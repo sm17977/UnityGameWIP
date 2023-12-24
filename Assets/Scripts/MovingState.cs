@@ -52,8 +52,4 @@ public class MovingState : State
         playerController.isRunning = false;
         playerController.animator.SetBool("isRunning", false);
     }
-
-    public void UpdateTargetLocation(Vector3 newTarget){
-        targetLocation = newTarget;
-    }
 }
