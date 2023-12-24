@@ -35,9 +35,11 @@ public class MovingState : State
 
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
+            // If we are walking in range to attack, transition to attack state
             if(movingToAttack){
                 playerController.TransitionToAttack();
             }
+            // Otherwise transition to idle 
             else{
                 playerController.TransitionToIdle();
             }

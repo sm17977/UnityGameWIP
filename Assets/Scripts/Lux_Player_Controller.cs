@@ -9,11 +9,11 @@ public class Lux_Player_Controller : MonoBehaviour
 
     // Flags
     public bool isRunning;
-    private bool isCasting;
+    public bool isCasting;
     public bool isAttacking;
     public bool isAttackClick = false;
-    private bool hasProjectile = false;
-    private bool incompleteMovement = false;
+    public bool hasProjectile = false;
+    public bool incompleteMovement = false;
     private bool isNewClick;
     public bool targetReached = false;
     public bool inAttackRange = false;
@@ -28,13 +28,13 @@ public class Lux_Player_Controller : MonoBehaviour
 
     // Projectile
     public GameObject projectile;
-    private List<GameObject> projectiles;
-    private Vector3 projectileSpawnPos;
-    private Vector3 projectileTargetPosition;
+    public List<GameObject> projectiles;
+    public Vector3 projectileSpawnPos;
+    public Vector3 projectileTargetPosition;
 
     // Hitbox
     public GameObject hitboxGameObj;
-    private SphereCollider hitboxCollider;
+    public SphereCollider hitboxCollider;
     private Vector3 hitboxPos;
     private Vector3 direction;
 
@@ -61,8 +61,8 @@ public class Lux_Player_Controller : MonoBehaviour
     // Input Data
     private Controls controls;
     public Queue<InputCommand> inputQueue;
-    private InputCommand previousInput = null;
-    private InputCommand nextPreviousInput = null;
+    public InputCommand previousInput = null;
+    public InputCommand nextPreviousInput = null;
     private InputCommand currentInput;
     private Vector3 lastClickPosition;
 
@@ -185,7 +185,6 @@ public class Lux_Player_Controller : MonoBehaviour
     private void InitStates(){
         stateManager = new StateManager();
         idleState = new IdleState();
-        castingState = new CastingState();
     }
 
 
@@ -210,13 +209,10 @@ public class Lux_Player_Controller : MonoBehaviour
                 case InputCommandType.Movement:
                     ShowMovementIndicator(lastClickPosition);
                     // If the state is already moving, update the target location
-                    if(stateManager.GetCurrentState() == "MovingState"){
-                        movingState.UpdateTargetLocation(lastClickPosition);
-                    }
-                    else{
+                
                         movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
                         stateManager.ChangeState(movingState);
-                    }
+                    
                     inputQueue.Dequeue();
                     break;
 
@@ -228,6 +224,7 @@ public class Lux_Player_Controller : MonoBehaviour
                         stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, true));
                     }
                     // If they are in attack range, transition to attack state
+                    // Attacking state persists until we input a new command
                     else{
                         stateManager.ChangeState(new AttackingState(this, direction));
                     }
@@ -237,9 +234,10 @@ public class Lux_Player_Controller : MonoBehaviour
                 // Process the cast spell command
                 case InputCommandType.CastSpell:
                     if(projectiles.Count == 0 && !isCasting){
-                        isCasting = true;
-                        StartCasting();
+                        GetCastingTargetPosition();
+                        stateManager.ChangeState(new CastingState(this, gameObject));
                     }
+                    inputQueue.Dequeue();
                     break;
 
                 case InputCommandType.None:
@@ -289,6 +287,17 @@ public class Lux_Player_Controller : MonoBehaviour
         return InputCommandType.None;
     }
 
+    private void GetCastingTargetPosition(){
+        Plane plane = new Plane(Vector3.up, new Vector3(0, hitboxPos.y, 0));
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        projectileTargetPosition = transform.position;
+
+        if (plane.Raycast(ray, out float enter)) {
+            Vector3 hitPoint = ray.GetPoint(enter);
+            projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
+        }
+    }
+
    // Get the minimum distance the player must move to reach the target location
     private float GetStoppingDistance(){
 
@@ -333,6 +342,10 @@ public class Lux_Player_Controller : MonoBehaviour
         stateManager.ChangeState(new AttackingState(this, direction));
     }
 
+    // public void TransitionToMove(){
+    //     stateManager.ChangeState(new MovingState(this, direction));
+    // }
+
 
     // Casts the Q skillshot projectile 
     private void Q_Ability(){
@@ -352,42 +365,13 @@ public class Lux_Player_Controller : MonoBehaviour
     // Initiate the casting process
     private void StartCasting (){
 
-        hasProjectile = true;
-        animator.SetBool("isQCast", isCasting);
-        isCastingText.text = "isCasting: " + isCasting;
-        projectileTargetPosition = transform.position;
 
-        Plane plane = new Plane(Vector3.up, new Vector3(0, hitboxPos.y, 0));
-        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-
-        if (plane.Raycast(ray, out float enter)) {
-            Vector3 hitPoint = ray.GetPoint(enter);
-            projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
-        }
     }
 
     // Instantiates the projectile, rotates the player towards its target (Generic_Projectile_Controller handles the movement)
     private void UpdateCasting(){
 
-        Vector3 direction = (projectileTargetPosition - transform.position).normalized;
-        qData = (Dictionary<string, object>)luxAbilityData["Q"];
-        qData["direction"] = direction;
-        RotateTowardsTarget(direction);
 
-        if (hasProjectile) {
-            float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
-            projectileSpawnPos = new Vector3(transform.position.x, 0.51f, transform.position.z) + direction * worldRadius;
-            
-            Vector3 eulerAngles = transform.rotation.eulerAngles;
-            eulerAngles.x = 90;
-            Quaternion rotation = Quaternion.Euler(eulerAngles);
-
-            GameObject newProjectile = Instantiate(projectile, projectileSpawnPos, rotation);
-            projectiles.Add(newProjectile);
-            Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectile_Controller.setParams((Dictionary<string, object>)luxAbilityData["Q"]);
-            hasProjectile = false;
-        }
     }
 
     // Set casting state false, handle any left over movement commands
