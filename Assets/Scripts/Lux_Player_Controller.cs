@@ -11,6 +11,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public bool isRunning;
     public bool isCasting;
     public bool isAttacking;
+    public bool isWindingUp;
     public bool isAttackClick = false;
     public bool canCast = false;
     public bool incompleteMovement = false;
@@ -24,6 +25,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
     private float attackRange = 0.6f;
+    public float windupTime = 15.625f;  // Percentage
 
     // Projectile
     public GameObject projectile;
@@ -41,16 +43,18 @@ public class Lux_Player_Controller : MonoBehaviour
     public GameObject movementIndicatorPrefab;
     private GameObject movementIndicator;
 
-    // Animator
+    // Animation
     public Animator animator;
+
+    public string attackAnimName = "model|lux_attack1_model";
+    public string attackAnimState = "Attack";
 
     // Camera
     public Camera mainCamera;
  
     // Debug Text
-    public TMP_Text inputQueueSizeText;
     public TMP_Text currentStateText;
-    public float debugDistance;
+    public TMP_Text isWindingUpText;
 
     // Input Data
     private Controls controls;
@@ -90,11 +94,14 @@ public class Lux_Player_Controller : MonoBehaviour
 
         InitStates();
         stateManager.ChangeState(idleState);
+        isWindingUp = false;
 
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         hitboxPos = hitboxGameObj.transform.position;
         
         currentStateText.text = "currentState: ";
+        isWindingUpText.text = "isWindingUp: " + isWindingUp;
+        
 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
