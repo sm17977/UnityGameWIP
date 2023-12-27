@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2122.1252, g: 2256.139, b: 3345.477, a: 1}
+  m_IndirectSpecularColor: {r: 2121.846, g: 2255.9592, b: 3345.313, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -794,10 +794,11 @@ MonoBehaviour:
   isWindingUp: 0
   isAttackClick: 0
   canCast: 0
+  canAA: 0
   incompleteMovement: 0
   inAttackRange: 0
   moveSpeed: 3.3
-  windupTime: 15.625
+  windupTime: 80
   projectile: {fileID: 6197774755375270932, guid: a61d016d001d6f440b44f0872182bcc6,
     type: 3}
   projectiles: []
@@ -820,6 +821,8 @@ MonoBehaviour:
   AARangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
     type: 3}
   Lux_AI: {fileID: 1783552372}
+  attackStartTime: 0
+  attackStartTimeLogged: 0
 --- !u!54 &641275150
 Rigidbody:
   m_ObjectHideFlags: 0

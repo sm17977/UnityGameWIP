@@ -26,7 +26,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private float turnSpeed = 15f;
     private float stoppingDistance = 0.1f;
     private float attackRange = 0.6f;
-    public float windupTime = 15.625f;  // Percentage
+    private float windupTime = 15.625f;  // Percentage
 
     // Skllshot Projectile
     public GameObject projectile;
@@ -85,6 +85,10 @@ public class Lux_Player_Controller : MonoBehaviour
 
     // AI
     public GameObject Lux_AI;
+
+    // Debugging stuff
+    public float attackStartTime;
+    public bool attackStartTimeLogged = false;
 
     void Awake(){
         // Initiate Input Actions/Events
@@ -218,7 +222,7 @@ public class Lux_Player_Controller : MonoBehaviour
                     // If they are in attack range, transition to attack state
                     // Attacking state persists until we input a new command
                     else{
-                        stateManager.ChangeState(new AttackingState(this, direction, gameObject));
+                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, windupTime));
                     }
                     inputQueue.Dequeue();
                     break;
@@ -347,7 +351,7 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void TransitionToAttack(){
-        stateManager.ChangeState(new AttackingState(this, direction, gameObject));
+        stateManager.ChangeState(new AttackingState(this, direction, gameObject, windupTime));
     }
 
     public void TransitionToMove(){
