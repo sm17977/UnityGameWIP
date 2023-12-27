@@ -44,7 +44,7 @@ public class CastingState : State
             GameObject newProjectile = Lux_Player_Controller.Instantiate(playerController.projectile, playerController.projectileSpawnPos, rotation);
             playerController.projectiles.Add(newProjectile);
             Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectile_Controller.setParams((Dictionary<string, object>)playerController.luxAbilityData["Q"]);
+            projectile_Controller.SetParams((Dictionary<string, object>)playerController.luxAbilityData["Q"]);
             playerController.canCast = false;
         }
         

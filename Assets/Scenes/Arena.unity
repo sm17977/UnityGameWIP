@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2147.9182, g: 2339.9866, b: 3638.5396, a: 1}
+  m_IndirectSpecularColor: {r: 2122.1252, g: 2256.139, b: 3345.477, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -791,6 +791,7 @@ MonoBehaviour:
   isRunning: 0
   isCasting: 0
   isAttacking: 0
+  isWindingUp: 0
   isAttackClick: 0
   canCast: 0
   incompleteMovement: 0
@@ -802,6 +803,10 @@ MonoBehaviour:
   projectiles: []
   projectileSpawnPos: {x: 0, y: 0, z: 0}
   projectileTargetPosition: {x: 0, y: 0, z: 0}
+  projectileAA: {fileID: 1471483319961456590, guid: 965bce388d2b9e74780b26ff8cb5b8ea,
+    type: 3}
+  projectileAASpawnPos: {x: 0, y: 0, z: 0}
+  projectileAATargetPosition: {x: 0, y: 0, z: 0}
   hitboxGameObj: {fileID: 1700967548}
   hitboxCollider: {fileID: 0}
   movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
@@ -810,7 +815,6 @@ MonoBehaviour:
   attackAnimName: model|lux_attack1_model
   attackAnimState: Attack
   mainCamera: {fileID: 1823688466}
-  inputQueueSizeText: {fileID: 0}
   currentStateText: {fileID: 1089756721}
   isWindingUpText: {fileID: 854228733}
   AARangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,

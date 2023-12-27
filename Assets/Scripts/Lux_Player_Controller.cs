@@ -14,6 +14,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public bool isWindingUp;
     public bool isAttackClick = false;
     public bool canCast = false;
+    public bool canAA = false;
     public bool incompleteMovement = false;
     private bool isNewClick;
     public bool inAttackRange = false;
@@ -27,11 +28,17 @@ public class Lux_Player_Controller : MonoBehaviour
     private float attackRange = 0.6f;
     public float windupTime = 15.625f;  // Percentage
 
-    // Projectile
+    // Skllshot Projectile
     public GameObject projectile;
     public List<GameObject> projectiles;
     public Vector3 projectileSpawnPos;
     public Vector3 projectileTargetPosition;
+
+    // AA Projectile
+    public GameObject projectileAA;
+    public Vector3 projectileAASpawnPos;
+    public Vector3 projectileAATargetPosition;
+
 
     // Hitbox
     public GameObject hitboxGameObj;
@@ -77,7 +84,6 @@ public class Lux_Player_Controller : MonoBehaviour
     private CastingState castingState;
 
     // AI
-
     public GameObject Lux_AI;
 
     void Awake(){
@@ -212,7 +218,7 @@ public class Lux_Player_Controller : MonoBehaviour
                     // If they are in attack range, transition to attack state
                     // Attacking state persists until we input a new command
                     else{
-                        stateManager.ChangeState(new AttackingState(this, direction));
+                        stateManager.ChangeState(new AttackingState(this, direction, gameObject));
                     }
                     inputQueue.Dequeue();
                     break;
@@ -252,6 +258,7 @@ public class Lux_Player_Controller : MonoBehaviour
                 ToggleOutlineShader(Lux_AI, "Default");
                 isAttackClick = true;
                 lastClickPosition = hit.transform.position;
+                projectileAATargetPosition = hit.transform.position;
                 return InputCommandType.Attack;
             }
         }
@@ -340,7 +347,7 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void TransitionToAttack(){
-        stateManager.ChangeState(new AttackingState(this, direction));
+        stateManager.ChangeState(new AttackingState(this, direction, gameObject));
     }
 
     public void TransitionToMove(){
