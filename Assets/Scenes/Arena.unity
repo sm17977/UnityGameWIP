@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2121.846, g: 2255.9592, b: 3345.313, a: 1}
+  m_IndirectSpecularColor: {r: 2120.885, g: 2255.2385, b: 3344.7505, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -797,8 +797,7 @@ MonoBehaviour:
   canAA: 0
   incompleteMovement: 0
   inAttackRange: 0
-  moveSpeed: 3.3
-  windupTime: 80
+  moveSpeed: 2.8
   projectile: {fileID: 6197774755375270932, guid: a61d016d001d6f440b44f0872182bcc6,
     type: 3}
   projectiles: []

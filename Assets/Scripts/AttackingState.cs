@@ -14,6 +14,7 @@ public class AttackingState : State
     private float lastAttackCount = 0;
     private float currentAttackCount;
     private float windupTime;
+    private string lastAnimationState = "";
 
     public AttackingState(Lux_Player_Controller controller, Vector3 dir, GameObject gameObject, float time){
         playerController = controller;
@@ -36,14 +37,7 @@ public class AttackingState : State
         // Rotate to enemy 
         playerController.RotateTowardsTarget(direction);
         playerController.isWindingUpText.text = "isWindingUp: " + playerController.isWindingUp;
-        
-        // Check if a new attack has started
-        if (currentAttackCount > lastAttackCount){
-            Debug.Log("Animation looped");
-            playerController.canAA = true;
-            lastAttackCount = currentAttackCount;
-        }
-        
+                
         // Get the direction the abliity should move towards
         Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
         playerController.qData = (Dictionary<string, object>)playerController.luxAbilityData["Q"];
@@ -86,7 +80,12 @@ public class AttackingState : State
     // Track when a new animation loop as started
     private void GetCurrentAnimationTime(){
         AnimatorStateInfo animState = playerController.animator.GetCurrentAnimatorStateInfo(0);
-        if(animState.IsName(playerController.attackAnimState)){
+
+        if(animState.IsName("Attack.Variant Picker")){
+            playerController.canAA = true;
+        }
+
+        if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
             currentTime = animState.normalizedTime % 1;
             currentAttackCount = (int)animState.normalizedTime;
         }
