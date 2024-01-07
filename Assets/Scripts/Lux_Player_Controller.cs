@@ -20,13 +20,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public bool inAttackRange = false;
 
     // Lux Stats
-    public Dictionary<string, object> luxAbilityData;
-    public Dictionary<string, object> qData;
-    public float moveSpeed = 3.3f;
-    private float turnSpeed = 15f;
-    private float stoppingDistance = 0.1f;
-    private float attackRange = 0.6f;
-    private float windupTime = 15.625f;  // Percentage
+    public Lux lux;
 
     // Skllshot Projectile
     public GameObject projectile;
@@ -38,7 +32,6 @@ public class Lux_Player_Controller : MonoBehaviour
     public GameObject projectileAA;
     public Vector3 projectileAASpawnPos;
     public Vector3 projectileAATargetPosition;
-
 
     // Hitbox
     public GameObject hitboxGameObj;
@@ -112,43 +105,9 @@ public class Lux_Player_Controller : MonoBehaviour
         currentStateText.text = "currentState: ";
         isWindingUpText.text = "isWindingUp: " + isWindingUp;
         
-
+        lux = new Lux();
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
-
-        // Define Lux Ability Data
-        luxAbilityData = new Dictionary<string, object>
-        {
-            {
-                "Q", new Dictionary<string, object>
-                {
-                    {"range", 8f},
-                    {"direction", null},
-                    {"speed", 10f}
-                }
-            },
-            {
-                "W", new Dictionary<string, object>
-                {
-                    {"range", 5},
-                    {"direction", new Vector3(1f, 2f, 5f)}
-                }
-            },
-            {
-                "E", new Dictionary<string, object>
-                {
-                    {"range", 5},
-                    {"direction", new Vector3(1f, 2f, 5f)}
-                }
-            },
-            {
-                "R", new Dictionary<string, object>
-                {
-                    {"range", 5},
-                    {"direction", new Vector3(1f, 2f, 5f)}
-                }
-            }
-        };
     }
 
     // Update is called once per frame
@@ -222,7 +181,7 @@ public class Lux_Player_Controller : MonoBehaviour
                     // If they are in attack range, transition to attack state
                     // Attacking state persists until we input a new command
                     else{
-                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, windupTime));
+                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windup_time));
                     }
                     inputQueue.Dequeue();
                     break;
@@ -314,11 +273,11 @@ public class Lux_Player_Controller : MonoBehaviour
    // Get the minimum distance the player must move to reach the target location
     private float GetStoppingDistance(){
 
-        float distance = stoppingDistance;
+        float distance = lux.stopping_distance;
 
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if(isAttackClick){
-            float calculatedAttackRange = ((attackRange * 10) / 2);
+            float calculatedAttackRange = ((lux.AA_range * 10) / 2);
             distance = calculatedAttackRange + hitboxCollider.radius;
         }
 
@@ -351,7 +310,7 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void TransitionToAttack(){
-        stateManager.ChangeState(new AttackingState(this, direction, gameObject, windupTime));
+        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windup_time));
     }
 
     public void TransitionToMove(){
@@ -362,7 +321,7 @@ public class Lux_Player_Controller : MonoBehaviour
         if (direction != Vector3.zero){
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             Quaternion fromRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, turnSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, lux.turn_speed * Time.deltaTime);
         }
     }
 
@@ -404,6 +363,6 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public float GetAttackRange(){
-        return attackRange;
+        return lux.AA_range;
     }
 }

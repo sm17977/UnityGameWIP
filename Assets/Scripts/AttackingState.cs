@@ -12,9 +12,8 @@ public class AttackingState : State
     private Vector3 direction;
     private float currentTime;
     private float lastAttackCount = 0;
-    private float currentAttackCount;
     private float windupTime;
-    private string lastAnimationState = "";
+    private float currentAttackCount;
 
     public AttackingState(Lux_Player_Controller controller, Vector3 dir, GameObject gameObject, float time){
         playerController = controller;
@@ -40,8 +39,7 @@ public class AttackingState : State
                 
         // Get the direction the abliity should move towards
         Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
-        playerController.qData = (Dictionary<string, object>)playerController.luxAbilityData["Q"];
-        playerController.qData["direction"] = attackDirection;
+        playerController.lux.AA_direction = attackDirection;
 
         playerController.RotateTowardsTarget(direction);
 
@@ -56,12 +54,14 @@ public class AttackingState : State
             eulerAngles.x = 90;
             Quaternion rotation = Quaternion.Euler(eulerAngles);
 
+            float distance = Vector3.Distance(playerController.projectileAASpawnPos, playerController.Lux_AI.transform.position);
+
             // Create projectile
             GameObject newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, playerController.projectileAASpawnPos, rotation);
 
             playerController.projectiles.Add(newProjectile);
             Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectile_Controller.SetParams((Dictionary<string, object>)playerController.luxAbilityData["Q"]);
+            projectile_Controller.SetParams(playerController.lux.AA_missile_speed, distance, playerController.lux.AA_direction);
             playerController.canAA = false;
         }
     }

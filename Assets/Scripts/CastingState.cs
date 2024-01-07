@@ -25,9 +25,7 @@ public class CastingState : State
 
         // Get the direction the abliity should move towards
         Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
-        playerController.qData = (Dictionary<string, object>)playerController.luxAbilityData["Q"];
-        playerController.qData["direction"] = direction;
-
+        playerController.lux.Q_direction = direction;
         playerController.RotateTowardsTarget(direction);
 
         if (playerController.canCast) {
@@ -44,7 +42,7 @@ public class CastingState : State
             GameObject newProjectile = Lux_Player_Controller.Instantiate(playerController.projectile, playerController.projectileSpawnPos, rotation);
             playerController.projectiles.Add(newProjectile);
             Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectile_Controller.SetParams((Dictionary<string, object>)playerController.luxAbilityData["Q"]);
+            projectile_Controller.SetParams(playerController.lux.Q_speed, playerController.lux.Q_range, playerController.lux.Q_direction);
             playerController.canCast = false;
         }
         

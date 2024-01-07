@@ -1,13 +1,12 @@
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
 
 public class Generic_Projectile_Controller : MonoBehaviour
 {
-    private Dictionary<string, object> abilityData;
-    private Vector3 direction;
-    private float speed;
-    private float range;
+
+    private Vector3 missile_direction;
+    private float missile_speed;
+    private float missile_range;
     public float remainingDistance = Mathf.Infinity;
     private Vector3 initialPosition;
 
@@ -19,19 +18,18 @@ public class Generic_Projectile_Controller : MonoBehaviour
     void Update(){
 
         if(gameObject != null && gameObject.activeSelf){
-            float distance = Time.deltaTime * speed;
-            remainingDistance = (float)Math.Round(range - Vector3.Distance(transform.position, initialPosition), 2);
+            float distance = Time.deltaTime * missile_speed;
+            remainingDistance = (float)Math.Round(missile_range - Vector3.Distance(transform.position, initialPosition), 2);
             float travelDistance = Mathf.Min(distance, remainingDistance);
-            transform.Translate(direction * travelDistance, Space.World);
+            transform.Translate(missile_direction * travelDistance, Space.World);
         }
     }
 
-    public void SetParams(Dictionary<string, object> abilityData){
+    public void SetParams(float speed, float range, Vector3 dir){
         if(gameObject != null && gameObject.activeSelf){
-            this.abilityData = abilityData as Dictionary<string, object>;
-            direction = (Vector3)abilityData["direction"];
-            speed = (float)abilityData["speed"];
-            range = (float)abilityData["range"];
+            missile_speed = speed;
+            missile_range = range;
+            missile_direction = dir;    
         }
     }
 
