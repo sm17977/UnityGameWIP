@@ -32,12 +32,13 @@ public class Lux_Player_Controller : MonoBehaviour
     public GameObject projectileAA;
     public Vector3 projectileAASpawnPos;
     public Vector3 projectileAATargetPosition;
+    public double timeSinceLastAttack = 0;
 
     // Hitbox
     public GameObject hitboxGameObj;
     public SphereCollider hitboxCollider;
     private Vector3 hitboxPos;
-    private Vector3 direction;
+    public Vector3 direction;
 
     // Movement Indicator
     public GameObject movementIndicatorPrefab;
@@ -55,6 +56,7 @@ public class Lux_Player_Controller : MonoBehaviour
     // Debug Text
     public TMP_Text currentStateText;
     public TMP_Text isWindingUpText;
+    public TMP_Text autoCDText;
 
     // Input Data
     private Controls controls;
@@ -104,6 +106,7 @@ public class Lux_Player_Controller : MonoBehaviour
         
         currentStateText.text = "currentState: ";
         isWindingUpText.text = "isWindingUp: " + isWindingUp;
+        autoCDText.text = "autoCD: " + timeSinceLastAttack;
         
         lux = new Lux();
         inputQueue = new Queue<InputCommand>();
@@ -120,6 +123,14 @@ public class Lux_Player_Controller : MonoBehaviour
         stateManager.Update();
 
         currentStateText.text = "currentState: " + stateManager.GetCurrentState();
+
+        if(stateManager.GetCurrentState() != "AttackingState"){
+            if(timeSinceLastAttack > 0){
+                timeSinceLastAttack -= Time.deltaTime;
+            }
+        }
+
+        autoCDText.text = "autoCD: " + timeSinceLastAttack;
   
         HandleProjectiles();
     }

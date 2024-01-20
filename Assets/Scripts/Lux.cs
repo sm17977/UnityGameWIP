@@ -3,7 +3,7 @@ using UnityEngine;
 public class Lux {
 
     // Base
-    public float movement_speed =  3.3f;
+    public float movement_speed =  3.0f;
     public float turn_speed = 15f;
     public float windup_time = 15.625f;
     public float stopping_distance =  0.1f;
@@ -11,7 +11,7 @@ public class Lux {
     // Auto Attacks
     public float AA_range = 0.6f;
     public float AA_missile_speed = 8f;
-    public float AA_attack_speed = 10f;
+    public double AA_attack_speed = 0.625; // Attack Speed Ratio
     public Vector3 AA_direction;
 
     // Q

@@ -1,9 +1,6 @@
-
-using System.Collections;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEditor.ShaderGraph.Internal;
+using System.Timers;
+
 
 public class AttackingState : State
 {
@@ -11,9 +8,10 @@ public class AttackingState : State
     private GameObject player;
     private Vector3 direction;
     private float currentTime;
-    private float lastAttackCount = 0;
+    private float lastAttackCount = 0f;
     private float windupTime;
     private float currentAttackCount;
+   
 
     public AttackingState(Lux_Player_Controller controller, Vector3 dir, GameObject gameObject, float time){
         playerController = controller;
@@ -23,26 +21,28 @@ public class AttackingState : State
     }
 
     public override void Enter() {
+        playerController.canAA = false;
         playerController.isAttacking = true;
-        playerController.animator.SetBool("isAttacking", true);
-        playerController.canAA = true;
+        playerController.animator.SetBool("isAttacking", playerController.isAttacking);
+        
     }
 
     public override void Execute() {
-        
+      
+        if(playerController.timeSinceLastAttack > 0){
+            playerController.timeSinceLastAttack -= Time.deltaTime;
+        }
+
         // Get animation timings
         GetCurrentAnimationTime();
-
-        // Rotate to enemy 
-        playerController.RotateTowardsTarget(direction);
+        
         playerController.isWindingUpText.text = "isWindingUp: " + playerController.isWindingUp;
                 
         // Get the direction the abliity should move towards
         Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
         playerController.lux.AA_direction = attackDirection;
 
-        playerController.RotateTowardsTarget(direction);
-
+   
         // Once the windup window has passed, fire the projectile
         if (IsWindupCompleted() && playerController.canAA) {
             // Set the spawn position of the projectile
@@ -68,8 +68,9 @@ public class AttackingState : State
 
     public override void Exit() {
         playerController.isAttacking = false;
-        playerController.animator.SetBool("isAttacking", false);
+        playerController.animator.SetBool("isAttacking", playerController.isAttacking);
     }
+
 
     // Track the windup window
     private bool IsWindupCompleted() {
@@ -81,9 +82,9 @@ public class AttackingState : State
     private void GetCurrentAnimationTime(){
         AnimatorStateInfo animState = playerController.animator.GetCurrentAnimatorStateInfo(0);
 
-        if(animState.IsName("Attack.Variant Picker")){
-            playerController.canAA = true;
-        }
+        // if(animState.IsName("Attack.Variant Picker")){
+        //     playerController.canAA = true;
+        // }
 
         if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
             currentTime = animState.normalizedTime % 1;
