@@ -81,6 +81,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
     // AI
     public GameObject Lux_AI;
+    public GameObject ai_hitboxGameObj;
+    public SphereCollider ai_hitboxCollider;
+    private Vector3 ai_hitboxPos;
 
     // Debugging stuff
     public float attackStartTime;
@@ -104,6 +107,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         hitboxPos = hitboxGameObj.transform.position;
+
+        ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
+        ai_hitboxPos = ai_hitboxGameObj.transform.position;
         
         currentStateText.text = "currentState: ";
         isWindingUpText.text = "isWindingUp: " + isWindingUp;

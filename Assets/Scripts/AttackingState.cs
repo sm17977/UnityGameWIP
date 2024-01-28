@@ -52,17 +52,19 @@ public class AttackingState : State
             
             
        
-            //float distance = Vector3.Distance(playerController.projectileAASpawnPos, playerController.Lux_AI.transform.position);
+            float distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.Lux_AI.transform.position);
+            float speed = 7;
+            float time = distance/speed;
+
+            Debug.Log("Time: " + time);
 
             // Create projectile
             VisualEffect newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), player.transform.rotation);
 
-            Debug.Log("AA GameObject Position: " + newProjectile.transform.position);
-
             newProjectile.SetVector3("targetDirection", playerController.lux.AA_direction);
-            //newProjectile.SetVector3("targetAngle", test.eulerAngles);
-      
-
+            newProjectile.SetFloat("lifetime", time);
+            newProjectile.SetFloat("speed", speed);
+           
             playerController.canAA = false;
         }
     }

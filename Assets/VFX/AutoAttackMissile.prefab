@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8011906311983826227}
-  - component: {fileID: 1571514267349484319}
-  - component: {fileID: 1125503981737026357}
+  - component: {fileID: -2805702098513475222}
+  - component: {fileID: -701793559454014325}
   m_Layer: 0
   m_Name: AutoAttackMissile
   m_TagString: Untagged
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!2083052967 &1571514267349484319
+--- !u!2083052967 &-2805702098513475222
 VisualEffect:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -54,13 +54,7 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array:
-      - m_Value: {x: 2, y: 1, z: 2}
-        m_Name: targetDirection
-        m_Overridden: 1
-      - m_Value: {x: 0, y: 0, z: 0}
-        m_Name: targetAngle
-        m_Overridden: 1
+      m_Array: []
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -77,7 +71,7 @@ VisualEffect:
       m_Array: []
     m_Bool:
       m_Array: []
---- !u!73398921 &1125503981737026357
+--- !u!73398921 &-701793559454014325
 VFXRenderer:
   serializedVersion: 1
   m_ObjectHideFlags: 0
