@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Timers;
+using UnityEngine.VFX;
+
 
 
 public class AttackingState : State
@@ -45,23 +47,22 @@ public class AttackingState : State
    
         // Once the windup window has passed, fire the projectile
         if (IsWindupCompleted() && playerController.canAA) {
-            // Set the spawn position of the projectile
-            float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
-            playerController.projectileAASpawnPos = new Vector3(player.transform.position.x, 1f, player.transform.position.z) + attackDirection * worldRadius;
+        
+            //playerController.projectileAASpawnPos = player.transform.TransformPoint(new Vector3(player.transform.position.x, 0.5f, player.transform.position.z));
             
-            // Set rotation
-            Vector3 eulerAngles = player.transform.rotation.eulerAngles;
-            eulerAngles.x = 90;
-            Quaternion rotation = Quaternion.Euler(eulerAngles);
-
-            float distance = Vector3.Distance(playerController.projectileAASpawnPos, playerController.Lux_AI.transform.position);
+            
+       
+            //float distance = Vector3.Distance(playerController.projectileAASpawnPos, playerController.Lux_AI.transform.position);
 
             // Create projectile
-            GameObject newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, playerController.projectileAASpawnPos, rotation);
+            VisualEffect newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), player.transform.rotation);
 
-            playerController.projectiles.Add(newProjectile);
-            Generic_Projectile_Controller projectile_Controller = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectile_Controller.SetParams(playerController.lux.AA_missile_speed, distance, playerController.lux.AA_direction);
+            Debug.Log("AA GameObject Position: " + newProjectile.transform.position);
+
+            newProjectile.SetVector3("targetDirection", playerController.lux.AA_direction);
+            //newProjectile.SetVector3("targetAngle", test.eulerAngles);
+      
+
             playerController.canAA = false;
         }
     }

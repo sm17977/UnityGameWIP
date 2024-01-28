@@ -3,7 +3,7 @@ using UnityEngine;
 public class Lux {
 
     // Base
-    public float movement_speed =  3.0f;
+    public float movement_speed =  2.5f;
     public float turn_speed = 15f;
     public float windup_time = 15.625f;
     public float stopping_distance =  0.1f;

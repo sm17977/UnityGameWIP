@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.InputSystem;
 using NUnit.Framework;
+using UnityEngine.VFX;
 
 public class Lux_Player_Controller : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class Lux_Player_Controller : MonoBehaviour
     public Vector3 projectileTargetPosition;
 
     // AA Projectile
-    public GameObject projectileAA;
+    public VisualEffect projectileAA;
     public Vector3 projectileAASpawnPos;
     public Vector3 projectileAATargetPosition;
     public double timeSinceLastAttack = 0;
