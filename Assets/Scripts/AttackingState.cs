@@ -1,18 +1,21 @@
 using UnityEngine;
 using System.Timers;
 using UnityEngine.VFX;
-
-
+using UnityEditor;
+using System;
 
 public class AttackingState : State
 {
-    private Lux_Player_Controller playerController;
-    private GameObject player;
+    public Lux_Player_Controller playerController;
+    public VFX_Controller vfxController;
+    public GameObject player;
     private Vector3 direction;
     private float currentTime;
     private float lastAttackCount = 0f;
     private float windupTime;
     private float currentAttackCount;
+    private VisualEffect newProjectile;
+    private float effectTimer;
    
 
     public AttackingState(Lux_Player_Controller controller, Vector3 dir, GameObject gameObject, float time){
@@ -26,7 +29,7 @@ public class AttackingState : State
         playerController.canAA = false;
         playerController.isAttacking = true;
         playerController.animator.SetBool("isAttacking", playerController.isAttacking);
-        
+            
     }
 
     public override void Execute() {
@@ -34,7 +37,7 @@ public class AttackingState : State
         if(playerController.timeSinceLastAttack > 0){
             playerController.timeSinceLastAttack -= Time.deltaTime;
         }
-
+    
         // Get animation timings
         GetCurrentAnimationTime();
         
@@ -48,23 +51,12 @@ public class AttackingState : State
         // Once the windup window has passed, fire the projectile
         if (IsWindupCompleted() && playerController.canAA) {
         
-            //playerController.projectileAASpawnPos = player.transform.TransformPoint(new Vector3(player.transform.position.x, 0.5f, player.transform.position.z));
-            
-            
-       
-            float distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.Lux_AI.transform.position);
-            float speed = 7;
-            float time = distance/speed;
-
-            Debug.Log("Time: " + time);
-
             // Create projectile
-            VisualEffect newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), player.transform.rotation);
-
-            newProjectile.SetVector3("targetDirection", playerController.lux.AA_direction);
-            newProjectile.SetFloat("lifetime", time);
-            newProjectile.SetFloat("speed", speed);
-           
+            newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), Quaternion.LookRotation(direction, Vector3.up));
+            vfxController = newProjectile.GetComponent<VFX_Controller>();
+            vfxController.player = player;
+            vfxController.playerController = playerController;
+            playerController.vfxProjectileList.Add(newProjectile.gameObject);
             playerController.canAA = false;
         }
     }
@@ -84,10 +76,6 @@ public class AttackingState : State
     // Track when a new animation loop as started
     private void GetCurrentAnimationTime(){
         AnimatorStateInfo animState = playerController.animator.GetCurrentAnimatorStateInfo(0);
-
-        // if(animState.IsName("Attack.Variant Picker")){
-        //     playerController.canAA = true;
-        // }
 
         if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
             currentTime = animState.normalizedTime % 1;

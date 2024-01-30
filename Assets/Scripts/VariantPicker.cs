@@ -23,7 +23,7 @@ public class AttackAnimationPicker : StateMachineBehaviour
         if(playerController.timeSinceLastAttack <= 0){
             int random = Random.Range(0, 2);
             animator.SetInteger("attackVariant", random);   
-            playerController.timeSinceLastAttack = 1.25;
+            playerController.timeSinceLastAttack = 1.15;
         }     
     }
 

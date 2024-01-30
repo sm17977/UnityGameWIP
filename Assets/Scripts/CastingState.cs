@@ -4,7 +4,7 @@ public class CastingState : State
 {
 
     private Lux_Player_Controller playerController;
-    private GameObject player;
+    public GameObject player;
 
     public CastingState (Lux_Player_Controller controller,  GameObject gameObject){
         playerController = controller;
