@@ -100,6 +100,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AARangeIndicatorMaterial: {fileID: 0}
-  player: {fileID: 8278035178701963260, guid: 63aa808a8a5d571408068b11a0d197f5, type: 3}
+  player: {fileID: 8661120606669196666, guid: 14266636b25d5da4baa680f02c9f0178, type: 3}
   size: 0
   borderWidth: 0

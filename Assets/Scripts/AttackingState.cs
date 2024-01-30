@@ -15,7 +15,6 @@ public class AttackingState : State
     private float windupTime;
     private float currentAttackCount;
     private VisualEffect newProjectile;
-    private float effectTimer;
    
 
     public AttackingState(Lux_Player_Controller controller, Vector3 dir, GameObject gameObject, float time){
@@ -29,7 +28,6 @@ public class AttackingState : State
         playerController.canAA = false;
         playerController.isAttacking = true;
         playerController.animator.SetBool("isAttacking", playerController.isAttacking);
-            
     }
 
     public override void Execute() {
@@ -51,12 +49,19 @@ public class AttackingState : State
         // Once the windup window has passed, fire the projectile
         if (IsWindupCompleted() && playerController.canAA) {
         
-            // Create projectile
+            // Create Visual Effect instance
             newProjectile = Lux_Player_Controller.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), Quaternion.LookRotation(direction, Vector3.up));
+
             vfxController = newProjectile.GetComponent<VFX_Controller>();
+
+            // Set the player and controller references in the VFX Controller 
             vfxController.player = player;
             vfxController.playerController = playerController;
+
+            // Add the VFX projectile to a list so they can be destroyed after VFX is complete
             playerController.vfxProjectileList.Add(newProjectile.gameObject);
+
+            // Prevent player spamming AAs
             playerController.canAA = false;
         }
     }

@@ -366,7 +366,6 @@ public class Lux_Player_Controller : MonoBehaviour
                 GameObject projectile = vfxProjectileList[i];
                 if(projectile != null && projectile.activeSelf){
                     VFX_Controller controller = projectile.GetComponent<VFX_Controller>();
-                    Debug.Log("Die: " + controller.die);
                     if(controller.die){
                         vfxProjectileList.RemoveAt(i);
                         Destroy(projectile.gameObject);
@@ -374,7 +373,6 @@ public class Lux_Player_Controller : MonoBehaviour
                 }
             }
         }
-
     }
 
     private void ToggleAARange(){
