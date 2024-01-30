@@ -362,14 +362,14 @@ public class Lux_Player_Controller : MonoBehaviour
 
     private void HandleVFX(){
         if(vfxProjectileList.Count > 0){
-            for(int i = 0; i < vfxProjectileList.Count - 1; i++){
+            for(int i = 0; i < vfxProjectileList.Count; i++){
                 GameObject projectile = vfxProjectileList[i];
                 if(projectile != null && projectile.activeSelf){
                     VFX_Controller controller = projectile.GetComponent<VFX_Controller>();
                     Debug.Log("Die: " + controller.die);
                     if(controller.die){
-                        projectiles.RemoveAt(i);
-                        Destroy(projectile);
+                        vfxProjectileList.RemoveAt(i);
+                        Destroy(projectile.gameObject);
                     }
                 }
             }
