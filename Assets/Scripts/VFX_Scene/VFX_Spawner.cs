@@ -1,0 +1,39 @@
+using UnityEngine;
+using UnityEngine.VFX;
+
+public class VFX_Spawner : MonoBehaviour{
+
+    public VFX_Scene_Manager sceneManager;
+    public VisualEffect vfx;
+    public GameObject target;
+    public Vector3 targetDirection;
+
+
+    // Start is called before the first frame update
+    void Start(){
+    }
+
+    // Update is called once per frame
+    void Update(){
+
+        // Calculate direction from source to target
+        targetDirection = (target.transform.position - transform.position).normalized;
+
+        // Demo projectile on spacebar press
+        if(Input.GetKeyDown(KeyCode.Space)){
+           ShootProjectile();
+        }
+
+    }
+
+    void ShootProjectile(){
+
+        // Add the effect to the scene
+        VisualEffect effect = Instantiate(vfx, transform.position, Quaternion.LookRotation(targetDirection, Vector3.up));
+        VFX_Timer timer = effect.GetComponent<VFX_Timer>();
+        timer.spawner = this;
+
+        // Add effect to a list to handle gameobjects in the scene
+        sceneManager.effectsList.Add(effect.gameObject);
+    }
+}
