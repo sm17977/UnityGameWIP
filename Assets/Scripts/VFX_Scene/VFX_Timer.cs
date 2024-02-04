@@ -19,8 +19,7 @@ public class VFX_Timer : MonoBehaviour
 
         // Distance between player and enemy
         distance = Vector3.Distance(spawner.transform.position, spawner.target.transform.position);
-        // Particle speed
-        speed = 7;
+
         // Particle lifetime
         time = distance/speed;
 
