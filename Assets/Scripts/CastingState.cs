@@ -29,6 +29,7 @@ public class CastingState : State
 
         // Rotate the player in the direction the spell was cast
         playerController.RotateTowardsTarget(direction);
+        Debug.Log("Rotation direction: " + direction);
 
         if (playerController.canCast) {
             // Set the spawn position of the projectile
@@ -41,6 +42,7 @@ public class CastingState : State
             // Store projectile in list
             playerController.projectiles.Add(newProjectile);
 
+            // Assign projectile properties
             Generic_Projectile_Controller projectileController = newProjectile.GetComponent<Generic_Projectile_Controller>();
             projectileController.missile_direction = direction;
             projectileController.missile_speed = playerController.lux.Q_speed;

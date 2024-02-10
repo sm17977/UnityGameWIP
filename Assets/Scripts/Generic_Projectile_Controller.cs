@@ -8,28 +8,28 @@ public class Generic_Projectile_Controller : MonoBehaviour
     public float missile_speed;
     public float missile_range;
     public float remainingDistance = Mathf.Infinity;
+    private GameObject hitbox;
     private Vector3 initialPosition;
+
 
     void Start(){
         initialPosition = transform.position;
+
+        hitbox = transform.Find("Hitbox").gameObject;
+
+        hitbox.transform.position = new Vector3(hitbox.transform.position.x, 0.5f, hitbox.transform.position.z);
+        hitbox.transform.localScale = new Vector3(hitbox.transform.localScale.x, 0.1f, hitbox.transform.localScale.z);
     }
 
-    // Handles movement of projectile
+    
     void Update(){
      
+        //Handle movement of projectile
         float distance = Time.deltaTime * missile_speed;
         remainingDistance = (float)Math.Round(missile_range - Vector3.Distance(transform.position, initialPosition), 2);
         float travelDistance = Mathf.Min(distance, remainingDistance);
         transform.Translate(missile_direction * travelDistance, Space.World);
         
     }
-
-    // public void SetParams(float speed, float range, Vector3 dir){
-    //     if(gameObject != null && gameObject.activeSelf){
-    //         missile_speed = speed;
-    //         missile_range = range;
-    //         missile_direction = dir;    
-    //     }
-    // }
 
 }
