@@ -11,6 +11,7 @@ public class VFX_Spawner : MonoBehaviour{
 
     // Start is called before the first frame update
     void Start(){
+        targetDirection = (target.transform.position - transform.position).normalized;
     }
 
     // Update is called once per frame
@@ -32,6 +33,7 @@ public class VFX_Spawner : MonoBehaviour{
         VisualEffect effect = Instantiate(vfx, transform.position, Quaternion.LookRotation(targetDirection, Vector3.up));
         VFX_Timer timer = effect.GetComponent<VFX_Timer>();
         timer.spawner = this;
+        timer.direction = targetDirection;
 
         // Add effect to a list to handle gameobjects in the scene
         sceneManager.effectsList.Add(effect.gameObject);

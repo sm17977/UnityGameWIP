@@ -17,7 +17,7 @@ public class Lux {
     // Q
     public float Q_range = 8f;
     public Vector3 Q_direction;
-    public float Q_speed = 10f;
+    public float Q_speed = 6f;
 
     // W
     public float W_range;
