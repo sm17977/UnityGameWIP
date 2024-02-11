@@ -9,7 +9,10 @@ public class VFX_Timer : MonoBehaviour
     private float distance;
     private float time;
     private float timer;
+    private bool canMove = true;
     private VisualEffect vfx;
+    private VisualEffect childVfx;
+    private VisualEffect[] childVfxArray;
     public VFX_Spawner spawner;
     public Vector3 direction;
 
@@ -18,6 +21,15 @@ public class VFX_Timer : MonoBehaviour
     void Start()
     {
         vfx = GetComponent<VisualEffect>();
+        childVfxArray = GetComponentsInChildren<VisualEffect>();
+        int count = 0;
+        foreach(VisualEffect vfx in childVfxArray){
+            Debug.Log("VFX Child: " + vfx.gameObject.name + " Index: " + count);
+            count++;
+        }
+        
+
+        childVfx = childVfxArray[1];
         
         // Distance between player and enemy
          if(spawner != null){
@@ -40,7 +52,7 @@ public class VFX_Timer : MonoBehaviour
             distance = Vector3.Distance(spawner.transform.position, spawner.target.transform.position);
         }
         
-        if(distance > 0){
+        if(distance > 0 && canMove){
             transform.Translate(speed * Time.deltaTime * direction, Space.World);
         }
 
@@ -49,7 +61,12 @@ public class VFX_Timer : MonoBehaviour
             timer -= Time.deltaTime;
         }
         else{
+            canMove = false;
             die = true;
+            vfx.SetBool("showParticle", false);
+            if(childVfx){
+                childVfx.SetBool("showParticle", false);
+            }
         }
     }
 
