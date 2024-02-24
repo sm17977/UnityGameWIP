@@ -29,7 +29,7 @@ public class CastingState : State
 
         // Rotate the player in the direction the spell was cast
         playerController.RotateTowardsTarget(direction);
-        Debug.Log("Rotation direction: " + direction);
+        
 
         if (playerController.canCast) {
             // Set the spawn position of the projectile

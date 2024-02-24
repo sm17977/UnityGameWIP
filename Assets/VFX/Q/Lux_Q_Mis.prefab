@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -2970310292650251287}
   - component: {fileID: 8922581347003359746}
   m_Layer: 0
-  m_Name: Lux_Q
+  m_Name: Lux_Q_Mis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,6 +220,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HitEffect: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483,
+    type: 3}
+  radius: 0.4
 --- !u!1 &5319015081871029421
 GameObject:
   m_ObjectHideFlags: 0
