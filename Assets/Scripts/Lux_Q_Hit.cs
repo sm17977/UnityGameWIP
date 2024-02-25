@@ -5,14 +5,18 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Hitbox_Collision : MonoBehaviour
+public class Lux_Q_Hit : MonoBehaviour
 {
 
     private Lux_Player_Controller playerController;
     private GameObject target;
     public GameObject HitEffect;
-    public float radius;
     private bool hasHit = false;
+
+    // Rings radius
+    private float ringRadius1 = 0.4f;
+    private float ringRadius2 = 0.45f;
+    private float ringRadius3 = 0.5f;
 
     // Top Ring 
     private VisualEffect topRingVfx;
@@ -24,6 +28,11 @@ public class Hitbox_Collision : MonoBehaviour
     private GameObject bottomRing;
     private float bottomHeight = 0.5f;
 
+    // Rays
+    private VisualEffect raysVfx;
+    private GameObject rays;
+    private float middleHeight;
+
     // Fade Rings
     private float fadeStartTime = 0;
     private float innerRingAlpha = 0.2f;
@@ -34,12 +43,6 @@ public class Hitbox_Collision : MonoBehaviour
     // Ring Spawner State 
     private VFXSpawnerState ringState;
     private List<string> spawnSystemNames;
-
-    // Rays
-    private VisualEffect raysVfx;
-    private GameObject rays;
-    private float middleHeight;
-
 
     // Enemy 
     private float enemyHeight;
@@ -81,53 +84,73 @@ public class Hitbox_Collision : MonoBehaviour
 
     void SpawnHit(GameObject target){
 
+        // Calculate which y position to spawn the 2 rings and rays
         enemyCollider = target.GetComponent<CapsuleCollider>();
         enemyHeight = enemyCollider.height - enemyCollider.radius;
         bottomHeight = target.transform.position.y + 0.001f;
         topHeight = bottomHeight + enemyHeight;
         middleHeight = topHeight / 2;
 
+        // Spawn the prefab 
         Instantiate(HitEffect, target.transform.position, Quaternion.identity);
 
+        // Retrieve the rings gameobjects
         topRing = GameObject.Find("Top Ring");
         bottomRing = GameObject.Find("Bottom Ring");
 
-        topRingVfx = topRing.GetComponent<VisualEffect>();
-        //topRingVfx.SetFloat("ringRadius", radius);
+        // Set the y position of the rings gameobject
         topRing.transform.position = new Vector3(topRing.transform.position.x, topHeight, topRing.transform.position.z);
-
-        bottomRingVfx = bottomRing.GetComponent<VisualEffect>();
-        //bottomRingVfx.SetFloat("ringRadius", radius);
         bottomRing.transform.position = new Vector3(bottomRing.transform.position.x,  bottomHeight, bottomRing.transform.position.z);
 
+        // Get the VFX components of the rings
+        topRingVfx = topRing.GetComponent<VisualEffect>();
+        bottomRingVfx = bottomRing.GetComponent<VisualEffect>();
+
+        // Set radius of the rings (each vfx composed of 3 systems/rings)
+        topRingVfx.SetFloat("ringRadius1", ringRadius1);
+        topRingVfx.SetFloat("ringRadius2", ringRadius2);
+        topRingVfx.SetFloat("ringRadius3", ringRadius3);
+        bottomRingVfx.SetFloat("ringRadius1", ringRadius1);
+        bottomRingVfx.SetFloat("ringRadius2", ringRadius2);
+        bottomRingVfx.SetFloat("ringRadius3", ringRadius3);
+        
+        // Get list of spawn system names in order to access the current loop count used to trigger the fade out (top and bottom ring are in sync so can just get this from the topRingVfx)
         topRingVfx.GetSpawnSystemNames(spawnSystemNames);
 
+        // Retrieve rays gameobject
         rays = GameObject.Find("Rays");
-        raysVfx = rays.GetComponent<VisualEffect>();
-        raysVfx.SetFloat("ringRadius", radius);
+
+        // Set the y position of the rays' gameobject
         rays.transform.position = new Vector3(rays.transform.position.x,  middleHeight, rays.transform.position.z);
 
-        StartCoroutine(DelayRingVFX(0.3f));
+        // Get rays VFX comppnent
+        raysVfx = rays.GetComponent<VisualEffect>();
+        raysVfx.SetFloat("ringRadius", ringRadius1);
 
+        // Delay spawning rings and rays
+        StartCoroutine(DelayRingAndRaysVFX(0.3f));
     }
 
-    IEnumerator DelayRingVFX(float delayInSeconds){
+    IEnumerator DelayRingAndRaysVFX(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds); 
 
-        // PreWarm Rings
+        
         topRingVfx.Play(); 
+        bottomRingVfx.Play(); 
 
         topRingVfx.pause = true;
-        topRingVfx.Simulate(0.02f, 50);
-        topRingVfx.pause = false;
-
-        bottomRingVfx.Play(); 
         bottomRingVfx.pause = true;
+
+        // PreWarm rings so they've drawn a full circle when the effect plays
+        topRingVfx.Simulate(0.02f, 50);
         bottomRingVfx.Simulate(0.02f, 50);
+        
+        topRingVfx.pause = false;
         bottomRingVfx.pause = false;
 
         startFadeIn = true;
    
+        // Play rays
         raysVfx.Play();
     }
 
@@ -141,6 +164,7 @@ public class Hitbox_Collision : MonoBehaviour
         // Clamp between 0 and 1
         float normalizedTime = Mathf.Clamp01(elapsedTime / fadeDuration);
 
+        // Set fade to true to allow updating the Set Alpha node
         topRingVfx.SetBool("fade", true);
         bottomRingVfx.SetBool("fade", true);
         
@@ -172,6 +196,7 @@ public class Hitbox_Collision : MonoBehaviour
             topRingVfx.SetFloat("fadeTime", normalizedTime);
             bottomRingVfx.SetFloat("fadeTime", normalizedTime);
         }
+        // Reset start time when fade has finished
         else{
             fadeStartTime = 0;
             if(fadeIn){
