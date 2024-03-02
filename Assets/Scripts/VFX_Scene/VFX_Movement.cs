@@ -2,11 +2,12 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class VFX_Timer : MonoBehaviour
+public class VFX_Movement : MonoBehaviour
 {
     public bool die = false;
     public float speed;
     private float distance;
+    private float distanceTravelled = 0f;
     private float time;
     private float timer;
     private bool canMove = true;
@@ -29,7 +30,8 @@ public class VFX_Timer : MonoBehaviour
         }
         
 
-        childVfx = childVfxArray[1];
+        //childVfx = childVfxArray[1];
+        //childVfx.Play();
         
         // Distance between player and enemy
          if(spawner != null){
@@ -38,6 +40,8 @@ public class VFX_Timer : MonoBehaviour
 
         // Particle lifetime
         time = distance/speed;
+
+        vfx.SetFloat("lifetime", time);
 
         // Initiate timer
         timer = time;
@@ -49,11 +53,16 @@ public class VFX_Timer : MonoBehaviour
     {
 
         if(spawner != null){
-            distance = Vector3.Distance(spawner.transform.position, spawner.target.transform.position);
+            distance = Vector3.Distance(transform.position, spawner.target.transform.position);
+            distanceTravelled = Vector3.Distance(spawner.transform.position, transform.position);
         }
         
         if(distance > 0 && canMove){
             transform.Translate(speed * Time.deltaTime * direction, Space.World);
+        }
+
+        if( 1 > distanceTravelled && distanceTravelled < 3){
+            
         }
 
         // Set die to true when the particle lifetime ends

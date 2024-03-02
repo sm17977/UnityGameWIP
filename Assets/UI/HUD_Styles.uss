@@ -1,0 +1,38 @@
+.main-container{
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+
+.player-center-container{
+    background-color: rgba(255, 255, 255, 0.2);
+    height: 100px;
+    width: 400px;
+    margin-top: auto;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 10px;
+}
+
+.skills-container{
+    height: 100%;
+    width: auto;
+    flex-direction: row;
+    background-color: white;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.skill{
+    height: 60px;
+    width: 60px;
+    background-color: red;
+}
+
+.skill-label{
+    margin: auto;
+    font-size: 40px;
+    color: white;
+}

@@ -351,7 +351,8 @@ public class Lux_Player_Controller : MonoBehaviour
                 GameObject projectile = projectiles[i];
                 if(projectile != null && projectile.activeSelf){
                     Generic_Projectile_Controller controller = projectile.GetComponent<Generic_Projectile_Controller>();
-                    if(controller.remainingDistance <= 0){
+                    //Debug.Log("HandleProjectiles - Die: " + controller.die);
+                    if(controller.die){
                         projectiles.RemoveAt(i);
                         Destroy(projectile);
                     }

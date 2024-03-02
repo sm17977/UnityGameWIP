@@ -10,7 +10,8 @@ public class Lux_Q_Hit : MonoBehaviour
 
     private Lux_Player_Controller playerController;
     private GameObject target;
-    public GameObject HitEffect;
+    public GameObject hitEffectPrefab;
+    private GameObject hitEffect;
     private bool hasHit = false;
 
     // Rings radius
@@ -73,11 +74,8 @@ public class Lux_Q_Hit : MonoBehaviour
 
     void OnCollisionEnter(Collision collision){
         if(collision.gameObject.name == "Lux_AI" && !hasHit){
-            Debug.Log("Q Hit!");
             target = collision.gameObject;
             SpawnHit(target);
-            playerController.projectiles.Remove(transform.parent.gameObject);
-            //Destroy(transform.parent.gameObject);
             hasHit = true;
         }
     }
@@ -92,7 +90,7 @@ public class Lux_Q_Hit : MonoBehaviour
         middleHeight = topHeight / 2;
 
         // Spawn the prefab 
-        Instantiate(HitEffect, target.transform.position, Quaternion.identity);
+        hitEffect = Instantiate(hitEffectPrefab, target.transform.position, Quaternion.identity);
 
         // Retrieve the rings gameobjects
         topRing = GameObject.Find("Top Ring");
@@ -205,6 +203,9 @@ public class Lux_Q_Hit : MonoBehaviour
             }
             else{
                 startFadeOut = false;
+                Generic_Projectile_Controller controller = transform.parent.gameObject.GetComponent<Generic_Projectile_Controller>();
+                controller.die = true;
+                Destroy(hitEffect);
             }
         }
     }
