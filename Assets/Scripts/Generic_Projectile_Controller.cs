@@ -29,8 +29,9 @@ public class Generic_Projectile_Controller : MonoBehaviour
 
     void Start(){
         orbVfx = GetComponent<VisualEffect>();
-        qTrails = GameObject.Find("Q_Trails");
+        qTrails = orbVfx.transform.GetChild(0).gameObject;
         qTrailsVfx = qTrails.GetComponent<VisualEffect>();
+        qTrailsVfx.SetBool("setActive", true);
 
         spawnSystemNames = new List<string>();
         qTrailsVfx.GetSpawnSystemNames(spawnSystemNames);
@@ -51,9 +52,11 @@ public class Generic_Projectile_Controller : MonoBehaviour
         remainingDistance = (float)Math.Round(missile_range - Vector3.Distance(transform.position, initialPosition), 2);
         float travelDistance = Mathf.Min(distance, remainingDistance);
         transform.Translate(missile_direction * travelDistance, Space.World);
-        //Debug.Log("Controller - Die: " + die);
-        if(remainingDistance <= 0){
-            qTrailsVfx.SetBool("setActive", false);
+   
+        if(qTrailsVfx != null){
+            if(remainingDistance <= 0 && qTrailsVfx.GetBool("setActive")){
+                qTrailsVfx.SetBool("setActive", false);
+            }
         }
     }
 }

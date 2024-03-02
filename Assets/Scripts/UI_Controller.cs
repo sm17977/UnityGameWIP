@@ -22,8 +22,6 @@ public class UI_Controller : MonoBehaviour
 
     void ActivateQ(){
 
-        Debug.Log("Q!");
-
         qBox = uiDocument.rootVisualElement.Q<VisualElement>("q-overlay");
         var wBox = uiDocument.rootVisualElement.Q<VisualElement>("w-box");
         var eBox = uiDocument.rootVisualElement.Q<VisualElement>("e-box");
@@ -34,8 +32,7 @@ public class UI_Controller : MonoBehaviour
             if(!qBox.ClassListContains("bar-transition")){
                 qBox.AddToClassList("bar-transition");
                 StartCoroutine(WaitForTransition(3f));
-            }
-           
+            }  
         }
     }
 

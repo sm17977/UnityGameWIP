@@ -205,7 +205,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 // Process the cast spell command
                 case InputCommandType.CastSpell:
-                    if(projectiles.Count == 0 && !isCasting){
+                    if(!isCasting){
                         GetCastingTargetPosition();
                         stateManager.ChangeState(new CastingState(this, gameObject));
                     }

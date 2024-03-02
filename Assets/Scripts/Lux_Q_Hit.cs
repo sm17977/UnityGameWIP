@@ -93,8 +93,8 @@ public class Lux_Q_Hit : MonoBehaviour
         hitEffect = Instantiate(hitEffectPrefab, target.transform.position, Quaternion.identity);
 
         // Retrieve the rings gameobjects
-        topRing = GameObject.Find("Top Ring");
-        bottomRing = GameObject.Find("Bottom Ring");
+        topRing = hitEffect.transform.GetChild(0).gameObject;
+        bottomRing = hitEffect.transform.GetChild(1).gameObject;
 
         // Set the y position of the rings gameobject
         topRing.transform.position = new Vector3(topRing.transform.position.x, topHeight, topRing.transform.position.z);
@@ -116,7 +116,7 @@ public class Lux_Q_Hit : MonoBehaviour
         topRingVfx.GetSpawnSystemNames(spawnSystemNames);
 
         // Retrieve rays gameobject
-        rays = GameObject.Find("Rays");
+        rays = hitEffect.transform.GetChild(2).gameObject;
 
         // Set the y position of the rays' gameobject
         rays.transform.position = new Vector3(rays.transform.position.x,  middleHeight, rays.transform.position.z);
