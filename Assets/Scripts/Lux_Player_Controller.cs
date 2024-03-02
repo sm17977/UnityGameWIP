@@ -158,12 +158,10 @@ public class Lux_Player_Controller : MonoBehaviour
         ToggleAARange();
     }
 
-
     private void InitStates(){
         stateManager = new StateManager();
         idleState = new IdleState();
     }
-
 
     // Read the input queue to handle movement and casting input commands
     private void HandleInput(){

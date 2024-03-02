@@ -54,6 +54,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MiddleBtn"",
+                    ""type"": ""Button"",
+                    ""id"": ""12fbbfc3-a35d-48e6-b693-b7d4916a9fd5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Space"",
+                    ""type"": ""Button"",
+                    ""id"": ""86bf6156-712b-4391-abb2-a07fa4227ccf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -89,6 +107,28 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""A"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a62469e-5794-4e41-9f36-27bcdec64f5e"",
+                    ""path"": ""<Mouse>/middleButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MiddleBtn"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""abe226fa-9b1c-4cd5-ad2b-4da174d9fc91"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Space"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -100,6 +140,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
         m_Player_Q = m_Player.FindAction("Q", throwIfNotFound: true);
         m_Player_A = m_Player.FindAction("A", throwIfNotFound: true);
+        m_Player_MiddleBtn = m_Player.FindAction("MiddleBtn", throwIfNotFound: true);
+        m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -169,6 +211,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_RightClick;
     private readonly InputAction m_Player_Q;
     private readonly InputAction m_Player_A;
+    private readonly InputAction m_Player_MiddleBtn;
+    private readonly InputAction m_Player_Space;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -176,6 +220,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
         public InputAction @Q => m_Wrapper.m_Player_Q;
         public InputAction @A => m_Wrapper.m_Player_A;
+        public InputAction @MiddleBtn => m_Wrapper.m_Player_MiddleBtn;
+        public InputAction @Space => m_Wrapper.m_Player_Space;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -194,6 +240,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @A.started += instance.OnA;
             @A.performed += instance.OnA;
             @A.canceled += instance.OnA;
+            @MiddleBtn.started += instance.OnMiddleBtn;
+            @MiddleBtn.performed += instance.OnMiddleBtn;
+            @MiddleBtn.canceled += instance.OnMiddleBtn;
+            @Space.started += instance.OnSpace;
+            @Space.performed += instance.OnSpace;
+            @Space.canceled += instance.OnSpace;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -207,6 +259,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @A.started -= instance.OnA;
             @A.performed -= instance.OnA;
             @A.canceled -= instance.OnA;
+            @MiddleBtn.started -= instance.OnMiddleBtn;
+            @MiddleBtn.performed -= instance.OnMiddleBtn;
+            @MiddleBtn.canceled -= instance.OnMiddleBtn;
+            @Space.started -= instance.OnSpace;
+            @Space.performed -= instance.OnSpace;
+            @Space.canceled -= instance.OnSpace;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -229,5 +287,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnQ(InputAction.CallbackContext context);
         void OnA(InputAction.CallbackContext context);
+        void OnMiddleBtn(InputAction.CallbackContext context);
+        void OnSpace(InputAction.CallbackContext context);
     }
 }
