@@ -33,6 +33,20 @@
 
 .skill-label{
     margin: auto;
-    font-size: 40px;
+    font-size: 38px;
     color: white;
+}
+
+.bar{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: blue;
+    visibility: hidden;
+    
+}
+
+.bar-transition{
+    transition: height 3s;
+    height: 0%;
 }

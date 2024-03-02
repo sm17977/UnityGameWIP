@@ -108,6 +108,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "UI",
+            "id": "0744a617-7cce-4a27-9c06-9af5f04c402f",
+            "actions": [
+                {
+                    "name": "Q",
+                    "type": "Button",
+                    "id": "ecc4b5db-597b-498b-8a90-1fe57511a165",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "62c6e54d-88e1-4bdd-bff3-3ea3cba2e0df",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Q",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

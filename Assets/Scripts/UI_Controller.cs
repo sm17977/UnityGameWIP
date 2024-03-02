@@ -1,29 +1,49 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
+using System.Collections;
+
 public class UI_Controller : MonoBehaviour
 {
+
+    [SerializeField] private UIDocument uiDocument;
+    private Controls controls;
+    private VisualElement qBox;
+   
+    private float qCooldown = 1000;
  
-    void OnEnable()
-    {
-        var root = GetComponent<UIDocument>().rootVisualElement;
-        root.Add(new Label("Press any key to see the keyDown properties"));
-        root.Add(new TextField());
-        root.Q<TextField>().Focus();
-        root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
-        root.RegisterCallback<KeyUpEvent>(OnKeyUp, TrickleDown.TrickleDown);
-    }
-    void OnKeyDown(KeyDownEvent ev)
-    {
-        Debug.Log("KeyDown:" + ev.keyCode);
-        Debug.Log("KeyDown:" + ev.character);
-        Debug.Log("KeyDown:" + ev.modifiers);
+    void OnEnable(){
+
+        controls = new Controls();
+        controls.UI.Enable();
+        controls.UI.Q.performed += _ => ActivateQ();
+        
     }
 
-    void OnKeyUp(KeyUpEvent ev)
-    {
-        Debug.Log("KeyUp:" + ev.keyCode);
-        Debug.Log("KeyUp:" + ev.character);
-        Debug.Log("KeyUp:" + ev.modifiers);
+    void ActivateQ(){
+
+        Debug.Log("Q!");
+
+        qBox = uiDocument.rootVisualElement.Q<VisualElement>("q-overlay");
+        var wBox = uiDocument.rootVisualElement.Q<VisualElement>("w-box");
+        var eBox = uiDocument.rootVisualElement.Q<VisualElement>("e-box");
+        var rBox = uiDocument.rootVisualElement.Q<VisualElement>("r-box");
+        
+        if (qBox != null){
+            qBox.style.visibility = Visibility.Visible;
+            if(!qBox.ClassListContains("bar-transition")){
+                qBox.AddToClassList("bar-transition");
+                StartCoroutine(WaitForTransition(3f));
+            }
+           
+        }
     }
+
+     IEnumerator WaitForTransition(float delayInSeconds){
+        yield return new WaitForSeconds(delayInSeconds); 
+        qBox.style.visibility = Visibility.Hidden;
+        qBox.RemoveFromClassList("bar-transition");
+     }
+  
 }
 

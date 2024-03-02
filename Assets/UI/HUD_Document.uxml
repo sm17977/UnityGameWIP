@@ -10,17 +10,19 @@
     <Style src="project://database/Assets/UI/HUD_Styles.uss" />
     <ui:VisualElement name="main-container" class="main-container">
         <ui:VisualElement name="player-center" class="player-center-container">
-            <ui:VisualElement name="test" class="skills-container">
-                <ui:VisualElement class="skill">    
+            <ui:VisualElement class="skills-container">
+                <ui:VisualElement name="q-box" class="skill">
+                    <ui:VisualElement name="q-overlay" class="bar">
+                    </ui:VisualElement>
                     <ui:Label text="Q" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement class="skill">    
+                <ui:VisualElement name="w-box" class="skill">    
                     <ui:Label text="W" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement class="skill">    
+                <ui:VisualElement name="e-box" class="skill">    
                     <ui:Label text="E" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement class="skill">    
+                <ui:VisualElement name="r-box" class="skill">    
                     <ui:Label text="R" class="skill-label"/>
                 </ui:VisualElement>
             </ui:VisualElement>
