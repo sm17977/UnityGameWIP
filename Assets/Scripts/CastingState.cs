@@ -3,15 +3,18 @@ using System.Collections.Generic;
 public class CastingState : State
 {
 
-    private Lux_Player_Controller playerController;
     public GameObject player;
+    private Lux_Player_Controller playerController;
+    public Ability ability;
 
-    public CastingState (Lux_Player_Controller controller,  GameObject gameObject){
+    public CastingState (Lux_Player_Controller controller,  GameObject gameObject, Ability ability){
         playerController = controller;
         player = gameObject;
+        this.ability = ability;
     }
 
     public override void Enter() {
+        ability.PutOnCooldown();
         playerController.isCasting = true;
         playerController.canCast = true;
         playerController.animator.SetBool("isQCast", playerController.isCasting);

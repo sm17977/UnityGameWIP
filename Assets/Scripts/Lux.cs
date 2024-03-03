@@ -18,6 +18,7 @@ public class Lux {
     public float Q_range = 8f;
     public Vector3 Q_direction;
     public float Q_speed = 6f;
+    public float Q_cooldown = 4f;
 
     // W
     public float W_range;

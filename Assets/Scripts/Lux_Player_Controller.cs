@@ -89,6 +89,12 @@ public class Lux_Player_Controller : MonoBehaviour
     public float attackStartTime;
     public bool attackStartTimeLogged = false;
 
+
+    // Abilities
+
+    public Ability LuxQAbility;
+
+
     void Awake(){
         // Initiate Input Actions/Events
         controls = new Controls();
@@ -205,9 +211,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 // Process the cast spell command
                 case InputCommandType.CastSpell:
-                    if(!isCasting){
+                    if(!isCasting && !LuxQAbility.OnCooldown()){
                         GetCastingTargetPosition();
-                        stateManager.ChangeState(new CastingState(this, gameObject));
+                        stateManager.ChangeState(new CastingState(this, gameObject, LuxQAbility));
                     }
                     inputQueue.Dequeue();
                     break;
