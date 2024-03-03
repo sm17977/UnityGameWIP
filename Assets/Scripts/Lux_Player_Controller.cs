@@ -348,8 +348,7 @@ public class Lux_Player_Controller : MonoBehaviour
                 GameObject projectile = projectiles[i];
                 if(projectile != null && projectile.activeSelf){
                     Lux_Q_Mis missile = projectile.GetComponent<Lux_Q_Mis>();
-                    //Debug.Log("HandleProjectiles - Die: " + controller.die);
-                    if(missile.die){
+                    if(missile.canBeDestroyed){
                         projectiles.RemoveAt(i);
                         Destroy(projectile);
                     }

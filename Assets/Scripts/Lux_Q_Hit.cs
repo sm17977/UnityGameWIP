@@ -131,7 +131,6 @@ public class Lux_Q_Hit : MonoBehaviour
 
     IEnumerator DelayRingAndRaysVFX(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds); 
-
         
         topRingVfx.Play(); 
         bottomRingVfx.Play(); 
@@ -204,7 +203,7 @@ public class Lux_Q_Hit : MonoBehaviour
             else{
                 startFadeOut = false;
                 Lux_Q_Mis missile = transform.parent.gameObject.GetComponent<Lux_Q_Mis>();
-                missile.die = true;
+                missile.canBeDestroyed = true;
                 Destroy(hitEffect);
             }
         }

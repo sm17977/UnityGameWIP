@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -21,7 +22,7 @@ public class Lux_Q_Mis : MonoBehaviour
     public float projectileRange;
 
 
-    public bool die = false;  // Can we destroy the GameObject?
+    public bool canBeDestroyed = false;  
     private float remainingDistance = Mathf.Infinity;
     private Vector3 initialPosition; // Add intialPosition field to Lux.cs?
 
@@ -75,12 +76,19 @@ public class Lux_Q_Mis : MonoBehaviour
 
         // Move the projectile
         transform.Translate(projectileDirection * travelDistance, Space.World);
-   
-        // Before end, set Trails VFX spawn rate block to inactive 
-        if(qTrailsVfx != null){
-            if(remainingDistance <= 0 && qTrailsVfx.GetBool("setActive")){
+
+        // Handle end of life
+        if(remainingDistance <= 0){
+            // Before end, set Trails VFX spawn rate block to inactive 
+            if(qTrailsVfx != null && qTrailsVfx.GetBool("setActive")){
                 qTrailsVfx.SetBool("setActive", false);
             }
+            StartCoroutine(DelayBeforeDestroy(3f));
         }
+    }
+
+    IEnumerator DelayBeforeDestroy(float delayInSeconds){
+        yield return new WaitForSeconds(delayInSeconds);
+        canBeDestroyed = true;
     }
 }
