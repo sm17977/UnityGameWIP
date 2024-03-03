@@ -198,7 +198,7 @@ public class Lux_Player_Controller : MonoBehaviour
                     // If they are in attack range, transition to attack state
                     // Attacking state persists until we input a new command
                     else{
-                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windup_time));
+                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
                     }
                     inputQueue.Dequeue();
                     break;
@@ -290,7 +290,7 @@ public class Lux_Player_Controller : MonoBehaviour
    // Get the minimum distance the player must move to reach the target location
     private float GetStoppingDistance(){
 
-        float distance = lux.stopping_distance;
+        float distance = lux.stoppingDistance;
 
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if(isAttackClick){
@@ -327,7 +327,7 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void TransitionToAttack(){
-        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windup_time));
+        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
     }
 
     public void TransitionToMove(){
@@ -338,7 +338,7 @@ public class Lux_Player_Controller : MonoBehaviour
         if (direction != Vector3.zero){
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             Quaternion fromRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, lux.turn_speed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, lux.turnSpeed * Time.deltaTime);
         }
     }
 
@@ -347,9 +347,9 @@ public class Lux_Player_Controller : MonoBehaviour
             for(int i = 0; i < projectiles.Count; i++){
                 GameObject projectile = projectiles[i];
                 if(projectile != null && projectile.activeSelf){
-                    Generic_Projectile_Controller controller = projectile.GetComponent<Generic_Projectile_Controller>();
+                    Lux_Q_Mis missile = projectile.GetComponent<Lux_Q_Mis>();
                     //Debug.Log("HandleProjectiles - Die: " + controller.die);
-                    if(controller.die){
+                    if(missile.die){
                         projectiles.RemoveAt(i);
                         Destroy(projectile);
                     }

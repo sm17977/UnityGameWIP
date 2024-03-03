@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4910429161867129436}
   - component: {fileID: 5002599691775342733}
   - component: {fileID: -2970310292650251287}
-  - component: {fileID: 8922581347003359746}
+  - component: {fileID: 1436939814578764564}
   m_Layer: 0
   m_Name: Lux_Q_Mis
   m_TagString: Untagged
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1894600549252798281}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.628}
+  m_LocalPosition: {x: 0, y: 0, z: -0.707}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -129,7 +129,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &8922581347003359746
+--- !u!114 &1436939814578764564
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,10 +141,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  missile_direction: {x: 0, y: 0, z: 0}
-  missile_speed: 1
-  missile_range: 3
-  remainingDistance: Infinity
+  projectileDirection: {x: 0, y: 0, z: 0}
+  projectileSpeed: 0
+  projectileRange: 0
   die: 0
 --- !u!1 &4100793993242763836
 GameObject:

@@ -30,7 +30,7 @@ public class MovingState : State
         direction.y = 0f;
 
         // Move player towards last mouse click 
-        player.transform.Translate(playerController.lux.movement_speed * Time.deltaTime * direction, Space.World);
+        player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
         playerController.RotateTowardsTarget(direction);
 
         // State exits when player has reached target location

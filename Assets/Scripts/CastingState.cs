@@ -43,10 +43,10 @@ public class CastingState : State
             playerController.projectiles.Add(newProjectile);
 
             // Assign projectile properties
-            Generic_Projectile_Controller projectileController = newProjectile.GetComponent<Generic_Projectile_Controller>();
-            projectileController.missile_direction = direction;
-            projectileController.missile_speed = playerController.lux.Q_speed;
-            projectileController.missile_range = playerController.lux.Q_range;
+            Lux_Q_Mis mis = newProjectile.GetComponent<Lux_Q_Mis>();
+            mis.projectileDirection = direction;
+            mis.projectileSpeed = playerController.lux.Q_speed;
+            mis.projectileRange = playerController.lux.Q_range;
 
             playerController.canCast = false;
         }

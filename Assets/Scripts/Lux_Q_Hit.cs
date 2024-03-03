@@ -203,8 +203,8 @@ public class Lux_Q_Hit : MonoBehaviour
             }
             else{
                 startFadeOut = false;
-                Generic_Projectile_Controller controller = transform.parent.gameObject.GetComponent<Generic_Projectile_Controller>();
-                controller.die = true;
+                Lux_Q_Mis missile = transform.parent.gameObject.GetComponent<Lux_Q_Mis>();
+                missile.die = true;
                 Destroy(hitEffect);
             }
         }
