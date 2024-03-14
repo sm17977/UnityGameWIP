@@ -13,13 +13,13 @@ Component of: Lux_Q_Mis prefab
 */
 
 
-public class Lux_Q_Mis : MonoBehaviour
+public class Lux_Q_Mis : MonoBehaviour, IProjectileAbility
 {
 
     // Projectile properties are set in CastingState
-    public Vector3 projectileDirection;
-    public float projectileSpeed;
-    public float projectileRange;
+    private Vector3 _projectileDirection;
+    private float _projectileSpeed;
+    private float _projectileRange;
 
 
     public bool canBeDestroyed = false;  
@@ -36,6 +36,9 @@ public class Lux_Q_Mis : MonoBehaviour
     private GameObject qTrails;
     private VisualEffect qTrailsVfx;
 
+    public Vector3 ProjectileDirection { get => _projectileDirection; set => _projectileDirection = value; }
+    public float ProjectileSpeed { get => _projectileSpeed; set => _projectileSpeed = value; }
+    public float ProjectileRange { get => _projectileRange; set => _projectileRange = value; }
 
     void Start(){
 
@@ -55,27 +58,17 @@ public class Lux_Q_Mis : MonoBehaviour
         qTrailsVfx = qTrails.GetComponent<VisualEffect>();
       
     }
-
     
     void Update(){
      
-        // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
-
         // The time it takes to reach projectile range 
-        float lifetime = projectileRange / projectileSpeed;
+        float lifetime = _projectileRange / _projectileSpeed;
 
         // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
         orbVfx.SetFloat("lifetime", lifetime);
 
-        // The current remaining distance the projectile must travel to reach projectile range
-        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
-
-        // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
-
-        // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        // Move object
+        MoveProjectile();
 
         // Handle end of life
         if(remainingDistance <= 0){
@@ -90,5 +83,25 @@ public class Lux_Q_Mis : MonoBehaviour
     IEnumerator DelayBeforeDestroy(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds);
         canBeDestroyed = true;
+    }
+
+    public void MoveProjectile(){
+        // The distance the projectile moves per frame
+        float distance = Time.deltaTime * _projectileSpeed;
+
+        // The current remaining distance the projectile must travel to reach projectile range
+        remainingDistance = (float)Math.Round(_projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+
+        // Ensures the projectile stops moving once remaining distance is zero 
+        float travelDistance = Mathf.Min(distance, remainingDistance);
+
+        // Move the projectile
+        transform.Translate(_projectileDirection * travelDistance, Space.World);
+    }
+
+    public void InitializeProjectile(Vector3 direction, float speed, float range){
+        _projectileDirection = direction;
+        _projectileSpeed = speed;
+        _projectileRange = range;
     }
 }

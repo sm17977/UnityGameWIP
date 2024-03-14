@@ -5,5 +5,7 @@ public class InputCommand {
     public InputCommandType type;
     public double time;
 
+    public Ability ability;
+
 
 }

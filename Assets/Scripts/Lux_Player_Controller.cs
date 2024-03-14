@@ -91,6 +91,7 @@ public class Lux_Player_Controller : MonoBehaviour
     // Abilities
 
     public Ability LuxQAbility;
+    public Ability LuxEAbility;
 
 
     void Awake(){
@@ -99,6 +100,7 @@ public class Lux_Player_Controller : MonoBehaviour
         controls.Player.Enable();
         controls.Player.RightClick.performed += OnRightClick;
         controls.Player.Q.performed += OnQ;
+        controls.Player.E.performed += OnE;
         controls.Player.A.performed += OnA;
     }
 
@@ -143,7 +145,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
         autoCDText.text = "autoCD: " + timeSinceLastAttack;
   
-        HandleProjectiles();
+        //HandleProjectiles();
         HandleVFX();
     }
 
@@ -154,7 +156,11 @@ public class Lux_Player_Controller : MonoBehaviour
     }
 
     public void OnQ(InputAction.CallbackContext context){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time});
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, ability = LuxQAbility});
+    }
+
+    public void OnE(InputAction.CallbackContext context){
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, ability = LuxEAbility});
     }
 
     public void OnA(InputAction.CallbackContext context){
@@ -209,9 +215,9 @@ public class Lux_Player_Controller : MonoBehaviour
 
                 // Process the cast spell command
                 case InputCommandType.CastSpell:
-                    if(!isCasting && !LuxQAbility.OnCooldown()){
+                    if(!isCasting && !currentInput.ability.OnCooldown()){
                         GetCastingTargetPosition();
-                        stateManager.ChangeState(new CastingState(this, gameObject, LuxQAbility));
+                        stateManager.ChangeState(new CastingState(this, gameObject, currentInput.ability));
                     }
                     inputQueue.Dequeue();
                     break;

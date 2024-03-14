@@ -72,6 +72,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""E"",
+                    ""type"": ""Button"",
+                    ""id"": ""aa2104a0-5a99-4d29-bc70-46151e50a2c6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -129,6 +138,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Space"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c69773d7-3d6f-44bc-a39f-2cb98f5a81c3"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""E"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -170,6 +190,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_A = m_Player.FindAction("A", throwIfNotFound: true);
         m_Player_MiddleBtn = m_Player.FindAction("MiddleBtn", throwIfNotFound: true);
         m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
+        m_Player_E = m_Player.FindAction("E", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Q = m_UI.FindAction("Q", throwIfNotFound: true);
@@ -245,6 +266,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_A;
     private readonly InputAction m_Player_MiddleBtn;
     private readonly InputAction m_Player_Space;
+    private readonly InputAction m_Player_E;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -254,6 +276,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @A => m_Wrapper.m_Player_A;
         public InputAction @MiddleBtn => m_Wrapper.m_Player_MiddleBtn;
         public InputAction @Space => m_Wrapper.m_Player_Space;
+        public InputAction @E => m_Wrapper.m_Player_E;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -278,6 +301,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Space.started += instance.OnSpace;
             @Space.performed += instance.OnSpace;
             @Space.canceled += instance.OnSpace;
+            @E.started += instance.OnE;
+            @E.performed += instance.OnE;
+            @E.canceled += instance.OnE;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -297,6 +323,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Space.started -= instance.OnSpace;
             @Space.performed -= instance.OnSpace;
             @Space.canceled -= instance.OnSpace;
+            @E.started -= instance.OnE;
+            @E.performed -= instance.OnE;
+            @E.canceled -= instance.OnE;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -367,6 +396,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnA(InputAction.CallbackContext context);
         void OnMiddleBtn(InputAction.CallbackContext context);
         void OnSpace(InputAction.CallbackContext context);
+        void OnE(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

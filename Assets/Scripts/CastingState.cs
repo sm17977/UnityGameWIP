@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.ComponentModel;
 public class CastingState : State
 {
 
@@ -28,13 +29,13 @@ public class CastingState : State
 
         // Get the direction the abliity should move towards
         Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
-        playerController.lux.Q_direction = direction;
-
+  
         // Rotate the player in the direction the spell was cast
         playerController.RotateTowardsTarget(direction);
         
 
         if (playerController.canCast) {
+
             // Set the spawn position of the projectile
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, 1f, player.transform.position.z) + direction * worldRadius;
@@ -45,12 +46,10 @@ public class CastingState : State
             // Store projectile in list
             playerController.projectiles.Add(newProjectile);
 
-            // Assign projectile properties
-            Lux_Q_Mis mis = newProjectile.GetComponent<Lux_Q_Mis>();
-            mis.projectileDirection = direction;
-            mis.projectileSpeed = playerController.lux.Q_speed;
-            mis.projectileRange = playerController.lux.Q_range;
-
+            // Assign properties using interface
+            IProjectileAbility projectileScript = newProjectile.GetComponent<IProjectileAbility>();
+            projectileScript?.InitializeProjectile(direction, ability.speed, ability.range);
+          
             playerController.canCast = false;
         }
         

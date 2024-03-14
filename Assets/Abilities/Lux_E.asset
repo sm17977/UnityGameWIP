@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5eeea76e6b8ef5240a03dc2e4f72283b, type: 3}
-  m_Name: Lux_Q
+  m_Name: Lux_E
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
-  missile: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94, type: 3}
-  spawnScript: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}
-  hitScript: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}
+  missile: {fileID: 4041543770075780115, guid: 84e2765d4e5acbf48a1b4a0f5f74264e, type: 3}
+  spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
+  hitScript: {fileID: 0}
   currentCooldown: 0
-  maxCooldown: 3
-  range: 8
-  speed: 6
+  maxCooldown: 1
+  range: 5
+  speed: 4
