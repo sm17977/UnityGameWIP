@@ -23,10 +23,8 @@ public class Lux_Player_Controller : MonoBehaviour
     public Lux lux;
 
     // Skllshot Projectile
-    public GameObject projectile;
     public List<GameObject> projectiles;
     public List<GameObject> vfxProjectileList;
-    public Vector3 projectileSpawnPos;
     public Vector3 projectileTargetPosition;
 
     // AA Projectile

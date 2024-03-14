@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2283.5276, g: 2514.557, b: 3572.52, a: 1}
+  m_IndirectSpecularColor: {r: 2284.3381, g: 2514.6565, b: 3572.1216, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -573,6 +573,50 @@ MonoBehaviour:
   m_ObsoleteUseShadowQualitySettings: 0
   m_ObsoleteCustomShadowResolution: 512
   m_ObsoleteContactShadows: 0
+--- !u!1 &259096465
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 259096467}
+  - component: {fileID: 259096466}
+  m_Layer: 0
+  m_Name: Cooldown Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &259096466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259096465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae23403a152641549b919f67e3c5ba7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &259096467
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259096465}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.0303764, y: 1, z: 8.303158}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1765,6 +1809,12 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 1871884202897402574, guid: 14266636b25d5da4baa680f02c9f0178,
         type: 3}
+      propertyPath: LuxQAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0,
+        type: 2}
+    - target: {fileID: 1871884202897402574, guid: 14266636b25d5da4baa680f02c9f0178,
+        type: 3}
       propertyPath: isWindingUpText
       value: 
       objectReference: {fileID: 854228733}
@@ -2397,3 +2447,4 @@ SceneRoots:
   - {fileID: 1068616494}
   - {fileID: 776954377}
   - {fileID: 2124605748}
+  - {fileID: 259096467}

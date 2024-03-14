@@ -10,6 +10,9 @@ public class Ability : ScriptableObject
     public string abilityDescription;
 
 
+    [Header("Objects")]
+    public GameObject missile;
+
     [Header("Ability Stats")]
     public float currentCooldown = 0;
     public float maxCooldown;

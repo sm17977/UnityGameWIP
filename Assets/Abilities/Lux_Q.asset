@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
+  missile: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94, type: 3}
   currentCooldown: 0
-  maxCooldown: 0
+  maxCooldown: 3

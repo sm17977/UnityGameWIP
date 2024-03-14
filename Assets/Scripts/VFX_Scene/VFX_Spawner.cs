@@ -4,7 +4,7 @@ using UnityEngine.VFX;
 public class VFX_Spawner : MonoBehaviour{
 
     public VFX_Scene_Manager sceneManager;
-    public VisualEffect vfx;
+    public GameObject vfx;
     public GameObject target;
     public Vector3 targetDirection;
 
@@ -30,7 +30,7 @@ public class VFX_Spawner : MonoBehaviour{
     void ShootProjectile(){
 
         // Add the effect to the scene
-        VisualEffect effect = Instantiate(vfx, transform.position, Quaternion.LookRotation(targetDirection, Vector3.up));
+        GameObject effect = Instantiate(vfx, transform.position, Quaternion.LookRotation(targetDirection, Vector3.up));
         VFX_Movement movement = effect.GetComponent<VFX_Movement>();
         movement.spawner = this;
         movement.direction = targetDirection;
