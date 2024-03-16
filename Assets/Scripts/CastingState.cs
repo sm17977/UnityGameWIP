@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System;
+using Unity.VisualScripting;
+using NUnit.Framework.Internal;
 public class CastingState : State
 {
 
@@ -46,9 +49,9 @@ public class CastingState : State
             // Store projectile in list
             playerController.projectiles.Add(newProjectile);
 
-            // Assign properties using interface
-            IProjectileAbility projectileScript = newProjectile.GetComponent<IProjectileAbility>();
-            projectileScript?.InitializeProjectile(direction, ability.speed, ability.range);
+            // Get script on prefab to initialize propreties
+            ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range);
           
             playerController.canCast = false;
         }

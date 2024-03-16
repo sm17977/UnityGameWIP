@@ -145,7 +145,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
         autoCDText.text = "autoCD: " + timeSinceLastAttack;
   
-        //HandleProjectiles();
+        HandleProjectiles();
         HandleVFX();
     }
 
@@ -357,7 +357,7 @@ public class Lux_Player_Controller : MonoBehaviour
             for(int i = 0; i < projectiles.Count; i++){
                 GameObject projectile = projectiles[i];
                 if(projectile != null && projectile.activeSelf){
-                    Lux_Q_Mis missile = projectile.GetComponent<Lux_Q_Mis>();
+                    ProjectileAbility missile = projectile.GetComponent<ProjectileAbility>();
                     if(missile.canBeDestroyed){
                         projectiles.RemoveAt(i);
                         Destroy(projectile);

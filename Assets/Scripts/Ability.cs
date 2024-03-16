@@ -16,6 +16,7 @@ public class Ability : ScriptableObject
     [Header("Scripts")]
     public UnityEngine.Object spawnScript;
     public UnityEngine.Object hitScript;
+    public Type test;
 
     [Header("Ability Stats")]
     public float currentCooldown = 0;
