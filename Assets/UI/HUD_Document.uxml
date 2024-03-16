@@ -16,13 +16,19 @@
                     </ui:VisualElement>
                     <ui:Label text="Q" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement name="w-box" class="skill">    
+                <ui:VisualElement name="w-box" class="skill">   
+                    <ui:VisualElement name="w-overlay" class="bar">
+                    </ui:VisualElement> 
                     <ui:Label text="W" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement name="e-box" class="skill">    
+                <ui:VisualElement name="e-box" class="skill">
+                    <ui:VisualElement name="e-overlay" class="bar">
+                    </ui:VisualElement>     
                     <ui:Label text="E" class="skill-label"/>
                 </ui:VisualElement>
-                <ui:VisualElement name="r-box" class="skill">    
+                <ui:VisualElement name="r-box" class="skill">  
+                    <ui:VisualElement name="r-overlay" class="bar">
+                    </ui:VisualElement>   
                     <ui:Label text="R" class="skill-label"/>
                 </ui:VisualElement>
             </ui:VisualElement>

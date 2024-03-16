@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.InputSystem;
 using System.Collections;
 
 public class UI_Controller : MonoBehaviour
@@ -8,7 +7,7 @@ public class UI_Controller : MonoBehaviour
 
     [SerializeField] private UIDocument uiDocument;
     private Controls controls;
-    private VisualElement qBox;
+    private VisualElement abilityBox;
    
     private float qCooldown = 1000;
  
@@ -16,30 +15,31 @@ public class UI_Controller : MonoBehaviour
 
         controls = new Controls();
         controls.UI.Enable();
-        controls.UI.Q.performed += _ => ActivateQ();
+        controls.UI.Q.performed += _ => ActivateAbilityAnimation("Q");
+        controls.UI.W.performed += _ => ActivateAbilityAnimation("W");
+        controls.UI.E.performed += _ => ActivateAbilityAnimation("E");
+        controls.UI.R.performed += _ => ActivateAbilityAnimation("R");
         
     }
 
-    void ActivateQ(){
+    void ActivateAbilityAnimation(string abilityKey){
 
-        qBox = uiDocument.rootVisualElement.Q<VisualElement>("q-overlay");
-        var wBox = uiDocument.rootVisualElement.Q<VisualElement>("w-box");
-        var eBox = uiDocument.rootVisualElement.Q<VisualElement>("e-box");
-        var rBox = uiDocument.rootVisualElement.Q<VisualElement>("r-box");
+        string overlayElementName = abilityKey.ToLower() + "-overlay";
+        abilityBox = uiDocument.rootVisualElement.Q<VisualElement>(overlayElementName);
         
-        if (qBox != null){
-            qBox.style.visibility = Visibility.Visible;
-            if(!qBox.ClassListContains("bar-transition")){
-                qBox.AddToClassList("bar-transition");
-                StartCoroutine(WaitForTransition(3f));
+        if (abilityBox != null){
+            abilityBox.style.visibility = Visibility.Visible;
+            if(!abilityBox.ClassListContains("bar-transition")){
+                abilityBox.AddToClassList("bar-transition");
+                StartCoroutine(WaitForTransition(3f, abilityBox));
             }  
         }
     }
 
-     IEnumerator WaitForTransition(float delayInSeconds){
+     IEnumerator WaitForTransition(float delayInSeconds, VisualElement box){
         yield return new WaitForSeconds(delayInSeconds); 
-        qBox.style.visibility = Visibility.Hidden;
-        qBox.RemoveFromClassList("bar-transition");
+        box.style.visibility = Visibility.Hidden;
+        box.RemoveFromClassList("bar-transition");
      }
   
 }
