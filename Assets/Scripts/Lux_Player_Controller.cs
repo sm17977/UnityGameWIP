@@ -52,11 +52,6 @@ public class Lux_Player_Controller : MonoBehaviour
     // Camera
     public Camera mainCamera;
  
-    // Debug Text
-    public TMP_Text currentStateText;
-    public TMP_Text isWindingUpText;
-    public TMP_Text autoCDText;
-
     // Input Data
     private Controls controls;
     public Queue<InputCommand> inputQueue;
@@ -89,7 +84,6 @@ public class Lux_Player_Controller : MonoBehaviour
 
 
     // Abilities
-
     public Ability LuxQAbility;
     public Ability LuxEAbility;
 
@@ -116,11 +110,7 @@ public class Lux_Player_Controller : MonoBehaviour
 
         ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
         ai_hitboxPos = ai_hitboxGameObj.transform.position;
-        
-        currentStateText.text = "currentState: ";
-        isWindingUpText.text = "isWindingUp: " + isWindingUp;
-        autoCDText.text = "autoCD: " + timeSinceLastAttack;
-        
+                
         lux = new Lux();
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -135,15 +125,11 @@ public class Lux_Player_Controller : MonoBehaviour
 
         stateManager.Update();
 
-        currentStateText.text = "currentState: " + stateManager.GetCurrentState();
-
         if(stateManager.GetCurrentState() != "AttackingState"){
             if(timeSinceLastAttack > 0){
                 timeSinceLastAttack -= Time.deltaTime;
             }
         }
-
-        autoCDText.text = "autoCD: " + timeSinceLastAttack;
   
         HandleProjectiles();
         HandleVFX();

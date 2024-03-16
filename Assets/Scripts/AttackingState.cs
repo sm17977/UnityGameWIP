@@ -38,8 +38,6 @@ public class AttackingState : State
     
         // Get animation timings
         GetCurrentAnimationTime();
-        
-        playerController.isWindingUpText.text = "isWindingUp: " + playerController.isWindingUp;
                 
         // Get the direction the abliity should move towards
         Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
