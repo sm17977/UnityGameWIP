@@ -41,7 +41,7 @@ public class CastingState : State
 
             // Set the spawn position of the projectile
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
-            Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, 1f, player.transform.position.z) + direction * worldRadius;
+            Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
             // Create projectile
             GameObject newProjectile = Lux_Player_Controller.Instantiate(ability.missile, abilitySpawnPos,  Quaternion.LookRotation(direction, Vector3.up));

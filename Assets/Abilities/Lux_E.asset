@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
-  missile: {fileID: 4041543770075780115, guid: 84e2765d4e5acbf48a1b4a0f5f74264e, type: 3}
+  missile: {fileID: 7768291782423510599, guid: ba05f37d1d1d21549b0e29a5bd159bbb, type: 3}
+  spawnHeight: 0.7
   spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
   hitScript: {fileID: 0}
   currentCooldown: 0
   maxCooldown: 1
   range: 5
-  speed: 4
+  speed: 5.8

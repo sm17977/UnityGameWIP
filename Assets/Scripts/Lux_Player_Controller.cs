@@ -131,7 +131,7 @@ public class Lux_Player_Controller : MonoBehaviour
             }
         }
   
-        HandleProjectiles();
+        //HandleProjectiles();
         HandleVFX();
     }
 
@@ -161,57 +161,60 @@ public class Lux_Player_Controller : MonoBehaviour
     // Read the input queue to handle movement and casting input commands
     private void HandleInput(){
 
-        // Check the queue for any unconsumed input commands
-        if(inputQueue.Count > 0){
+        if(inputQueue != null){
 
-            // Get the next input command
-            currentInput = inputQueue.Peek();
+            // Check the queue for any unconsumed input commands
+            if(inputQueue.Count > 0){
 
-            // Set previous input to null on first function call
-            if(previousInput == null){
-                previousInput = currentInput;
+                // Get the next input command
+                currentInput = inputQueue.Peek();
+
+                // Set previous input to null on first function call
+                if(previousInput == null){
+                    previousInput = currentInput;
+                }
+
+                switch(currentInput.type){
+
+                    // Process the movement command
+                    case InputCommandType.Movement:
+
+                        ShowMovementIndicator(lastClickPosition);
+                        movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
+                        stateManager.ChangeState(movingState);
+                        
+                        inputQueue.Dequeue();
+                        break;
+
+                    //Process the attack command
+                    case InputCommandType.Attack:
+                        direction = (lastClickPosition - transform.position).normalized;
+                        // If the player is not within attack range, move until they are
+                        if(!IsInAttackRange(lastClickPosition, GetStoppingDistance())){
+                            stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, true));
+                        }
+                        // If they are in attack range, transition to attack state
+                        // Attacking state persists until we input a new command
+                        else{
+                            stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+                        }
+                        inputQueue.Dequeue();
+                        break;
+
+                    // Process the cast spell command
+                    case InputCommandType.CastSpell:
+                        if(!isCasting && !currentInput.ability.OnCooldown()){
+                            GetCastingTargetPosition();
+                            stateManager.ChangeState(new CastingState(this, gameObject, currentInput.ability));
+                        }
+                        inputQueue.Dequeue();
+                        break;
+
+                    case InputCommandType.None:
+                        inputQueue.Dequeue();
+                        break;
+                } 
             }
-
-            switch(currentInput.type){
-
-                // Process the movement command
-                case InputCommandType.Movement:
-
-                    ShowMovementIndicator(lastClickPosition);
-                    movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
-                    stateManager.ChangeState(movingState);
-                    
-                    inputQueue.Dequeue();
-                    break;
-
-                //Process the attack command
-                case InputCommandType.Attack:
-                    direction = (lastClickPosition - transform.position).normalized;
-                    // If the player is not within attack range, move until they are
-                    if(!IsInAttackRange(lastClickPosition, GetStoppingDistance())){
-                        stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, true));
-                    }
-                    // If they are in attack range, transition to attack state
-                    // Attacking state persists until we input a new command
-                    else{
-                        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
-                    }
-                    inputQueue.Dequeue();
-                    break;
-
-                // Process the cast spell command
-                case InputCommandType.CastSpell:
-                    if(!isCasting && !currentInput.ability.OnCooldown()){
-                        GetCastingTargetPosition();
-                        stateManager.ChangeState(new CastingState(this, gameObject, currentInput.ability));
-                    }
-                    inputQueue.Dequeue();
-                    break;
-
-                case InputCommandType.None:
-                    inputQueue.Dequeue();
-                    break;
-            } 
         }
     }
 

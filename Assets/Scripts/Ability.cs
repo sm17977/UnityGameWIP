@@ -9,21 +9,19 @@ public class Ability : ScriptableObject
     public string abilityName;
     public string abilityDescription;
 
-
-    [Header("Objects")]
+    [Header("Object Data")]
     public GameObject missile;
+    public float spawnHeight;
 
     [Header("Scripts")]
     public UnityEngine.Object spawnScript;
     public UnityEngine.Object hitScript;
-    public Type test;
-
+   
     [Header("Ability Stats")]
     public float currentCooldown = 0;
     public float maxCooldown;
     public float range;
     public float speed;
-
 
     public void PutOnCooldown(){
         Cooldown_Manager.instance.StartCooldown(this);
