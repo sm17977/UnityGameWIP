@@ -16,7 +16,7 @@ public class AbilityEditor : Editor
         // Calculate totalLifetime and display it
         EditorGUI.BeginDisabledGroup(true); // Makes the next field read-only
         EditorGUILayout.FloatField("Projectile Lifetime", ability.range / ability.speed);
-        EditorGUILayout.FloatField("Total Lifetime", (ability.range / ability.speed) + ability.maxLingeringLifetime);
+        EditorGUILayout.FloatField("Total Lifetime", (ability.range / ability.speed) + ability.lingeringLifetime);
         EditorGUI.EndDisabledGroup();
     }
 }

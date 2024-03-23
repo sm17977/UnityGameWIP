@@ -22,10 +22,7 @@ public class Ability : ScriptableObject
     public float maxCooldown;
     public float range;
     public float speed;
-
-    [SerializeField]
-    public float totalLifetime => range / speed;
-    public float maxLingeringLifetime;
+    public float lingeringLifetime;
 
 
     public void PutOnCooldown(){
