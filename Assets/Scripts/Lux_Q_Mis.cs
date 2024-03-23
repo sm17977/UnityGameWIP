@@ -17,11 +17,9 @@ public class Lux_Q_Mis : ProjectileAbility
 
     private Vector3 initialPosition; // Add intialPosition field to Lux.cs?
 
-
     // Projectile hitbox
     private GameObject hitbox;
     
-
     // VFX Assets
     private VisualEffect orbVfx;
     private GameObject qTrails;
@@ -44,16 +42,12 @@ public class Lux_Q_Mis : ProjectileAbility
         // Get Trails VFX
         qTrails = gameObject.transform.Find("Q_Trails").gameObject;
         qTrailsVfx = qTrails.GetComponent<VisualEffect>();
-      
     }
     
     void Update(){
      
-        // The time it takes to reach projectile range 
-        float lifetime = projectileRange / projectileSpeed;
-
         // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
-        orbVfx.SetFloat("lifetime", lifetime);
+        orbVfx.SetFloat("lifetime", projectileLifetime);
 
         // Move object
         MoveProjectile(transform, initialPosition);

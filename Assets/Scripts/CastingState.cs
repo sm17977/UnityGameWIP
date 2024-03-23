@@ -51,7 +51,7 @@ public class CastingState : State
 
             // Get script on prefab to initialize propreties
             ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range);
+            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range, ability);
           
             playerController.canCast = false;
         }

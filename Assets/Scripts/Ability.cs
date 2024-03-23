@@ -23,6 +23,11 @@ public class Ability : ScriptableObject
     public float range;
     public float speed;
 
+    [SerializeField]
+    public float totalLifetime => range / speed;
+    public float maxLingeringLifetime;
+
+
     public void PutOnCooldown(){
         Cooldown_Manager.instance.StartCooldown(this);
     }

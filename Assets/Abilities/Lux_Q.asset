@@ -22,3 +22,4 @@ MonoBehaviour:
   maxCooldown: 3
   range: 8
   speed: 6
+  maxLingeringLifetime: 0

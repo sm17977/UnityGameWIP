@@ -7,19 +7,26 @@ public class ProjectileAbility : MonoBehaviour
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
+    public float projectileLifetime;
     public float remainingDistance = Mathf.Infinity;
     public bool canBeDestroyed = false;  
+    public Ability abilityData;
 
    /// <summary>
-   /// Sets the direction, speed and range of a projectile
+   /// Set the direction, speed and range of a projectile. Pass in this specific ability's data
    /// </summary>
    /// <param name="direction"></param>
    /// <param name="speed"></param>
    /// <param name="range"></param>
-    public void InitProjectileProperties(Vector3 direction, float speed, float range){
+    public void InitProjectileProperties(Vector3 direction, float speed, float range, Ability ability){
+
         projectileDirection = direction;
         projectileSpeed = speed;
         projectileRange = range;
+        projectileLifetime = projectileRange / projectileSpeed;
+
+        abilityData = ability;
+
     }
 
     /// <summary>
