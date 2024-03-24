@@ -1,15 +1,24 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class UI_Controller : MonoBehaviour
 {
 
+    // UI Document
     [SerializeField] private UIDocument uiDocument;
-    private Controls controls;
+
+    // UI Elements
     private VisualElement abilityBox;
-   
-    private float qCooldown = 1000;
+    private Label debugCurrentState;
+
+    // Input System
+    private Controls controls;
+
+    // Player Reference
+    public Lux_Player_Controller player;
+
  
     void OnEnable(){
 
@@ -19,7 +28,7 @@ public class UI_Controller : MonoBehaviour
         controls.UI.W.performed += _ => ActivateAbilityAnimation("W");
         controls.UI.E.performed += _ => ActivateAbilityAnimation("E");
         controls.UI.R.performed += _ => ActivateAbilityAnimation("R");
-        
+       
     }
 
     void ActivateAbilityAnimation(string abilityKey){
@@ -34,6 +43,16 @@ public class UI_Controller : MonoBehaviour
                 StartCoroutine(WaitForTransition(3f, abilityBox));
             }  
         }
+    }
+
+    void Update(){
+        showDebugInfo();
+    }
+
+    void showDebugInfo(){
+        debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-state");
+        debugCurrentState.text = "Current State: " + player.currentState;
+
     }
 
      IEnumerator WaitForTransition(float delayInSeconds, VisualElement box){

@@ -18,6 +18,10 @@ MonoBehaviour:
   spawnHeight: 0.7
   spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
   hitScript: {fileID: 0}
+  animationClip: {fileID: 2986519980907021182, guid: 458163394b1b81746828f5eedf2ee10a,
+    type: 3}
+  animationTrigger: eAbility
+  animationState: E Ability
   currentCooldown: 0
   maxCooldown: 1
   range: 5

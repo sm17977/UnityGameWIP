@@ -9,6 +9,10 @@
 
     <Style src="project://database/Assets/UI/HUD_Styles.uss" />
     <ui:VisualElement name="main-container" class="main-container">
+        <ui:VisualElement name="debug" class="debug-container">
+            <ui:Label text="Debug Info" class="debug-header"/>
+            <ui:Label text="Current State: " name="debug-current-state"/>
+        </ui:VisualElement>   
         <ui:VisualElement name="player-center" class="player-center-container">
             <ui:VisualElement class="skills-container">
                 <ui:VisualElement name="q-box" class="skill">

@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System;
 using Unity.VisualScripting;
 using NUnit.Framework.Internal;
+using UnityEditor.PackageManager;
 public class CastingState : State
 {
 
     public GameObject player;
     private Lux_Player_Controller playerController;
     public Ability ability;
+    public bool castingFinished = false; 
 
     public CastingState (Lux_Player_Controller controller,  GameObject gameObject, Ability ability){
         playerController = controller;
@@ -21,14 +23,20 @@ public class CastingState : State
         ability.PutOnCooldown();
         playerController.isCasting = true;
         playerController.canCast = true;
-        playerController.animator.SetBool("isQCast", playerController.isCasting);
+        //playerController.animator.SetBool("isQCast", playerController.isCasting);
+        playerController.animator.SetTrigger(ability.animationTrigger);
     }
 
     public override void Execute() {
 
         // Track when animation ends
-        bool castingFinished = playerController.animator.GetCurrentAnimatorStateInfo(0).IsName("Q_Ability") && 
-            playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1;
+        try{
+            castingFinished = playerController.animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == ability.animationClip.name && 
+                playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95;
+        }
+        catch(Exception e){
+            Debug.Log("Error: " + e);
+        }
 
         // Get the direction the abliity should move towards
         Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
@@ -57,6 +65,7 @@ public class CastingState : State
         }
         
         if(castingFinished){
+            Debug.Log("Casting Finished!");
             // Finish any incomplete movement commands
             if(playerController.incompleteMovement){
                 playerController.TransitionToMove();
@@ -74,6 +83,7 @@ public class CastingState : State
 
     public override void Exit() {
         playerController.isCasting = false;
-        playerController.animator.SetBool("isQCast", playerController.isCasting);
+        //playerController.animator.SetBool("isQCast", playerController.isCasting);
+        //playerController.animator.ResetTrigger(ability.animationTrigger);
     }
 }

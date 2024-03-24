@@ -71,6 +71,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private AttackingState attackingState;
     private IdleState idleState;
     private CastingState castingState;
+    public string currentState;
 
     // AI
     public GameObject Lux_AI;
@@ -124,6 +125,8 @@ public class Lux_Player_Controller : MonoBehaviour
         HandleInput();
 
         stateManager.Update();
+
+        currentState = stateManager.GetCurrentState();
 
         if(stateManager.GetCurrentState() != "AttackingState"){
             if(timeSinceLastAttack > 0){

@@ -16,6 +16,11 @@ public class Ability : ScriptableObject
     [Header("Scripts")]
     public UnityEngine.Object spawnScript;
     public UnityEngine.Object hitScript;
+
+    [Header("Animations")]
+    public Motion animationClip;
+    public string animationTrigger;
+    public string animationState;
    
     [Header("Ability Stats")]
     public float currentCooldown = 0;

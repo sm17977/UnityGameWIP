@@ -50,3 +50,14 @@
     transition: height 3s;
     height: 0%;
 }
+
+.debug-container{
+    padding: 10px;
+    width: 300px;
+    height: 500px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.debug-header{
+    -unity-font-style: bold;
+}
