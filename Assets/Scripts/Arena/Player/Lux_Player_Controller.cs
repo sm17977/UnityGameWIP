@@ -6,6 +6,9 @@ using UnityEngine.VFX;
 public class Lux_Player_Controller : MonoBehaviour
 {
 
+    // Champion
+    public Champion lux;
+
     // Flags
     public bool isRunning;
     public bool isCasting;
@@ -17,9 +20,6 @@ public class Lux_Player_Controller : MonoBehaviour
     public bool incompleteMovement = false;
     private bool isNewClick;
     public bool inAttackRange = false;
-
-    // Lux Stats
-    public Lux lux;
 
     // Skllshot Projectile
     public List<GameObject> projectiles;
@@ -81,10 +81,12 @@ public class Lux_Player_Controller : MonoBehaviour
     public float attackStartTime;
     public bool attackStartTimeLogged = false;
 
-
     // Abilities
-    public Ability LuxQAbility;
-    public Ability LuxEAbility;
+    public Ability LuxQAbilitySO;
+    public Ability LuxEAbilitySO;
+    private Ability LuxQAbility;
+    private Ability LuxEAbility;
+
 
 
     void Awake(){
@@ -95,6 +97,9 @@ public class Lux_Player_Controller : MonoBehaviour
         controls.Player.Q.performed += OnQ;
         controls.Player.E.performed += OnE;
         controls.Player.A.performed += OnA;
+
+        LuxQAbility = Object.Instantiate(LuxQAbilitySO);
+        LuxEAbility = Object.Instantiate(LuxEAbilitySO);
     }
 
     // Start is called before the first frame update
@@ -110,7 +115,6 @@ public class Lux_Player_Controller : MonoBehaviour
         ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
         ai_hitboxPos = ai_hitboxGameObj.transform.position;
                 
-        lux = new Lux();
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
         ResetCooldowns();

@@ -15,7 +15,6 @@ public class Cooldown_Manager : MonoBehaviour
         else if(instance != this){
             Destroy(this);
         }
-        ResetCooldowns();
     }
 
     void Update(){
@@ -38,10 +37,4 @@ public class Cooldown_Manager : MonoBehaviour
             abilitiesOnCooldown.Add(ability);
         }
     }
-
-    private void ResetCooldowns(){
-
-
-    }
-
 }

@@ -38,7 +38,6 @@ public class AI_CastingState : State
         
 
         if (agent.canCast) {
-
             // Set the spawn position of the projectile
             float worldRadius = agent.hitboxCollider.radius * agent.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
@@ -51,7 +50,7 @@ public class AI_CastingState : State
 
             // Get script on prefab to initialize propreties
             ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range, ability, agent.projectiles);
+            projectileScript?.InitProjectileProperties(direction, ability, agent.projectiles, false);
           
             agent.canCast = false;
         }

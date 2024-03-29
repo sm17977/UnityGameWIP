@@ -29,7 +29,6 @@ public class CastingState : State
                 playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95; // This is set to 0.95 because the normalized time doesn't always reach 100%
         }
        
-
         // Get the direction the abliity should move towards
         Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
   
@@ -51,7 +50,7 @@ public class CastingState : State
 
             // Get script on prefab to initialize propreties
             ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range, ability, playerController.projectiles);
+            projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, true);
           
             playerController.canCast = false;
         }

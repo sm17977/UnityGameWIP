@@ -20,6 +20,10 @@ public class AI_IdleState : State
     public override void Execute() {
 
         if(IsPlayerInQRange(agent.LuxQAbility.range)){
+            agent.projectileTargetPosition = player.transform.position;
+            agent.SimulateQ();
+        }
+        else{
             
         }
 

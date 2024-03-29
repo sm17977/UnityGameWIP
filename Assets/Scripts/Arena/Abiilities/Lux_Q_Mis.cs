@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -34,7 +33,6 @@ public class Lux_Q_Mis : ProjectileAbility
     private GameObject target;
     private bool hasHit = false;
 
-
     void Start(){
 
         // Store projectile start position in order to calculate remaining distance
@@ -68,6 +66,10 @@ public class Lux_Q_Mis : ProjectileAbility
             }
             StartCoroutine(DelayBeforeDestroy(1f));
         }
+
+        if(hasHit){
+            abilityData.buff.ApplyBuff();
+        }
     }
 
     IEnumerator DelayBeforeDestroy(float delayInSeconds){
@@ -75,16 +77,16 @@ public class Lux_Q_Mis : ProjectileAbility
         canBeDestroyed = true;
     }
 
-
     // Detect projectile hitbox collision with enemy 
     void OnCollisionEnter(Collision collision){
-        if(collision.gameObject.name == "Lux_AI" && !hasHit){
+        if(((isCastFromPlayer && collision.gameObject.name == "Lux_AI") || (!isCastFromPlayer && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
             target = collision.gameObject;
             SpawnHitVfx(target);
             hasHit = true;
         }
     }
 
+    // Intantiate the hit vfx prefab
     void SpawnHitVfx(GameObject target){
         // Spawn the prefab 
         newQHit = Instantiate(qHit, target.transform.position, Quaternion.identity);

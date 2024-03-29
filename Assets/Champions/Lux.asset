@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c85ecee802709e14c89620d7f21708d3, type: 3}
+  m_Name: Lux
+  m_EditorClassIdentifier: 
+  championName: 
+  movementSpeed: 2.5
+  turnSpeed: 15
+  windupTime: 15.625
+  stoppingDistance: 0.1
+  AA_range: 0.6
+  AA_missileSpeed: 8
+  AA_attackSpeed: 0.625
+  AA_direction: {x: 0, y: 0, z: 0}
+  Q_range: 8
+  Q_direction: {x: 0, y: 0, z: 0}
+  Q_speed: 6
+  Q_cooldown: 4
+  W_range: 0
+  W_direction: {x: 0, y: 0, z: 0}
+  W_speed: 0
+  E_range: 0
+  E_direction: {x: 0, y: 0, z: 0}
+  E_speed: 0
+  R_range: 0
+  R_direction: {x: 0, y: 0, z: 0}
+  R_speed: 0

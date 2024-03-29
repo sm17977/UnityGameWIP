@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RangeIndicator_Controller : MonoBehaviour
@@ -14,9 +12,8 @@ public class RangeIndicator_Controller : MonoBehaviour
     private Lux_Player_Controller playerController;
 
     void Start(){
-        Lux lux = new Lux();
         playerController = player.GetComponent<Lux_Player_Controller>();
-        size = lux.AA_range;
+        size = playerController.lux.AA_range;
     }
 
 

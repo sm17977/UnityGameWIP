@@ -5,6 +5,10 @@ using UnityEngine.VFX;
 
 public class Lux_AI_Controller : MonoBehaviour
 {
+
+    // Champion
+    public Champion lux;
+    
    // Flags
     public bool isRunning;
     public bool isCasting;
@@ -16,8 +20,6 @@ public class Lux_AI_Controller : MonoBehaviour
     public bool incompleteMovement = false;
     public bool inAttackRange = false;
 
-    // Lux Stats
-    public Lux lux;
 
     // Skllshot Projectile
     public List<GameObject> projectiles;
@@ -70,12 +72,15 @@ public class Lux_AI_Controller : MonoBehaviour
 
 
     // Abilities
+    public Ability LuxQAbilitySO;
+    public Ability LuxEAbilitySO;
     public Ability LuxQAbility;
     public Ability LuxEAbility;
 
 
     void Awake(){
-    
+        LuxQAbility = Object.Instantiate(LuxQAbilitySO);
+        LuxEAbility = Object.Instantiate(LuxEAbilitySO);
     }
 
     // Start is called before the first frame update
@@ -90,14 +95,13 @@ public class Lux_AI_Controller : MonoBehaviour
 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
+        ResetCooldowns();
     }
 
     // Update is called once per frame
     void Update(){
 
         hitboxPos = hitboxGameObj.transform.position;
-
-
 
         HandleInput();
 
@@ -191,5 +195,10 @@ public class Lux_AI_Controller : MonoBehaviour
 
     public float GetAttackRange(){
         return lux.AA_range;
+    }
+
+    private void ResetCooldowns(){
+        LuxQAbility.currentCooldown = 0;
+        LuxEAbility.currentCooldown = 0;
     }
 }
