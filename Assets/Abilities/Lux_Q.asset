@@ -22,7 +22,7 @@ MonoBehaviour:
     type: 3}
   animationTrigger: qAbility
   animationState: Q Ability
-  currentCooldown: 0
+  currentCooldown: 1.0705264
   maxCooldown: 3
   range: 8
   speed: 6

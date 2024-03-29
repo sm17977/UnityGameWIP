@@ -1,10 +1,5 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System;
-using Unity.VisualScripting;
-using NUnit.Framework.Internal;
-using UnityEditor.PackageManager;
+
 public class CastingState : State
 {
 
@@ -21,22 +16,19 @@ public class CastingState : State
 
     public override void Enter() {
         ability.PutOnCooldown();
-        playerController.isCasting = true;
+        playerController.isCasting = true; // This flag was used for the animator, can probs remove if triggers are working
         playerController.canCast = true;
-        //playerController.animator.SetBool("isQCast", playerController.isCasting);
         playerController.animator.SetTrigger(ability.animationTrigger);
     }
 
     public override void Execute() {
 
         // Track when animation ends
-        try{
+        if(playerController.animator.GetCurrentAnimatorClipInfo(0).Length > 0){
             castingFinished = playerController.animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == ability.animationClip.name && 
-                playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95;
+                playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95; // This is set to 0.95 because the normalized time doesn't always reach 100%
         }
-        catch(Exception e){
-            Debug.Log("Error: " + e);
-        }
+       
 
         // Get the direction the abliity should move towards
         Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
@@ -65,7 +57,6 @@ public class CastingState : State
         }
         
         if(castingFinished){
-            Debug.Log("Casting Finished!");
             // Finish any incomplete movement commands
             if(playerController.incompleteMovement){
                 playerController.TransitionToMove();
@@ -83,7 +74,5 @@ public class CastingState : State
 
     public override void Exit() {
         playerController.isCasting = false;
-        //playerController.animator.SetBool("isQCast", playerController.isCasting);
-        //playerController.animator.ResetTrigger(ability.animationTrigger);
     }
 }

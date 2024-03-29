@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Ability", menuName = "Scriptable Objects/Ability")]
@@ -22,6 +23,7 @@ public class Ability : ScriptableObject
     public string animationTrigger;
     public string animationState;
    
+ 
     [Header("Ability Stats")]
     public float currentCooldown = 0;
     public float maxCooldown;
@@ -29,6 +31,13 @@ public class Ability : ScriptableObject
     public float speed;
     public float lingeringLifetime;
 
+    public float GetProjectileLifetime(){
+        return range / speed;
+    }
+
+    public float GetTotalLifetime(){
+        return GetProjectileLifetime() + lingeringLifetime;
+    }
 
     public void PutOnCooldown(){
         Cooldown_Manager.instance.StartCooldown(this);

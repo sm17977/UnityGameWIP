@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
@@ -72,7 +71,6 @@ public class Lux_Player_Controller : MonoBehaviour
     private IdleState idleState;
     private CastingState castingState;
     public string currentState;
-
     // AI
     public GameObject Lux_AI;
     public GameObject ai_hitboxGameObj;
@@ -115,6 +113,7 @@ public class Lux_Player_Controller : MonoBehaviour
         lux = new Lux();
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
+        ResetCooldowns();
     }
 
     // Update is called once per frame
@@ -134,7 +133,7 @@ public class Lux_Player_Controller : MonoBehaviour
             }
         }
   
-        //HandleProjectiles();
+        HandleProjectiles();
         HandleVFX();
     }
 
@@ -398,5 +397,10 @@ public class Lux_Player_Controller : MonoBehaviour
 
     public float GetAttackRange(){
         return lux.AA_range;
+    }
+
+    private void ResetCooldowns(){
+        LuxQAbility.currentCooldown = 0;
+        LuxEAbility.currentCooldown = 0;
     }
 }

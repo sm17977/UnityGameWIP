@@ -1182,6 +1182,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2083874468 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8661120606669196666, guid: 14266636b25d5da4baa680f02c9f0178,
+    type: 3}
+  m_PrefabInstance: {fileID: 4289307159994159378}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2124605745
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 2124605747}
+  player: {fileID: 4832082249383183726}
 --- !u!1 &919132147716187170 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5498214066713641879, guid: 6082634baff4ac7478e65f8a103dd813,
@@ -1896,6 +1903,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4289307159994159378}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4832082249383183726 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1871884202897402574, guid: 14266636b25d5da4baa680f02c9f0178,
+    type: 3}
+  m_PrefabInstance: {fileID: 4289307159994159378}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2083874468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07052d477ced37b4a99245f4238af22b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6388855424279157340
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1959,6 +1978,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lux_AI
       objectReference: {fileID: 0}
+    - target: {fileID: 7040443157270715295, guid: 6082634baff4ac7478e65f8a103dd813,
+        type: 3}
+      propertyPath: Lux_Player
+      value: 
+      objectReference: {fileID: 2083874468}
+    - target: {fileID: 7040443157270715295, guid: 6082634baff4ac7478e65f8a103dd813,
+        type: 3}
+      propertyPath: LuxEAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84,
+        type: 2}
+    - target: {fileID: 7040443157270715295, guid: 6082634baff4ac7478e65f8a103dd813,
+        type: 3}
+      propertyPath: LuxQAbility
+      value: 
+      objectReference: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

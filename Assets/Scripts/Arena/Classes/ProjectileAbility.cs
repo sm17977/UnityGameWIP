@@ -23,7 +23,7 @@ public class ProjectileAbility : MonoBehaviour
         projectileDirection = direction;
         projectileSpeed = speed;
         projectileRange = range;
-        projectileLifetime = projectileRange / projectileSpeed;
+        projectileLifetime = ability.GetProjectileLifetime();
 
         abilityData = ability;
 

@@ -144,8 +144,10 @@ MonoBehaviour:
   projectileDirection: {x: 0, y: 0, z: 0}
   projectileSpeed: 0
   projectileRange: 0
+  projectileLifetime: 0
   remainingDistance: Infinity
   canBeDestroyed: 0
+  abilityData: {fileID: 0}
 --- !u!1 &4100793993242763836
 GameObject:
   m_ObjectHideFlags: 0

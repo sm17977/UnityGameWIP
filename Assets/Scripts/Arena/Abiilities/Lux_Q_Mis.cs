@@ -25,7 +25,6 @@ public class Lux_Q_Mis : ProjectileAbility
     private GameObject qTrails;
     private VisualEffect qTrailsVfx;
 
-
     void Start(){
 
         // Store projectile start position in order to calculate remaining distance
@@ -38,6 +37,8 @@ public class Lux_Q_Mis : ProjectileAbility
         
         // Get Orb VFX
         orbVfx = GetComponent<VisualEffect>();
+        // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
+        orbVfx.SetFloat("lifetime", projectileLifetime);
 
         // Get Trails VFX
         qTrails = gameObject.transform.Find("Q_Trails").gameObject;
@@ -46,9 +47,6 @@ public class Lux_Q_Mis : ProjectileAbility
     
     void Update(){
      
-        // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
-        orbVfx.SetFloat("lifetime", projectileLifetime);
-
         // Move object
         MoveProjectile(transform, initialPosition);
 
@@ -58,7 +56,7 @@ public class Lux_Q_Mis : ProjectileAbility
             if(qTrailsVfx != null && qTrailsVfx.GetBool("setActive")){
                 qTrailsVfx.SetBool("setActive", false);
             }
-            StartCoroutine(DelayBeforeDestroy(3f));
+            StartCoroutine(DelayBeforeDestroy(5f));
         }
     }
 

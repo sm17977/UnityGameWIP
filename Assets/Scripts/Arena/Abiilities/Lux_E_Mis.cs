@@ -96,9 +96,8 @@ public class Lux_E_Mis : ProjectileAbility
             if(currentLingeringLifetime <= -0.5){
                 // Turn off shockwave distortion
                 shockwaveQuad.SetActive(false);
+                canBeDestroyed = true;
             }
-
-
         }
     }
 }
