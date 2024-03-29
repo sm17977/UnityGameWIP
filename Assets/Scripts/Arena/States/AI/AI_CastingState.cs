@@ -51,7 +51,7 @@ public class AI_CastingState : State
 
             // Get script on prefab to initialize propreties
             ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range, ability);
+            projectileScript?.InitProjectileProperties(direction, ability.speed, ability.range, ability, agent.projectiles);
           
             agent.canCast = false;
         }

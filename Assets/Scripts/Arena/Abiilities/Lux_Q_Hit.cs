@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Lux_Q_Hit : MonoBehaviour
+public class Lux_Q_Hit : ProjectileAbility
 {
-
-    private Lux_Player_Controller playerController;
-    private GameObject target;
-    public GameObject hitEffectPrefab;
-    private GameObject hitEffect;
-    private bool hasHit = false;
-
+    public GameObject target;
+ 
     // Rings radius
     private float ringRadius1 = 0.4f;
     private float ringRadius2 = 0.45f;
@@ -50,9 +45,8 @@ public class Lux_Q_Hit : MonoBehaviour
 
     // Start is called before the first frame update
     void Start(){
-        GameObject player = GameObject.Find("Lux_Player");
-        playerController = player.GetComponent<Lux_Player_Controller>();
         spawnSystemNames = new List<string>();
+        InitVfx(target);
     }
 
     void Update(){
@@ -70,15 +64,7 @@ public class Lux_Q_Hit : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter(Collision collision){
-        if(collision.gameObject.name == "Lux_AI" && !hasHit){
-            target = collision.gameObject;
-            SpawnHit(target);
-            hasHit = true;
-        }
-    }
-
-    void SpawnHit(GameObject target){
+    void InitVfx(GameObject target){
 
         // Calculate which y position to spawn the 2 rings and rays
         enemyCollider = target.GetComponent<CapsuleCollider>();
@@ -87,12 +73,9 @@ public class Lux_Q_Hit : MonoBehaviour
         topHeight = bottomHeight + enemyHeight;
         middleHeight = topHeight / 2;
 
-        // Spawn the prefab 
-        hitEffect = Instantiate(hitEffectPrefab, target.transform.position, Quaternion.identity);
-
         // Retrieve the rings gameobjects
-        topRing = hitEffect.transform.GetChild(0).gameObject;
-        bottomRing = hitEffect.transform.GetChild(1).gameObject;
+        topRing = transform.GetChild(0).gameObject;
+        bottomRing = transform.GetChild(1).gameObject;
 
         // Set the y position of the rings gameobject
         topRing.transform.position = new Vector3(topRing.transform.position.x, topHeight, topRing.transform.position.z);
@@ -114,7 +97,7 @@ public class Lux_Q_Hit : MonoBehaviour
         topRingVfx.GetSpawnSystemNames(spawnSystemNames);
 
         // Retrieve rays gameobject
-        rays = hitEffect.transform.GetChild(2).gameObject;
+        rays = transform.GetChild(2).gameObject;
 
         // Set the y position of the rays' gameobject
         rays.transform.position = new Vector3(rays.transform.position.x,  middleHeight, rays.transform.position.z);
@@ -200,9 +183,7 @@ public class Lux_Q_Hit : MonoBehaviour
             }
             else{
                 startFadeOut = false;
-                Lux_Q_Mis missile = transform.parent.gameObject.GetComponent<Lux_Q_Mis>();
-                missile.canBeDestroyed = true;
-                Destroy(hitEffect);
+                canBeDestroyed = true;
             }
         }
     }

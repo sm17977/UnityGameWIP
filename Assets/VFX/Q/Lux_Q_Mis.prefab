@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4910429161867129436}
+  - component: {fileID: 168662718014812030}
   - component: {fileID: 5002599691775342733}
   - component: {fileID: -2970310292650251287}
-  - component: {fileID: 1436939814578764564}
+  - component: {fileID: -8239888669240628202}
   m_Layer: 0
   m_Name: Lux_Q_Mis
   m_TagString: Untagged
@@ -36,6 +37,33 @@ Transform:
   - {fileID: 7156764183380914907}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &168662718014812030
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894600549252798281}
+  serializedVersion: 4
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!2083052967 &5002599691775342733
 VisualEffect:
   m_ObjectHideFlags: 0
@@ -129,7 +157,7 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1436939814578764564
+--- !u!114 &-8239888669240628202
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -147,7 +175,8 @@ MonoBehaviour:
   projectileLifetime: 0
   remainingDistance: Infinity
   canBeDestroyed: 0
-  abilityData: {fileID: 0}
+  abilityData: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  qHit: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483, type: 3}
 --- !u!1 &4100793993242763836
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +188,6 @@ GameObject:
   - component: {fileID: 7156764183380914907}
   - component: {fileID: 3759576000633273679}
   - component: {fileID: 2470604313769240203}
-  - component: {fileID: 3526374397985128003}
   m_Layer: 0
   m_Name: Hitbox
   m_TagString: Untagged
@@ -211,20 +239,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3526374397985128003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4100793993242763836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitEffectPrefab: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483,
-    type: 3}
 --- !u!1 &5319015081871029421
 GameObject:
   m_ObjectHideFlags: 0

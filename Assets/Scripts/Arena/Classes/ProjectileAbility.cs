@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class ProjectileAbility : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ProjectileAbility : MonoBehaviour
     public float remainingDistance = Mathf.Infinity;
     public bool canBeDestroyed = false;  
     public Ability abilityData;
+    public List<GameObject> projectiles;
 
    /// <summary>
    /// Set the direction, speed and range of a projectile. Pass in this specific ability's data
@@ -18,12 +20,13 @@ public class ProjectileAbility : MonoBehaviour
    /// <param name="direction"></param>
    /// <param name="speed"></param>
    /// <param name="range"></param>
-    public void InitProjectileProperties(Vector3 direction, float speed, float range, Ability ability){
+    public void InitProjectileProperties(Vector3 direction, float speed, float range, Ability ability, List<GameObject> playerProjectiles){
 
         projectileDirection = direction;
         projectileSpeed = speed;
         projectileRange = range;
         projectileLifetime = ability.GetProjectileLifetime();
+        projectiles = playerProjectiles;
 
         abilityData = ability;
 

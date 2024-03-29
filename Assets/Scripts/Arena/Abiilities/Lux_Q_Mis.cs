@@ -25,6 +25,16 @@ public class Lux_Q_Mis : ProjectileAbility
     private GameObject qTrails;
     private VisualEffect qTrailsVfx;
 
+    // Hit VFX
+    public GameObject qHit;
+    public Lux_Q_Hit hitScript;
+    private GameObject newQHit;
+
+    // Collision
+    private GameObject target;
+    private bool hasHit = false;
+
+
     void Start(){
 
         // Store projectile start position in order to calculate remaining distance
@@ -56,12 +66,30 @@ public class Lux_Q_Mis : ProjectileAbility
             if(qTrailsVfx != null && qTrailsVfx.GetBool("setActive")){
                 qTrailsVfx.SetBool("setActive", false);
             }
-            StartCoroutine(DelayBeforeDestroy(5f));
+            StartCoroutine(DelayBeforeDestroy(1f));
         }
     }
 
     IEnumerator DelayBeforeDestroy(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds);
         canBeDestroyed = true;
+    }
+
+
+    // Detect projectile hitbox collision with enemy 
+    void OnCollisionEnter(Collision collision){
+        if(collision.gameObject.name == "Lux_AI" && !hasHit){
+            target = collision.gameObject;
+            SpawnHitVfx(target);
+            hasHit = true;
+        }
+    }
+
+    void SpawnHitVfx(GameObject target){
+        // Spawn the prefab 
+        newQHit = Instantiate(qHit, target.transform.position, Quaternion.identity);
+        projectiles.Add(newQHit);
+        hitScript = newQHit.GetComponent<Lux_Q_Hit>();
+        hitScript.target = target;
     }
 }
