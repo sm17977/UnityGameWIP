@@ -25,6 +25,10 @@ public class MovingState : State
 
     public override void Execute() {
 
+        if(!playerController.canMove){
+            playerController.TransitionToIdle();
+        }
+
         // Calculate the direction the player wants to move in
         Vector3 direction = (targetLocation - player.transform.position).normalized;
         direction.y = 0f;
@@ -32,7 +36,7 @@ public class MovingState : State
         // Move player towards last mouse click 
         player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
         playerController.RotateTowardsTarget(direction);
-
+        
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
             playerController.incompleteMovement = false;

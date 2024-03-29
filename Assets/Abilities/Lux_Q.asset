@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
+  champion: {fileID: 0}
   currentCooldown: 0
-  maxCooldown: 3
+  maxCooldown: 8
   range: 8
   speed: 6
   lingeringLifetime: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lux
   m_EditorClassIdentifier: 
   championName: 
-  movementSpeed: 2.5
+  movementSpeed: 3
   turnSpeed: 15
   windupTime: 15.625
   stoppingDistance: 0.1

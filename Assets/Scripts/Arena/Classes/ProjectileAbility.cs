@@ -11,9 +11,9 @@ public class ProjectileAbility : MonoBehaviour
     public float projectileLifetime;
     public float remainingDistance = Mathf.Infinity;
     public bool canBeDestroyed = false;  
-    public Ability abilityData;
+    public Ability ability;
     public List<GameObject> projectiles;
-    public bool isCastFromPlayer;
+    public PlayerType playerType;
 
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
@@ -21,17 +21,17 @@ public class ProjectileAbility : MonoBehaviour
    /// <param name="direction"></param>
    /// <param name="ability"></param>
    /// <param name="playerProjectiles"></param>
-   /// <param name="castFromPlayer"></param>
-    public void InitProjectileProperties(Vector3 direction, Ability ability, List<GameObject> playerProjectiles, bool castFromPlayer){
+   /// <param name="playerType"></param>
+    public void InitProjectileProperties(Vector3 direction, Ability abilityData, List<GameObject> projectileList, PlayerType type){
 
         projectileDirection = direction;
-        projectileSpeed = ability.speed;
-        projectileRange = ability.range;
-        projectileLifetime = ability.GetProjectileLifetime();
-        projectiles = playerProjectiles;
-
-        abilityData = ability;
-        isCastFromPlayer = castFromPlayer;
+        projectileSpeed = abilityData.speed;
+        projectileRange = abilityData.range;
+        projectileLifetime = abilityData.GetProjectileLifetime();
+        
+        projectiles = projectileList;
+        ability = abilityData;
+        playerType = type;
 
     }
 

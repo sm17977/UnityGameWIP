@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
-public class Lux_Player_Controller : MonoBehaviour
+public class Lux_Player_Controller : Lux_Controller
 {
-
-    // Champion
-    public Champion lux;
 
     // Flags
     public bool isRunning;
@@ -71,6 +68,7 @@ public class Lux_Player_Controller : MonoBehaviour
     private IdleState idleState;
     private CastingState castingState;
     public string currentState;
+
     // AI
     public GameObject Lux_AI;
     public GameObject ai_hitboxGameObj;
@@ -86,8 +84,6 @@ public class Lux_Player_Controller : MonoBehaviour
     public Ability LuxEAbilitySO;
     private Ability LuxQAbility;
     private Ability LuxEAbility;
-
-
 
     void Awake(){
         // Initiate Input Actions/Events
@@ -105,6 +101,9 @@ public class Lux_Player_Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start(){
 
+        buffManager = new Buff_Manager(this);
+        playerType = PlayerType.Player;
+     
         InitStates();
         stateManager.ChangeState(idleState);
         isWindingUp = false;
@@ -128,6 +127,8 @@ public class Lux_Player_Controller : MonoBehaviour
         HandleInput();
 
         stateManager.Update();
+
+        buffManager.Update();
 
         currentState = stateManager.GetCurrentState();
 
@@ -186,8 +187,10 @@ public class Lux_Player_Controller : MonoBehaviour
                     case InputCommandType.Movement:
 
                         ShowMovementIndicator(lastClickPosition);
-                        movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
-                        stateManager.ChangeState(movingState);
+                        if(canMove){
+                            movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);
+                            stateManager.ChangeState(movingState);
+                        }
                         
                         inputQueue.Dequeue();
                         break;

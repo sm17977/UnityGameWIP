@@ -7,6 +7,7 @@ public class Ability : ScriptableObject
     [Header("Ability Info")]
     public string abilityName;
     public string abilityDescription;
+    public Champion champion;
 
     [Header("Ability Stats")]
     public float currentCooldown = 0;

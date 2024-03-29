@@ -29,8 +29,8 @@ public class Lux_E_Mis : ProjectileAbility
    
     void Start(){
 
-        totalLifetime = projectileLifetime + abilityData.lingeringLifetime;
-        currentLingeringLifetime = abilityData.lingeringLifetime;
+        totalLifetime = projectileLifetime + ability.lingeringLifetime;
+        currentLingeringLifetime = ability.lingeringLifetime;
 
         // Store projectile start position in order to calculate remaining distance
         initialPosition = transform.position;
@@ -50,11 +50,11 @@ public class Lux_E_Mis : ProjectileAbility
 
         ring = transform.GetChild(3).gameObject;
         ringVfx = ring.GetComponent<VisualEffect>();
-        ringVfx.SetFloat("lifetime", abilityData.lingeringLifetime);
+        ringVfx.SetFloat("lifetime", ability.lingeringLifetime);
 
         particlesIn = transform.GetChild(4).gameObject;
         particlesInVfx = particlesIn.GetComponent<VisualEffect>();
-        particlesInVfx.SetFloat("lifetime", abilityData.lingeringLifetime);
+        particlesInVfx.SetFloat("lifetime", ability.lingeringLifetime);
          
         explosion = transform.GetChild(5).gameObject;
         explosionVfx = explosion.GetComponent<VisualEffect>();

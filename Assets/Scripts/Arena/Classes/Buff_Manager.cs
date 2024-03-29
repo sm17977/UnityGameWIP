@@ -2,21 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Buff_Manager : MonoBehaviour
+public class Buff_Manager
 {
-    public static Buff_Manager instance;
-    private List<Buff> appliedBuffs = new List<Buff>();
 
-    void Awake(){
-        if(instance == null){
-            instance = this;
-        }
-        else if(instance != this){
-            Destroy(this);
-        }
+    private List<Buff> appliedBuffs;
+    public Lux_Controller target;
+
+    public Buff_Manager(Lux_Controller controller){
+        target = controller;
+        appliedBuffs = new List<Buff>();
     }
 
-    void Update(){
+    public void Update(){
 
         foreach(Buff buff in appliedBuffs.ToList()){
 
@@ -24,11 +21,11 @@ public class Buff_Manager : MonoBehaviour
 
             if(buff.currentTimer <= 0){
                 buff.currentTimer = 0;
+                buff.Clear(target);
                 appliedBuffs.Remove(buff);
             }
         }
     }
-
     public void AddBuff(Buff buff){
 
         if(!appliedBuffs.Contains(buff)){

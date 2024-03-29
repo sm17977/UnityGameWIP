@@ -43,14 +43,14 @@ public class CastingState : State
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
             // Create projectile
-            GameObject newProjectile = Lux_Player_Controller.Instantiate(ability.missile, abilitySpawnPos,  Quaternion.LookRotation(direction, Vector3.up));
+            GameObject newProjectile = Lux_Controller.Instantiate(ability.missile, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
 
             // Store projectile in list
             playerController.projectiles.Add(newProjectile);
 
             // Get script on prefab to initialize propreties
             ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, true);
+            projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, playerController.playerType);
           
             playerController.canCast = false;
         }

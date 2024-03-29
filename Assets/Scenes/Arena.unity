@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2284.4163, g: 2514.8245, b: 3572.438, a: 1}
+  m_IndirectSpecularColor: {r: 2283.5276, g: 2514.557, b: 3572.52, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1796,6 +1796,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lux_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 8661120606669196666, guid: 14266636b25d5da4baa680f02c9f0178,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3583631458307876207, guid: 14266636b25d5da4baa680f02c9f0178, type: 3}
     m_RemovedGameObjects: []
@@ -1926,6 +1931,11 @@ PrefabInstance:
       propertyPath: Lux_Player
       value: 
       objectReference: {fileID: 2083874468}
+    - target: {fileID: 7040443157270715295, guid: 6082634baff4ac7478e65f8a103dd813,
+        type: 3}
+      propertyPath: playerType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7040443157270715295, guid: 6082634baff4ac7478e65f8a103dd813,
         type: 3}
       propertyPath: LuxEAbility

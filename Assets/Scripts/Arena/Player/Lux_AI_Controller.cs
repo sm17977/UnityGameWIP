@@ -3,11 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.VFX;
 
-public class Lux_AI_Controller : MonoBehaviour
+public class Lux_AI_Controller : Lux_Controller
 {
-
-    // Champion
-    public Champion lux;
     
    // Flags
     public bool isRunning;
@@ -77,7 +74,7 @@ public class Lux_AI_Controller : MonoBehaviour
     public Ability LuxQAbility;
     public Ability LuxEAbility;
 
-
+ 
     void Awake(){
         LuxQAbility = Object.Instantiate(LuxQAbilitySO);
         LuxEAbility = Object.Instantiate(LuxEAbilitySO);
@@ -86,6 +83,9 @@ public class Lux_AI_Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start(){
 
+        buffManager = new Buff_Manager(this);
+        playerType = PlayerType.Bot;
+       
         InitStates();
         stateManager.ChangeState(idleState);
         isWindingUp = false;
@@ -106,6 +106,8 @@ public class Lux_AI_Controller : MonoBehaviour
         HandleInput();
 
         stateManager.Update();
+
+        buffManager.Update();
 
         currentState = stateManager.GetCurrentState();
   

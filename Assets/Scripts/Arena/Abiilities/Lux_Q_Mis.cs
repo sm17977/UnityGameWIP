@@ -30,7 +30,7 @@ public class Lux_Q_Mis : ProjectileAbility
     private GameObject newQHit;
 
     // Collision
-    private GameObject target;
+    private Lux_Controller target;
     private bool hasHit = false;
 
     void Start(){
@@ -68,7 +68,8 @@ public class Lux_Q_Mis : ProjectileAbility
         }
 
         if(hasHit){
-            abilityData.buff.ApplyBuff();
+            ability.buff.Apply(target);
+            hasHit = false;
         }
     }
 
@@ -79,9 +80,9 @@ public class Lux_Q_Mis : ProjectileAbility
 
     // Detect projectile hitbox collision with enemy 
     void OnCollisionEnter(Collision collision){
-        if(((isCastFromPlayer && collision.gameObject.name == "Lux_AI") || (!isCastFromPlayer && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
-            target = collision.gameObject;
-            SpawnHitVfx(target);
+        if(((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") || (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
+            target = collision.gameObject.GetComponent<Lux_Controller>();
+            SpawnHitVfx(collision.gameObject);
             hasHit = true;
         }
     }
