@@ -66,11 +66,6 @@ public class Lux_Q_Mis : ProjectileAbility
             }
             StartCoroutine(DelayBeforeDestroy(1f));
         }
-
-        if(hasHit){
-            ability.buff.Apply(target);
-            hasHit = false;
-        }
     }
 
     IEnumerator DelayBeforeDestroy(float delayInSeconds){
@@ -83,6 +78,7 @@ public class Lux_Q_Mis : ProjectileAbility
         if(((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") || (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
             target = collision.gameObject.GetComponent<Lux_Controller>();
             SpawnHitVfx(collision.gameObject);
+            ability.buff.Apply(target);
             hasHit = true;
         }
     }

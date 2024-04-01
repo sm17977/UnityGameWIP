@@ -5,7 +5,7 @@ public class RangeIndicator_Controller : MonoBehaviour
     public Material AARangeIndicatorMaterial;
     public GameObject player;
     public float size;
-    public float borderWidth;
+    private float borderWidth = 0.01f;
 
     // Keep radius 0.5 so the range indicator circle fills the quad
     private float radius = 0.5f;

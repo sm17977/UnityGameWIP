@@ -85,6 +85,7 @@ public class Lux_Player_Controller : Lux_Controller
     private Ability LuxQAbility;
     private Ability LuxEAbility;
 
+
     void Awake(){
         // Initiate Input Actions/Events
         controls = new Controls();

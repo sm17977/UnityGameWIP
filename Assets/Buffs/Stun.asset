@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Stun
   m_EditorClassIdentifier: 
   name: Stun
-  duration: 3.5
+  duration: 2
   currentTimer: 0

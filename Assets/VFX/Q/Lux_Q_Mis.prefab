@@ -175,8 +175,11 @@ MonoBehaviour:
   projectileLifetime: 0
   remainingDistance: Infinity
   canBeDestroyed: 0
-  abilityData: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  projectiles: []
+  playerType: 0
   qHit: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483, type: 3}
+  hitScript: {fileID: 0}
 --- !u!1 &4100793993242763836
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,7 +240,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5319015081871029421
 GameObject:

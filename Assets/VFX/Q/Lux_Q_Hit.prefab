@@ -48,7 +48,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitEffectPrefab: {fileID: 0}
+  projectileDirection: {x: 0, y: 0, z: 0}
+  projectileSpeed: 0
+  projectileRange: 0
+  projectileLifetime: 0
+  remainingDistance: Infinity
+  canBeDestroyed: 0
+  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  projectiles: []
+  playerType: 0
+  target: {fileID: 0}
+  totalDuration: 0
 --- !u!1 &1784501952716417434
 GameObject:
   m_ObjectHideFlags: 0

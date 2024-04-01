@@ -99,7 +99,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20df42ad056c44743a755bb40cf34585, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AARangeIndicatorMaterial: {fileID: 0}
-  player: {fileID: 8661120606669196666, guid: 14266636b25d5da4baa680f02c9f0178, type: 3}
+  AARangeIndicatorMaterial: {fileID: 2100000, guid: e09292d2390ba874495c2b480b2ab79c,
+    type: 2}
+  player: {fileID: 206841937268976223, guid: 0a143c7a372e9b341b63855efd0a5bf8, type: 3}
   size: 0
   borderWidth: 0

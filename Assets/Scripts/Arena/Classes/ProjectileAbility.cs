@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class ProjectileAbility : MonoBehaviour
 {
-
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
