@@ -14,6 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
+  champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  key: E
+  currentCooldown: 0
+  maxCooldown: 8
+  range: 5
+  speed: 5.8
+  lingeringLifetime: 4
+  buff: {fileID: 0}
   missile: {fileID: 7768291782423510599, guid: ba05f37d1d1d21549b0e29a5bd159bbb, type: 3}
   spawnHeight: 0.7
   spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
@@ -22,8 +30,3 @@ MonoBehaviour:
     type: 3}
   animationTrigger: eAbility
   animationState: E Ability
-  currentCooldown: 0
-  maxCooldown: 1
-  range: 5
-  speed: 5.8
-  lingeringLifetime: 4

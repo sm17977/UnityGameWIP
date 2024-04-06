@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Lux
   m_EditorClassIdentifier: 
   championName: Lux
-  movementSpeed: 3
-  turnSpeed: 15
+  movementSpeed: 3.8
+  turnSpeed: 18
   windupTime: 15.625
   stoppingDistance: 0.1
   AA_range: 0.6
   AA_missileSpeed: 8
   AA_attackSpeed: 0.625
-  AA_direction: {x: -0.8779177, y: -0.00000021742507, z: 0.47881153}
+  AA_direction: {x: -0.8854571, y: 0.0000004190906, z: 0.4647212}
   Q_range: 8
   Q_direction: {x: 0, y: 0, z: 0}
   Q_speed: 6

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 
 public class UI_Controller : MonoBehaviour
 {
@@ -24,23 +25,26 @@ public class UI_Controller : MonoBehaviour
 
         controls = new Controls();
         controls.UI.Enable();
-        controls.UI.Q.performed += _ => ActivateAbilityAnimation("Q");
-        controls.UI.W.performed += _ => ActivateAbilityAnimation("W");
-        controls.UI.E.performed += _ => ActivateAbilityAnimation("E");
-        controls.UI.R.performed += _ => ActivateAbilityAnimation("R");
+        controls.UI.Q.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
+        controls.UI.W.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
+        controls.UI.E.performed += _ => ActivateAbilityAnimation(player.LuxEAbility);
+        controls.UI.R.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
        
     }
 
-    void ActivateAbilityAnimation(string abilityKey){
+    void ActivateAbilityAnimation(Ability ability){
 
-        string overlayElementName = abilityKey.ToLower() + "-overlay";
+        if(ability.OnCooldown()) return;
+
+        string overlayElementName = ability.key.ToLower() + "-overlay";
         abilityBox = uiDocument.rootVisualElement.Q<VisualElement>(overlayElementName);
         
         if (abilityBox != null){
             abilityBox.style.visibility = Visibility.Visible;
             if(!abilityBox.ClassListContains("bar-transition")){
                 abilityBox.AddToClassList("bar-transition");
-                StartCoroutine(WaitForTransition(3f, abilityBox));
+                abilityBox.style.transitionDuration =  new List<TimeValue> {ability.maxCooldown};
+                StartCoroutine(WaitForTransition(ability.maxCooldown, abilityBox));
             }  
         }
     }
@@ -55,11 +59,12 @@ public class UI_Controller : MonoBehaviour
 
     }
 
-     IEnumerator WaitForTransition(float delayInSeconds, VisualElement box){
+    IEnumerator WaitForTransition(float delayInSeconds, VisualElement box){
         yield return new WaitForSeconds(delayInSeconds); 
+        abilityBox.style.transitionDuration =  new List<TimeValue> {0};
         box.style.visibility = Visibility.Hidden;
         box.RemoveFromClassList("bar-transition");
-     }
+    }
   
 }
 

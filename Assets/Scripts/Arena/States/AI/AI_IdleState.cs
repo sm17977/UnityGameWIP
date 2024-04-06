@@ -14,7 +14,7 @@ public class AI_IdleState : State
 
 
     public override void Enter() {
-
+        
     }
 
     public override void Execute() {

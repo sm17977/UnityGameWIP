@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: 
   abilityDescription: 
-  champion: {fileID: 0}
+  champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  key: Q
   currentCooldown: 0
-  maxCooldown: 8
-  range: 8
+  maxCooldown: 4
+  range: 30
   speed: 6
   lingeringLifetime: 0
   buff: {fileID: 11400000, guid: e047f18e11ea22b44a0d1c4f8cc525c8, type: 2}

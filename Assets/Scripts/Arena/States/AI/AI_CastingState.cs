@@ -12,6 +12,7 @@ public class AI_CastingState : State
         agent = controller;
         player = gameObject;
         this.ability = ability;
+        ability.maxCooldown = Random.Range(1, 8);
     }
 
     public override void Enter() {

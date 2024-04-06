@@ -560,12 +560,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &546559309 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 403359567151355459, guid: 6bfab754a437a5e448e4f16490c68384,
-    type: 3}
-  m_PrefabInstance: {fileID: 6705199109984268380}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &776954375
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,11 +818,11 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: -20
-  far clip plane: 30
+  near clip plane: -9.6
+  far clip plane: 25.27
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1014,6 +1008,18 @@ MonoBehaviour:
   heightOffset: 0
   depthOffset: 0
   cam: {fileID: 1823688466}
+--- !u!1 &1946216458 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1108951634745852663, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3618542272877358491}
+  m_PrefabAsset: {fileID: 0}
+--- !u!135 &1946216460 stripped
+SphereCollider:
+  m_CorrespondingSourceObject: {fileID: 4061616120029314635, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+    type: 3}
+  m_PrefabInstance: {fileID: 3618542272877358491}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
@@ -1166,6 +1172,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lux_Player
       objectReference: {fileID: 0}
+    - target: {fileID: 206841937268976223, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1732250947714356030, guid: 0a143c7a372e9b341b63855efd0a5bf8,
         type: 3}
       propertyPath: Lux_AI
@@ -1180,12 +1191,12 @@ PrefabInstance:
         type: 3}
       propertyPath: ai_hitboxGameObj
       value: 
-      objectReference: {fileID: 546559309}
+      objectReference: {fileID: 1946216458}
     - target: {fileID: 1732250947714356030, guid: 0a143c7a372e9b341b63855efd0a5bf8,
         type: 3}
       propertyPath: ai_hitboxCollider
       value: 
-      objectReference: {fileID: 4812752054820952853}
+      objectReference: {fileID: 1946216460}
     - target: {fileID: 7819001837808545408, guid: 0a143c7a372e9b341b63855efd0a5bf8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1241,12 +1252,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0a143c7a372e9b341b63855efd0a5bf8, type: 3}
---- !u!135 &4812752054820952853 stripped
-SphereCollider:
-  m_CorrespondingSourceObject: {fileID: 614474663803806565, guid: 6bfab754a437a5e448e4f16490c68384,
-    type: 3}
-  m_PrefabInstance: {fileID: 6705199109984268380}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4878758971192155240 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 206841937268976223, guid: 0a143c7a372e9b341b63855efd0a5bf8,
@@ -1279,7 +1284,7 @@ PrefabInstance:
     - target: {fileID: 7505526489313825690, guid: 6bfab754a437a5e448e4f16490c68384,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.344875
+      value: 20.32
       objectReference: {fileID: 0}
     - target: {fileID: 7505526489313825690, guid: 6bfab754a437a5e448e4f16490c68384,
         type: 3}
@@ -1320,6 +1325,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Lux_AI
+      objectReference: {fileID: 0}
+    - target: {fileID: 8614434341074625969, guid: 6bfab754a437a5e448e4f16490c68384,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
