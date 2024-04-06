@@ -4,44 +4,12 @@ A LoL like mini-game to practice dodging skilshots and abilities, intended as an
 
 ## Tasks currently in progress
 
-Player Controller Script
-- State Machine         ✔️
-- Animations            ✔️
-- Attacks
+- UI
+  - Ability CDs
+  - Healthbar
+  - Buf/Debuffs
 
-#### Auto attack
-
-
-  ##### VFX
-
-    Missile           ✔️
-    Hit
-
-  ##### Logic
-
-    Cooldown          ✔️
-    Collision         ✔️
-    VFX Scripting     ✔️
-    Storage Handling  ✔️      
-
-#### Q Ability
-  
-  VFX
-  
-    Missile           ✔️
-    Hit               ✔️
-    
-  Logic
-  
-    Cooldown
-    Collision         ✔️
-    VFX Scripting     ✔️
-    Storage Handling
-    
 ### Next tasks...
 
-- Remaining abilities, W, E, R, Summoner Spells(?)
-- AI Behaviour Tree 
-- Implement Basic UI
 - Environment Design
 
