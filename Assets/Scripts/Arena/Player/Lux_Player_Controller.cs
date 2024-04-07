@@ -465,10 +465,4 @@ public void InitSpawners()
         LuxEAbility.currentCooldown = 0;
     }
 
-    void OnDrawGizmos(){
-
-        Vector3 p = mainCamera.ViewportToWorldPoint(new Vector3(1, 1, mainCamera.farClipPlane));
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(p, 1f);
-    }
 }

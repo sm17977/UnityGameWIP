@@ -123,7 +123,7 @@ public class Lux_Q_Hit : ProjectileAbility
         // Set the y position of the rays' gameobject
         rays.transform.position = new Vector3(rays.transform.position.x,  middleHeight, rays.transform.position.z);
 
-        // Get rays VFX comppnent
+        // Get rays VFX component
         raysVfx = rays.GetComponent<VisualEffect>();
         raysVfx.SetFloat("ringRadius", baseRadius);
 

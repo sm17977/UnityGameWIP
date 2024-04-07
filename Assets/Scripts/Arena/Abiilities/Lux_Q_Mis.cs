@@ -77,7 +77,11 @@ public class Lux_Q_Mis : ProjectileAbility
     void OnCollisionEnter(Collision collision){
         if(((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") || (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
             target = collision.gameObject.GetComponent<Lux_Controller>();
-            SpawnHitVfx(collision.gameObject);
+
+            if(!target.buffManager.HasBuffApplied(ability.buff)){
+               SpawnHitVfx(collision.gameObject);
+            }
+
             ability.buff.Apply(target);
             hasHit = true;
         }

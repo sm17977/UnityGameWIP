@@ -33,4 +33,8 @@ public class Buff_Manager
             appliedBuffs.Add(buff);
         }
     }
+
+    public bool HasBuffApplied(Buff buff){
+        return appliedBuffs.Contains(buff);
+    }
 }
