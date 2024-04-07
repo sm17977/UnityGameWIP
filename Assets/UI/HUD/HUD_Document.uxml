@@ -1,6 +1,5 @@
-<ui:UXML 
-    xmlns:ui="UnityEngine.UIElements" 
-    xmlns:uie="UnityEditor.UIElements" 
+<UXML 
+    xmlns="UnityEngine.UIElements" 
     xsi="http://www.w3.org/2001/XMLSchema-instance" 
     engine="UnityEngine.UIElements" 
     editor="UnityEditor.UIElements" 
@@ -8,35 +7,38 @@
     editor-extension-mode="False">
 
     <Style src="project://database/Assets/UI/HUD/HUD_Styles.uss" />
-    <ui:VisualElement name="main-container" class="main-container">
-        <ui:VisualElement name="debug" class="debug-container">
-            <ui:Label text="Debug Info" class="debug-header"/>
-            <ui:Label text="Current State: " name="debug-current-state"/>
-        </ui:VisualElement>   
-        <ui:VisualElement name="player-center" class="player-center-container">
-            <ui:VisualElement class="skills-container">
-                <ui:VisualElement name="q-box" class="skill">
-                    <ui:VisualElement name="q-overlay" class="bar">
-                    </ui:VisualElement>
-                    <ui:Label text="Q" class="skill-label"/>
-                </ui:VisualElement>
-                <ui:VisualElement name="w-box" class="skill">   
-                    <ui:VisualElement name="w-overlay" class="bar">
-                    </ui:VisualElement> 
-                    <ui:Label text="W" class="skill-label"/>
-                </ui:VisualElement>
-                <ui:VisualElement name="e-box" class="skill">
-                    <ui:VisualElement name="e-overlay" class="bar">
-                    </ui:VisualElement>     
-                    <ui:Label text="E" class="skill-label"/>
-                </ui:VisualElement>
-                <ui:VisualElement name="r-box" class="skill">  
-                    <ui:VisualElement name="r-overlay" class="bar">
-                    </ui:VisualElement>   
-                    <ui:Label text="R" class="skill-label"/>
-                </ui:VisualElement>
-            </ui:VisualElement>
-        </ui:VisualElement>
-    </ui:VisualElement>
+    <VisualElement name="main-container" class="main-container">
+        <VisualElement name="debug" class="debug-container">
+            <Label text="Debug Info" class="header"/>
+            <Label text="Current State: " name="debug-current-state"/>
+        </VisualElement>   
+        <VisualElement name="pause-menu" class="pause-menu-container">
+            <Label text="Paused" class="header pause-menu-header"/>
+        </VisualElement>
+        <VisualElement name="player-center" class="player-center-container">
+            <VisualElement class="skills-container">
+                <VisualElement name="q-box" class="skill">
+                    <VisualElement name="q-overlay" class="bar">
+                    </VisualElement>
+                    <Label text="Q" class="skill-label"/>
+                </VisualElement>
+                <VisualElement name="w-box" class="skill">   
+                    <VisualElement name="w-overlay" class="bar">
+                    </VisualElement> 
+                    <Label text="W" class="skill-label"/>
+                </VisualElement>
+                <VisualElement name="e-box" class="skill">
+                    <VisualElement name="e-overlay" class="bar">
+                    </VisualElement>     
+                    <Label text="E" class="skill-label"/>
+                </VisualElement>
+                <VisualElement name="r-box" class="skill">  
+                    <VisualElement name="r-overlay" class="bar">
+                    </VisualElement>   
+                    <Label text="R" class="skill-label"/>
+                </VisualElement>
+            </VisualElement>
+        </VisualElement>
+    </VisualElement>
 
-</ui:UXML>
+</UXML>

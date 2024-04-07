@@ -191,6 +191,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ESC"",
+                    ""type"": ""Button"",
+                    ""id"": ""503191c2-42d1-489d-9ba0-be674b2d446c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -237,6 +246,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""R"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b22cef2-b250-4811-a16e-b5303b692dc7"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ESC"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -257,6 +277,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_UI_E = m_UI.FindAction("E", throwIfNotFound: true);
         m_UI_W = m_UI.FindAction("W", throwIfNotFound: true);
         m_UI_R = m_UI.FindAction("R", throwIfNotFound: true);
+        m_UI_ESC = m_UI.FindAction("ESC", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -414,6 +435,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_E;
     private readonly InputAction m_UI_W;
     private readonly InputAction m_UI_R;
+    private readonly InputAction m_UI_ESC;
     public struct UIActions
     {
         private @Controls m_Wrapper;
@@ -422,6 +444,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @E => m_Wrapper.m_UI_E;
         public InputAction @W => m_Wrapper.m_UI_W;
         public InputAction @R => m_Wrapper.m_UI_R;
+        public InputAction @ESC => m_Wrapper.m_UI_ESC;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -443,6 +466,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @R.started += instance.OnR;
             @R.performed += instance.OnR;
             @R.canceled += instance.OnR;
+            @ESC.started += instance.OnESC;
+            @ESC.performed += instance.OnESC;
+            @ESC.canceled += instance.OnESC;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -459,6 +485,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @R.started -= instance.OnR;
             @R.performed -= instance.OnR;
             @R.canceled -= instance.OnR;
+            @ESC.started -= instance.OnESC;
+            @ESC.performed -= instance.OnESC;
+            @ESC.canceled -= instance.OnESC;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -491,5 +520,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnE(InputAction.CallbackContext context);
         void OnW(InputAction.CallbackContext context);
         void OnR(InputAction.CallbackContext context);
+        void OnESC(InputAction.CallbackContext context);
     }
 }

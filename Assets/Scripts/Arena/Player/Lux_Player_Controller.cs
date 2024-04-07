@@ -193,9 +193,6 @@ public void InitSpawners()
     canSpawn = false;
 }
 
-
-
-
     public void OnRightClick (InputAction.CallbackContext context){
         isNewClick = true;
         InputCommandType inputType = GetClickInput();
