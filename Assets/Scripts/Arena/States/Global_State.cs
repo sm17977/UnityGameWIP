@@ -1,21 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Global_State : MonoBehaviour
 {
 
     public bool paused = false;
+    public RoundManager roundManager;
+    private List<Round> rounds = new List<Round>();
 
+    void Awake(){
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+        rounds.Add(new Round(2f, 10, 10));
+        rounds.Add(new Round(2f, 10, 10));
+        rounds.Add(new Round(2f, 10, 10));
+        rounds.Add(new Round(2f, 10, 10));
+        rounds.Add(new Round(2f, 10, 10));
+        roundManager = new RoundManager(rounds);
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void Update(){
+        if(roundManager.inProgress){
+            roundManager.Update();
+        }
     }
 
     public void Pause(){
@@ -29,6 +36,8 @@ public class Global_State : MonoBehaviour
             paused = false;
         }
     }
+
+   
 
 
 }

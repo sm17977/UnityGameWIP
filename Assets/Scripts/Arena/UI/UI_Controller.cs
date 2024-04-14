@@ -12,6 +12,8 @@ public class UI_Controller : MonoBehaviour
     // UI Elements
     private VisualElement abilityBox;
     private Label debugCurrentState;
+    private Label debugCurrentRound;
+    private Label debugCurrentRoundTimer;
     private VisualElement pauseMenu;
 
     // Input System
@@ -63,6 +65,12 @@ public class UI_Controller : MonoBehaviour
     void ShowDebugInfo(){
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-state");
         debugCurrentState.text = "Current State: " + player.currentState;
+        
+        debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round");
+        debugCurrentState.text = "Round: " + globalState.roundManager.GetCurrentRound();
+
+        debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
+        debugCurrentState.text = "Next round starts in " + globalState.roundManager.GetCurrentRoundTime();
 
     }
 

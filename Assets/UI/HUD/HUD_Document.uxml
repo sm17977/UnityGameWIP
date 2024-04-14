@@ -11,6 +11,8 @@
         <VisualElement name="debug" class="debug-container">
             <Label text="Debug Info" class="header"/>
             <Label text="Current State: " name="debug-current-state"/>
+            <Label text="Round: " name="debug-current-round"/>
+            <Label text="Next round starts in " name="debug-current-round-timer"/>
         </VisualElement>   
         <VisualElement name="pause-menu" class="pause-menu-container">
             <Label text="Paused" class="header pause-menu-header"/>

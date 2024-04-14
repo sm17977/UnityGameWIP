@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
+
 public class Lux_Player_Controller : Lux_Controller
 {
 
@@ -17,8 +18,6 @@ public class Lux_Player_Controller : Lux_Controller
     public bool incompleteMovement = false;
     private bool isNewClick;
     public bool inAttackRange = false;
-
-    public bool canSpawn = true;
 
     // Skllshot Projectile
     public List<GameObject> projectiles;
@@ -49,6 +48,8 @@ public class Lux_Player_Controller : Lux_Controller
 
     // Camera
     public Camera mainCamera;
+
+    private Plane cameraPlane;
  
     // Input Data
     private Controls controls;
@@ -144,54 +145,7 @@ public class Lux_Player_Controller : Lux_Controller
         HandleProjectiles();
         HandleVFX();
 
-        InitSpawners();
-
     }
-
-public void InitSpawners()
-{
-    float extraSpace = 8.0f; // Space outside the viewport to spawn bots
-    float terrainY = 0.5f; 
-
-    // Calculate the half-width and half-height of the camera view in world units
-    float halfHeight = mainCamera.orthographicSize;
-    float halfWidth = halfHeight * mainCamera.aspect;
-
-    // Camera direction vectors
-    Vector3 forward = mainCamera.transform.forward;
-    Vector3 right = mainCamera.transform.right;
-    Vector3 up = mainCamera.transform.up;
-
-    Vector3 centerAtTerrain = mainCamera.transform.position + (forward * (mainCamera.transform.position.y - terrainY) / Mathf.Cos(Mathf.Deg2Rad * 45));
-
-    Vector3 bottomLeft = centerAtTerrain - (right * halfWidth) - (up * halfHeight) - (right + up) * extraSpace;
-    Vector3 bottomRight = centerAtTerrain + (right * halfWidth) - (up * halfHeight) + (right - up) * extraSpace;
-    Vector3 topLeft = centerAtTerrain - (right * halfWidth) + (up * halfHeight) - (right - up) * extraSpace;
-    Vector3 topRight = centerAtTerrain + (right * halfWidth) + (up * halfHeight) + (right + up) * extraSpace;
-
-    for (int i = 0; i < 10; i++)
-    {
-        Vector3 randomPointOnEdge = Vector3.zero;
-        float randomLerp = Random.Range(0f, 1f); // To interpolate between two corners
-
-        // Choose a random point along the perimeter of the extended bounding box
-        int edge = Random.Range(0, 4);
-        if (edge == 0) // Bottom edge
-            randomPointOnEdge = Vector3.Lerp(bottomLeft, bottomRight, randomLerp);
-        else if (edge == 1) // Top edge
-            randomPointOnEdge = Vector3.Lerp(topLeft, topRight, randomLerp);
-        else if (edge == 2) // Left edge
-            randomPointOnEdge = Vector3.Lerp(bottomLeft, topLeft, randomLerp);
-        else if (edge == 3) // Right edge
-            randomPointOnEdge = Vector3.Lerp(bottomRight, topRight, randomLerp);
-
-        if(canSpawn)
-        {
-            Instantiate(Lux_AI, new Vector3(randomPointOnEdge.x, terrainY, randomPointOnEdge.z), Quaternion.identity);
-        }
-    }
-    canSpawn = false;
-}
 
     public void OnRightClick (InputAction.CallbackContext context){
         isNewClick = true;
@@ -461,5 +415,4 @@ public void InitSpawners()
         LuxQAbility.currentCooldown = 0;
         LuxEAbility.currentCooldown = 0;
     }
-
 }

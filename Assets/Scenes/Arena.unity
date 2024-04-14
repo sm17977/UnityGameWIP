@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2284.3147, g: 2515.3694, b: 3573.2817, a: 1}
+  m_IndirectSpecularColor: {r: 2282.9124, g: 2517.2405, b: 3582.145, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -560,6 +560,70 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &559113635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 559113637}
+  - component: {fileID: 559113636}
+  - component: {fileID: 559113638}
+  m_Layer: 0
+  m_Name: Global State
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &559113636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559113635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3104d4764d13a604fafe65566c85cc38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  paused: 0
+--- !u!4 &559113637
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559113635}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -136.0752, y: 4.4568863, z: 75.39107}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &559113638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559113635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d30f7a22cbcaa4db808590288c9dcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 1823688466}
+  player: {fileID: 4878758971192155240}
+  LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  LuxQAbility: {fileID: 0}
+  timer: 2
+  canSpawn: 1
 --- !u!1 &776954375
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,7 +883,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: -9.6
-  far clip plane: 25.27
+  far clip plane: 35
   field of view: 60
   orthographic: 1
   orthographic size: 5
@@ -1135,6 +1199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 2124605747}
   player: {fileID: 2485119347255720924}
+  globalStateObj: {fileID: 559113635}
 --- !u!1 &1505419128846506443 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8614434341074625969, guid: 6bfab754a437a5e448e4f16490c68384,
@@ -1329,7 +1394,7 @@ PrefabInstance:
     - target: {fileID: 8614434341074625969, guid: 6bfab754a437a5e448e4f16490c68384,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1351,3 +1416,4 @@ SceneRoots:
   - {fileID: 776954377}
   - {fileID: 2124605748}
   - {fileID: 259096467}
+  - {fileID: 559113637}
