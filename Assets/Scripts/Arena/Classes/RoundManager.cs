@@ -39,6 +39,10 @@ public class RoundManager {
         return (currentRoundIndex + 1).ToString();
     }
 
+    public Round GetCurrentRoundInstance(){
+        return currentRound;
+    }
+
     public float GetCurrentRoundTime(){
         return currentRound.currentTime;
     }

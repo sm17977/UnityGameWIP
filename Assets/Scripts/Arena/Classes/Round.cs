@@ -6,17 +6,18 @@ public class Round{
     private bool complete = false;
     private float duration;
     public float currentTime;
-    private float maxProjectileCount;
-    private float projectileFrequency;
-    //public Ability ability;
+    public float maxProjectileCount;
+    public float projectileFrequency;
+    
+    public Ability ability;
 
 
-    public Round(float duration, float maxProjectileCount, float projectileFrequency) {
+    public Round(float duration, float maxProjectileCount, float projectileFrequency, Ability ability) {
 
         this.duration = duration;
         this.maxProjectileCount = maxProjectileCount;
         this.projectileFrequency = projectileFrequency;
-        //this.ability = ability;
+        this.ability = ability;
 
     }
 

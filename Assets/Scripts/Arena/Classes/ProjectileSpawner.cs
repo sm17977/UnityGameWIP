@@ -7,12 +7,12 @@ public class ProjectileSpawner : MonoBehaviour
     public Camera mainCamera;
     public GameObject player;
     private Lux_Player_Controller playerController;
-    public Ability LuxQAbilitySO;
-    public Ability LuxQAbility;
+    public Global_State globalState;
+    private Round currentRound;
 
     // Properties
     private Vector3 direction;
-    public float timer = 2f;
+    public float timer;
 
     // Flags
     public bool canSpawn = true;
@@ -25,21 +25,27 @@ public class ProjectileSpawner : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start(){
-        LuxQAbility = Object.Instantiate(LuxQAbilitySO);
         playerController = player.GetComponent<Lux_Player_Controller>();
+        currentRound = globalState.roundManager.GetCurrentRoundInstance();
+        timer = currentRound.projectileFrequency;
     }
 
     void Update() {
+
+        currentRound = globalState.roundManager.GetCurrentRoundInstance();
+
         if (!canSpawn) {
             timer -= Time.deltaTime;
             if (timer <= 0) {
                 canSpawn = true;
-                timer = 2f; 
+                timer = currentRound.projectileFrequency; 
             }
         }
 
         if (canSpawn) {
-            SpawnProjectile(LuxQAbility);
+            for(int i = 0; i < currentRound.maxProjectileCount; i++){
+                SpawnProjectile(currentRound.ability);
+            }
             canSpawn = false;
         }
     }
