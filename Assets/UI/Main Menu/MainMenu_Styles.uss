@@ -25,5 +25,5 @@
 }
 
 .list-item-btn{
-    background-color: none;
+    background-color: deeppink;
 }

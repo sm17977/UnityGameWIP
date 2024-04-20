@@ -42,7 +42,6 @@ public class Lux_Player_Controller : Lux_Controller
 
     // Animation
     public Animator animator;
-
     public string attackAnimName = "model|lux_attack1_model";
     public string attackAnimState = "Attack";
 
@@ -88,23 +87,36 @@ public class Lux_Player_Controller : Lux_Controller
     public Ability LuxQAbility;
     public Ability LuxEAbility;
 
-
     void Awake(){
-        // Initiate Input Actions/Events
+        hitboxGameObj = GameObject.Find("Hitbox");
+        hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
+        hitboxPos = hitboxGameObj.transform.position;
+
+        LuxQAbility = Object.Instantiate(LuxQAbilitySO);
+        LuxEAbility = Object.Instantiate(LuxEAbilitySO);
+    }
+
+    void OnEnable(){
         controls = new Controls();
         controls.Player.Enable();
         controls.Player.RightClick.performed += OnRightClick;
         controls.Player.Q.performed += OnQ;
         controls.Player.E.performed += OnE;
         controls.Player.A.performed += OnA;
+    }
 
-        LuxQAbility = Object.Instantiate(LuxQAbilitySO);
-        LuxEAbility = Object.Instantiate(LuxEAbilitySO);
+    void OnDisable(){
+         // Disable Input Actions/Events
+        controls.Player.RightClick.performed -= OnRightClick;
+        controls.Player.Q.performed -= OnQ;
+        controls.Player.E.performed -= OnE;
+        controls.Player.A.performed -= OnA;
+        controls.Player.Disable();
     }
 
     // Start is called before the first frame update
     void Start(){
-
+        globalState = GameObject.Find("Global State").GetComponent<Global_State>();
         buffManager = new Buff_Manager(this);
         playerType = PlayerType.Player;
      
@@ -112,11 +124,10 @@ public class Lux_Player_Controller : Lux_Controller
         stateManager.ChangeState(idleState);
         isWindingUp = false;
 
-        hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
-        hitboxPos = hitboxGameObj.transform.position;
-
         ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
         ai_hitboxPos = ai_hitboxGameObj.transform.position;
+
+     
                 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -148,6 +159,7 @@ public class Lux_Player_Controller : Lux_Controller
     }
 
     public void OnRightClick (InputAction.CallbackContext context){
+        if(globalState.paused) return;
         isNewClick = true;
         InputCommandType inputType = GetClickInput();
         AddInputToQueue(new InputCommand{type = inputType, time = context.time});
@@ -240,6 +252,7 @@ public class Lux_Player_Controller : Lux_Controller
     // Store the position of the click in lastClickPosition
     // Return the input command type
     private InputCommandType GetClickInput(){
+
         float worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, hitboxPos.y, 0));
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());

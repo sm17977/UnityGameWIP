@@ -86,10 +86,10 @@
         </ui:VisualElement>
         <ui:VisualElement name="btn-panel" class="btn-panel">
             <ui:VisualElement name="btn-container" class="btn-container">
-                <ui:Button text="Retry" name="btn" class="list-item-btn"/>
+                <ui:Button text="Retry" name="retry-btn" class="list-item-btn"/>
             </ui:VisualElement>
             <ui:VisualElement name="btn-container" class="btn-container">
-                <ui:Button text="Main Menu" name="btn" class="list-item-btn"/>
+                <ui:Button text="Main Menu" name="main-menu-btn" class="list-item-btn"/>
             </ui:VisualElement>
         </ui:VisualElement>
 

@@ -80,6 +80,10 @@ public class Lux_Q_Mis : ProjectileAbility
 
             if(!target.buffManager.HasBuffApplied(ability.buff)){
                SpawnHitVfx(collision.gameObject);
+
+               if(playerType == PlayerType.Bot){
+                   target.ProcessPlayerDeath();
+               }
             }
 
             ability.buff.Apply(target);
@@ -95,4 +99,10 @@ public class Lux_Q_Mis : ProjectileAbility
         hitScript = newQHit.GetComponent<Lux_Q_Hit>();
         hitScript.target = target;
     }
+
+
+
+
+
+
 }

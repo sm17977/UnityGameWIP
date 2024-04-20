@@ -7,7 +7,7 @@ public class ProjectileSpawner : MonoBehaviour
     public Camera mainCamera;
     public GameObject player;
     private Lux_Player_Controller playerController;
-    public Global_State globalState;
+    private Global_State globalState;
     private Round currentRound;
 
     // Properties
@@ -25,6 +25,7 @@ public class ProjectileSpawner : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start(){
+        globalState = GameObject.Find("Global State").GetComponent<Global_State>();
         playerController = player.GetComponent<Lux_Player_Controller>();
         currentRound = globalState.roundManager.GetCurrentRoundInstance();
         timer = currentRound.projectileFrequency;

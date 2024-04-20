@@ -26,14 +26,15 @@ public class UI_Controller : MonoBehaviour
     public Lux_Player_Controller player;
 
     // Global State
-    public GameObject globalStateObj;
     private Global_State globalState;
 
- 
+    void Awake(){
+        globalState = GameObject.Find("Global State").GetComponent<Global_State>();
+        InitCountdownTimer();
+        InitRoundCounter();  
+    }
+
     void OnEnable(){
-
-        globalState = globalStateObj.GetComponent<Global_State>();
-
         controls = new Controls();
         controls.UI.Enable();
         controls.UI.Q.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
@@ -41,9 +42,15 @@ public class UI_Controller : MonoBehaviour
         controls.UI.E.performed += _ => ActivateAbilityAnimation(player.LuxEAbility);
         controls.UI.R.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
         controls.UI.ESC.performed += _ => ShowPauseMenu();
+    }
 
-        InitCountdownTimer();
-        InitRoundCounter();  
+    void OnDisable(){
+        controls.UI.Q.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
+        controls.UI.W.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
+        controls.UI.E.performed -= _ => ActivateAbilityAnimation(player.LuxEAbility);
+        controls.UI.R.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
+        controls.UI.ESC.performed -= _ => ShowPauseMenu();
+        controls.UI.Disable();
     }
 
     void ActivateAbilityAnimation(Ability ability){
@@ -81,22 +88,21 @@ public class UI_Controller : MonoBehaviour
     }
 
     void InitCountdownTimer(){
+        countdownContainer = uiDocument.rootVisualElement.Q<VisualElement>("countdown-container");
         countdownTimer = uiDocument.rootVisualElement.Q<Label>("countdown-timer");
         countdownTimer.text = globalState.countdownTimer.ToString();
+        countdownContainer.style.visibility = Visibility.Visible;
     }
 
     void UpdateCountdownTimer() {
-        if (globalState.countdownActive) {
-            countdownContainer = uiDocument.rootVisualElement.Q<VisualElement>("countdown-container");
-            countdownContainer.style.visibility = Visibility.Visible;
-
+        if(globalState.countdownActive){
             if (globalState.countdownTimer >= 1) {
                 countdownTimer.text = globalState.countdownTimer.ToString();
             }
-            else {
+            else if (globalState.countdownTimer == 0){
                 countdownTimer.text = "Go!";
             }
-        } 
+        }
         else {
             countdownContainer.style.visibility = Visibility.Hidden;
         }
@@ -124,7 +130,6 @@ public class UI_Controller : MonoBehaviour
             pauseMenu.style.visibility = Visibility.Hidden;
         }
     }
-
 
     IEnumerator WaitForTransition(float delayInSeconds, VisualElement box){
         yield return new WaitForSeconds(delayInSeconds); 

@@ -7,34 +7,39 @@ public class Global_State : MonoBehaviour
 {
     public bool paused = false;
     public RoundManager roundManager;
-    private List<Round> rounds = new List<Round>();
+    private List<Round> rounds;
     public Ability LuxQAbilitySO;
     public Ability ability;
-    public int countdownTimer = 3;
+    public int countdownTimer;
     public bool countdownActive;
+    private string currentScene;
+    private bool initArena;
    
     void Awake(){
-
         DontDestroyOnLoad(gameObject);
-
-        ability = Object.Instantiate(LuxQAbilitySO);
-
-        rounds.Add(new Round(10f, 1f, 0.6f, ability));
-        rounds.Add(new Round(10f, 1f, 0.5f, ability));
-        rounds.Add(new Round(10f, 1f, 0.4f, ability));
-        rounds.Add(new Round(10f, 1f, 0.3f, ability));
-        rounds.Add(new Round(30f, 1f, 0.2f, ability));
-
-        roundManager = new RoundManager(rounds);
     }
 
     void Start(){
-        InitCountdown();
+        initArena  = false;
+        countdownTimer = 3;
+        rounds = new List<Round>();
+        InitArena();
     }
 
     void Update(){
-        if(roundManager.inProgress){
-            roundManager.Update();
+
+        currentScene = SceneManager.GetActiveScene().name;
+
+        if(currentScene == "Arena"){
+
+            if(!initArena){
+                InitCountdown();
+                initArena = true;
+            }
+
+            if(roundManager.inProgress){
+                roundManager.Update();
+            }
         }
     }
 
@@ -51,6 +56,7 @@ public class Global_State : MonoBehaviour
 
     IEnumerator Countdown() {
         countdownActive = true;
+
         while (countdownTimer > 0) {
             yield return new WaitForSecondsRealtime(1f);
             countdownTimer--;
@@ -63,8 +69,15 @@ public class Global_State : MonoBehaviour
     }
 
     private void InitArena(){
+        ability = Object.Instantiate(LuxQAbilitySO);
 
-        
+        rounds.Add(new Round(10f, 1f, 0.6f, ability));
+        rounds.Add(new Round(10f, 1f, 0.5f, ability));
+        rounds.Add(new Round(10f, 1f, 0.4f, ability));
+        rounds.Add(new Round(10f, 1f, 0.3f, ability));
+        rounds.Add(new Round(30f, 1f, 0.2f, ability));
+
+        roundManager = new RoundManager(rounds);
     }
 
     public void LoadScene(string sceneName){
@@ -74,11 +87,14 @@ public class Global_State : MonoBehaviour
                 Application.Quit();
                 return;
             }
-            Debug.Log($"Loading scene: {sceneName}");
             SceneManager.LoadScene(sceneName);
         }
         else{
             Debug.LogError("Scene name not found: " + sceneName);
         }
+    }
+
+    public void Reset(){
+        Start();
     }
 }
