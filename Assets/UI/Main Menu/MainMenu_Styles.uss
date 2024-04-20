@@ -1,13 +1,17 @@
 .main-container{
     width: 100%;
     height: 100%;
-    background-color: deeppink;
+    background-color: white;
+}
+
+.title-container{
+    margin-top: 100px;
 }
 
 .title-label{
     margin: auto;
-    color: white;
-    font-size: 58px;
+    color: black;
+    font-size: 128px;
 }
 
 .list-container{
@@ -20,10 +24,15 @@
 .list-item{
     margin: 20px;
     font-size: 38px;
-    color: white;
+    color: black;
     align-self: center;
 }
 
 .list-item-btn{
-    background-color: deeppink;
+    background-color: white;
+    border-color: white;
+}
+
+.list-item-btn:hover{
+     -unity-font-style: bold;
 }
