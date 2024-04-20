@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class UI_Controller : MonoBehaviour
 {
@@ -12,8 +13,10 @@ public class UI_Controller : MonoBehaviour
     // UI Elements
     private VisualElement abilityBox;
     private Label debugCurrentState;
-    private Label debugCurrentRound;
-    private Label debugCurrentRoundTimer;
+    private Label countdownTimer;
+    private VisualElement countdownContainer;
+    private VisualElement roundCounterContainer;
+    private Label roundCounter;
     private VisualElement pauseMenu;
 
     // Input System
@@ -38,7 +41,9 @@ public class UI_Controller : MonoBehaviour
         controls.UI.E.performed += _ => ActivateAbilityAnimation(player.LuxEAbility);
         controls.UI.R.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
         controls.UI.ESC.performed += _ => ShowPauseMenu();
-       
+
+        InitCountdownTimer();
+        InitRoundCounter();  
     }
 
     void ActivateAbilityAnimation(Ability ability){
@@ -59,9 +64,43 @@ public class UI_Controller : MonoBehaviour
     }
 
     void Update(){
+        UpdateCountdownTimer();
         ShowDebugInfo();
+        UpdateRoundCounter();
     }
 
+    void UpdateRoundCounter(){
+        string currentRound = globalState.roundManager.GetCurrentRound();
+        roundCounter.text = "Round: " + currentRound;
+    }
+
+    void InitRoundCounter(){
+        roundCounter = uiDocument.rootVisualElement.Q<Label>("round-count");
+        roundCounterContainer = uiDocument.rootVisualElement.Q<VisualElement>("round-count-container");
+        roundCounterContainer.style.visibility = Visibility.Visible;
+    }
+
+    void InitCountdownTimer(){
+        countdownTimer = uiDocument.rootVisualElement.Q<Label>("countdown-timer");
+        countdownTimer.text = globalState.countdownTimer.ToString();
+    }
+
+    void UpdateCountdownTimer() {
+        if (globalState.countdownActive) {
+            countdownContainer = uiDocument.rootVisualElement.Q<VisualElement>("countdown-container");
+            countdownContainer.style.visibility = Visibility.Visible;
+
+            if (globalState.countdownTimer >= 1) {
+                countdownTimer.text = globalState.countdownTimer.ToString();
+            }
+            else {
+                countdownTimer.text = "Go!";
+            }
+        } 
+        else {
+            countdownContainer.style.visibility = Visibility.Hidden;
+        }
+    }
     void ShowDebugInfo(){
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-state");
         debugCurrentState.text = "Current State: " + player.currentState;
@@ -71,12 +110,11 @@ public class UI_Controller : MonoBehaviour
 
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
         debugCurrentState.text = "Next round starts in " + globalState.roundManager.GetCurrentRoundTime();
-
     }
 
     void ShowPauseMenu(){
 
-        globalState.Pause();
+        globalState.Pause(!globalState.paused);
         pauseMenu = uiDocument.rootVisualElement.Q<VisualElement>("pause-menu");
 
         if(globalState.paused){

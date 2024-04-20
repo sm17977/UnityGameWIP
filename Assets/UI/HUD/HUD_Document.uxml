@@ -17,6 +17,12 @@
         <VisualElement name="pause-menu" class="pause-menu-container">
             <Label text="Paused" class="header pause-menu-header"/>
         </VisualElement>
+        <VisualElement name="countdown-container" class="countdown-container">
+            <Label text="" name="countdown-timer" class="countdown-timer header"/>
+        </VisualElement>
+        <VisualElement name="round-count-container" class="round-count-container">
+            <Label text="" name="round-count" class="round-count"/>
+        </VisualElement>
         <VisualElement name="player-center" class="player-center-container">
             <VisualElement class="skills-container">
                 <VisualElement name="q-box" class="skill">

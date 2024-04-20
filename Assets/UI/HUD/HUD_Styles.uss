@@ -77,3 +77,34 @@
     background-color: rgba(255, 255, 255, 0.2);
     visibility: hidden;
 }
+
+.countdown-container{
+    position: absolute;
+    margin: auto;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 50px;
+    border-radius: 20px;
+    visibility: hidden;
+  
+}
+
+.countdown-timer{
+    margin: auto;
+    font-size: 128px;
+}
+
+.round-count-container{
+    position: absolute;
+    width: 500px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.2);
+    right: 0px;
+    top: 0px;
+    visibility: hidden;
+}
+
+.round-count{
+    margin: auto;
+    font-size: 80px;
+    -unity-font-style: bold;
+}
