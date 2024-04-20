@@ -19,7 +19,7 @@ MonoBehaviour:
   currentCooldown: 0
   maxCooldown: 4
   range: 30
-  speed: 6
+  speed: 7
   lingeringLifetime: 0
   buff: {fileID: 11400000, guid: e047f18e11ea22b44a0d1c4f8cc525c8, type: 2}
   missile: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94, type: 3}

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Global_State : MonoBehaviour
 {
@@ -13,14 +14,16 @@ public class Global_State : MonoBehaviour
     public bool countdownActive;
    
     void Awake(){
-     
+
+        DontDestroyOnLoad(gameObject);
+
         ability = Object.Instantiate(LuxQAbilitySO);
 
-        rounds.Add(new Round(10f, 1f, 2f, ability));
-        rounds.Add(new Round(10f, 1f, 1.6f, ability));
-        rounds.Add(new Round(10f, 1f, 1.2f, ability));
-        rounds.Add(new Round(10f, 1f, 1.2f, ability));
-        rounds.Add(new Round(30f, 1f, 1.2f, ability));
+        rounds.Add(new Round(10f, 1f, 0.6f, ability));
+        rounds.Add(new Round(10f, 1f, 0.5f, ability));
+        rounds.Add(new Round(10f, 1f, 0.4f, ability));
+        rounds.Add(new Round(10f, 1f, 0.3f, ability));
+        rounds.Add(new Round(30f, 1f, 0.2f, ability));
 
         roundManager = new RoundManager(rounds);
     }
@@ -57,5 +60,25 @@ public class Global_State : MonoBehaviour
         yield return new WaitForSecondsRealtime(1f); // Delay 1 sec to show "Go!" after countdown ends
         countdownActive = false;
         Pause(false); 
+    }
+
+    private void InitArena(){
+
+        
+    }
+
+    public void LoadScene(string sceneName){
+
+        if (!string.IsNullOrEmpty(sceneName)){
+            if(sceneName == "Exit"){
+                Application.Quit();
+                return;
+            }
+            Debug.Log($"Loading scene: {sceneName}");
+            SceneManager.LoadScene(sceneName);
+        }
+        else{
+            Debug.LogError("Scene name not found: " + sceneName);
+        }
     }
 }

@@ -570,7 +570,6 @@ GameObject:
   m_Component:
   - component: {fileID: 559113637}
   - component: {fileID: 559113636}
-  - component: {fileID: 559113638}
   m_Layer: 0
   m_Name: Global State
   m_TagString: Untagged
@@ -593,6 +592,8 @@ MonoBehaviour:
   paused: 0
   LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   ability: {fileID: 0}
+  countdownTimer: 3
+  countdownActive: 0
 --- !u!4 &559113637
 Transform:
   m_ObjectHideFlags: 0
@@ -608,23 +609,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &559113638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 559113635}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63d30f7a22cbcaa4db808590288c9dcf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 1823688466}
-  player: {fileID: 4878758971192155240}
-  globalState: {fileID: 559113636}
-  timer: 2
-  canSpawn: 1
 --- !u!1 &776954375
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,6 +808,55 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+--- !u!1 &1206023200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1206023202}
+  - component: {fileID: 1206023201}
+  m_Layer: 0
+  m_Name: Projectile Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1206023201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206023200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d30f7a22cbcaa4db808590288c9dcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 1823688466}
+  player: {fileID: 4878758971192155240}
+  globalState: {fileID: 559113636}
+  timer: 2
+  canSpawn: 1
+--- !u!4 &1206023202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206023200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.239542, y: -136.24126, z: 29.856459}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1823688464
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,3 +1451,4 @@ SceneRoots:
   - {fileID: 2124605748}
   - {fileID: 259096467}
   - {fileID: 559113637}
+  - {fileID: 1206023202}
