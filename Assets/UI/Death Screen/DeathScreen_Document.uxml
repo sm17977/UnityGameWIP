@@ -34,16 +34,16 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="stat-vals-col" class="stat-vals-col">
                         <ui:VisualElement name="list-item" class="list-item">
-                            <ui:Label text = "Test"/>
+                            <ui:Label text = "Test" name="round-reached-label"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="list-item" class="list-item">
-                            <ui:Label text = "Test"/>
+                            <ui:Label text = "Test" name="time-label"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="list-item" class="list-item">
-                            <ui:Label text = "Test"/>
+                            <ui:Label text = "Test" name="apm-label"/>
                         </ui:VisualElement>
                         <ui:VisualElement name="list-item" class="list-item">
-                            <ui:Label text = "Test"/>
+                            <ui:Label text = "Test" name="accuracy-label"/>
                         </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>

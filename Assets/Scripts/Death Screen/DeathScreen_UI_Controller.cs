@@ -20,16 +20,38 @@ public class DeathScreen_UI_Controller : MonoBehaviour
     private Button retryBtn;
     private Button mainMenuBtn;
 
+    private Label roundReached;
+    private Label timeSurvived;
+    private Label apm;
+    private Label accuracy;
+
     void Awake(){
         globalState = GameObject.Find("Global State").GetComponent<Global_State>();
-        globalState.Reset();
 
-        retryBtn = uiDocument.rootVisualElement.Query<Button>("retry-btn");
-        mainMenuBtn = uiDocument.rootVisualElement.Query<Button>("main-menu-btn");
+        roundReached = uiDocument.rootVisualElement.Q<Label>("round-reached-label");
+        timeSurvived = uiDocument.rootVisualElement.Q<Label>("time-label");
+        apm = uiDocument.rootVisualElement.Q<Label>("apm-label");
+        accuracy = uiDocument.rootVisualElement.Q<Label>("accuracy-label");
+
+        roundReached.text = globalState.roundManager.GetCurrentRound();
+        timeSurvived.text = globalState.GetGameTimer();
+
+        retryBtn = uiDocument.rootVisualElement.Q<Button>("retry-btn");
+        mainMenuBtn = uiDocument.rootVisualElement.Q<Button>("main-menu-btn");
        
-        retryBtn.RegisterCallback<ClickEvent>(evt => globalState.LoadScene("Arena"));
-        mainMenuBtn.RegisterCallback<ClickEvent>(evt => globalState.LoadScene("Main Menu"));
+        retryBtn.RegisterCallback<ClickEvent>(evt => LoadArena());
+        mainMenuBtn.RegisterCallback<ClickEvent>(evt => LoadMainMenu());
     }
+
+    private void LoadArena(){
+        globalState.Reset();
+        globalState.LoadScene("Arena");
+    }
+
+    private void LoadMainMenu(){
+        globalState.Reset();
+        globalState.LoadScene("Main Menu");
+    } 
 
     void OnEnable(){
         controls = new Controls();

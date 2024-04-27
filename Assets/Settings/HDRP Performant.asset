@@ -187,6 +187,7 @@ MonoBehaviour:
       forcedPercentage: 100
       lowResTransparencyMinimumThreshold: 0
       rayTracingHalfResThreshold: 50
+      lowResSSGIMinimumThreshold: 0
       enableDLSS: 0
     lowresTransparentSettings:
       enabled: 1

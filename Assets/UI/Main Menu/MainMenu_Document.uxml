@@ -17,7 +17,7 @@
                  <ui:Button text="Arena" name="btn" class="list-item-btn"/>
              </ui:VisualElement>
             <ui:VisualElement name="list-item" class="list-item">
-                 <ui:Button text="Versus" name="btn" class="list-item-btn"/>
+                 <ui:Button text="Multiplayer" name="btn" class="list-item-btn"/>
              </ui:VisualElement>
             <ui:VisualElement name="list-item" class="list-item">
                  <ui:Button text="Settings" name="btn" class="list-item-btn"/>

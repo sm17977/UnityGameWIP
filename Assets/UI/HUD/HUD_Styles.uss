@@ -93,18 +93,17 @@
     font-size: 128px;
 }
 
-.round-count-container{
+.time-count-container{
     position: absolute;
     width: 500px;
     height: 100px;
-    background-color: rgba(255, 255, 255, 0.2);
-    right: 0px;
-    top: 0px;
+    top: 20px;
     visibility: hidden;
 }
 
-.round-count{
+.time-count{
     margin: auto;
-    font-size: 80px;
+    font-size: 60px;
     -unity-font-style: bold;
+    color: white;
 }

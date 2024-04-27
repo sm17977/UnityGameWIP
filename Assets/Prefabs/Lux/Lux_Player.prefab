@@ -109,6 +109,8 @@ GameObject:
   - component: {fileID: 6881271443565087466}
   - component: {fileID: 1504514774118711622}
   - component: {fileID: 1732250947714356030}
+  - component: {fileID: 6631036478180635241}
+  - component: {fileID: -7405480031313484491}
   m_Layer: 3
   m_Name: Lux_Player
   m_TagString: Untagged
@@ -220,6 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerType: 0
   lux: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  globalState: {fileID: 0}
   canMove: 1
   isRunning: 0
   isCasting: 0
@@ -251,12 +254,66 @@ MonoBehaviour:
     type: 3}
   currentState: 
   Lux_AI: {fileID: 0}
-  ai_hitboxGameObj: {fileID: 0}
-  ai_hitboxCollider: {fileID: 0}
+  ai_hitboxGameObj: {fileID: 1108951634745852663}
+  ai_hitboxCollider: {fileID: 4061616120029314635}
   attackStartTime: 0
   attackStartTimeLogged: 0
   LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   LuxEAbilitySO: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
+  LuxQAbility: {fileID: 0}
+  LuxEAbility: {fileID: 0}
+--- !u!114 &6631036478180635241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3407969275
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &-7405480031313484491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

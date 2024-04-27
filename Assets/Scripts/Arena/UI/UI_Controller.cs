@@ -15,8 +15,8 @@ public class UI_Controller : MonoBehaviour
     private Label debugCurrentState;
     private Label countdownTimer;
     private VisualElement countdownContainer;
-    private VisualElement roundCounterContainer;
-    private Label roundCounter;
+    private VisualElement timeCounterContainer;
+    private Label timeCounter;
     private VisualElement pauseMenu;
 
     // Input System
@@ -31,7 +31,7 @@ public class UI_Controller : MonoBehaviour
     void Awake(){
         globalState = GameObject.Find("Global State").GetComponent<Global_State>();
         InitCountdownTimer();
-        InitRoundCounter();  
+        InitTimeCounter();  
     }
 
     void OnEnable(){
@@ -73,18 +73,22 @@ public class UI_Controller : MonoBehaviour
     void Update(){
         UpdateCountdownTimer();
         ShowDebugInfo();
-        UpdateRoundCounter();
+       
     }
 
-    void UpdateRoundCounter(){
-        string currentRound = globalState.roundManager.GetCurrentRound();
-        roundCounter.text = "Round: " + currentRound;
+    void FixedUpdate(){
+        UpdateTimeCounter();
     }
 
-    void InitRoundCounter(){
-        roundCounter = uiDocument.rootVisualElement.Q<Label>("round-count");
-        roundCounterContainer = uiDocument.rootVisualElement.Q<VisualElement>("round-count-container");
-        roundCounterContainer.style.visibility = Visibility.Visible;
+    void UpdateTimeCounter(){
+        string currentTime = globalState.GetGameTimer();
+        timeCounter.text = currentTime;
+    }
+
+    void InitTimeCounter(){
+        timeCounter = uiDocument.rootVisualElement.Q<Label>("time-count");
+        timeCounterContainer = uiDocument.rootVisualElement.Q<VisualElement>("time-count-container");
+        timeCounterContainer.style.visibility = Visibility.Visible;
     }
 
     void InitCountdownTimer(){
