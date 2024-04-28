@@ -75,7 +75,6 @@ public class TestLobby : MonoBehaviour
         try{
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
             await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
-
         }
         catch (LobbyServiceException e){
             Debug.Log(e);

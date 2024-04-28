@@ -88,6 +88,7 @@ public class Lux_Player_Controller : Lux_Controller
     public Ability LuxEAbility;
 
     void Awake(){
+        mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         hitboxGameObj = GameObject.Find("Hitbox");
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         hitboxPos = hitboxGameObj.transform.position;
