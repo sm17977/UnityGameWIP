@@ -1,3 +1,5 @@
+
+
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -21,6 +23,31 @@ public class Lux_Controller : NetworkBehaviour
     void Update()
     {
         
+    }
+
+    public override void OnNetworkSpawn(){
+        if(IsOwner && IsClient){
+            SendToServerRpc("Message from client");
+        }
+    }
+
+    void Move(){
+        transform.position = new Vector3(1, 1, 1);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void SendToServerRpc(string msg) {
+        if(IsServer){
+            Debug.Log($"Player position on Server is {transform.position}");
+            Move();
+            Debug.Log($"Player moved on Server to position {transform.position}");
+            SendToClientRpc("Message from server");
+        }
+    }
+
+    [Rpc(SendTo.NotServer)]
+    void SendToClientRpc(string msg){
+        Debug.Log("In Client RPC, message sent from server: " + msg);
     }
 
     public void ProcessPlayerDeath(){

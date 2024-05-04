@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Buff", menuName = "Scriptable Objects/Buff")]

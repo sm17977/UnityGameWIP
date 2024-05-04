@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
+using Unity.Netcode;
+
 
 
 public class Lux_Player_Controller : Lux_Controller
@@ -53,8 +55,7 @@ public class Lux_Player_Controller : Lux_Controller
     // Input Data
     private Controls controls;
     public Queue<InputCommand> inputQueue;
-    public InputCommand previousInput = null;
-    public InputCommand nextPreviousInput = null;
+    public InputCommand previousInput;
     private InputCommand currentInput;
     private Vector3 lastClickPosition;
 
@@ -87,6 +88,7 @@ public class Lux_Player_Controller : Lux_Controller
     public Ability LuxQAbility;
     public Ability LuxEAbility;
 
+
     void Awake(){
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         hitboxGameObj = GameObject.Find("Hitbox");
@@ -95,6 +97,8 @@ public class Lux_Player_Controller : Lux_Controller
 
         LuxQAbility = Object.Instantiate(LuxQAbilitySO);
         LuxEAbility = Object.Instantiate(LuxEAbilitySO);
+        previousInput = new InputCommand{type = InputCommandType.Init};
+
     }
 
     void OnEnable(){
@@ -128,8 +132,6 @@ public class Lux_Player_Controller : Lux_Controller
 
         ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
         ai_hitboxPos = ai_hitboxGameObj.transform.position;
-
-     
                 
         inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
@@ -140,43 +142,46 @@ public class Lux_Player_Controller : Lux_Controller
     
     void Update(){
 
-            if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
-             
-            hitboxPos = hitboxGameObj.transform.position;
+        if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
+            
+        hitboxPos = hitboxGameObj.transform.position;
 
-            HandleInput();
+        HandleInput();
 
-            stateManager.Update();
+        stateManager.Update();
 
-            buffManager.Update();
+        buffManager.Update();
 
-            currentState = stateManager.GetCurrentState();
+        currentState = stateManager.GetCurrentState();
 
-            if(stateManager.GetCurrentState() != "AttackingState"){
-                if(timeSinceLastAttack > 0){
-                    timeSinceLastAttack -= Time.deltaTime;
-                }
+        if(stateManager.GetCurrentState() != "AttackingState"){
+            if(timeSinceLastAttack > 0){
+                timeSinceLastAttack -= Time.deltaTime;
             }
-    
-            HandleProjectiles();
-            HandleVFX();
-        
+        }
 
+        HandleProjectiles();
+        HandleVFX();
+        
     }
+
+
+  
 
     public void OnRightClick (InputAction.CallbackContext context){
         if(globalState.paused) return;
         isNewClick = true;
         InputCommandType inputType = GetClickInput();
         AddInputToQueue(new InputCommand{type = inputType, time = context.time});
+
     }
 
     public void OnQ(InputAction.CallbackContext context){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, ability = LuxQAbility});
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, key = "Q"});
     }
 
     public void OnE(InputAction.CallbackContext context){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, ability = LuxEAbility});
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, time = context.time, key = "E"});
     }
 
     public void OnA(InputAction.CallbackContext context){
@@ -200,7 +205,7 @@ public class Lux_Player_Controller : Lux_Controller
                 currentInput = inputQueue.Peek();
 
                 // Set previous input to null on first function call
-                if(previousInput == null){
+                if(previousInput.type == InputCommandType.Init){
                     previousInput = currentInput;
                 }
 
@@ -235,9 +240,19 @@ public class Lux_Player_Controller : Lux_Controller
 
                     // Process the cast spell command
                     case InputCommandType.CastSpell:
-                        if(!isCasting && !currentInput.ability.OnCooldown()){
+
+                        Ability inputAbility = LuxQAbility;
+
+                        if(currentInput.key == "Q"){
+                            inputAbility = LuxQAbility;
+                        }
+                        if(currentInput.key == "E"){
+                            inputAbility = LuxEAbility;
+                        }
+
+                        if(!isCasting && !inputAbility.OnCooldown()){
                             GetCastingTargetPosition();
-                            stateManager.ChangeState(new CastingState(this, gameObject, currentInput.ability));
+                            stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
                         }
                         inputQueue.Dequeue();
                         break;

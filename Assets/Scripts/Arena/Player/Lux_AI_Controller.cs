@@ -43,8 +43,7 @@ public class Lux_AI_Controller : Lux_Controller
  
     // Input Data
     public Queue<InputCommand> inputQueue;
-    public InputCommand previousInput = null;
-    public InputCommand nextPreviousInput = null;
+    public InputCommand previousInput;
     private InputCommand currentInput;
 
     // AA Range Indicator
@@ -78,6 +77,7 @@ public class Lux_AI_Controller : Lux_Controller
     void Awake(){
         LuxQAbility = Object.Instantiate(LuxQAbilitySO);
         LuxEAbility = Object.Instantiate(LuxEAbilitySO);
+        previousInput = new InputCommand{type = InputCommandType.Init};
     }
 
     // Start is called before the first frame update
@@ -116,11 +116,11 @@ public class Lux_AI_Controller : Lux_Controller
 
 
     public void SimulateQ(){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, ability = LuxQAbility});
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, key = "Q"});
     }
 
     public void SimulateE(){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, ability = LuxEAbility});
+        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, key = "E"});
     }
 
     private void InitStates(){
@@ -140,7 +140,7 @@ public class Lux_AI_Controller : Lux_Controller
                 currentInput = inputQueue.Peek();
 
                 // Set previous input to null on first function call
-                if(previousInput == null){
+                if(previousInput.type == InputCommandType.Init){
                     previousInput = currentInput;
                 }
 
@@ -148,8 +148,19 @@ public class Lux_AI_Controller : Lux_Controller
 
                     // Process the cast spell command
                     case InputCommandType.CastSpell:
-                        if(!isCasting && !currentInput.ability.OnCooldown()){
-                            stateManager.ChangeState(new AI_CastingState(this, gameObject, currentInput.ability));
+
+                         Ability inputAbility = LuxQAbility;
+
+                        if(currentInput.key == "Q"){
+                            inputAbility = LuxQAbility;
+                        }
+                        if(currentInput.key == "E"){
+                            inputAbility = LuxEAbility;
+                        }
+
+
+                        if(!isCasting && !inputAbility.OnCooldown()){
+                            stateManager.ChangeState(new AI_CastingState(this, gameObject, inputAbility));
                         }
                         inputQueue.Dequeue();
                         break;

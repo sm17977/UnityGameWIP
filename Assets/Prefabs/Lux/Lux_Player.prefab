@@ -110,8 +110,7 @@ GameObject:
   - component: {fileID: 1504514774118711622}
   - component: {fileID: 7686054493345482184}
   - component: {fileID: 1732250947714356030}
-  - component: {fileID: 3485011507191412296}
-  - component: {fileID: -1987111848832714351}
+  - component: {fileID: -4322377962518386521}
   m_Layer: 3
   m_Name: Lux_Player
   m_TagString: Untagged
@@ -284,16 +283,16 @@ MonoBehaviour:
   LuxEAbilitySO: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
   LuxQAbility: {fileID: 0}
   LuxEAbility: {fileID: 0}
---- !u!114 &3485011507191412296
+--- !u!114 &-4322377962518386521
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df2868252ab5c4d1da357e8f11f1b524, type: 3}
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UseUnreliableDeltas: 0
@@ -315,76 +314,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &-1987111848832714351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad8deae8091111f4eb30a56c1f4e0d3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TransitionStateInfoList:
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 491268883
-    TransitionDuration: 0.25
-    TriggerNameHash: 1657161401
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 1850888857
-    TransitionDuration: 0.25
-    TriggerNameHash: -1532408002
-    TransitionIndex: 3
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: -328976274
-    TransitionDuration: 0.25
-    TriggerNameHash: -1707640472
-    TransitionIndex: 4
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
-    DestinationState: 616896470
-    TransitionDuration: 0.25
-    TriggerNameHash: -330743462
-    TransitionIndex: 5
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 491268883
-    TransitionDuration: 0.25
-    TriggerNameHash: 1657161401
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 1850888857
-    TransitionDuration: 0.25
-    TriggerNameHash: -1532408002
-    TransitionIndex: 3
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: -328976274
-    TransitionDuration: 0.25
-    TriggerNameHash: -1707640472
-    TransitionIndex: 4
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 616896470
-    TransitionDuration: 0.25
-    TriggerNameHash: -330743462
-    TransitionIndex: 5
-  m_Animator: {fileID: 6881271443565087466}
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

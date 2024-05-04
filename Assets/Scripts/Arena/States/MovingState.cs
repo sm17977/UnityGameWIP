@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovingState : State
@@ -35,7 +36,12 @@ public class MovingState : State
         Vector3 direction = (targetLocation - player.transform.position).normalized;
         direction.y = 0f;
 
-        MoveAndRotate(direction);
+        if(playerController.globalState.currentScene == "Multiplayer"){
+           
+        }
+        else {
+            MoveAndRotate(direction);
+        }
         
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
@@ -49,11 +55,10 @@ public class MovingState : State
             else{
                 playerController.TransitionToIdle();
             }
-        }        
+        }   
     }
 
-
-    private void MoveAndRotate(Vector3 direction){
+    void MoveAndRotate(Vector3 direction){
         // Move player towards last mouse click 
         player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
         playerController.RotateTowardsTarget(direction);

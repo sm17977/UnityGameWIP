@@ -34,5 +34,5 @@
 }
 
 .list-item-btn:hover{
-     -unity-font-style: bold;
+    -unity-font-style: bold;
 }

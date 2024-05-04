@@ -17,5 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Multiplayer.unity
     guid: d7149b183c0f3674db06d64799cdc8f7
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 064bdd3f75d208e409c40b014b8a9130,
+      type: 3}
   m_UseUCBPForAssetBundles: 0
