@@ -6,18 +6,26 @@ using UnityEngine.SceneManagement;
 public class Global_State : MonoBehaviour
 {
     public bool paused = false;
+    public static Global_State Instance;
     public RoundManager roundManager;
     private List<Round> rounds;
     public Ability LuxQAbilitySO;
     public Ability ability;
     public int countdownTimer;
     public bool countdownActive;
-    private string currentScene;
+    public string currentScene;
     private bool initArena;
     private float gameTimer;
    
     void Awake(){
-        DontDestroyOnLoad(gameObject);
+          
+        if (Instance == null){
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else{
+            Destroy(gameObject);
+        }
     }
 
     void Start(){
@@ -32,18 +40,32 @@ public class Global_State : MonoBehaviour
 
         currentScene = SceneManager.GetActiveScene().name;
 
+        switch(currentScene){
+            case "Arena": 
+                if(!initArena){
+                    InitCountdown();
+                    initArena = true;
+                }
+
+                if(roundManager.inProgress){
+                    gameTimer += Time.deltaTime;
+                    roundManager.Update();
+                }
+                break;
+
+            case "Multiplayer":
+
+
+                break;
+
+        }
+
         if(currentScene == "Arena"){
             
-            if(!initArena){
-                InitCountdown();
-                initArena = true;
-            }
-
-            if(roundManager.inProgress){
-                gameTimer += Time.deltaTime;
-                roundManager.Update();
-            }
+ 
         }
+
+        
     }
 
     public void Pause(bool shouldPause) {

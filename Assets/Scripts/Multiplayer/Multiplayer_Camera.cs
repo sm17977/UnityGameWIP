@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Multiplayer_Camera : MonoBehaviour
+public class Multiplayer_Camera : NetworkBehaviour
 {
     public Transform playerTransform;
     public float heightOffset = 0f; 
@@ -18,6 +19,11 @@ public class Multiplayer_Camera : MonoBehaviour
 
 
     void Update(){
+
+        if(!IsClient || !IsLocalPlayer){
+            return;
+        }
+
         if(playerTransform == null){
             playerTransform = GameObject.Find("Lux_Player(Clone)").GetComponent<Transform>();
         }

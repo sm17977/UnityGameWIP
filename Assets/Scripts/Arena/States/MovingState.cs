@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class MovingState : State
@@ -25,6 +26,7 @@ public class MovingState : State
 
     public override void Execute() {
 
+     
         if(!playerController.canMove){
             playerController.TransitionToIdle();
         }
@@ -33,9 +35,7 @@ public class MovingState : State
         Vector3 direction = (targetLocation - player.transform.position).normalized;
         direction.y = 0f;
 
-        // Move player towards last mouse click 
-        player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
-        playerController.RotateTowardsTarget(direction);
+        MoveAndRotate(direction);
         
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
@@ -50,6 +50,13 @@ public class MovingState : State
                 playerController.TransitionToIdle();
             }
         }        
+    }
+
+
+    private void MoveAndRotate(Vector3 direction){
+        // Move player towards last mouse click 
+        player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
+        playerController.RotateTowardsTarget(direction);
     }
 
     public override void Exit() {

@@ -115,6 +115,7 @@ public class Lux_Player_Controller : Lux_Controller
         controls.Player.Disable();
     }
 
+
     // Start is called before the first frame update
     void Start(){
         globalState = GameObject.Find("Global State").GetComponent<Global_State>();
@@ -136,26 +137,30 @@ public class Lux_Player_Controller : Lux_Controller
     }
 
     // Update is called once per frame
+    
     void Update(){
 
-        hitboxPos = hitboxGameObj.transform.position;
+            if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
+             
+            hitboxPos = hitboxGameObj.transform.position;
 
-        HandleInput();
+            HandleInput();
 
-        stateManager.Update();
+            stateManager.Update();
 
-        buffManager.Update();
+            buffManager.Update();
 
-        currentState = stateManager.GetCurrentState();
+            currentState = stateManager.GetCurrentState();
 
-        if(stateManager.GetCurrentState() != "AttackingState"){
-            if(timeSinceLastAttack > 0){
-                timeSinceLastAttack -= Time.deltaTime;
+            if(stateManager.GetCurrentState() != "AttackingState"){
+                if(timeSinceLastAttack > 0){
+                    timeSinceLastAttack -= Time.deltaTime;
+                }
             }
-        }
-  
-        HandleProjectiles();
-        HandleVFX();
+    
+            HandleProjectiles();
+            HandleVFX();
+        
 
     }
 

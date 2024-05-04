@@ -1,8 +1,9 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 public enum PlayerType {Player, Bot};
-public class Lux_Controller : MonoBehaviour
+public class Lux_Controller : NetworkBehaviour
 {
 
     public PlayerType playerType;
