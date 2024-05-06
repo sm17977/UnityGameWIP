@@ -5,12 +5,16 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using QFSW.QC;
 using UnityEditor;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 public class TestLobby : MonoBehaviour
 {
    
     private Lobby hostLobby;
     private float heartbeatTimer;
+    private bool isJoining = false;
 
     async void Start(){
         heartbeatTimer = 15f;
@@ -71,7 +75,32 @@ public class TestLobby : MonoBehaviour
         }
     }
 
+    public async Task<List<Lobby>> GetLobbiesList(){
+        try{
+            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
+
+            foreach(Lobby lobby in queryResponse.Results){
+                Debug.Log("Lobby Name: " + lobby.Name);
+            }
+
+            return queryResponse.Results.ToList<Lobby>();
+        }
+        catch(LobbyServiceException e){
+            Debug.Log(e);
+        }
+        return new List<Lobby>();
+    }
+
+
+
+    [Command]
     private async void JoinLobby(){
+
+        if(isJoining) return;
+
+        isJoining = true;
+
         try{
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
             await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
@@ -79,6 +108,25 @@ public class TestLobby : MonoBehaviour
         catch (LobbyServiceException e){
             Debug.Log(e);
         }
+
+        isJoining = false;
+    }
+
+
+    public async void Join(Lobby lobby){
+
+        if(isJoining) return;
+
+        isJoining = true;
+
+        try{
+            await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
+        }
+        catch (LobbyServiceException e){
+            Debug.Log(e);
+        }
+
+        isJoining = false;
     }
 
 

@@ -142,9 +142,8 @@ public class Lux_Player_Controller : Lux_Controller
     
     void Update(){
     
-        //if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
+        if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
 
-            
         hitboxPos = hitboxGameObj.transform.position;
 
         HandleInput();
@@ -163,15 +162,23 @@ public class Lux_Player_Controller : Lux_Controller
 
         HandleProjectiles();
         HandleVFX();
-        
     }
 
-    [Rpc(SendTo.Server, RequireOwnership = false)]
-    public void SendCommandToServerRpc(Vector3 clickPos){
-        Debug.Log("Call from client");
-        lastClickPosition = clickPos;
-        AddInputToQueue(new InputCommand{type = InputCommandType.Movement});
-    }
+
+    // [Rpc(SendTo.Server, RequireOwnership = false)]
+    // public void SendCommandToServerRpc(Vector3 clickPos){
+    //     Debug.Log("Call from client");
+    //     SendCommandToClientRpc(clickPos);
+    // }
+
+    // [Rpc(SendTo.NotServer)]
+    // public void SendCommandToClientRpc(Vector3 clickPos){
+    //     if(!IsOwner){
+    //         Debug.Log("Call from server!");
+    //         lastClickPosition = clickPos;
+    //         AddInputToQueue(new InputCommand{type = InputCommandType.Movement});
+    //     }
+    // }
 
 
     public void OnRightClick (InputAction.CallbackContext context){
@@ -181,8 +188,7 @@ public class Lux_Player_Controller : Lux_Controller
         InputCommandType inputType = GetClickInput();
 
         if(globalState.currentScene == "Multiplayer" && IsOwner){
-            Debug.Log("Server RPC Call");
-            SendCommandToServerRpc(lastClickPosition);
+            AddInputToQueue(new InputCommand{type = inputType, time = context.time});
         }
         else{
             AddInputToQueue(new InputCommand{type = inputType, time = context.time});
