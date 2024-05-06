@@ -142,26 +142,28 @@ public class Lux_Player_Controller : Lux_Controller
     
     void Update(){
 
-        if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
+        base.Update();
+
+        //if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
             
-        hitboxPos = hitboxGameObj.transform.position;
+        // hitboxPos = hitboxGameObj.transform.position;
 
-        HandleInput();
+        // HandleInput();
 
-        stateManager.Update();
+        // stateManager.Update();
 
-        buffManager.Update();
+        // buffManager.Update();
 
-        currentState = stateManager.GetCurrentState();
+        // currentState = stateManager.GetCurrentState();
 
-        if(stateManager.GetCurrentState() != "AttackingState"){
-            if(timeSinceLastAttack > 0){
-                timeSinceLastAttack -= Time.deltaTime;
-            }
-        }
+        // if(stateManager.GetCurrentState() != "AttackingState"){
+        //     if(timeSinceLastAttack > 0){
+        //         timeSinceLastAttack -= Time.deltaTime;
+        //     }
+        // }
 
-        HandleProjectiles();
-        HandleVFX();
+        // HandleProjectiles();
+        // HandleVFX();
         
     }
 
