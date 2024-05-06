@@ -1,3 +1,4 @@
+using QFSW.QC;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -36,12 +37,15 @@ public class MovingState : State
         Vector3 direction = (targetLocation - player.transform.position).normalized;
         direction.y = 0f;
 
-        if(playerController.globalState.currentScene == "Multiplayer"){
-           
-        }
-        else {
-            MoveAndRotate(direction);
-        }
+        // if(playerController.globalState.currentScene == "Multiplayer" && playerController.IsOwner){
+        //    playerController.SendMovementToServerRpc(direction);
+        // }
+       
+        MoveAndRotate(direction);
+        
+
+        float dist = Vector3.Distance(player.transform.position, targetLocation);
+        //Debug.Log("Distance from click: " + dist);
         
         // State exits when player has reached target location
         if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){

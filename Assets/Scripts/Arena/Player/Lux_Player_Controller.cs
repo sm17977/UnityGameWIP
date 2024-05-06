@@ -141,41 +141,52 @@ public class Lux_Player_Controller : Lux_Controller
     // Update is called once per frame
     
     void Update(){
-
-        base.Update();
-
+    
         //if(globalState.currentScene == "Multiplayer" && !IsOwner) return;
+
             
-        // hitboxPos = hitboxGameObj.transform.position;
+        hitboxPos = hitboxGameObj.transform.position;
 
-        // HandleInput();
+        HandleInput();
 
-        // stateManager.Update();
+        stateManager.Update();
 
-        // buffManager.Update();
+        buffManager.Update();
 
-        // currentState = stateManager.GetCurrentState();
+        currentState = stateManager.GetCurrentState();
 
-        // if(stateManager.GetCurrentState() != "AttackingState"){
-        //     if(timeSinceLastAttack > 0){
-        //         timeSinceLastAttack -= Time.deltaTime;
-        //     }
-        // }
+        if(stateManager.GetCurrentState() != "AttackingState"){
+            if(timeSinceLastAttack > 0){
+                timeSinceLastAttack -= Time.deltaTime;
+            }
+        }
 
-        // HandleProjectiles();
-        // HandleVFX();
+        HandleProjectiles();
+        HandleVFX();
         
     }
 
+    [Rpc(SendTo.Server, RequireOwnership = false)]
+    public void SendCommandToServerRpc(Vector3 clickPos){
+        Debug.Log("Call from client");
+        lastClickPosition = clickPos;
+        AddInputToQueue(new InputCommand{type = InputCommandType.Movement});
+    }
 
-  
 
     public void OnRightClick (InputAction.CallbackContext context){
         if(globalState.paused) return;
+
         isNewClick = true;
         InputCommandType inputType = GetClickInput();
-        AddInputToQueue(new InputCommand{type = inputType, time = context.time});
 
+        if(globalState.currentScene == "Multiplayer" && IsOwner){
+            Debug.Log("Server RPC Call");
+            SendCommandToServerRpc(lastClickPosition);
+        }
+        else{
+            AddInputToQueue(new InputCommand{type = inputType, time = context.time});
+        }   
     }
 
     public void OnQ(InputAction.CallbackContext context){
@@ -215,6 +226,8 @@ public class Lux_Player_Controller : Lux_Controller
 
                     // Process the movement command
                     case InputCommandType.Movement:
+
+                        Debug.Log("New Movement Command!");
 
                         ShowMovementIndicator(lastClickPosition);
                         if(canMove){
