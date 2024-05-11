@@ -48,7 +48,7 @@
                     <ui:VisualElement name="col-header" class="col-header">
                         <ui:Label text="Players"/>
                     </ui:VisualElement>
-                    <ui:VisualElement name="col-header" class="col-header">
+                    <ui:VisualElement name="col-header" class="col-header col-join-lobby">
                         <ui:Label text="Join Lobby"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
@@ -63,8 +63,16 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-  
-
+        <ui:VisualElement name="lobby-modal-container" class="lobby-modal-container">
+            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
+                <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
+                    <ui:Label text="Create a lobby"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="lobby-modal-form" class="lobby-modal-form">
+                    <ui:TextField label="Lobby Name" name="the-uxml-field" value="Enter lobby name..." />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+ 
     </ui:VisualElement>
-
 </ui:UXML>

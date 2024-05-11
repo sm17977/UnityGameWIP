@@ -15,8 +15,6 @@ public class MainMenu_UI_Controller : MonoBehaviour
 
 
     void Awake(){
-
-        Debug.Log("TEST");
         var mainMenuBtns = uiDocument.rootVisualElement.Query<Button>("btn").ToList();
       
         foreach (var button in mainMenuBtns){

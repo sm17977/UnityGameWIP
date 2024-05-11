@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using QFSW.QC;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -15,6 +16,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     VisualElement listLobbiesContainer;
     VisualElement listLobbiesTable;
     Button listLobbiesBackBtn;
+    VisualElement lobbyModalContainer;
     
     List<Button> menuBtns;
 
@@ -23,14 +25,13 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
     // Global State
     private Global_State globalState;
-
-    public TestLobby testLobby;
-
+    public GameObject gameLobbyManagerObj;
+    private GameLobbyManager gameLobbyManager;
 
     void Awake(){
 
         globalState = GameObject.Find("Global State").GetComponent<Global_State>();
-        testLobby = GameObject.Find("TestLobby").GetComponent<TestLobby>();
+        gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
 
         menuBtnsContainer = uiDocument.rootVisualElement.Query<VisualElement>("menu-container");
         menuBtns = uiDocument.rootVisualElement.Query<Button>("btn").ToList();
@@ -38,14 +39,16 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         listLobbiesContainer = uiDocument.rootVisualElement.Query<VisualElement>("lobby-container");
         listLobbiesBackBtn = uiDocument.rootVisualElement.Query<Button>("lobby-back-btn");
         listLobbiesTable = uiDocument.rootVisualElement.Query<VisualElement>("lobby-table-body");
-        listLobbiesBackBtn.RegisterCallback<ClickEvent>(evt => ShowMenu(listLobbiesContainer));
+        listLobbiesBackBtn.RegisterCallback<ClickEvent>(evt => ListLobbyBackBtn());
+
+        lobbyModalContainer = uiDocument.rootVisualElement.Query<VisualElement>("lobby-modal-container");
 
         foreach (var button in menuBtns){
 
             switch (button.text){
 
                 case "Create new lobby":
-                    button.RegisterCallback<ClickEvent>(PlaceholderFunc);
+                    button.RegisterCallback<ClickEvent>(CreateLobby);
                     break;
 
                 case "List lobbies":
@@ -61,19 +64,27 @@ public class Multiplayer_UI_Controller : MonoBehaviour
                     break;
 
             }
-
         }  
     }
 
+
+    async void CreateLobby(ClickEvent evt){
+        lobbyModalContainer.style.display = DisplayStyle.Flex;
+        // await gameLobbyManager.CreateLobby();
+        // ListLobbies(evt);
+    }
 
     async void ListLobbies(ClickEvent evt){
 
         HideMenu(listLobbiesContainer);
         listLobbiesTable.Clear();
-        var lobbies = await testLobby.GetLobbiesList();
+        var lobbies = await gameLobbyManager.GetLobbiesList();
+        int lobbyCount = 0;
+        int lobbyRowHeight = 100;
 
         foreach(Lobby lobby in lobbies){
 
+            lobbyCount++;
             VisualElement row = new VisualElement();
             row.AddToClassList("row-container");
 
@@ -90,17 +101,20 @@ public class Multiplayer_UI_Controller : MonoBehaviour
             lobbyName.AddToClassList("col-body");
 
             VisualElement players = new VisualElement();
-            Label playersLable = new Label();
-            playersLable.text = lobby.Players.Count.ToString();
-            players.Add(playersLable);
+            Label playersLabel = new Label();
+            playersLabel.text = lobby.Players.Count.ToString();
+            players.Add(playersLabel);
             players.AddToClassList("col-body");
 
-            Button joinLobby = new Button();
-            joinLobby.RegisterCallback<ClickEvent>(evt => testLobby.Join(lobby));
-            Label joinLobbyLabel = new Label();
-            joinLobbyLabel.text = "Join Lobby";
-            joinLobby.Add(joinLobbyLabel);
+            VisualElement joinLobby = new VisualElement();
+            Button joinLobbyBtn = new Button();
+            Label joinLobbyBtnLabel = new Label();
+            joinLobbyBtnLabel.text = "Join Lobby";
+            joinLobbyBtn.Add(joinLobbyBtnLabel);
+            joinLobby.Add(joinLobbyBtn);
             joinLobby.AddToClassList("col-body");
+            joinLobby.RegisterCallback<ClickEvent>(async evt => await gameLobbyManager.JoinLobby(lobby));
+            joinLobby.SetEnabled(!await gameLobbyManager.IsPlayerInLobby(lobby));
 
             row.Add(lobbyID);
             row.Add(lobbyName);
@@ -109,6 +123,13 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
             listLobbiesTable.Add(row);
          }    
+
+         listLobbiesTable.style.maxHeight = lobbyCount * lobbyRowHeight;
+    }
+
+    void ListLobbyBackBtn(){
+        listLobbiesTable.style.maxHeight = 0;
+        ShowMenu(listLobbiesContainer);
     }
 
     void HideMenu(VisualElement selectedItem){
