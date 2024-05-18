@@ -1,49 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Unity.Services.Authentication;
-using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 
-public class GameLobbyManager : MonoBehaviour
-{
+public class GameLobbyManager : MonoBehaviour {
    
-    public LobbyManager lobbyManager;
+    private LobbyManager lobbyManager;
     private Lobby lobby;
+    private string playerId;
+    private List<String> joinedLobbyList;
+
+    // Rate Limit Timers
+
+    float getJoinedLobbiesTimer; 
+    float getJoinedLobbiesLimit = 30f;
+    bool canRequestGetJoinedLobbies = true;
 
     void Awake(){
         lobbyManager = LobbyManager.Instance;
     }
 
     async void Start(){
-        await UnityServices.InitializeAsync();
-        await SignInCachedUserAsync();
-
+        playerId = await lobbyManager.SignInUser();
     }
 
     private void Update(){
         
-    }
-
-    async Task SignInCachedUserAsync(){
-
-        try{
-            if (!AuthenticationService.Instance.IsSignedIn){
-                AuthenticationService.Instance.ClearSessionToken();
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-                Debug.Log("Signed in user: " + AuthenticationService.Instance.PlayerId);
-            }
+        if(getJoinedLobbiesTimer > 0){
+            getJoinedLobbiesTimer -= Time.deltaTime;
         }
-        catch(AuthenticationException e){
-            Debug.LogException(e);
+        else{
+            canRequestGetJoinedLobbies = true;
         }
     }
 
-    public async Task CreateLobby(){
-        string lobbyName = "MyLobby";
+    public async Task CreateLobby(string lobbyName){
         int maxPlayers = 4;
         lobby = await lobbyManager.CreateLobby(lobbyName, maxPlayers);
         StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 15));
@@ -63,18 +58,28 @@ public class GameLobbyManager : MonoBehaviour
         return await lobbyManager.GetLobbiesList();
     }
 
-    public async Task JoinLobby(Lobby lobby){
-        await lobbyManager.JoinLobby(lobby);
+    public async Task JoinLobby(Lobby lobbyToJoin){
+        await lobbyManager.JoinLobby(lobbyToJoin);
     }
 
-    public async Task<bool> IsPlayerInLobby(Lobby lobby){
-        var joinedLobbies = await lobbyManager.GetJoinedLobbies();
+    public async Task<bool> IsPlayerInLobby(Lobby lobbyToCheck){
 
-        foreach(string lobbyId in joinedLobbies){
-            if(lobby.Id == lobbyId){
+        if(canRequestGetJoinedLobbies){
+            joinedLobbyList = await lobbyManager.GetJoinedLobbies();
+            canRequestGetJoinedLobbies = false;
+            getJoinedLobbiesTimer = getJoinedLobbiesLimit;
+        }
+
+        foreach(string lobbyId in joinedLobbyList){
+            if(lobbyToCheck.Id == lobbyId){
                 return true;
             }
         }
         return false;
     }
+
+    public string GetPlayerID(){
+        return playerId;
+    }
+
 }

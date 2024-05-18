@@ -39,17 +39,20 @@
                 <!-- Table Header Row Container-->
                 <ui:VisualElement name="lobby-table-header" class="row-container">
                     <!-- Header Row-->
-                    <ui:VisualElement name="col-header" class="col-header">
+                    <ui:VisualElement name="col-header" class="col-header col-lobby-id">
                         <ui:Label text="Lobby ID"/>
                     </ui:VisualElement>
-                    <ui:VisualElement name="col-header" class="col-header">
+                    <ui:VisualElement name="col-header" class="col-header col-lobby-name">
                         <ui:Label text="Lobby Name"/>
                     </ui:VisualElement>
-                    <ui:VisualElement name="col-header" class="col-header">
+                    <ui:VisualElement name="col-header" class="col-header col-players">
                         <ui:Label text="Players"/>
                     </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-header col-host">
+                        <ui:Label text="Host"/>
+                    </ui:VisualElement>
                     <ui:VisualElement name="col-header" class="col-header col-join-lobby">
-                        <ui:Label text="Join Lobby"/>
+                        <ui:Label text="Join"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
 
@@ -58,21 +61,37 @@
                     <!-- Table Body Row Container-->
                 </ui:VisualElement>
              </ui:VisualElement>
-            <ui:VisualElement name="back-btn-container" class="back-btn-container">
-                <ui:Button text="Back" name="lobby-back-btn" class="back-btn"/>
-            </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- Lobby Modal -->
         <ui:VisualElement name="lobby-modal-container" class="lobby-modal-container">
             <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
                 <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
                     <ui:Label text="Create a lobby"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="lobby-modal-form" class="lobby-modal-form">
-                    <ui:TextField label="Lobby Name" name="the-uxml-field" value="Enter lobby name..." />
+                    <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                        <ui:Label text="Lobby Name:" class="lobby-name-label"/>
+                        <ui:TextField name="lobby-name-input" class="lobby-name-input" value="Enter lobby name here..." />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                        <ui:Label text="Max Players:" class="lobby-name-label"/>
+                        <ui:TextField name="lobby-name-input" class="lobby-name-input" value="Enter max plaer count here..." />
+                    </ui:VisualElement>
                 </ui:VisualElement>
+                <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn"/>
+                <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
             </ui:VisualElement>
         </ui:VisualElement>
- 
+    </ui:VisualElement>
+
+    <!-- Back to Main Menu button -->
+    <ui:VisualElement name="back-btn-container" class="back-btn-container">
+        <ui:Button text="Back" name="lobby-back-btn" class="back-btn"/>
+    </ui:VisualElement>
+
+    <!-- Player ID -->
+    <ui:VisualElement name="player-id-container" class="player-id-container">
+        <ui:Label text="Player ID: " name="player-id" class="player-id"/>
     </ui:VisualElement>
 </ui:UXML>

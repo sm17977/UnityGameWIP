@@ -1,5 +1,5 @@
 
-using QFSW.QC;
+
 using Unity.Services.Lobbies;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,12 +7,15 @@ using System.Linq;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using System;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
 public sealed class LobbyManager{
 
     private static LobbyManager instance = null;
     private static readonly object padlock = new object();
+    private Lobby lobby;
 
-    LobbyManager(){
+    private LobbyManager(){
     }
 
     public static LobbyManager Instance{
@@ -26,28 +29,28 @@ public sealed class LobbyManager{
         }
     }
 
+    public async Task<string> SignInUser(){
+        await UnityServices.InitializeAsync();
+        
+        try{
+            if (!AuthenticationService.Instance.IsSignedIn){
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log("Signed in user: " + AuthenticationService.Instance.PlayerId);
+            }
+            return AuthenticationService.Instance.PlayerId;
+        }
+        catch(AuthenticationException e){
+            Debug.LogException(e);
+            return "null";
+        }
+    }
+
     public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers){
-        Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers);
+        lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers);
         Debug.Log("Created new lobby: " + lobbyName);
         return lobby;
     }
-
-
-    private async void ListLobbies(){
-        try{
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
-
-            foreach(Lobby lobby in queryResponse.Results){
-                Debug.Log("Lobby Name: " + lobby.Name);
-            }
-        }
-        catch(LobbyServiceException e){
-            Debug.Log(e);
-        }
-    }
-
-
+    
     public async Task<List<Lobby>> GetLobbiesList(){
         try{
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
@@ -85,6 +88,12 @@ public sealed class LobbyManager{
         }
     }
 
+    
+    public void OnApplicationQuit(){
+        if(lobby != null && lobby.HostId == AuthenticationService.Instance.PlayerId){
+            LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
+        }
+    }
 
 
 

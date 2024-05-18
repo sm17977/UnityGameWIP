@@ -1,0 +1,145 @@
+﻿using System.Threading.Tasks;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Multiplay;
+using UnityEngine;
+
+namespace Multiplayer
+{
+    public sealed class ServerManager {
+        
+#if DEDICATED_SERVER
+        private IServerQueryHandler _serverQueryHandler;
+#endif        
+        
+        private static ServerManager _instance = null;
+        private static readonly object Padlock = new object();
+        private ServerManager(){
+        }
+
+        public static ServerManager Instance {
+            get{
+                lock(Padlock){
+                    _instance ??= new ServerManager();
+                    return _instance;
+                }
+            }
+        }
+
+        public async Task InitializeUnityAuth() {
+            if (UnityServices.State != ServicesInitializationState.Initialized) {
+                Debug.Log("TEST");
+                var initializationOptions = new InitializationOptions();
+                await UnityServices.InitializeAsync();
+                
+#if !DEDICATED_SERVER
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+#endif
+                
+#if DEDICATED_SERVER
+                Debug.Log("DEDICATED_SERVER LOBBY - INITIALIZING");
+
+                var multiplayEventCallbacks = new MultiplayEventCallbacks();
+                multiplayEventCallbacks.Allocate += OnAllocate;
+                multiplayEventCallbacks.Deallocate += OnDeallocate;
+                multiplayEventCallbacks.Error += OnError;
+                multiplayEventCallbacks.SubscriptionStateChanged += OnSubscriptionStateChanged;
+                
+                var serverEvents = await MultiplayService.Instance.SubscribeToServerEventsAsync(multiplayEventCallbacks);
+
+                _serverQueryHandler =
+                    await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)4, "MyServerName", "Arena", "81317",
+                        "map");
+
+                var serverConfig = MultiplayService.Instance.ServerConfig;
+                if (serverConfig.AllocationId != "") {
+                    OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
+                        serverConfig.AllocationId));
+                }
+#endif
+            }
+            else {
+#if DEDICATED_SERVER
+                Debug.Log("DEDICATED_SERVER LOBBY - ALREADY INITIALIZED");
+
+                var serverConfig = MultiplayService.Instance.ServerConfig;
+                if (serverConfig.AllocationId != "") {
+                    OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
+                        serverConfig.AllocationId));
+                }
+#endif
+            }
+        }
+
+        private void OnAllocate(MultiplayAllocation allocation) {
+#if DEDICATED_SERVER
+            Debug.Log("DEDICATED_SERVER OnAllocate");
+            
+            var serverConfig = MultiplayService.Instance.ServerConfig;
+            Debug.Log($"Server ID[{serverConfig.ServerId}]");
+            Debug.Log($"AllocationID[{serverConfig.AllocationId}]");
+            Debug.Log($"Port[{serverConfig.Port}]");
+            Debug.Log($"QueryPort[{serverConfig.QueryPort}");
+            Debug.Log($"LogDirectory[{serverConfig.ServerLogDirectory}]");
+            
+            var port = serverConfig.Port;
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", port, "0.0.0.0");
+            StartServer();
+#endif
+        }
+
+        private void OnDeallocate(MultiplayDeallocation deallocation) {
+#if DEDICATED_SERVER    
+            
+#endif
+        }
+
+        private void OnError(MultiplayError error) {
+#if DEDICATED_SERVER    
+            
+#endif
+        }
+
+        private void OnSubscriptionStateChanged(MultiplayServerSubscriptionState stateChanged) {
+#if DEDICATED_SERVER    
+            
+#endif
+        }
+
+        private async void StartServer() {
+#if DEDICATED_SERVER
+            NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            NetworkManager.Singleton.StartServer();
+            await MultiplayService.Instance.ReadyServerForPlayersAsync();
+#endif
+        }
+
+        public void Disconnect() {
+            NetworkManager.Singleton.Shutdown();
+        }
+
+        private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
+            
+        }
+        
+        private void OnClientConnected(ulong clientId) {
+            Debug.Log($"New client connected: {clientId}");
+        }
+
+        public void UpdateServer() {
+#if DEDICATED_SERVER            
+            if (_serverQueryHandler != null) {
+                _serverQueryHandler.UpdateServerCheck();
+            }
+#endif
+        }
+        
+        private void OnClientDisconnected(ulong clientId) {
+            Debug.Log($"Client disconnected: {clientId}");
+        }
+    }
+}
