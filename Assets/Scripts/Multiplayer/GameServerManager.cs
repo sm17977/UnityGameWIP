@@ -9,6 +9,10 @@ namespace Multiplayer {
         private readonly ServerManager _serverManager = ServerManager.Instance;
         private void Awake() {
             Debug.Log("Awake");
+#if DEDICATED_SERVER
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+#endif
         }
 
         private async void Start() {

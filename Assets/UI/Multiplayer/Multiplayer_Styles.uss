@@ -105,7 +105,6 @@ Label{
     right: 0;
     bottom: 0;
     padding: 20px;
-    display: flex;
     justify-content: flex-end;
     align-items: flex-end;
     align-self: flex-end;
@@ -124,7 +123,6 @@ Label{
     right: 0;
     bottom: 0;
     padding: 20px;
-    display: flex;
     justify-content: flex-start;
     align-items: flex-start;
     display: flex;
@@ -187,4 +185,15 @@ Label{
 
 .lobby-name-label{
     color: white;
+}
+
+.lobby-loader {
+    display: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border-width: 9px;
+    border-color: #dbdcef;
+    border-right-color: #474bff;
+    transition: rotate 1s linear;
 }

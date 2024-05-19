@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Multiplayer;
 using QFSW.QC;
@@ -7,6 +10,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
+
 
 public class Multiplayer_UI_Controller : MonoBehaviour
 {
@@ -17,6 +21,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     // Visual Elements
 
     // Menu
+    VisualElement mainContainer;
     VisualElement menuBtnsContainer;
     List<Button> menuBtns;
     Label playerIdLabel;
@@ -32,6 +37,11 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     Button cancelLobbyBtn;
     VisualElement lobbyModalContainer;
     TextField lobbyNameInput;
+    
+    // Loader
+    VisualElement lobbyLoader;
+    private float rotation = 0;
+    private float timer = 0;
 
     // Input System
     private Controls controls;
@@ -40,6 +50,10 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     private Global_State globalState;
     public GameObject gameLobbyManagerObj;
     private GameLobbyManager gameLobbyManager;
+    
+    //
+    private CancellationTokenSource cancellationTokenSource;
+    
 
     void Awake(){
 
@@ -47,6 +61,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
 
         playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
+        mainContainer = uiDocument.rootVisualElement.Q<VisualElement>("main-container");
         menuBtnsContainer = uiDocument.rootVisualElement.Q<VisualElement>("menu-container");
         menuBtns = uiDocument.rootVisualElement.Query<Button>("btn").ToList();
 
@@ -58,10 +73,11 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         
         lobbyModalContainer = uiDocument.rootVisualElement.Q<VisualElement>("lobby-modal-container");
         lobbyNameInput = uiDocument.rootVisualElement.Q<TextField>("lobby-name-input");
+        lobbyLoader = uiDocument.rootVisualElement.Q<VisualElement>("lobby-loader");
         createLobbyBtn = uiDocument.rootVisualElement.Q<Button>("create-lobby-btn");
         createLobbyBtn.RegisterCallback<ClickEvent>(evt => CreateLobby());
         cancelLobbyBtn = uiDocument.rootVisualElement.Q<Button>("cancel-lobby-btn");
-        cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => HideVisualElement(lobbyModalContainer));
+        cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => CancelLobby());
 
         foreach (var button in menuBtns){
 
@@ -82,35 +98,78 @@ public class Multiplayer_UI_Controller : MonoBehaviour
                 case "Main Menu":
                     button.RegisterCallback<ClickEvent>(evt => globalState.LoadScene(button.text));
                     break;
-
             }
-        }  
+        }
+
+        Debug.Log("here");
     }
 
     void Start(){
         playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
     }
 
+    private void Update() {
+        if (lobbyLoader != null) {
+            if (timer >= 1) {
+                RotateLoader();
+                timer = 0;
+            }
+            else {
+                timer += Time.deltaTime;
+            }
+        }
+    }
+
+    // Create a lobby and request a game server
    async void CreateLobby(){
         playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
         string lobbyName = lobbyNameInput.text;
+        ShowVisualElement(lobbyLoader);
         await gameLobbyManager.CreateLobby(lobbyName);
-        HideVisualElement(lobbyModalContainer);
-        ListLobbies(new ClickEvent());
-        await StartClient();
+        cancellationTokenSource = new CancellationTokenSource();
+        var clientConnected = await StartClient(cancellationTokenSource.Token);
+        HideVisualElement(lobbyLoader);
+        if (clientConnected) {
+            HideVisualElement(mainContainer);
+        }
    }
 
-   private async Task StartClient() {
-       WebServicesAPI webServicesAPI = new WebServicesAPI();
-       await webServicesAPI.GetServerList();
-       await webServicesAPI.RequestAPIToken();
-       await webServicesAPI.QueueAllocationRequest();
-       GetAllocationResponse response = await webServicesAPI.GetAllocationRequest();
+   // TODO - Ensure only lobby hosts can request a server allocation
+   private async Task<bool> StartClient(CancellationToken cancellationToken) {
 
-       string ipv4Address = "35.233.17.110";//response.ipv4;
-       ushort port = 9000;//(ushort)response.gamePort;
-       NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ipv4Address, port);
-       NetworkManager.Singleton.StartClient();
+       try {
+           WebServicesAPI webServicesAPI = new WebServicesAPI();
+           await webServicesAPI.GetServerList();
+           await webServicesAPI.RequestAPIToken();
+           await webServicesAPI.QueueAllocationRequest();
+
+           GetAllocationResponse response =
+               await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
+
+           if (response != null && !string.IsNullOrEmpty(response.ipv4)) {
+               string ipv4Address = response.ipv4;
+               ushort port = (ushort)response.gamePort;
+               NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ipv4Address, port);
+               NetworkManager.Singleton.StartClient();
+               Debug.Log("Client started successfully.");
+               return true;
+           }
+       }
+       catch (OperationCanceledException) {
+           Debug.Log("Cancelled allocation request");
+       }
+
+       Debug.LogError("Failed to retrieve server allocation details.");
+       return false;
+   }
+
+   void CancelLobby() {
+       HideVisualElement(lobbyLoader);
+       HideVisualElement(lobbyModalContainer);
+       ClearFormInput();
+       if (cancellationTokenSource != null) {
+           cancellationTokenSource.Cancel(); 
+       }
    }
    
     void OpenCreateLobbyModal(ClickEvent evt){
@@ -188,11 +247,15 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     }
 
     void HideVisualElement(VisualElement element){
-        element.style.display = DisplayStyle.None;
+        if (element != null) {
+            element.style.display = DisplayStyle.None;
+        }
     }
 
     void ShowVisualElement(VisualElement element){
-        element.style.display = DisplayStyle.Flex;
+        if (element != null) {
+            element.style.display = DisplayStyle.Flex;
+        }
     }
 
     void HideMenu(VisualElement selectedItem){
@@ -205,9 +268,19 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         selectedItem.style.display = DisplayStyle.None;
     }
 
+    void RotateLoader() {
+        rotation += 360;
+        lobbyLoader.style.rotate =
+            new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(rotation, AngleUnit.Degree)));
+    }
+
     void PlaceholderFunc(ClickEvent evt){
         var targetButton = evt.target as Button;
         Debug.Log(targetButton.text);
+    }
+
+    void ClearFormInput() {
+        lobbyNameInput.SetValueWithoutNotify("");
     }
 
     void OnEnable(){

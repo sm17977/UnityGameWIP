@@ -9,8 +9,10 @@
 
     <Style src="project://database/Assets/UI/Multiplayer/Multiplayer_Styles.uss" />
 
-    <!-- Multiplayer Menu Buttons-->
+    <!-- Main Container -->
     <ui:VisualElement name="main-container" class="main-container">
+        
+        <!-- Multiplayer Menu Buttons-->
         <ui:VisualElement name="title-container" class="title-container">
             <ui:Label text="Multiplayer" class="title-label"/>
         </ui:VisualElement>
@@ -29,7 +31,7 @@
              </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Lobby Table Container-->
+        <!-- Lobby Table Container -->
         <ui:VisualElement name="lobby-container" class="lobby-container">
             <ui:VisualElement name="lobby-heading" class="lobby-heading">
                 <ui:Label text="Lobbies" class="heading-label"/>
@@ -55,14 +57,14 @@
                         <ui:Label text="Join"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
-
+    
                 <!-- Table Body Container-->
                 <ui:VisualElement name="lobby-table-body" class="lobby-table-body">
                     <!-- Table Body Row Container-->
                 </ui:VisualElement>
              </ui:VisualElement>
         </ui:VisualElement>
-
+    
         <!-- Lobby Modal -->
         <ui:VisualElement name="lobby-modal-container" class="lobby-modal-container">
             <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
@@ -76,20 +78,22 @@
                     </ui:VisualElement>
                     <ui:VisualElement name="modal-input-container" class="modal-input-container">
                         <ui:Label text="Max Players:" class="lobby-name-label"/>
-                        <ui:TextField name="lobby-name-input" class="lobby-name-input" value="Enter max plaer count here..." />
+                        <ui:TextField name="lobby-name-input" class="lobby-name-input" value="Enter max player count here..." />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn"/>
                 <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
+                <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+    
     </ui:VisualElement>
-
+  
     <!-- Back to Main Menu button -->
     <ui:VisualElement name="back-btn-container" class="back-btn-container">
         <ui:Button text="Back" name="lobby-back-btn" class="back-btn"/>
     </ui:VisualElement>
-
+    
     <!-- Player ID -->
     <ui:VisualElement name="player-id-container" class="player-id-container">
         <ui:Label text="Player ID: " name="player-id" class="player-id"/>

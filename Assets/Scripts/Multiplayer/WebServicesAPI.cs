@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -160,6 +162,26 @@ namespace Multiplayer
                 catch (Exception e) {
                     Debug.LogError($"Error: {e}");
                 }
+            }
+            return response;
+        }
+        
+        // Poll the allocation request, because the response will not contain the server IP if it's not ready yet
+        public async Task<GetAllocationResponse> PollForAllocation(int timeoutSeconds, CancellationToken cancellationToken) {
+            int elapsed = 0;
+            const int pollInterval = 5;
+            GetAllocationResponse response = await GetAllocationRequest();
+
+            while (string.IsNullOrEmpty(response.ipv4) && elapsed < timeoutSeconds) {
+                cancellationToken.ThrowIfCancellationRequested();
+                await Task.Delay(pollInterval * 1000, cancellationToken);
+                elapsed += pollInterval;
+                response = await GetAllocationRequest();
+            }
+
+            if (string.IsNullOrEmpty(response.ipv4)) {
+                Debug.LogError("Polling timed out.");
+                return null;
             }
             return response;
         }
