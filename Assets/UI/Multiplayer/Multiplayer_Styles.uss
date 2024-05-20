@@ -2,8 +2,6 @@
     width: 100%;
     height: 100%;
     background-color: white;
-    opacity: 0.9;
-
 }
 
 .title-container{
@@ -79,7 +77,6 @@
 }
 
 Label{
-    background-color: white;
     white-space: normal;
 }
 
@@ -162,16 +159,27 @@ Label{
 }
 
 .lobby-modal-content{
-    background-color: black;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
     width: 800px;
     height: 600px;
     align-items: center;
+    align-content: center;
+    padding: 20px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 20px;
 }
 
 .lobby-modal-header{
     -unity-font-style: bold;
     font-size: 80px;
-    color: white;
+    padding: 10px;
+}
+
+.lobby-modal-header-label{
+    color: black;
 }
 
 .modal-input-container{
@@ -179,13 +187,52 @@ Label{
     flex-direction: row;
 }
 
-.lobby-name-input{
-
+.lobby-modal-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    border-color: white;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
 }
 
-.lobby-name-label{
-    color: white;
+.form-columns-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
+
+.form-left-column{
+    width: 50%;
+    -unity-text-align: middle-right;
+    align-items: flex-end;
+    justify-content: space-evenly;
+}
+
+.form-left-column Label{
+    font-size: 32px;
+}
+
+.form-right-column{
+    width: 50%;
+    justify-content: space-between;
+    font-size: 32px;
+}
+
+.form-right-column TextField{
+    width: 70%;
+    border-color: white;
+}
+
+.form-buttons-container{
+    width: 100%;
+}
+
+.form-buttons-container Button{
+    font-size: 32px;
+}
+
 
 .lobby-loader {
     display: none;

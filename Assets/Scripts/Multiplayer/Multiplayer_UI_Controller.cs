@@ -122,6 +122,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
     // Create a lobby and request a game server
    async void CreateLobby(){
+       createLobbyBtn.SetEnabled(false);
         playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
         string lobbyName = lobbyNameInput.text;
         ShowVisualElement(lobbyLoader);
@@ -132,6 +133,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         if (clientConnected) {
             HideVisualElement(mainContainer);
         }
+        createLobbyBtn.SetEnabled(true);
    }
 
    // TODO - Ensure only lobby hosts can request a server allocation

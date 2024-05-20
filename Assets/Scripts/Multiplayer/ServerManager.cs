@@ -32,13 +32,9 @@ namespace Multiplayer
             if (UnityServices.State != ServicesInitializationState.Initialized) {
                 Debug.Log("TEST");
                 var initializationOptions = new InitializationOptions();
-                await UnityServices.InitializeAsync();
-                
-#if !DEDICATED_SERVER
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
-#endif
                 
 #if DEDICATED_SERVER
+                await UnityServices.InitializeAsync();
                 Debug.Log("DEDICATED_SERVER LOBBY - INITIALIZING");
 
                 var multiplayEventCallbacks = new MultiplayEventCallbacks();

@@ -30,6 +30,9 @@ namespace Multiplayer
 
         private static readonly string ListServersEndpoint =
             $"/multiplay/servers/v1/projects/{ProjectId}/environments/{EnvId}/servers";
+        
+        private static readonly string ListMachinesEndpoint =
+            $"/multiplay/machines/v1/projects/{ProjectId}/environments/{EnvId}/machines";
 
         private static readonly string TokenExchangeEndpoint =
             $"/auth/v1/token-exchange?projectId={ProjectId}&environmentId={EnvId}";
@@ -54,7 +57,8 @@ namespace Multiplayer
         public async Task RequestAPIToken() {
 
             var payload = new {
-                scopes = new[] { "multiplay.allocations.create", "multiplay.allocations.list" , "multiplay.allocations.get"} 
+                scopes = new[] { "multiplay.allocations.create", "multiplay.allocations.list" ,
+                    "multiplay.allocations.get", "multiplay.machines.list"} 
             };
 
             string jsonPayload = JsonConvert.SerializeObject(payload);
@@ -220,6 +224,54 @@ namespace Multiplayer
                 }
             }
             return servers;
+        }
+
+        public async Task<Machine[]> GetMachineList() {
+            Machine[] machines = Array.Empty<Machine>();
+            
+            var uri = Protocol + ServicesDomain + ListMachinesEndpoint;
+            using var www = UnityWebRequest.Get(uri);
+            www.SetRequestHeader("Authorization", "Basic " + _authHeader);
+
+            var operation = www.SendWebRequest();
+            
+            while (!operation.isDone) {
+                await Task.Yield();
+            }
+
+            if (www.result == UnityWebRequest.Result.ConnectionError || 
+                www.result == UnityWebRequest.Result.ProtocolError) {
+                Debug.LogError($"Error: {www.error}");
+            }
+            else {
+                var jsonResponse = www.downloadHandler.text;
+                try {
+                    Debug.Log($"Success: {jsonResponse}");
+                    machines = JsonConvert.DeserializeObject<Machine[]>(jsonResponse);
+                    foreach (Machine machine in machines) {
+                        Debug.Log($"Machine: {machine.ip}, Status: {machine.status}");
+                    }
+                    return machines;
+                }
+                catch (Exception e) {
+                    Debug.LogError($"Error: {e}");
+                    Server[] emptyServersArray;
+                }
+            }
+            return machines;
+        }
+
+        public async Task<string> GetMachineStatus(string serverIp) {
+
+            Machine[] machines = await GetMachineList();
+            
+            foreach (Machine machine in machines) {
+                if (machine.ip == serverIp) {
+                    return machine.status;
+                }
+            }
+
+            return "";
         }
     }
 }
