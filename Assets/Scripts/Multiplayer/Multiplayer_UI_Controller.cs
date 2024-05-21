@@ -10,7 +10,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
-
+using WebSocketSharp;
 
 public class Multiplayer_UI_Controller : MonoBehaviour
 {
@@ -37,6 +37,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     Button cancelLobbyBtn;
     VisualElement lobbyModalContainer;
     TextField lobbyNameInput;
+    private Label lobbyStatusLabel;
     
     // Loader
     VisualElement lobbyLoader;
@@ -73,6 +74,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         
         lobbyModalContainer = uiDocument.rootVisualElement.Q<VisualElement>("lobby-modal-container");
         lobbyNameInput = uiDocument.rootVisualElement.Q<TextField>("lobby-name-input");
+        lobbyStatusLabel = uiDocument.rootVisualElement.Q<Label>("lobby-status-label");
         lobbyLoader = uiDocument.rootVisualElement.Q<VisualElement>("lobby-loader");
         createLobbyBtn = uiDocument.rootVisualElement.Q<Button>("create-lobby-btn");
         createLobbyBtn.RegisterCallback<ClickEvent>(evt => CreateLobby());
@@ -122,14 +124,19 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
     // Create a lobby and request a game server
    async void CreateLobby(){
-       createLobbyBtn.SetEnabled(false);
         playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
-        string lobbyName = lobbyNameInput.text;
+        
+        createLobbyBtn.SetEnabled(false);
+        var lobbyName = lobbyNameInput.text;
+        ShowVisualElement(lobbyStatusLabel);
         ShowVisualElement(lobbyLoader);
+        
         await gameLobbyManager.CreateLobby(lobbyName);
         cancellationTokenSource = new CancellationTokenSource();
         var clientConnected = await StartClient(cancellationTokenSource.Token);
+        
         HideVisualElement(lobbyLoader);
+        HideVisualElement(lobbyStatusLabel);
         if (clientConnected) {
             HideVisualElement(mainContainer);
         }
@@ -141,29 +148,57 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
        try {
            WebServicesAPI webServicesAPI = new WebServicesAPI();
-           await webServicesAPI.GetServerList();
            await webServicesAPI.RequestAPIToken();
-           await webServicesAPI.QueueAllocationRequest();
-
-           GetAllocationResponse response =
-               await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
-
-           if (response != null && !string.IsNullOrEmpty(response.ipv4)) {
-               string ipv4Address = response.ipv4;
-               ushort port = (ushort)response.gamePort;
-               NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ipv4Address, port);
+           var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, webServicesAPI);
+           if (!clientConnectionInfo.IP.IsNullOrEmpty()) {
+               NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(clientConnectionInfo.IP, (ushort)clientConnectionInfo.Port);
                NetworkManager.Singleton.StartClient();
-               Debug.Log("Client started successfully.");
                return true;
            }
        }
        catch (OperationCanceledException) {
-           Debug.Log("Cancelled allocation request");
+           
        }
-
-       Debug.LogError("Failed to retrieve server allocation details.");
        return false;
    }
+   
+   private async Task<ClientConnectionInfo> GetClientConnectionInfo(CancellationToken cancellationToken, WebServicesAPI webServicesAPI) {
+            
+       // Queue allocation request for a game server
+       await webServicesAPI.QueueAllocationRequest();
+       
+       // Check for active machine
+       var machineStatus = await webServicesAPI.GetMachineStatus();
+       
+       // If no machine is found yet, keep polling until one is
+       if (machineStatus.IsNullOrEmpty()) {
+           var machines = await webServicesAPI.PollForMachine(60 * 5, cancellationToken, false);
+           var initStatus = machines[0].status;
+           lobbyStatusLabel.text = initStatus;
+           
+           while (true) {
+               Debug.Log("before req6");
+               var status = await webServicesAPI.GetMachineStatus();
+               if (status != "" && status != initStatus) {
+                   lobbyStatusLabel.text = status;
+                   break;
+               }
+           }
+       }
+       else {
+           lobbyStatusLabel.text = machineStatus;
+       }
+            
+       // Get the IP and Port of allocated game server
+       var response = await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
+
+       if (response != null) {
+           return new ClientConnectionInfo { IP = response.ipv4, Port = response.gamePort };
+       }
+
+       return new ClientConnectionInfo { IP = "", Port = 0 };
+   }
+
 
    void CancelLobby() {
        HideVisualElement(lobbyLoader);

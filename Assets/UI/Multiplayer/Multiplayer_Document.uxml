@@ -96,6 +96,9 @@
                         <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn"/>
                         <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
                         <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
+                        <ui:VisualElement name="lobby-status" class="lobby-status">
+                            <ui:Label text="Status: " name="lobby-status-label" class="lobby-status-label"/>
+                        </ui:VisualElement>
                     </ui:VisualElement>
                     
                 </ui:VisualElement>

@@ -32,6 +32,8 @@
         public string CpuShortname { get; set; }
         public int CpuSpeed { get; set; }
         public string CpuType { get; set; }
-        public int Memory { get; set; }
+        public long Memory { get; set; }
     }
 }
+
+

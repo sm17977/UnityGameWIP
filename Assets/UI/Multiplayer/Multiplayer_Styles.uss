@@ -233,6 +233,10 @@ Label{
     font-size: 32px;
 }
 
+.lobby-status-label{
+    display: none;
+}
+
 
 .lobby-loader {
     display: none;
