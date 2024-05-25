@@ -12,14 +12,19 @@
     <!-- Main Container -->
     <ui:VisualElement name="main-container" class="main-container">
         
-        <!-- Multiplayer Menu Buttons-->
+        <!-- Multiplayer Heading -->
         <ui:VisualElement name="title-container" class="title-container">
             <ui:Label text="Multiplayer" class="title-label"/>
         </ui:VisualElement>
+        
+        <!-- Multiplayer Menu Buttons-->
         <ui:VisualElement name="menu-container" class="menu-container">
-             <ui:VisualElement name="list-item" class="list-item">
+             <ui:VisualElement name="create-lobby-btn-container" class="list-item">
                  <ui:Button text="Create new lobby" name="btn" class="list-item-btn"/>
              </ui:VisualElement>
+            <ui:VisualElement name="current-lobby-btn-container" class="list-item current-lobby-menu-btn-container">
+                <ui:Button text="Current lobby" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
             <ui:VisualElement name="list-item" class="list-item">
                  <ui:Button text="List lobbies" name="btn" class="list-item-btn"/>
              </ui:VisualElement>
@@ -31,15 +36,15 @@
              </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- Lobby Table Container -->
-        <ui:VisualElement name="lobby-container" class="lobby-container">
-            <ui:VisualElement name="lobby-heading" class="lobby-heading">
-                <ui:Label text="Lobbies" class="heading-label"/>
+        <!-- Lobbies Table Container -->
+        <ui:VisualElement name="lobbies-container" class="lobbies-container">
+            <ui:VisualElement name="subheading-container" class="subheading-container">
+                <ui:Label text="Lobbies" class="subheading-label"/>
             </ui:VisualElement>
             <!-- Lobby Table-->
-            <ui:VisualElement name="lobby-table" class="lobby-table">
+            <ui:VisualElement name="lobbies-table" class="table">
                 <!-- Table Header Row Container-->
-                <ui:VisualElement name="lobby-table-header" class="row-container">
+                <ui:VisualElement name="lobbies-table-header" class="row-container header-row">
                     <!-- Header Row-->
                     <ui:VisualElement name="col-header" class="col-header col-lobby-id">
                         <ui:Label text="Lobby ID"/>
@@ -59,13 +64,13 @@
                 </ui:VisualElement>
     
                 <!-- Table Body Container-->
-                <ui:VisualElement name="lobby-table-body" class="lobby-table-body">
+                <ui:VisualElement name="lobbies-table-body" class="table-body">
                     <!-- Table Body Row Container-->
                 </ui:VisualElement>
              </ui:VisualElement>
         </ui:VisualElement>
     
-        <!-- Lobby Modal -->
+        <!-- Create Lobby Modal -->
         <ui:VisualElement name="lobby-modal-container" class="lobby-modal-container">
             <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
                 <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
@@ -104,12 +109,48 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        
+        <!-- Current Lobby -->
+        <ui:VisualElement name="current-lobby-container" class="current-lobby-container">
+            <ui:VisualElement name="subheading" class="subheading">
+                <ui:Label text="Current Lobby" class="subheading-label"/>
+            </ui:VisualElement>
+            <!-- Current Lobby Table-->
+            <ui:VisualElement name="current-lobby-table" class="table">
+                <!-- Table Header Row Container-->
+                <ui:VisualElement name="current-lobby-table-header" class="row-container header-row">
+                    <!-- Header Row-->
+                    <ui:VisualElement name="col-header" class="col-header col-player-id">
+                        <ui:Label text="Player ID"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-header col-player-name">
+                        <ui:Label text="Player Name"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-header col-last-updated">
+                        <ui:Label text="Last Updated"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-header col-is-host">
+                        <ui:Label text="Is Host"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
     
+                <!-- Table Body Container-->
+                <ui:VisualElement name="current-lobby-table-body" class="table-body">
+                    <!-- Table Body Row Container-->
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
+            <ui:VisualElement name="current-lobby-btn-container" class="current-lobby-btn-container">
+                <ui:Button text="Leave Lobby" name="leave-lobby-btn" class="leave-lobby-btn"/>
+                <ui:Button text="Join Game" name="play-btn" class="play-btn"/>
+            </ui:VisualElement>
+            
+        </ui:VisualElement>
     </ui:VisualElement>
   
     <!-- Back to Main Menu button -->
     <ui:VisualElement name="back-btn-container" class="back-btn-container">
-        <ui:Button text="Back" name="lobby-back-btn" class="back-btn"/>
+        <ui:Button text="Back" name="back-btn" class="back-btn"/>
     </ui:VisualElement>
     
     <!-- Player ID -->

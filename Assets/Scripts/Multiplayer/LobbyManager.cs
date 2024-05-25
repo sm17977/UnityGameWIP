@@ -30,7 +30,13 @@ public sealed class LobbyManager{
     }
 
     public async Task<string> SignInUser(){
-        await UnityServices.InitializeAsync();
+        
+        System.Random random = new System.Random();
+        int randomNumber = random.Next();
+        
+        var options = new InitializationOptions();
+        options.SetProfile("Player" +  randomNumber.ToString());
+        await UnityServices.InitializeAsync(options);
         
         try{
             if (!AuthenticationService.Instance.IsSignedIn){
@@ -45,8 +51,17 @@ public sealed class LobbyManager{
         }
     }
 
-    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers){
-        lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers);
+    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, Dictionary<string, string> data) {
+
+        Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
+        Player player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
+
+        CreateLobbyOptions options = new CreateLobbyOptions() {
+            IsPrivate = false,
+            Player = player
+        };
+        
+        lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
         Debug.Log("Created new lobby: " + lobbyName);
         return lobby;
     }
@@ -67,12 +82,43 @@ public sealed class LobbyManager{
         }
         return new List<Lobby>();
     }
+    
+    public async Task<Lobby> GetLobby(string lobbyId) {
+        try {
+            return await LobbyService.Instance.GetLobbyAsync(lobbyId);
+        }
+        catch (LobbyServiceException e) {
+            Debug.Log(e);
+        }
 
-    public async Task JoinLobby(Lobby lobby){
-        try{
-            await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
+        return null;
+    }
+
+    public async Task<Lobby> JoinLobby(Lobby lobby, Dictionary<string, string> data){
+        
+        Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
+        Player player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
+        
+        try {
+            JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions() {
+                Player = player
+            };
+            lobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
+            return lobby;
         }
         catch (LobbyServiceException e){
+            Debug.Log(e);
+        }
+
+        return null;
+    }
+
+    public async Task LeaveLobby(string lobbyId) {
+        try {
+            string playerId = AuthenticationService.Instance.PlayerId;
+            await LobbyService.Instance.RemovePlayerAsync(lobbyId, playerId);
+        }
+        catch (LobbyServiceException e) {
             Debug.Log(e);
         }
     }
@@ -86,6 +132,41 @@ public sealed class LobbyManager{
             Debug.Log(e);
             return new List<string>();
         }
+    }
+    public async Task UpdateLobbyData(Dictionary<string, DataObject> lobbyData, string lobbyId) {
+        
+        try {
+            UpdateLobbyOptions options = new UpdateLobbyOptions();
+            options.HostId = AuthenticationService.Instance.PlayerId;
+
+            options.Data = lobbyData;
+
+            await LobbyService.Instance.UpdateLobbyAsync(lobbyId, options);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data) {
+        Dictionary<string, PlayerDataObject> playerData = new Dictionary<string, PlayerDataObject>();
+        foreach (var (key, value) in data) {
+            playerData.Add(key, new PlayerDataObject(
+                visibility: PlayerDataObject.VisibilityOptions.Member,
+                value: value));
+        }
+
+        return playerData;
+    }
+
+    public  List<Dictionary<string, PlayerDataObject>> GetPlayerData() {
+        List<Dictionary<string, PlayerDataObject>> data = new List<Dictionary<string, PlayerDataObject>>();
+        foreach (Player player in lobby.Players) {
+            data.Add(player.Data);
+        }
+
+        return data;
     }
 
     

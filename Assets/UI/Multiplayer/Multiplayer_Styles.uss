@@ -5,7 +5,7 @@
 }
 
 .title-container{
-    margin-top: 100px;
+    margin-top: 80px;
 }
 
 .title-label{
@@ -14,73 +14,111 @@
     font-size: 128px;
 }
 
-.heading-label{
+/* Multiplayer Menu */
+.menu-container{
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10%;
+    display: flex;
+}
+
+.subheading-label{
     margin: auto;
     color: black;
     font-size: 80px;
 }
 
-.lobby-container{
-    margin-top: 50px;
+/* List Lobbies */
+.lobbies-container{
+    margin-top: 40px;
     display: none;
 }
 
-.lobby-table{
+.table{
     display: flex;
     flex-direction: column;
     margin: auto;
     width: 80%;
-    background-color: lightgrey;
 }
 
 .row-container{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding: 10px;
-    height: 100px;
+    height: 75px;
+}
+
+.header-row{
+    background-color: lightgrey;
+}
+
+.body-row {
+    
 }
 
 .col-header{
     -unity-font-style: bold;
+    font-size: 18px;
 }
 
+/* Lobbies Table Columns */
 .col-lobby-id{
     flex: 0 0 25%;
     padding: 10px;
-    background-color: red;
 }
 
 .col-lobby-name{
     flex: 0 0 20%;
     padding: 10px;
-    background-color: orange;
 }
 
 .col-players{
     flex: 0 0 10%;
     padding: 10px;
-    background-color: yellow;
 }
 
 .col-host{
     flex: 0 0 25%;
     padding: 10px;
-    background-color: green;
 }
 
 .col-join-lobby{
     -unity-text-align: middle-center;
     flex: 0 0 20%;
     padding: 10px;
-    background-color: blue;
+}
+
+/* Lobby Table Columns */
+
+.col-player-id{
+    flex: 0 0 25%;
+    padding: 10px;
+}
+
+.col-player-name{
+    flex: 0 0 25%;
+    padding: 10px;
+}
+
+.col-last-updated{
+    flex: 0 0 25%;
+    padding: 10px;
+}
+
+.col-is-host{
+    flex: 0 0 25%;
+    padding: 10px;
+    -unity-text-align: middle-right;
 }
 
 Label{
     white-space: normal;
 }
 
-.lobby-table-body{
+.table-body{
     display: flex;
     width: 100%;
     transition: max-height .5s;
@@ -88,12 +126,9 @@ Label{
     overflow: hidden;
 }
 
-.menu-container{
-    flex-direction: column;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10%;
+.current-lobby-table-body{
     display: flex;
+    width: 100%;
 }
 
 .back-btn-container{
@@ -123,7 +158,7 @@ Label{
     justify-content: flex-start;
     align-items: flex-start;
     display: flex;
-    height: fit-content;
+    height: 80px;
 }
 
 .player-id{
@@ -146,6 +181,7 @@ Label{
     -unity-font-style: bold;
 }
 
+/* Create Lobby Modal */
 .lobby-modal-container{
     position: absolute;
     left: 0;
@@ -237,7 +273,6 @@ Label{
     display: none;
 }
 
-
 .lobby-loader {
     display: none;
     width: 56px;
@@ -247,4 +282,26 @@ Label{
     border-color: #dbdcef;
     border-right-color: #474bff;
     transition: rotate 1s linear;
+}
+
+/* Current Lobby */
+.current-lobby-container{
+    margin-top: 50px;
+    display: none;
+}
+
+.current-lobby-btn-container{
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.current-lobby-btn-container Button {
+    font-size: 42px;
+}
+
+.current-lobby-menu-btn-container{
+    display: none;
 }
