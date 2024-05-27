@@ -26,7 +26,7 @@
 .subheading-label{
     margin: auto;
     color: black;
-    font-size: 80px;
+    font-size: 50px;
 }
 
 /* List Lobbies */
@@ -42,13 +42,18 @@
     width: 80%;
 }
 
+.server-info{
+    width: 25%;
+    margin-left: 10%;
+}
+
 .row-container{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    height: 75px;
+    height: 35px;
 }
 
 .header-row{
@@ -68,21 +73,25 @@
 .col-lobby-id{
     flex: 0 0 25%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-lobby-name{
     flex: 0 0 20%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-players{
     flex: 0 0 10%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-host{
     flex: 0 0 25%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-join-lobby{
@@ -91,27 +100,59 @@
     padding: 10px;
 }
 
+.col-join-lobby-btn{
+    justify-content: center;
+}
+
 /* Lobby Table Columns */
 
 .col-player-id{
-    flex: 0 0 25%;
+    flex: 0 0 20%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-player-name{
-    flex: 0 0 25%;
+    flex: 0 0 20%;
     padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-last-updated{
-    flex: 0 0 25%;
+    flex: 0 0 20%;
     padding: 10px;
+    -unity-text-align: middle-left;
+}
+
+.col-connection-status{
+    flex: 0 0 20%;
+    padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 .col-is-host{
-    flex: 0 0 25%;
+    flex: 0 0 20%;
     padding: 10px;
     -unity-text-align: middle-right;
+}
+
+/* Server Info */
+.col-server-info{
+    flex: 1;
+    padding: 10px;
+    -unity-text-align: middle-center;
+}
+
+.col-server-info-key{
+    flex: 0 0 30%;
+    padding: 10px;
+    -unity-text-align: middle-left;
+}
+
+.col-server-info-value{
+    flex: 1;
+    padding: 10px;
+    -unity-text-align: middle-left;
 }
 
 Label{
@@ -126,9 +167,8 @@ Label{
     overflow: hidden;
 }
 
-.current-lobby-table-body{
-    display: flex;
-    width: 100%;
+.server-info-table-body{
+    
 }
 
 .back-btn-container{
@@ -263,14 +303,33 @@ Label{
 
 .form-buttons-container{
     width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-lobby-btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .form-buttons-container Button{
     font-size: 32px;
 }
 
+.create-lobby-btn{
+    
+}
+
+.lobby-loader-container{
+    position: absolute;
+    right: 25%;
+    top: 4px;
+}
+
 .lobby-status-label{
-    display: none;
+    display: flex;
 }
 
 .lobby-loader {
@@ -298,10 +357,57 @@ Label{
     justify-content: space-evenly;
 }
 
+.start-game-btn{
+    display: none;
+}
+
+.join-game-btn{
+    display: none;
+}
+
 .current-lobby-btn-container Button {
     font-size: 42px;
 }
 
 .current-lobby-menu-btn-container{
     display: none;
+}
+
+.exit-modal-container{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    display: none;
+}
+
+.exit-modal-content{
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    width: 800px;
+    height: 400px;
+    align-items: center;
+    align-content: center;
+    padding: 20px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 20px;
+}
+
+.exit-game-btn-container{
+    margin-top: 60px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.exit-game-btn-container Button{
+    font-size: 52px;
+    width: 40%;
 }

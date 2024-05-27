@@ -98,12 +98,13 @@
                     </ui:VisualElement>
                     
                     <ui:VisualElement class="form-buttons-container">
-                        <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn"/>
-                        <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
-                        <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
-                        <ui:VisualElement name="lobby-status" class="lobby-status">
-                            <ui:Label text="Status: " name="lobby-status-label" class="lobby-status-label"/>
+                        <ui:VisualElement class="create-lobby-btn-container">
+                            <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn create-lobby-btn"/>
                         </ui:VisualElement>
+                        <ui:VisualElement name="lobby-loader-container" class="lobby-loader-container">
+                            <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
                     </ui:VisualElement>
                     
                 </ui:VisualElement>
@@ -113,8 +114,48 @@
         <!-- Current Lobby -->
         <ui:VisualElement name="current-lobby-container" class="current-lobby-container">
             <ui:VisualElement name="subheading" class="subheading">
-                <ui:Label text="Current Lobby" class="subheading-label"/>
+                <ui:Label text="Player List" class="subheading-label"/>
             </ui:VisualElement>
+            
+            <!-- Server Info Table -->
+            <ui:VisualElement name="server-info-table" class="table server-info">
+                <!-- Table Header Row Container-->
+                <ui:VisualElement name="server-info-table-header" class="row-container header-row">
+                    <!-- Header Row-->
+                    <ui:VisualElement name="col-header" class="col-header col-server-info">
+                        <ui:Label text="Server Info"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <!-- Table Body Container-->
+                <ui:VisualElement name="server-info-table-body" class="server-info-table-body">
+                    <!-- Table Body Row Container-->
+                    <ui:VisualElement class="row-container">
+                        <ui:VisualElement name="col-header" class="col-server-info-key">
+                            <ui:Label text="Status "/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="col-header" class="col-server-info-value">
+                            <ui:Label text="N/A" name="server-status-label"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-container">
+                        <ui:VisualElement name="col-header" class="col-server-info-key">
+                            <ui:Label text="IP "/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="col-header" class="col-server-info-value">
+                            <ui:Label text="N/A" name="server-ip-label"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row-container">
+                        <ui:VisualElement name="col-header" class="col-server-info-key">
+                            <ui:Label text="Port "/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="col-header" class="col-server-info-value">
+                            <ui:Label text="N/A" name="server-port-label"/>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            
             <!-- Current Lobby Table-->
             <ui:VisualElement name="current-lobby-table" class="table">
                 <!-- Table Header Row Container-->
@@ -129,6 +170,9 @@
                     <ui:VisualElement name="col-header" class="col-header col-last-updated">
                         <ui:Label text="Last Updated"/>
                     </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-header col-connection-status">
+                        <ui:Label text="Status"/>
+                    </ui:VisualElement>
                     <ui:VisualElement name="col-header" class="col-header col-is-host">
                         <ui:Label text="Is Host"/>
                     </ui:VisualElement>
@@ -142,7 +186,8 @@
             
             <ui:VisualElement name="current-lobby-btn-container" class="current-lobby-btn-container">
                 <ui:Button text="Leave Lobby" name="leave-lobby-btn" class="leave-lobby-btn"/>
-                <ui:Button text="Join Game" name="play-btn" class="play-btn"/>
+                <ui:Button text="Start Game" name="start-game-btn" class="start-game-btn"/>
+                <ui:Button text="Join Game" name="join-game-btn" class="join-game-btn"/>
             </ui:VisualElement>
             
         </ui:VisualElement>
@@ -157,4 +202,21 @@
     <ui:VisualElement name="player-id-container" class="player-id-container">
         <ui:Label text="Player ID: " name="player-id" class="player-id"/>
     </ui:VisualElement>
+    
+    <!-- In Game Exit Modal -->
+    <ui:VisualElement name="exit-modal-container" class="exit-modal-container">
+        <ui:VisualElement name="exit-modal-content" class="exit-modal-content">
+            <ui:VisualElement name="exit-modal-header" class="lobby-modal-header">
+                <ui:Label text="Exit Game" class="lobby-modal-header-label"/>
+            </ui:VisualElement>
+            <ui:VisualElement>
+                <ui:Label text="Are you sure you want to disconnect from the current game?"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="exit-game-btn-container">
+                <ui:Button name="cancel-exit-btn" class="list-item-btn"><ui:Label text="Cancel"/></ui:Button>
+                <ui:Button name="confirm-exit-btn" class="list-item-btn"><ui:Label text="Confirm"/></ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    
 </ui:UXML>

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
@@ -16,6 +18,8 @@ namespace Multiplayer
         
         private static ServerManager _instance = null;
         private static readonly object Padlock = new object();
+        private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
+
         private ServerManager(){
         }
 
@@ -119,11 +123,23 @@ namespace Multiplayer
         }
 
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
+            response.Approved = true;
+            response.CreatePlayerObject = true;
             
+            PlayerData playerData;
+            using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
+                reader.ReadNetworkSerializable(out playerData);
+            }
+
+           // playerData.ClientId = request.Payload.;
+            //_playerDataDictionary[response.ClientId] = playerData;
+
+            NotifyClientsOfPlayerStatus(playerData, true);
         }
         
         private void OnClientConnected(ulong clientId) {
             Debug.Log($"New client connected: {clientId}");
+            //NotifyClientsOfPlayerStatus(clientId, true);
         }
 
         public void UpdateServer() {
@@ -136,6 +152,20 @@ namespace Multiplayer
         
         private void OnClientDisconnected(ulong clientId) {
             Debug.Log($"Client disconnected: {clientId}");
+            //NotifyClientsOfPlayerStatus(clientId, false);
+        }
+        
+        private void NotifyClientsOfPlayerStatus(PlayerData playerData, bool isConnected) {
+            Debug.Log("Notifying clients...");
+            PlayerStatusMessage msg = new PlayerStatusMessage {
+                ClientId = playerData.ClientId,
+                IsConnected = isConnected
+            };
+
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
+                Debug.Log("Sending notification to client: " + client.ClientId);
+                NetworkManager.Singleton.SendCustomMessageToClient(client.ClientId, msg);
+            }
         }
     }
 }

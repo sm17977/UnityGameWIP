@@ -5,16 +5,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Multiplayer;
 using QFSW.QC;
+using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 using WebSocketSharp;
 
-public class Multiplayer_UI_Controller : MonoBehaviour
+public class MultiplayerUIController : MonoBehaviour
 {
- 
     // UI Document
     [SerializeField] private UIDocument uiDocument;
 
@@ -36,8 +39,19 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     // Current Lobby
     private VisualElement _currentLobbyContainer;
     private VisualElement _currentLobbyTable;
-    private Button _currentLobbyPlayBtn;
+    private Button _currentLobbyStartGameBtn;
+    private Button _currentLobbyJoinGameBtn;
     private Button _currentLobbyleaveBtn;
+    private string _serverStatus = "N/A";
+    private string _serverIP;
+    private string _serverPort;
+    private string _playerConnectionStatus = "Not Connected";
+    
+    // Server Info 
+    private VisualElement _serverInfoTable;
+    private Label _serverStatusLabel;
+    private Label _serverIPLabel;
+    private Label _serverPortLabel;
     
     // Lobbies List
     VisualElement listLobbiesContainer;
@@ -49,6 +63,11 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     VisualElement lobbyModalContainer;
     TextField lobbyNameInput;
     private Label lobbyStatusLabel;
+    
+    // Game Exit Modal
+    private VisualElement _gameExitModal;
+    private Button _confirmGameExitBtn;
+    private Button _cancelGameExitBtn;
     
     // Loader
     VisualElement lobbyLoader;
@@ -65,10 +84,14 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     
     // Cancellation Token Source
     private CancellationTokenSource cancellationTokenSource;
-    
+
+
 
     void Awake(){
-
+#if DEDICATED_SERVER
+        gameObject.SetActive(false);
+        return;
+#endif
         globalState = GameObject.Find("Global State").GetComponent<Global_State>();
         gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
 
@@ -83,8 +106,17 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         // Current Lobby 
         _currentLobbyContainer = uiDocument.rootVisualElement.Q<VisualElement>("current-lobby-container");
         _currentLobbyTable = uiDocument.rootVisualElement.Q<VisualElement>("current-lobby-table-body");
-        _currentLobbyPlayBtn = uiDocument.rootVisualElement.Q<Button>("current-lobby-play-btn");
         _currentLobbyleaveBtn = uiDocument.rootVisualElement.Q<Button>("leave-lobby-btn");
+        _serverStatusLabel = uiDocument.rootVisualElement.Q<Label>("server-status-label");
+        _serverIPLabel = uiDocument.rootVisualElement.Q<Label>("server-ip-label");
+        _serverPortLabel = uiDocument.rootVisualElement.Q<Label>("server-port-label");
+        _currentLobbyStartGameBtn = uiDocument.rootVisualElement.Q<Button>("start-game-btn");
+        _currentLobbyStartGameBtn.RegisterCallback<ClickEvent>(async evt => await StartGame());
+        _currentLobbyJoinGameBtn = uiDocument.rootVisualElement.Q<Button>("join-game-btn");
+        _currentLobbyJoinGameBtn.RegisterCallback<ClickEvent>(evt => JoinGame());
+        
+        // Server Info
+        _serverInfoTable = uiDocument.rootVisualElement.Q<VisualElement>("server-info-table");
         
         // List Lobbies 
         listLobbiesContainer = uiDocument.rootVisualElement.Q<VisualElement>("lobbies-container");
@@ -99,6 +131,13 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         createLobbyBtn.RegisterCallback<ClickEvent>(evt => CreateLobby());
         cancelLobbyBtn = uiDocument.rootVisualElement.Q<Button>("cancel-lobby-btn");
         cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => CancelLobby());
+        
+        // Game Exit Modal
+        _gameExitModal = uiDocument.rootVisualElement.Q<VisualElement>("exit-modal-container");
+        _confirmGameExitBtn = uiDocument.rootVisualElement.Q<Button>("confirm-exit-btn");
+        _confirmGameExitBtn.RegisterCallback<ClickEvent>(evt => DisconnectClient());
+        _cancelGameExitBtn = uiDocument.rootVisualElement.Q<Button>("cancel-exit-btn");
+        _cancelGameExitBtn.RegisterCallback<ClickEvent>(evt => ToggleExitModal());
         
         // General 
         _backToMultiplayerMenuBtn = uiDocument.rootVisualElement.Q<Button>("back-btn");
@@ -116,11 +155,11 @@ public class Multiplayer_UI_Controller : MonoBehaviour
                     break;
                 
                 case "Current lobby":
-                    button.RegisterCallback<ClickEvent>(evt => ListLobbyPlayers());
+                    button.RegisterCallback<ClickEvent>(evt => ListLobbyPlayers(false));
                     break;
 
                 case "List lobbies":
-                    button.RegisterCallback<ClickEvent>(ListLobbies);
+                    button.RegisterCallback<ClickEvent>(evt => ListLobbies(false));
                     break;
 
                 case "Leaderboards":
@@ -132,8 +171,6 @@ public class Multiplayer_UI_Controller : MonoBehaviour
                     break;
             }
         }
-
-        Debug.Log("here");
     }
 
     void Start(){
@@ -167,23 +204,12 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         // Update menu buttons after joining a lobby
         HideVisualElement(_createLobbyMenuBtnContainer);
         ShowVisualElement(_currentLobbyMenuBtnContainer);
+          
+        HideVisualElement(lobbyLoader);
+        HideVisualElement(lobbyStatusLabel);
         
         HideVisualElement(lobbyModalContainer);
-        
-        ListLobbyPlayers();
-        
-        
-        
-        // cancellationTokenSource = new CancellationTokenSource();
-        // var clientConnected = await StartClient(cancellationTokenSource.Token);
-        //
-        // HideVisualElement(lobbyLoader);
-        // HideVisualElement(lobbyStatusLabel);
-        // if (clientConnected) {
-        //     HideVisualElement(lobbyModalContainer);
-        //     ShowVisualElement(_currentLobbyContainer);
-        // }
-        // createLobbyBtn.SetEnabled(true);
+        await ListLobbyPlayers(false);
    }
 
    async Task JoinLobby(Lobby lobby) {
@@ -191,27 +217,59 @@ public class Multiplayer_UI_Controller : MonoBehaviour
        HideVisualElement(_createLobbyMenuBtnContainer);
        ShowVisualElement(_currentLobbyMenuBtnContainer);
        HideVisualElement(listLobbiesContainer);
-       ListLobbyPlayers();
+       await ListLobbyPlayers(false);
    }
 
    async Task LeaveLobby() {
        await gameLobbyManager.LeaveLobby();
+       ShowVisualElement(_createLobbyMenuBtnContainer);
+       HideVisualElement(_currentLobbyMenuBtnContainer);
+       ShowMultiplayerMenu();
    }
    
 
    // TODO - Ensure only lobby hosts can request a server allocation
-   private async Task<bool> StartClient(CancellationToken cancellationToken) {
+   private async Task<bool> StartClientAsLobbyHost(CancellationToken cancellationToken) {
 
        try {
            WebServicesAPI webServicesAPI = new WebServicesAPI();
            await webServicesAPI.RequestAPIToken();
            var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, webServicesAPI);
            if (!clientConnectionInfo.IP.IsNullOrEmpty()) {
-               await gameLobbyManager.UpdateLobbyWithServerInfo("test", clientConnectionInfo.IP);
+               _serverIP = clientConnectionInfo.IP;
+               _serverPort = clientConnectionInfo.Port.ToString();
+               UpdateServerStatusUI();
+               await gameLobbyManager.UpdateLobbyWithServerInfo(_serverStatus, clientConnectionInfo.IP, clientConnectionInfo.Port);
                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(clientConnectionInfo.IP, (ushort)clientConnectionInfo.Port);
                NetworkManager.Singleton.StartClient();
+               NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
+               NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
+                   OnPlayerStatusMessage);
+               await gameLobbyManager.UpdatePlayerDataWithClientId(NetworkManager.Singleton.LocalClientId);
                return true;
            }
+       }
+       catch (OperationCanceledException) {
+           
+       }
+       return false;
+   }
+
+   private async Task<bool> StartClientAsLobbyPlayer() {
+       
+       var ip =  gameLobbyManager?.GetLobbyData("ServerIP");
+       var port = gameLobbyManager?.GetLobbyData("Port");
+
+       if (ip == null || port == null) return false;
+       
+       try {
+           NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ip, (ushort)int.Parse(port));
+           NetworkManager.Singleton.StartClient();
+           NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
+               OnPlayerStatusMessage);
+           await gameLobbyManager.UpdatePlayerDataWithClientId(NetworkManager.Singleton.LocalClientId);
+           
+           return true;
        }
        catch (OperationCanceledException) {
            
@@ -225,37 +283,49 @@ public class Multiplayer_UI_Controller : MonoBehaviour
        await webServicesAPI.QueueAllocationRequest();
        
        // Check for active machine
-       var machineStatus = await webServicesAPI.GetMachineStatus();
+       _serverStatus = await webServicesAPI.GetMachineStatus();
+       UpdateServerStatusUI();
+       Debug.Log("Initial Machine Status: " + _serverStatus);
        
        // If no machine is found yet, keep polling until one is
-       if (machineStatus.IsNullOrEmpty()) {
-           var machines = await webServicesAPI.PollForMachine(60 * 5, cancellationToken, false);
-           var initStatus = machines[0].status;
-           lobbyStatusLabel.text = initStatus;
+       if (_serverStatus != "ONLINE") {
+           var machines = await webServicesAPI.PollForMachine(60 * 5, cancellationToken);
            
-           while (true) {
-               var status = await webServicesAPI.GetMachineStatus();
-               if (status != "" && status != initStatus) {
-                   lobbyStatusLabel.text = status;
-                   break;
+           if (machines.Length == 0) {
+               Debug.LogError("No machines found after polling.");
+               return new ClientConnectionInfo { IP = "", Port = 0 };
+           }
+           
+           var maxRetries = 60;
+           var retryCount = 0;
+           
+           // Once a machine is found, poll for its status until it's online
+           while (retryCount < maxRetries) {
+               Debug.Log("Polling Machine Status");
+               var newStatus = await webServicesAPI.GetMachineStatus();
+               if (_serverStatus != newStatus) {
+                   Debug.Log("Machine Status Change: " + newStatus);
+                   _serverStatus = newStatus;
+                   UpdateServerStatusUI();
+                   if (_serverStatus == "ONLINE") {
+                       break;
+                   }
                }
+               retryCount++;
+               await Task.Delay(5000, cancellationToken);
            }
        }
        else {
-           lobbyStatusLabel.text = machineStatus;
+           UpdateServerStatusUI();
        }
-            
-       // Get the IP and Port of allocated game server
+       
+       // Now the machine is online, poll for the IP and Port of allocated game server
        var response = await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
+       return response != null
+           ? new ClientConnectionInfo { IP = response.ipv4, Port = response.gamePort }
+           : new ClientConnectionInfo { IP = "", Port = 0 };
 
-       if (response != null) {
-           return new ClientConnectionInfo { IP = response.ipv4, Port = response.gamePort };
-       }
-
-       return new ClientConnectionInfo { IP = "", Port = 0 };
    }
-
-
    void CancelLobby() {
        HideVisualElement(lobbyLoader);
        HideVisualElement(lobbyModalContainer);
@@ -270,15 +340,40 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         ShowVisualElement(lobbyModalContainer);
     }
 
-    async void ListLobbyPlayers() {
+    async Task ListLobbyPlayers(bool updateEvent) {
 
+        // Show/Hide buttons depending on if player is lobby host
+        
+        if (gameLobbyManager.IsPlayerHost()) {
+            ShowVisualElement(_currentLobbyStartGameBtn);
+            HideVisualElement(_currentLobbyJoinGameBtn);
+        }
+        else {
+            ShowVisualElement(_currentLobbyJoinGameBtn);
+            HideVisualElement(_currentLobbyStartGameBtn);
+        }
+        
         _currentView = _currentLobbyContainer;
         HideMultiplayerMenu();
         ShowVisualElement(_backToMultiplayerMenuBtnContainer);
+
+        if (!gameLobbyManager.IsPlayerHost()) {
+            _serverStatusLabel.text = gameLobbyManager?.GetLobbyData("MachineStatus");
+            _serverPortLabel.text =  gameLobbyManager?.GetLobbyData("Port");
+            _serverIPLabel.text =  gameLobbyManager?.GetLobbyData("ServerIP");
+        }
+        
+        var lobbyPlayers = new List<Player>();
         
         _currentLobbyTable.Clear();
 
-        var lobbyPlayers = await gameLobbyManager.GetLobbyPlayers();
+        if (!updateEvent) {
+            lobbyPlayers = await gameLobbyManager.GetLobbyPlayers();
+        }
+        else {
+            lobbyPlayers = gameLobbyManager.RefreshLobbyPlayers();
+        }
+
         var playerCount = 0;
         var lobbyRowHeight = 100;
 
@@ -296,15 +391,21 @@ public class Multiplayer_UI_Controller : MonoBehaviour
 
             VisualElement playerName = new VisualElement();
             Label playerNameLabel = new Label();
-            playerNameLabel.text = lobbyPlayer.Data["name"].Value;
+            playerNameLabel.text = lobbyPlayer.Data["Name"].Value;
             playerName.Add(playerNameLabel);
             playerName.AddToClassList("col-player-name");
             
             VisualElement lastUpdated = new VisualElement();
             Label lastUpdatedLabel = new Label();
-            lastUpdatedLabel.text = lobbyPlayer.LastUpdated.ToString();
+            lastUpdatedLabel.text = lobbyPlayer.Data["ClientId"].Value;
             lastUpdated.Add(lastUpdatedLabel);
             lastUpdated.AddToClassList("col-last-updated");
+            
+            VisualElement connectionStatus = new VisualElement();
+            Label connectionStatusLabel = new Label();
+            connectionStatusLabel.text = lobbyPlayer.Data["IsConnected"].Value;
+            connectionStatus.Add(connectionStatusLabel);
+            connectionStatus.AddToClassList("col-connection-status");
             
             VisualElement playerIsHost = new VisualElement();
             Label playerIsHostLabel = new Label();
@@ -315,6 +416,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
             row.Add(playerId);
             row.Add(playerName);
             row.Add(lastUpdated);
+            row.Add(connectionStatus);
             row.Add(playerIsHost);
             
             _currentLobbyTable.Add(row);
@@ -324,7 +426,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         _currentLobbyleaveBtn.RegisterCallback<ClickEvent>(async evt => await LeaveLobby());
     }
 
-    async void ListLobbies(ClickEvent evt){
+    async void ListLobbies(bool updateEvent){
 
         playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
         _currentView = listLobbiesContainer;
@@ -370,6 +472,7 @@ public class Multiplayer_UI_Controller : MonoBehaviour
             Button joinLobbyBtn = new Button();
             Label joinLobbyBtnLabel = new Label();
             joinLobbyBtnLabel.text = "Join Lobby";
+            joinLobbyBtn.AddToClassList("col-join-lobby-btn");
             joinLobbyBtn.Add(joinLobbyBtnLabel);
             joinLobby.Add(joinLobbyBtn);
             joinLobby.AddToClassList("col-join-lobby");
@@ -386,7 +489,6 @@ public class Multiplayer_UI_Controller : MonoBehaviour
         }    
         listLobbiesTable.style.maxHeight = lobbyCount * lobbyRowHeight;
     }
-
     void BackToMultiplayerMenuBtn(){
         
         HideVisualElement(_backToMultiplayerMenuBtnContainer);
@@ -440,13 +542,114 @@ public class Multiplayer_UI_Controller : MonoBehaviour
     void ClearFormInput() {
         lobbyNameInput.SetValueWithoutNotify("");
     }
+    public async Task OnLobbyChanged(ILobbyChanges changes) {
+        if (changes.PlayerLeft.Changed) {
+            Debug.Log("Lobby Change - Player left!");
+        }
 
+        if (changes.PlayerJoined.Changed) {
+            Debug.Log("Lobby Change - Player Joined!");
+        }
+
+        if (changes.Data.Added) {
+            Debug.Log("Lobby Change - Data Added");
+        }
+
+        if (changes.PlayerData.Changed) {
+            Debug.Log("Lobby Change - Player Data Added");
+        }
+        
+        gameLobbyManager.ApplyLobbyChanges(changes);
+
+        if (_currentView == _currentLobbyContainer) {
+            await ListLobbyPlayers(true);
+        }
+        else if (_currentView == listLobbiesContainer) {
+            ListLobbies(true);
+        }
+    }
+
+    // Start game server as lobby host
+    private async Task StartGame() {
+        _currentLobbyStartGameBtn.SetEnabled(false);
+        cancellationTokenSource = new CancellationTokenSource();
+        var clientConnected = await StartClientAsLobbyHost(cancellationTokenSource.Token);
+      
+        if (clientConnected) {
+            Debug.Log("client connected!");
+            HideVisualElement(mainContainer);
+        }
+    }
+
+    private async void JoinGame() {
+        var clientConnected = await StartClientAsLobbyPlayer();
+        if (clientConnected) {
+            Debug.Log("Lobby player joined!");
+            HideVisualElement(mainContainer);
+        }
+    }
+
+    private void UpdateServerStatusUI() {
+        if (_currentView == _currentLobbyContainer) {
+            _serverStatusLabel.text = _serverStatus;
+            _serverPortLabel.text = _serverPort;
+            _serverIPLabel.text = _serverIP;
+            Debug.Log("UpdateServerStatusUI");
+        }
+    }
+
+    private void ToggleExitModal() {
+        Debug.Log("Escape key pressed!");
+        if (_gameExitModal.style.display == DisplayStyle.Flex) {
+            HideVisualElement(_gameExitModal);
+        }
+        else {
+            ShowVisualElement(_gameExitModal);
+        }
+    }
+
+    private void OnEscape(InputAction.CallbackContext context) {
+        ToggleExitModal();
+    }
+
+    private async void DisconnectClient() {
+        NetworkManager.Singleton.Shutdown();
+        ToggleExitModal();
+        await ListLobbyPlayers(false);
+        ShowVisualElement(mainContainer);
+    }
+    
     void OnEnable(){
         controls = new Controls();
         controls.UI.Enable();
+        controls.UI.ESC.performed += OnEscape;
     }
 
     void OnDisable(){
+        controls.UI.ESC.performed -= OnEscape;
         controls.UI.Disable();
+    }
+
+    private async void OnPlayerStatusMessage(ulong clientId, FastBufferReader reader) {
+        PlayerStatusMessage msg = new PlayerStatusMessage();
+        reader.ReadNetworkSerializable<PlayerStatusMessage>(out msg);
+        Debug.Log("Player Status Message: " + msg.ClientId + " Connected: " + msg.IsConnected);
+        await gameLobbyManager.UpdatePlayerDataWithConnectionStatus(msg.IsConnected, msg.ClientId.ToString());
+    }
+
+    private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
+        response.Approved = true;
+        response.CreatePlayerObject = true;
+
+        // Include the player name in the connection approval payload
+        var playerData = new PlayerData {
+            ClientId = NetworkManager.Singleton.LocalClientId,
+            IsConnected = true
+        };
+
+        using (var writer = new FastBufferWriter(128, Allocator.Temp)) {
+            writer.WriteNetworkSerializable(playerData);
+            request.Payload = writer.ToArray();
+        }
     }
 }

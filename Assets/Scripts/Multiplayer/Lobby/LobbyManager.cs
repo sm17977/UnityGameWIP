@@ -1,5 +1,3 @@
-
-
 using Unity.Services.Lobbies;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -136,11 +134,11 @@ public sealed class LobbyManager{
     public async Task UpdateLobbyData(Dictionary<string, DataObject> lobbyData, string lobbyId) {
         
         try {
-            UpdateLobbyOptions options = new UpdateLobbyOptions();
-            options.HostId = AuthenticationService.Instance.PlayerId;
-
-            options.Data = lobbyData;
-
+            var options = new UpdateLobbyOptions() {
+                HostId = AuthenticationService.Instance.PlayerId,
+                Data = lobbyData
+            };
+            
             await LobbyService.Instance.UpdateLobbyAsync(lobbyId, options);
         }
         catch (LobbyServiceException e)
@@ -169,6 +167,17 @@ public sealed class LobbyManager{
         return data;
     }
 
+    public async Task<Lobby> UpdateLobbyPlayerData(UpdatePlayerOptions options, string playerId, string lobbyId) {
+        try {
+            var lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, options);
+            return lobby;
+        }
+        catch (LobbyServiceException e) {
+            Debug.Log(e);
+        }
+
+        return null;
+    }
     
     public void OnApplicationQuit(){
         if(lobby != null && lobby.HostId == AuthenticationService.Instance.PlayerId){

@@ -138,6 +138,7 @@ namespace Multiplayer {
             GetAllocationResponse response;
 
             do {
+                Debug.Log("Polling for allocation");
                 cancellationToken.ThrowIfCancellationRequested();
                 response = await GetAllocationRequest();
                 if (!string.IsNullOrEmpty(response?.ipv4)) return response;
@@ -150,7 +151,7 @@ namespace Multiplayer {
         }
         
         public async Task<Machine[]> PollForMachine(int timeoutSeconds,
-            CancellationToken cancellationToken, bool requireActiveStatus) {
+            CancellationToken cancellationToken) {
             var elapsed = 0;
             const int pollInterval = 5;
             Machine[] machines;
@@ -159,7 +160,7 @@ namespace Multiplayer {
                 cancellationToken.ThrowIfCancellationRequested();
                 machines = await GetMachineList();
 
-                if (machines.Length > 0 && (!requireActiveStatus || machines[0].status == "ACTIVE")) {
+                if (machines.Length > 0) {
                     return machines;
                 }
                 
