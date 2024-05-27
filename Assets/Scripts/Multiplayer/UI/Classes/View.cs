@@ -10,13 +10,23 @@ namespace Multiplayer.UI {
         // Root document element
         protected VisualElement Root;
         
-        
-        public void Show() {
+        public virtual void Show() {
             ParentContainer.style.display = DisplayStyle.Flex;
         }
 
-        public void Hide() {
+        public virtual void Hide() {
             ParentContainer.style.display = DisplayStyle.None;
+        }
+
+       public abstract void Update();
+       public abstract void RePaint();
+        
+        public void Show(VisualElement ele) {
+            ele.style.display = DisplayStyle.Flex;
+        }
+
+        public void Hide(VisualElement ele) {
+            ele.style.display = DisplayStyle.None;
         }
     }
 }

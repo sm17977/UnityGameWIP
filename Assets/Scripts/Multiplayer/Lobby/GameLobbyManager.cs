@@ -15,6 +15,7 @@ public class GameLobbyManager : MonoBehaviour {
     private string playerId;
     private List<String> joinedLobbyList;
     private List<LobbyPlayerData> _lobbyPlayerDatas = new List<LobbyPlayerData>();
+    private List<Lobby> _localLobbyList;
     private LobbyPlayerData _localLobbyPlayerData;
     private ILobbyEvents _lobbyEvents;
 
@@ -79,9 +80,25 @@ public class GameLobbyManager : MonoBehaviour {
     }
 
     public async Task<List<Lobby>> GetLobbiesList(){
-        return await lobbyManager.GetLobbiesList();
+        _localLobbyList = await lobbyManager.GetLobbiesList();
+        return _localLobbyList;
+    }
+    
+    public async Task<List<Lobby>> RefreshLobbyList(){
+        if (_localLobbyList == null) return await GetLobbiesList();
+        return _localLobbyList;
+    }
+    
+    public async Task<List<Player>> GetLobbyPlayers() {
+        lobby = await GetLobby(lobby.Id);
+        return lobby.Players;
     }
 
+    public async Task<List<Player>> RefreshLobbyPlayers() {
+        if (lobby == null) return await GetLobbyPlayers();
+        return lobby.Players;
+    }
+    
     private async Task<Lobby> GetLobby(string lobbyId) {
         return await lobbyManager.GetLobby(lobbyId);
     }
@@ -104,6 +121,18 @@ public class GameLobbyManager : MonoBehaviour {
 
         foreach(string lobbyId in joinedLobbyList){
             if(lobbyToCheck.Id == lobbyId){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public bool IsPlayerInLobby() {
+
+        if (lobby == null) return false;
+        
+        foreach (var player in lobby.Players) {
+            if (player.Id == playerId) {
                 return true;
             }
         }
@@ -147,16 +176,7 @@ public class GameLobbyManager : MonoBehaviour {
     public bool IsPlayerHost(string id) {
         return lobby.HostId == id;
     }
-
-    public async Task<List<Player>> GetLobbyPlayers() {
-        lobby = await GetLobby(lobby.Id);
-        return lobby.Players;
-    }
-
-    public List<Player> RefreshLobbyPlayers() {
-        return lobby.Players;
-    }
-
+    
     public void ApplyLobbyChanges(ILobbyChanges changes) {
         changes.ApplyToLobby(lobby);
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Netcode;
@@ -123,23 +124,29 @@ namespace Multiplayer
         }
 
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response) {
+            
+            Debug.Log("Approving new client connection...ClientNetworkId: " + request.ClientNetworkId);
+            
             response.Approved = true;
             response.CreatePlayerObject = true;
             
             PlayerData playerData;
             using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
-                reader.ReadNetworkSerializable(out playerData);
+                try {
+                    reader.ReadNetworkSerializable(out playerData);
+                } catch (Exception ex) {
+                    Debug.LogError($"Error reading player data: {ex.Message}");
+                    return;
+                }
             }
-
-           // playerData.ClientId = request.Payload.;
-            //_playerDataDictionary[response.ClientId] = playerData;
-
-            NotifyClientsOfPlayerStatus(playerData, true);
+            
+            _playerDataDictionary[request.ClientNetworkId] = playerData;
         }
         
         private void OnClientConnected(ulong clientId) {
             Debug.Log($"New client connected: {clientId}");
-            //NotifyClientsOfPlayerStatus(clientId, true);
+            PlayerData playerData = _playerDataDictionary[clientId];
+            NotifyClientsOfPlayerStatus(playerData, true);
         }
 
         public void UpdateServer() {
@@ -152,18 +159,20 @@ namespace Multiplayer
         
         private void OnClientDisconnected(ulong clientId) {
             Debug.Log($"Client disconnected: {clientId}");
-            //NotifyClientsOfPlayerStatus(clientId, false);
+            PlayerData playerData = _playerDataDictionary[clientId];
+            NotifyClientsOfPlayerStatus(playerData, false);
+            _playerDataDictionary.Remove(clientId);
         }
         
         private void NotifyClientsOfPlayerStatus(PlayerData playerData, bool isConnected) {
             Debug.Log("Notifying clients...");
             PlayerStatusMessage msg = new PlayerStatusMessage {
-                ClientId = playerData.ClientId,
+                PlayerId = playerData.PlayerId,
                 IsConnected = isConnected
             };
 
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-                Debug.Log("Sending notification to client: " + client.ClientId);
+                Debug.Log("Sending notification to client: " + client.ClientId + "with playerID: " + msg.PlayerId);
                 NetworkManager.Singleton.SendCustomMessageToClient(client.ClientId, msg);
             }
         }

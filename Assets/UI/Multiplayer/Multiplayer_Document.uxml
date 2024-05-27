@@ -18,11 +18,11 @@
         </ui:VisualElement>
         
         <!-- Multiplayer Menu Buttons-->
-        <ui:VisualElement name="menu-container" class="menu-container">
+        <ui:VisualElement name="multiplayer-menu" class="menu-container">
              <ui:VisualElement name="create-lobby-btn-container" class="list-item">
                  <ui:Button text="Create new lobby" name="btn" class="list-item-btn"/>
              </ui:VisualElement>
-            <ui:VisualElement name="current-lobby-btn-container" class="list-item current-lobby-menu-btn-container">
+            <ui:VisualElement name="lobby-btn-container" class="list-item current-lobby-menu-btn-container">
                 <ui:Button text="Current lobby" name="btn" class="list-item-btn"/>
             </ui:VisualElement>
             <ui:VisualElement name="list-item" class="list-item">
@@ -37,7 +37,7 @@
         </ui:VisualElement>
 
         <!-- Lobbies Table Container -->
-        <ui:VisualElement name="lobbies-container" class="lobbies-container">
+        <ui:VisualElement name="lobbies" class="lobbies-container">
             <ui:VisualElement name="subheading-container" class="subheading-container">
                 <ui:Label text="Lobbies" class="subheading-label"/>
             </ui:VisualElement>
@@ -71,7 +71,7 @@
         </ui:VisualElement>
     
         <!-- Create Lobby Modal -->
-        <ui:VisualElement name="lobby-modal-container" class="lobby-modal-container">
+        <ui:VisualElement name="create-lobby" class="lobby-modal-container">
             <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
                 <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
                     <ui:Label text="Create a lobby" class="lobby-modal-header-label"/>
@@ -112,7 +112,7 @@
         </ui:VisualElement>
         
         <!-- Current Lobby -->
-        <ui:VisualElement name="current-lobby-container" class="current-lobby-container">
+        <ui:VisualElement name="lobby" class="current-lobby-container">
             <ui:VisualElement name="subheading" class="subheading">
                 <ui:Label text="Player List" class="subheading-label"/>
             </ui:VisualElement>
@@ -204,7 +204,7 @@
     </ui:VisualElement>
     
     <!-- In Game Exit Modal -->
-    <ui:VisualElement name="exit-modal-container" class="exit-modal-container">
+    <ui:VisualElement name="exit-game" class="exit-modal-container">
         <ui:VisualElement name="exit-modal-content" class="exit-modal-content">
             <ui:VisualElement name="exit-modal-header" class="lobby-modal-header">
                 <ui:Label text="Exit Game" class="lobby-modal-header-label"/>

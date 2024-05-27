@@ -203,7 +203,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 187f563c73860fe499b2f80ae817a0d1, type: 2}
     TickRate: 50
     ClientConnectionBufferTimeout: 10
-    ConnectionApproval: 0
+    ConnectionApproval: 1
     ConnectionData: 
     EnableTimeResync: 0
     TimeResyncInterval: 30
@@ -703,6 +703,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 1516747484}
+  _serverStatus: 
+  _serverIP: 
+  _serverPort: 
   gameLobbyManagerObj: {fileID: 485914239}
 --- !u!1 &1730232042
 GameObject:
