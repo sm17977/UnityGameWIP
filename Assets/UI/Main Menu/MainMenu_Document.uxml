@@ -10,7 +10,7 @@
     <Style src="project://database/Assets/UI/Main Menu/MainMenu_Styles.uss" />
     <ui:VisualElement name="main-container" class="main-container">
         <ui:VisualElement name="title-container" class="title-container">
-            <ui:Label text="Mechanix" class="title-label"/>
+            <ui:Label text="A Game™" class="title-label"/>
         </ui:VisualElement>
         <ui:VisualElement name="list-container" class="list-container">
              <ui:VisualElement name="list-item" class="list-item">

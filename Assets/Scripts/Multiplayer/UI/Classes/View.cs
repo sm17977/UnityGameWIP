@@ -11,11 +11,15 @@ namespace Multiplayer.UI {
         protected VisualElement Root;
         
         public virtual void Show() {
-            ParentContainer.style.display = DisplayStyle.Flex;
+            if (ParentContainer != null) {
+                ParentContainer.style.display = DisplayStyle.Flex;
+            }
         }
 
         public virtual void Hide() {
-            ParentContainer.style.display = DisplayStyle.None;
+            if (ParentContainer != null) {
+                ParentContainer.style.display = DisplayStyle.None;
+            }
         }
 
        public abstract void Update();

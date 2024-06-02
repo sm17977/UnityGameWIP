@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Multiplayer;
+using QFSW.QC;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -62,11 +63,17 @@ public class GameLobbyManager : MonoBehaviour {
         
         // Subscribe to lobby events
         var callbacks = new LobbyEventCallbacks();
-        callbacks.LobbyChanged += async(change) => await _uiController.OnLobbyChanged(change);
+        callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
         _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
         
         // Initiate lobby heartbeat
         StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 15));
+    }
+
+    public async Task DeleteLobby() {
+        await _lobbyEvents.UnsubscribeAsync();
+        await lobbyManager.DeleteLobby(lobby.Id);
+        lobby = null;
     }
 
     IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSeconds){
@@ -107,10 +114,21 @@ public class GameLobbyManager : MonoBehaviour {
         _playerData = new LobbyPlayerData();
         _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Player", "");
         lobby = await lobbyManager.JoinLobby(lobbyToJoin, _playerData.Serialize());
+        // Subscribe to lobby events
+        var callbacks = new LobbyEventCallbacks();
+        callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
+        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
     }
     public async Task LeaveLobby() {
+        await _lobbyEvents.UnsubscribeAsync();
         await lobbyManager.LeaveLobby(lobby.Id);
+        lobby = null;
     }
+
+    public void InvalidateLobby() {
+        lobby = null;
+    }
+    
     public async Task<bool> IsPlayerInLobby(Lobby lobbyToCheck){
 
         if(canRequestGetJoinedLobbies){
@@ -139,7 +157,7 @@ public class GameLobbyManager : MonoBehaviour {
         return false;
     }
 
-    public async Task UpdateLobbyWithServerInfo(string machineStatus, string serverIP, int port) {
+    public async Task UpdateLobbyWithServerInfo(string machineStatus, string serverIP, string port) {
         
         var lobbyData = new Dictionary<string, DataObject>() {
             {
@@ -157,7 +175,7 @@ public class GameLobbyManager : MonoBehaviour {
             {
                 "Port", new DataObject(
                     visibility: DataObject.VisibilityOptions.Public,
-                    value: port.ToString(),
+                    value: port,
                     index: DataObject.IndexOptions.S3)
             },
         };
@@ -170,7 +188,7 @@ public class GameLobbyManager : MonoBehaviour {
     }
     
     public bool IsPlayerHost() {
-        return lobby.HostId == AuthenticationService.Instance.PlayerId;
+        return lobby.HostId == playerId;
     }
 
     public bool IsPlayerHost(string id) {
@@ -180,46 +198,55 @@ public class GameLobbyManager : MonoBehaviour {
     public void ApplyLobbyChanges(ILobbyChanges changes) {
         changes.ApplyToLobby(lobby);
     }
-
-    public async Task UpdatePlayerDataWithClientId(ulong clientId) {
-        UpdatePlayerOptions options = new UpdatePlayerOptions();
-        _playerData.ClientId = clientId.ToString();
-        options.Data = _playerData.SerializeUpdate();
-        lobby = await lobbyManager.UpdateLobbyPlayerData(options, AuthenticationService.Instance.PlayerId, lobby.Id);
-    }
-    
-    public async Task UpdatePlayerDataWithConnectionStatus(bool connected, string clientId) {
+    public async Task UpdatePlayerDataWithConnectionStatus(bool connected) {
 
         LobbyPlayerData playerData = new LobbyPlayerData();
         UpdatePlayerOptions options = new UpdatePlayerOptions();
-        string playerId = null;
         
         foreach(Player player in lobby.Players) {
-            Debug.Log("Client ID: " + player.Data["ClientId"].Value);
-            Debug.Log("Id: " + player.Data["Id"].Value);
-            if (player.Data["ClientId"].Value == clientId) {
-                playerId = player.Data["Id"].Value;
+            if (player.Id == playerId) {
+                var clientId = player.Data["ClientId"].Value;
                 var playerName = player.Data["Name"].Value;
-                playerData.Initialize(playerId, playerName, clientId);
+                playerData.Initialize(playerId, playerName, clientId, connected);
                 break;
             }
         }
-
-        playerData.IsConnected = connected;
         options.Data = playerData.SerializeUpdate();
         lobby = await lobbyManager.UpdateLobbyPlayerData(options, playerId, lobby.Id);
+        
     }
 
     public string GetLobbyData(string key) {
         try {
-            if (lobby.Data.TryGetValue(key, out var data)) {
-                return data.Value;
-            }
+            return lobby.Data[key].Value;
         }
         catch (Exception e) {
             Debug.Log(e.Message);
         }
-
         return null;
     }
+
+    public bool HostIsConnected() {
+        foreach(var player in lobby.Players) {
+            if (player.Id == lobby.HostId) {
+                var connected = bool.Parse(player.Data["IsConnected"].Value);
+                if (connected) return true;
+                break;
+            }
+        }
+        return false;
+    }
+
+    public bool LobbyPlayersDisconnected() {
+        foreach(var player in lobby.Players) {
+            if (player.Id != lobby.HostId) {
+                var connected = bool.Parse(player.Data["IsConnected"].Value);
+                if (connected) return false;
+            }
+        }
+        return true;
+    }
+    
+    
+    
 }

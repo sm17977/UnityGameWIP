@@ -26,6 +26,8 @@ public sealed class LobbyManager{
             }
         }
     }
+    
+    
 
     public async Task<string> SignInUser(){
         
@@ -49,6 +51,7 @@ public sealed class LobbyManager{
         }
     }
 
+    // 2 requests per 6 seconds
     public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, Dictionary<string, string> data) {
 
         Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
@@ -64,13 +67,14 @@ public sealed class LobbyManager{
         return lobby;
     }
     
+    // 1 request per second
     public async Task<List<Lobby>> GetLobbiesList(){
         try{
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
+            //Debug.Log("Lobbies found: " + queryResponse.Results.Count);
 
             foreach(Lobby lobby in queryResponse.Results){
-                Debug.Log("Lobby Name: " + lobby.Name);
+               // Debug.Log("Lobby Name: " + lobby.Name);
             }
 
             return queryResponse.Results.ToList<Lobby>();
@@ -81,6 +85,7 @@ public sealed class LobbyManager{
         return new List<Lobby>();
     }
     
+    // 1 request per second
     public async Task<Lobby> GetLobby(string lobbyId) {
         try {
             return await LobbyService.Instance.GetLobbyAsync(lobbyId);
@@ -92,6 +97,7 @@ public sealed class LobbyManager{
         return null;
     }
 
+    // 2 requests per 6 seconds
     public async Task<Lobby> JoinLobby(Lobby lobby, Dictionary<string, string> data){
         
         Dictionary<string, PlayerDataObject> playerData = SerializePlayerData(data);
@@ -102,6 +108,7 @@ public sealed class LobbyManager{
                 Player = player
             };
             lobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
+            Debug.Log("Joined lobby");
             return lobby;
         }
         catch (LobbyServiceException e){
@@ -111,6 +118,7 @@ public sealed class LobbyManager{
         return null;
     }
 
+    // 5 requests per second
     public async Task LeaveLobby(string lobbyId) {
         try {
             string playerId = AuthenticationService.Instance.PlayerId;
@@ -121,6 +129,7 @@ public sealed class LobbyManager{
         }
     }
 
+    // 1 request per 30 seconds
     public async Task<List<String>> GetJoinedLobbies(){
 
         try{
@@ -131,6 +140,8 @@ public sealed class LobbyManager{
             return new List<string>();
         }
     }
+    
+    // 5 requests per 5 seconds
     public async Task UpdateLobbyData(Dictionary<string, DataObject> lobbyData, string lobbyId) {
         
         try {
@@ -167,6 +178,7 @@ public sealed class LobbyManager{
         return data;
     }
 
+    // 5 requests per 5 seconds
     public async Task<Lobby> UpdateLobbyPlayerData(UpdatePlayerOptions options, string playerId, string lobbyId) {
         try {
             var lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, options);
@@ -177,6 +189,15 @@ public sealed class LobbyManager{
         }
 
         return null;
+    }
+
+    public async Task DeleteLobby(string lobbyId) {
+        try {
+            await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+        }
+        catch (LobbyServiceException e) {
+            Debug.Log(e);
+        }
     }
     
     public void OnApplicationQuit(){

@@ -34,6 +34,13 @@
         public string CpuType { get; set; }
         public long Memory { get; set; }
     }
+    
+    public class MachineStatus {
+        public const string Online = "ONLINE";
+        public const string Shutdown = "SHUTDOWN";
+        public const string AwaitingSetup = "AWAITING_SETUP";
+        public const string Booting = "BOOTING";
+    }
 }
 
 

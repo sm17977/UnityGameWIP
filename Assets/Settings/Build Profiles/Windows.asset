@@ -136,7 +136,7 @@ MonoBehaviour:
     - line: '|   xboxEnableFitness: 0'
     - line: '|   visibleInBackground: 1'
     - line: '|   allowFullscreenSwitch: 1'
-    - line: '|   fullscreenMode: 3'
+    - line: '|   fullscreenMode: 2'
     - line: '|   xboxSpeechDB: 0'
     - line: '|   xboxEnableHeadOrientation: 0'
     - line: '|   xboxEnableGuest: 0'

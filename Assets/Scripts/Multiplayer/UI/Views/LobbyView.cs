@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using UnityEngine.InputSystem.HID;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -8,6 +9,7 @@ namespace Multiplayer.UI {
         private MultiplayerUIController _uiController;
         
         private VisualElement _table;
+        private VisualElement _mainContainer;
         private Button _startGameBtn;
         private Button _joinGameBtn;
         private Button _leaveBtn;
@@ -19,11 +21,20 @@ namespace Multiplayer.UI {
         private Label _serverStatusLabel;
         private Label _serverIPLabel;
         private Label _serverPortLabel;
-        
-        private string _serverStatus = "N/A";
+
+        private string _serverStatus;
         private string _serverIP;
         private string _serverPort;
-        private string _playerConnectionStatus = "Not Connected";
+        private string _playerConnectionStatus;
+        
+        private static readonly Dictionary<string, string> ServerStatusClasses = new Dictionary<string, string>
+        {
+            { "SHUTDOWN", "server-status-default" },
+            { "BOOTING", "server-status-booting" },
+            { "AWAITING_SETUP", "server-status-awaiting-setup" },
+            { "ONLINE", "server-status-online" },
+            { "Inactive", "server-status-default" }
+        };
         
         public LobbyView(VisualElement parentContainer, MultiplayerUIController uiController) {
             _uiController = uiController;
@@ -46,6 +57,7 @@ namespace Multiplayer.UI {
 
             _backBtnContainer = Root.Q<VisualElement>("back-btn-container");
             _backBtn = Root.Q<Button>("back-btn");
+            _mainContainer = Root.Q<VisualElement>("main-container");
             
             _startGameBtn.RegisterCallback<ClickEvent>(evt => OnClickStartGameBtn());
             _joinGameBtn.RegisterCallback<ClickEvent>(evt => OnClickJoinGameBtn());
@@ -67,25 +79,22 @@ namespace Multiplayer.UI {
             Hide(_backBtnContainer);
         }
 
-        public void OnClickBackBtn() {
+        private void OnClickBackBtn() {
             _uiController.ReturnToMultiplayerMenu();
         }
         private async void OnClickStartGameBtn() {
             _startGameBtn.SetEnabled(false);
             bool clientConnected = await _uiController.StartGame();
-            _startGameBtn.SetEnabled(true);
-
+            
             if (clientConnected) {
-                //hide main UI
             }
         }
         private async void OnClickJoinGameBtn() {
             _joinGameBtn.SetEnabled(false);
             bool clientConnected = await _uiController.JoinGame();
-            _joinGameBtn.SetEnabled(true);
-
+            
             if (clientConnected) {
-                //hide main UI
+                _joinGameBtn.SetEnabled(true);
             }
         }
 
@@ -96,25 +105,26 @@ namespace Multiplayer.UI {
         private void DisplayButtons() {
             var isPlayerHost = _uiController.IsPlayerHost();
             if (isPlayerHost) {
+                _startGameBtn.SetEnabled(_uiController.CanStartGame());
                 Show(_startGameBtn);
                 Hide(_joinGameBtn);
             }
             else {
+                _joinGameBtn.SetEnabled(_uiController.CanJoinGame());
                 Show(_joinGameBtn);
                 Hide(_startGameBtn);
             }
         }
-
-        private async Task UpdateServerInfoTable() {
-            // if (!gameLobbyManager.IsPlayerHost()) {
-            //     _serverStatusLabel.text = gameLobbyManager?.GetLobbyData("MachineStatus");
-            //     _serverPortLabel.text =  gameLobbyManager?.GetLobbyData("Port");
-            //     _serverIPLabel.text =  gameLobbyManager?.GetLobbyData("ServerIP");
-            // }
-
-            _serverStatusLabel.text = _uiController._serverStatus;
-            _serverPortLabel.text = _uiController._serverPort;
-            _serverIPLabel.text = _uiController._serverIP;
+        
+        private void UpdateServerInfoTable() {
+            
+            _serverStatusLabel.text = _uiController._client.ServerStatus;
+            _serverPortLabel.text = _uiController._client.Port;
+            _serverIPLabel.text = _uiController._client.ServerIP;
+            
+            if (_uiController._client.ServerStatus != null &&  _uiController._client.ServerStatus != "") {
+                ApplyServerStatusStyling();
+            }
         }
 
         private async Task GenerateLobbyPlayerTable(bool sendNewRequest) {
@@ -143,15 +153,22 @@ namespace Multiplayer.UI {
                 
                 VisualElement lastUpdated = new VisualElement();
                 Label lastUpdatedLabel = new Label();
-                lastUpdatedLabel.text = lobbyPlayer.Data["ClientId"].Value;
+                lastUpdatedLabel.text = lobbyPlayer.LastUpdated.ToString();
                 lastUpdated.Add(lastUpdatedLabel);
                 lastUpdated.AddToClassList("col-last-updated");
                 
                 VisualElement connectionStatus = new VisualElement();
                 Label connectionStatusLabel = new Label();
-                connectionStatusLabel.text = lobbyPlayer.Data["IsConnected"].Value;
+                var connected = bool.Parse(lobbyPlayer.Data["IsConnected"].Value);
+                connectionStatusLabel.text = connected ? "Connected" : "Not Connected";
+                connectionStatusLabel.AddToClassList(connected ? "player-connection-status-connected" : "player-connection-status-not-connected");
+                connectionStatusLabel.AddToClassList("col-player-label");
                 connectionStatus.Add(connectionStatusLabel);
                 connectionStatus.AddToClassList("col-connection-status");
+
+                if (lobbyPlayer.Data["IsConnected"].Value == "True") {
+                    connectionStatusLabel.AddToClassList("status-active");
+                }
                 
                 VisualElement playerIsHost = new VisualElement();
                 Label playerIsHostLabel = new Label();
@@ -173,13 +190,38 @@ namespace Multiplayer.UI {
         public override void Update() {
             _table.Clear();
             UpdateServerInfoTable();
+            DisplayButtons();
             GenerateLobbyPlayerTable(true);
         }
         
         public override void RePaint() {
             _table.Clear();
             UpdateServerInfoTable();
+            DisplayButtons();
             GenerateLobbyPlayerTable(false);
+        }
+
+        private void ApplyServerStatusStyling() {
+            foreach (var statusClass in ServerStatusClasses.Values){
+                _serverStatusLabel.RemoveFromClassList(statusClass);
+            }
+            
+            if (ServerStatusClasses.TryGetValue(_uiController._client.ServerStatus, out var newClass)) {
+                _serverStatusLabel.AddToClassList(newClass);
+            }
+            else {
+                _serverStatusLabel.AddToClassList(ServerStatusClasses["DEFAULT"]);
+            }
+
+            _serverStatusLabel.text = Capitalize(_serverStatusLabel.text);
+        }
+        
+        private string Capitalize(string input) {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            input = input.ToLower();
+            return char.ToUpper(input[0]) + input.Substring(1);
         }
     }
 }

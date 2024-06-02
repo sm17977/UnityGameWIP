@@ -10,6 +10,7 @@ namespace Multiplayer.UI {
 
         private Button _confirmExitBtn;
         private Button _cancelExitBtn;
+        private VisualElement _mainContainer;
 
         public ExitGameModal(VisualElement parentContainer, MultiplayerUIController uiController) {
             _uiController = uiController;
@@ -22,13 +23,14 @@ namespace Multiplayer.UI {
         private void InitializeElements() {
             _confirmExitBtn = Root.Q<Button>("confirm-exit-btn");
             _cancelExitBtn = Root.Q<Button>("cancel-exit-btn");
+            _mainContainer = Root.Q<VisualElement>("main-container");
             
             _confirmExitBtn.RegisterCallback<ClickEvent>(evt => OnClickExitGameBtn());
-            _cancelExitBtn.RegisterCallback<ClickEvent>(evt =>OnClickCancelExitGameBtn());
+            _cancelExitBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelExitGameBtn());
         }
 
-        private void OnClickExitGameBtn() {
-            _uiController.DisconnectClient();
+        private async void OnClickExitGameBtn() {
+            await _uiController.DisconnectClient();
         }
         
         private void OnClickCancelExitGameBtn() {

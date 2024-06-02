@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -31,15 +32,15 @@ namespace Multiplayer.UI {
                 switch (button.text){
 
                     case "Create new lobby":
-                        button.RegisterCallback<ClickEvent>(evt => MultiplayerUIController.OnClickMultiplayerMenuBtn(typeof(CreateLobbyModal)));
+                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(CreateLobbyModal)));
                         break;
                 
                     case "Current lobby":
-                        button.RegisterCallback<ClickEvent>(evt => MultiplayerUIController.OnClickMultiplayerMenuBtn(typeof(LobbyView)));
+                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(LobbyView)));
                         break;
 
                     case "List lobbies":
-                        button.RegisterCallback<ClickEvent>(evt => MultiplayerUIController.OnClickMultiplayerMenuBtn(typeof(LobbiesView)));
+                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(LobbiesView)));
                         break;
 
                     case "Leaderboards":
@@ -47,12 +48,15 @@ namespace Multiplayer.UI {
                         break;
 
                     case "Main Menu":
-                        button.RegisterCallback<ClickEvent>(evt => MultiplayerUIController.OnClickMainMenuBtn());
+                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMainMenuBtn());
                         break;
                 }
             }
+        }
 
+        public void RunLobbyCheck() {
             if (_uiController.IsPlayerInLobby()) {
+                Debug.Log("Player is in lobby!");
                 var currentLobbyBtnContainer = Root.Q<VisualElement>("lobby-btn-container");
                 var createLobbyBtnContainer = Root.Q<VisualElement>("create-lobby-btn-container");
                 Show(currentLobbyBtnContainer);
@@ -64,11 +68,15 @@ namespace Multiplayer.UI {
                 Show(createLobbyBtnContainer);
                 Hide(currentLobbyBtnContainer);
             }
-            
         }
-
+        
+        public override async void Show() {
+            base.Show();
+            RunLobbyCheck();
+        }
+        
         public override void Update() {
-            InitializeElements();
+            RunLobbyCheck();
         }
         
         public override void RePaint() {

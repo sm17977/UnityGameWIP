@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Multiplayer;
 using Multiplayer.UI;
-using Unity.Collections;
+using QFSW.QC;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-using WebSocketSharp;
 using LobbyView = Multiplayer.UI.LobbyView;
 
 public class MultiplayerUIController : MonoBehaviour {
@@ -20,21 +17,22 @@ public class MultiplayerUIController : MonoBehaviour {
     // UI Document
     [SerializeField] public UIDocument uiDocument;
     
-    // Client Data
-    public string _serverStatus;
-    public string _serverIP;
-    public string _serverPort;
-    
-    // Managers
-    private static ViewManager _viewManager;
+    // Lobby Manager
+    public GameObject gameLobbyManagerObj;
     private GameLobbyManager _gameLobbyManager;
+    
+    // View Manager
+    public GameObject gameViewManagerObj;
+    private GameViewManager _gameViewManager;
+    private ViewManager _viewManager;
+    
+    // Client Manager
+    public GameObject clientManagerObj;
+    private ClientManager _clientManager;
+    public Client _client;
     
     // Global State
     private static Global_State _globalState;
-    public GameObject gameLobbyManagerObj;
-    
-    // Cancellation Token Source
-    private CancellationTokenSource cancellationTokenSource;
     
     // Input System
     private Controls _controls;
@@ -44,14 +42,17 @@ public class MultiplayerUIController : MonoBehaviour {
         gameObject.SetActive(false);
         return;
 #endif
-        _viewManager = ViewManager.Instance;
         _globalState = GameObject.Find("Global State").GetComponent<Global_State>();
+        
         _gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
+        _gameViewManager = gameViewManagerObj.GetComponent<GameViewManager>();
+        _clientManager = clientManagerObj.GetComponent<ClientManager>();
     }
 
     void Start(){
-        Debug.Log("In UI Controller Start");
+        _viewManager = _gameViewManager.ViewManager;
         _viewManager.Initialize(this);
+        _client = _clientManager.Client;
         //playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
     }
     
@@ -78,9 +79,9 @@ public class MultiplayerUIController : MonoBehaviour {
         // }
     }
 
-    public static void OnClickMultiplayerMenuBtn(Type type) {
-        Debug.Log($"Type: {type}");
-
+    
+    public void OnClickMultiplayerMenuBtn(Type type) {
+        
         if (type.IsSubclassOf(typeof(Modal))) {
             _viewManager.OpenModal(type);
         }
@@ -91,13 +92,23 @@ public class MultiplayerUIController : MonoBehaviour {
             Debug.LogError("Type is neither a View nor a Modal.");
         }
     }
+    
+    private void OnEscape(InputAction.CallbackContext context) {
+        if (_viewManager.CurrentModal != null) {
+            _viewManager.CloseModal(typeof(ExitGameModal));
+        }
+        else {
+            _viewManager.OpenModal(typeof(ExitGameModal));
+        }
+    }
 
-    public static void OnClickMainMenuBtn() {
+    public void OnClickMainMenuBtn() {
         _globalState.LoadScene("Main Menu");
     }
     
     public async Task CreateLobby(string lobbyName) {
         await _gameLobbyManager.CreateLobby(lobbyName);
+        _client.IsLobbyHost = true;
         _viewManager.CloseModal(typeof(CreateLobbyModal));
         _viewManager.ChangeView(typeof(LobbyView));
     }
@@ -125,19 +136,25 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     public async Task<bool> StartGame() {
-        cancellationTokenSource = new CancellationTokenSource();
-        var clientConnected = await StartClientAsLobbyHost(cancellationTokenSource.Token);
+        var clientConnected = await _clientManager.Connect();
+        _viewManager.ChangeView(typeof(GameView));
         return clientConnected;
     }
     
     public async Task<bool> JoinGame() {
-        var clientConnected = await StartClientAsLobbyPlayer();
+        var clientConnected = await _clientManager.Connect();
+        _viewManager.ChangeView(typeof(GameView));
         return clientConnected;
     }
     
     public async Task LeaveLobby() {
-        await _gameLobbyManager.LeaveLobby();
-        _viewManager.UpdateView(typeof(MultiplayerMenuView));
+        if (_client.IsLobbyHost) {
+            await _gameLobbyManager.DeleteLobby();
+            //Delete allocation?
+        }
+        else {
+            await _gameLobbyManager.LeaveLobby();
+        }
         _viewManager.ChangeView(typeof(MultiplayerMenuView));
     }
     
@@ -151,143 +168,62 @@ public class MultiplayerUIController : MonoBehaviour {
     
    public async Task JoinLobby(Lobby lobby) {
        await _gameLobbyManager.JoinLobby(lobby);
+       _client.IsLobbyHost = false;
+        UpdatePlayersServerInfo();
        _viewManager.ChangeView(typeof(LobbyView));
    }
    
-   private void OnEscape(InputAction.CallbackContext context) {
-       if (_viewManager.CurrentModal != null) {
-           _viewManager.CloseModal(typeof(ExitGameModal));
-       }
-       else {
-           _viewManager.OpenModal(typeof(ExitGameModal));
-       }
-   }
-
    public void CloseModal(Type type) {
        _viewManager.CloseModal(type);
    }
 
    public void ReturnToMultiplayerMenu() {
-       _viewManager.UpdateView(typeof(MultiplayerMenuView));
        _viewManager.ChangeView(typeof(MultiplayerMenuView));
    }
 
-   public void DisconnectClient() {
-       NetworkManager.Singleton.Shutdown();
-       _viewManager.CloseModal(typeof(ExitGameModal));
-       _viewManager.ChangeView(typeof(LobbyView));
-   }
-   
-   // TODO - Ensure only lobby hosts can request a server allocation
-   private async Task<bool> StartClientAsLobbyHost(CancellationToken cancellationToken) {
-
-       try {
-           WebServicesAPI webServicesAPI = new WebServicesAPI();
-           await webServicesAPI.RequestAPIToken();
-           var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, webServicesAPI);
-           if (!clientConnectionInfo.IP.IsNullOrEmpty()) {
-               _serverIP = clientConnectionInfo.IP;
-               _serverPort = clientConnectionInfo.Port.ToString();
+   /// <summary>
+   /// Process player initiated disconnect 
+   /// </summary>
+   public async Task DisconnectClient() {
+       
+       if (_viewManager.CurrentModal.GetType() == typeof(ExitGameModal)) {
+           if (_client.IsLobbyHost) {
+               await DisconnectHost();
+           }
+           else {
+               await _clientManager.Disconnect();
+               _viewManager.CloseModal(typeof(ExitGameModal));
                _viewManager.RePaintView(typeof(LobbyView));
-               await _gameLobbyManager.UpdateLobbyWithServerInfo(_serverStatus, clientConnectionInfo.IP, clientConnectionInfo.Port);
-               NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(clientConnectionInfo.IP, (ushort)clientConnectionInfo.Port);
-               // Send playerId of client to server in the connection approval payload 
-               var playerData = new PlayerData { PlayerId = _gameLobbyManager.GetPlayerID() };
-               using (var writer = new FastBufferWriter(128, Allocator.Temp)) {
-                   writer.WriteNetworkSerializable(playerData);
-                   NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
-               }
-               NetworkManager.Singleton.StartClient();
-               NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
-                   OnPlayerStatusMessage);
-               await _gameLobbyManager.UpdatePlayerDataWithClientId(NetworkManager.Singleton.LocalClientId);
-               return true;
+               _viewManager.ChangeView(typeof(LobbyView));
            }
        }
-       catch (OperationCanceledException) {
-           
-       }
-       return false;
    }
 
-   private async Task<bool> StartClientAsLobbyPlayer() {
+   private async Task DisconnectHost() {
+       Debug.Log("Host is sending disconnect message to server.");
+       _clientManager.NotifyServerOfHostDisconnect();
        
-       var ip =  _gameLobbyManager?.GetLobbyData("ServerIP");
-       var port = _gameLobbyManager?.GetLobbyData("Port");
-
-       if (ip == null || port == null) return false;
+       var maxRetries = 10;
+       var retryCount = 0;
        
-       try {
-           NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ip, (ushort)int.Parse(port));
-           
-           // Send playerId of client to server in the connection approval payload 
-           var playerData = new PlayerData { PlayerId = _gameLobbyManager.GetPlayerID() };
-           using (var writer = new FastBufferWriter(128, Allocator.Temp)) {
-               writer.WriteNetworkSerializable(playerData);
-               NetworkManager.Singleton.NetworkConfig.ConnectionData = writer.ToArray();
+       while (retryCount < maxRetries) {
+           if (_gameLobbyManager.LobbyPlayersDisconnected()) {
+               break;
            }
-           NetworkManager.Singleton.StartClient();
-           NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
-               OnPlayerStatusMessage);
-           await _gameLobbyManager.UpdatePlayerDataWithClientId(NetworkManager.Singleton.LocalClientId);
-           
-           return true;
+           Debug.Log("Wait for lobby players to disconnect...");
+           await Task.Delay(1000);
+           retryCount++;
        }
-       catch (OperationCanceledException) {
-           
-       }
-       return false;
-   }
-   
-   private async Task<ClientConnectionInfo> GetClientConnectionInfo(CancellationToken cancellationToken, WebServicesAPI webServicesAPI) {
-            
-       // Queue allocation request for a game server
-       await webServicesAPI.QueueAllocationRequest();
-       
-       // Check for active machine
-       _serverStatus = await webServicesAPI.GetMachineStatus();
-       _viewManager.RePaintView(typeof(LobbyView));
-       
-       Debug.Log("Initial Machine Status: " + _serverStatus);
-       
-       // If no machine is found yet, keep polling until one is
-       if (_serverStatus != "ONLINE") {
-           var machines = await webServicesAPI.PollForMachine(60 * 5, cancellationToken);
-           
-           if (machines.Length == 0) {
-               Debug.LogError("No machines found after polling.");
-               return new ClientConnectionInfo { IP = "", Port = 0 };
-           }
-           
-           var maxRetries = 60;
-           var retryCount = 0;
-           
-           // Once a machine is found, poll for its status until it's online
-           while (retryCount < maxRetries) {
-               Debug.Log("Polling Machine Status");
-               var newStatus = await webServicesAPI.GetMachineStatus();
-               if (_serverStatus != newStatus) {
-                   Debug.Log("Machine Status Change: " + newStatus);
-                   _serverStatus = newStatus;
-                   _viewManager.RePaintView(typeof(LobbyView));
-                   if (_serverStatus == "ONLINE") {
-                       break;
-                   }
-               }
-               retryCount++;
-               await Task.Delay(5000, cancellationToken);
-           }
+       var canDisconnect = _gameLobbyManager.LobbyPlayersDisconnected();
+       if (canDisconnect) {
+           await _clientManager.Disconnect();
+           _viewManager.CloseModal(typeof(ExitGameModal));
+           _viewManager.RePaintView(typeof(LobbyView));
+           _viewManager.ChangeView(typeof(LobbyView));
        }
        else {
-           _viewManager.RePaintView(typeof(LobbyView));
+           Debug.LogError("Players have not disconnected.");
        }
-       
-       // Now the machine is online, poll for the IP and Port of allocated game server
-       var response = await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
-       return response != null
-           ? new ClientConnectionInfo { IP = response.ipv4, Port = response.gamePort }
-           : new ClientConnectionInfo { IP = "", Port = 0 };
-
    }
    
     void RotateLoader() {
@@ -296,7 +232,7 @@ public class MultiplayerUIController : MonoBehaviour {
         //     new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(rotation, AngleUnit.Degree)));
     }
     
-    public async Task OnLobbyChanged(ILobbyChanges changes) {
+    public void OnLobbyChanged(ILobbyChanges changes) {
         if (changes.PlayerLeft.Changed) {
             Debug.Log("Lobby Change - Player left!");
         }
@@ -306,20 +242,56 @@ public class MultiplayerUIController : MonoBehaviour {
         }
 
         if (changes.Data.Added) {
-            Debug.Log("Lobby Change - Data Added");
+            Debug.Log("Lobby Change - Lobby Data Added");
         }
 
         if (changes.PlayerData.Changed) {
-            Debug.Log("Lobby Change - Player Data Added");
+            Debug.Log("Lobby Change - Player Data Changed");
+        }
+
+        if (changes.LobbyDeleted) {
+            Debug.Log("Lobby Change - Lobby Deleted");
+            if (!_client.IsLobbyHost) {
+                _gameLobbyManager.InvalidateLobby();
+                _viewManager.ChangeView(typeof(MultiplayerMenuView));
+                return;
+            }
         }
         
         _gameLobbyManager.ApplyLobbyChanges(changes);
-        _viewManager.UpdateView(typeof(LobbyView));
+        
+        if (!_client.IsLobbyHost) {
+            UpdatePlayersServerInfo();
+        }
+        else {
+            _viewManager.RePaintView(typeof(LobbyView));
+        }
     }
-    private async void OnPlayerStatusMessage(ulong clientId, FastBufferReader reader) {
-        PlayerStatusMessage msg = new PlayerStatusMessage();
-        reader.ReadNetworkSerializable<PlayerStatusMessage>(out msg);
-        Debug.Log("Player Status Message: " + msg.PlayerId + " Connected: " + msg.IsConnected);
-        await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(msg.IsConnected, msg.PlayerId.ToString());
+
+    /// <summary>
+    /// Update the server info in the Lobby View for players (non lobby host)
+    /// </summary>
+    private void UpdatePlayersServerInfo() {
+        
+         if(_gameLobbyManager?.GetLobbyData("ServerIP") != null) {
+             Debug.Log("In here1");
+             _client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
+             _client.Port = _gameLobbyManager?.GetLobbyData("Port");
+         }
+
+         if (_gameLobbyManager?.GetLobbyData("MachineStatus") != null) {
+             Debug.Log("In here2");
+             _client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
+             
+         }
+         _viewManager.RePaintView(typeof(LobbyView));
+    }
+
+    public bool CanJoinGame() {
+        return _gameLobbyManager.HostIsConnected();
+    }
+
+    public bool CanStartGame() {
+        return !_gameLobbyManager.HostIsConnected();
     }
 }

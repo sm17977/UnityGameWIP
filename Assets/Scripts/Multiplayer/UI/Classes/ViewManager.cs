@@ -38,8 +38,6 @@ namespace Multiplayer.UI {
 
         public void Initialize(MultiplayerUIController uiController) {
             
-            Debug.Log("init");
-            
             var root = uiController.uiDocument.rootVisualElement;
 
             // View Elements
@@ -54,6 +52,7 @@ namespace Multiplayer.UI {
             _views.Add(typeof(MultiplayerMenuView), new MultiplayerMenuView(multiplayerMenuElement, uiController));
             _views.Add(typeof(LobbiesView), new LobbiesView(lobbiesElement, uiController));
             _views.Add(typeof(LobbyView), new LobbyView(lobbyElement, uiController));
+            _views.Add(typeof(GameView), new GameView(null, uiController));
             
             _modals.Add(typeof(CreateLobbyModal), new CreateLobbyModal(createLobbyElement, uiController));
             _modals.Add(typeof(ExitGameModal), new ExitGameModal(exitGameElement, uiController));
@@ -61,14 +60,9 @@ namespace Multiplayer.UI {
             _currentView = _views[typeof(MultiplayerMenuView)];
             _currentModal = null;
             
-            Debug.Log("Before Logging Func");
-            
-            LogDictionaries();
         }
 
         public void ChangeView(Type viewType) {
-            Debug.Log("viewType: " + viewType);
-            
             if (_views.ContainsKey(viewType)) {
                 _currentView?.Hide();
                 _currentView = _views[viewType];
@@ -108,12 +102,11 @@ namespace Multiplayer.UI {
             if (_modals.ContainsKey(modalType)) {
                 _currentModal = _modals[modalType];
                 _currentModal?.HideModal();
+                _currentModal = null;
             } else {
                 Debug.LogError("Modal not found.");
             }
         }
-        
-        
         
         private void LogDictionaries() {
             Debug.Log("Logging Views Dictionary:");

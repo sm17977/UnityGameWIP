@@ -134,7 +134,7 @@
                             <ui:Label text="Status "/>
                         </ui:VisualElement>
                         <ui:VisualElement name="col-header" class="col-server-info-value">
-                            <ui:Label text="N/A" name="server-status-label"/>
+                            <ui:Label text="Inactive" name="server-status-label" class="server-status server-status-default"/>
                         </ui:VisualElement>
                     </ui:VisualElement>
                     <ui:VisualElement class="row-container">
@@ -171,7 +171,7 @@
                         <ui:Label text="Last Updated"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="col-header" class="col-header col-connection-status">
-                        <ui:Label text="Status"/>
+                        <ui:Label text="Connection Status"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="col-header" class="col-header col-is-host">
                         <ui:Label text="Is Host"/>
