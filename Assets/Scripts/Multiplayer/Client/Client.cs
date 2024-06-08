@@ -18,6 +18,11 @@ namespace Multiplayer {
         private string _port;
         private string _serverStatus = "Inactive";
 
+        public string ID {
+            get => _id;
+            set => _id = value;
+        }
+
         public bool IsLobbyHost {
             get => _isLobbyHost;
             set => _isLobbyHost = value;

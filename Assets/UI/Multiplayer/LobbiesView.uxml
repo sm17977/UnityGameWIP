@@ -1,0 +1,57 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    <!--<Style src="project://database/Assets/UI/Multiplayer/Multiplayer_Styles.uss" /> -->
+    
+    <!-- Lobbies Table Container -->
+    <ui:VisualElement name="lobbies" class="lobbies-container">
+        
+        <!-- Multiplayer Heading -->
+        <ui:VisualElement name="title-container" class="title-container">
+            <ui:Label text="Multiplayer" class="title-label"/>
+        </ui:VisualElement>
+        
+        <!-- Lobbies Heading -->
+        <ui:VisualElement name="subheading-container" class="subheading-container">
+            <ui:Label text="Lobbies" class="subheading-label"/>
+        </ui:VisualElement>
+        <!-- Lobby Table-->
+        <ui:VisualElement name="lobbies-table" class="table">
+            <!-- Table Header Row Container-->
+            <ui:VisualElement name="lobbies-table-header" class="row-container header-row">
+                <!-- Header Row-->
+                <ui:VisualElement name="col-header" class="col-header col-lobby-id">
+                    <ui:Label text="Lobby ID"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-lobby-name">
+                    <ui:Label text="Lobby Name"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-players">
+                    <ui:Label text="Players"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-host">
+                    <ui:Label text="Host"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-join-lobby">
+                    <ui:Label text="Join"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+    
+            <!-- Table Body Container-->
+            <ui:VisualElement name="lobbies-table-body" class="table-body">
+                <!-- Table Body Row Container-->
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Back to Main Menu button -->
+        <ui:VisualElement name="back-btn-container" class="back-btn-container">
+            <ui:Button text="Back" name="back-btn" class="back-btn"/>
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+    
+</ui:UXML>

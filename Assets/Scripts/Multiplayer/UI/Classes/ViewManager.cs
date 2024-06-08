@@ -39,27 +39,20 @@ namespace Multiplayer.UI {
         public void Initialize(MultiplayerUIController uiController) {
             
             var root = uiController.uiDocument.rootVisualElement;
-
-            // View Elements
-            var multiplayerMenuElement = root.Q<VisualElement>("multiplayer-menu");
-            var lobbiesElement = root.Q<VisualElement>("lobbies");
-            var lobbyElement = root.Q<VisualElement>("lobby");
+            var viewContainer = root.Q<VisualElement>("view-container");
             
-            // Modal Elements
-            var createLobbyElement = root.Q<VisualElement>("create-lobby");
             var exitGameElement = root.Q<VisualElement>("exit-game");
             
-            _views.Add(typeof(MultiplayerMenuView), new MultiplayerMenuView(multiplayerMenuElement, uiController));
-            _views.Add(typeof(LobbiesView), new LobbiesView(lobbiesElement, uiController));
-            _views.Add(typeof(LobbyView), new LobbyView(lobbyElement, uiController));
+            _views.Add(typeof(MultiplayerMenuView), new MultiplayerMenuView(viewContainer, uiController, uiController.multiplayerMenuViewTmpl));
+            _views.Add(typeof(LobbiesView), new LobbiesView(viewContainer, uiController, uiController.lobbiesViewTmpl));
+            _views.Add(typeof(LobbyView), new LobbyView(viewContainer, uiController, uiController.lobbyViewTmpl));
             _views.Add(typeof(GameView), new GameView(null, uiController));
             
-            _modals.Add(typeof(CreateLobbyModal), new CreateLobbyModal(createLobbyElement, uiController));
+            _modals.Add(typeof(CreateLobbyModal), new CreateLobbyModal(root, uiController, uiController.createLobbyModalTmpl));
             _modals.Add(typeof(ExitGameModal), new ExitGameModal(exitGameElement, uiController));
 
-            _currentView = _views[typeof(MultiplayerMenuView)];
+            ChangeView(typeof(MultiplayerMenuView));
             _currentModal = null;
-            
         }
 
         public void ChangeView(Type viewType) {

@@ -1,4 +1,5 @@
-﻿using UnityEngine.UIElements;
+﻿using System.Threading.Tasks;
+using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     
@@ -6,20 +7,17 @@ namespace Multiplayer.UI {
         
         // Top level container of the view
         protected VisualElement ParentContainer;
+        protected VisualElement Template;
         
         // Root document element
         protected VisualElement Root;
         
         public virtual void Show() {
-            if (ParentContainer != null) {
-                ParentContainer.style.display = DisplayStyle.Flex;
-            }
+            ParentContainer.Add(Template);
         }
 
         public virtual void Hide() {
-            if (ParentContainer != null) {
-                ParentContainer.style.display = DisplayStyle.None;
-            }
+            ParentContainer.Remove(Template);
         }
 
        public abstract void Update();

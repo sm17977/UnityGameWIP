@@ -1,0 +1,39 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Multiplayer/Multiplayer_Styles.uss" />
+    
+    <!-- Multiplayer Menu Buttons-->
+    <ui:VisualElement name="multiplayer-menu" class="menu-container">
+        
+        <!-- Multiplayer Heading -->
+        <ui:VisualElement name="title-container" class="title-container">
+            <ui:Label text="Multiplayer" class="title-label"/>
+        </ui:VisualElement>
+        
+        
+        <!-- Menu Container -->
+        <ui:VisualElement name="menu-list-container" class="menu-list-container">
+            <ui:VisualElement name="create-lobby-btn-container" class="list-item">
+                <ui:Button text="Create new lobby" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="lobby-btn-container" class="list-item current-lobby-menu-btn-container">
+                <ui:Button text="Current lobby" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="list-item" class="list-item">
+                <ui:Button text="List lobbies" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="list-item" class="list-item">
+                <ui:Button text="Leaderboards" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="list-item" class="list-item">
+                <ui:Button text="Main Menu" name="btn" class="list-item-btn"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    
+</ui:UXML>

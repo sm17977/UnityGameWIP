@@ -1,4 +1,5 @@
-﻿using UnityEngine.UIElements;
+﻿using System.Linq;
+using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     public class CreateLobbyModal : Modal {
@@ -9,7 +10,7 @@ namespace Multiplayer.UI {
         private Button _createLobbyBtn;
         private Button _cancelLobbyBtn;
         private TextField _lobbyNameInput;
-
+        
         public Button CreateLobbyBtn {
             get => _createLobbyBtn;
         }
@@ -18,29 +19,23 @@ namespace Multiplayer.UI {
             get => _lobbyNameInput;
         }
         
-        // Loader
-        VisualElement _loader;
-        private float _rotation = 0;
-        private float _timer = 0;
-        
-        public CreateLobbyModal(VisualElement parentContainer, MultiplayerUIController uiController) {
+        public CreateLobbyModal(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+            Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             _uiController = uiController;
-            var uiDocument = uiController.uiDocument;
-            Root = uiDocument.rootVisualElement;
             InitializeElements();
         }
         
         private void InitializeElements() {
-            _lobbyNameInput = Root.Q<TextField>("lobby-name-input");
+            _lobbyNameInput = Template.Q<TextField>("lobby-name-input");
           
-            _createLobbyBtn = Root.Q<Button>("create-lobby-btn");
-            _cancelLobbyBtn = Root.Q<Button>("cancel-lobby-btn");
+            _createLobbyBtn = Template.Q<Button>("create-lobby-btn");
+            _cancelLobbyBtn = Template.Q<Button>("cancel-lobby-btn");
             
             _createLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCreateLobbyBtn());
             _cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelBtn());
             
-            _loader = Root.Q<VisualElement>("lobby-loader");
+            Loader = Template.Q<VisualElement>("lobby-loader");
         }
         
         private async void OnClickCreateLobbyBtn() {
@@ -62,17 +57,15 @@ namespace Multiplayer.UI {
         }
         
         public override void ShowLoader() {
-            //Show(_lobbyStatusLabel);
-            //Show(_lobbyLoader);
+            Show(Loader);
         }
         
         public override void HideLoader() {
-            //Show(_lobbyStatusLabel);
-            //Show(_lobbyLoader);
+            Hide(Loader);
         }
 
         public override void Update() {
-            
+   
         }
         
         public override void RePaint() {

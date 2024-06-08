@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Multiplayer;
 using Multiplayer.UI;
-using QFSW.QC;
-using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -37,23 +35,31 @@ public class MultiplayerUIController : MonoBehaviour {
     // Input System
     private Controls _controls;
     
-    void Awake(){
+    // Templates
+    public VisualTreeAsset multiplayerMenuViewTmpl;
+    public VisualTreeAsset lobbiesViewTmpl;
+    public VisualTreeAsset lobbyViewTmpl;
+    public VisualTreeAsset createLobbyModalTmpl;
+    public VisualTreeAsset exitGameModalTmpl;
+    
+    
+    private async void Awake(){
 #if DEDICATED_SERVER
         gameObject.SetActive(false);
         return;
 #endif
         _globalState = GameObject.Find("Global State").GetComponent<Global_State>();
-        
         _gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
         _gameViewManager = gameViewManagerObj.GetComponent<GameViewManager>();
         _clientManager = clientManagerObj.GetComponent<ClientManager>();
+        
+        _client = _clientManager.Client;
+        _client.ID = await _gameLobbyManager.SignIn();
     }
 
-    void Start(){
+     private void Start(){ 
         _viewManager = _gameViewManager.ViewManager;
         _viewManager.Initialize(this);
-        _client = _clientManager.Client;
-        //playerIdLabel.text = "Player ID: " + gameLobbyManager.GetPlayerID();
     }
     
     void OnEnable(){
@@ -68,15 +74,9 @@ public class MultiplayerUIController : MonoBehaviour {
     }
 
     private void Update() {
-        // if (lobbyLoader != null) {
-        //     if (timer >= 1) {
-        //         RotateLoader();
-        //         timer = 0;
-        //     }
-        //     else {
-        //         timer += Time.deltaTime;
-        //     }
-        // }
+        if (_viewManager != null && _viewManager.CurrentModal != null) {
+            _viewManager.CurrentModal.UpdateLoader();
+        }
     }
 
     
@@ -226,12 +226,6 @@ public class MultiplayerUIController : MonoBehaviour {
        }
    }
    
-    void RotateLoader() {
-        // rotation += 360;
-        // lobbyLoader.style.rotate =
-        //     new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(rotation, AngleUnit.Degree)));
-    }
-    
     public void OnLobbyChanged(ILobbyChanges changes) {
         if (changes.PlayerLeft.Changed) {
             Debug.Log("Lobby Change - Player left!");

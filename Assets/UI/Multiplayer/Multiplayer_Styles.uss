@@ -1,11 +1,12 @@
-.main-container{
+.view-container{
     width: 100%;
     height: 100%;
-    background-color: white;
+    
 }
 
 .title-container{
     margin-top: 80px;
+    margin-bottom: 50px;
 }
 
 .title-label{
@@ -17,10 +18,12 @@
 /* Multiplayer Menu */
 .menu-container{
     flex-direction: column;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 10%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    height: 100%;
     display: flex;
+    background-color: white;
 }
 
 .subheading-label{
@@ -29,16 +32,23 @@
     font-size: 50px;
 }
 
+.menu-list-container{
+    padding-top: 100px;
+}
+
 /* List Lobbies */
 .lobbies-container{
-    margin-top: 40px;
-    display: none;
+    display: flex;
+    height: 100%;
+    background-color: white;
 }
 
 .table{
     display: flex;
     flex-direction: column;
     margin: auto;
+    margin-top: 20px;
+    margin-bottom: 0;
     width: 80%;
 }
 
@@ -52,7 +62,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     height: 35px;
 }
 
@@ -106,14 +117,6 @@
 
 /* Lobby Table Columns */
 
-.col-player-label{
-    padding: 10px;
-}
-
-.col-body-connection-status{
-    flex-direction: row;
-}
-
 .col-player-id{
     flex: 0 0 20%;
     padding: 10px;
@@ -133,13 +136,19 @@
 }
 
 .col-connection-status{
-    flex-direction: row;
+    flex: 0 0 20%;
+    padding-left: 10px;
+    padding-right: 10px;
     -unity-text-align: middle-left;
     -unity-font-style: bold;
 }
 
+.col-connection-status-inner{
+    flex-direction: row;
+}
+
 .col-is-host{
-    flex: 0 0 15%;
+    flex: 0 0 20%;
     padding: 10px;
     -unity-text-align: middle-right;
 }
@@ -171,10 +180,11 @@ Label{
 .table-body{
     display: flex;
     width: 100%;
-    transition: max-height .5s;
-    max-height: 0px;
+    transition: height 0.5s;
+    height: 0;
     overflow: hidden;
 }
+
 
 .server-info-table-body{
     
@@ -182,15 +192,10 @@ Label{
 
 .back-btn-container{
     position: absolute;
-    left: 0;
     right: 0;
     bottom: 0;
     padding: 20px;
-    justify-content: flex-end;
-    align-items: flex-end;
-    align-self: flex-end;
-    display: none;
-    height: 100px;
+    display: flex;
 }
 
 .back-btn{
@@ -211,7 +216,7 @@ Label{
 }
 
 .player-id{
-    width: 200px;
+    width: 100%;
 }
 
 .list-item{
@@ -240,13 +245,13 @@ Label{
     align-items: center;
     justify-content: center;
     padding: 20px;
-    display: none;
+    display: flex;
 }
 
 .lobby-modal-content{
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: white;
     width: 800px;
     height: 600px;
     align-items: center;
@@ -354,8 +359,9 @@ Label{
 
 /* Current Lobby */
 .current-lobby-container{
-    margin-top: 50px;
-    display: none;
+    display: flex;
+    height: 100%;
+    background-color: white;
 }
 
 .current-lobby-btn-container{

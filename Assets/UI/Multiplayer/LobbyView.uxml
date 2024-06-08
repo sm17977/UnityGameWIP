@@ -1,0 +1,103 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    <!--<Style src="project://database/Assets/UI/Multiplayer/Multiplayer_Styles.uss" />-->
+
+    <!-- Current Lobby -->
+    <ui:VisualElement name="lobby" class="current-lobby-container">
+        
+        <!-- Multiplayer Heading -->
+        <ui:VisualElement name="title-container" class="title-container">
+            <ui:Label text="Multiplayer" class="title-label"/>
+        </ui:VisualElement>
+        
+        <!-- Lobby Heading -->
+        <ui:VisualElement name="subheading" class="subheading">
+            <ui:Label text="Player List" class="subheading-label"/>
+        </ui:VisualElement>
+        
+        <!-- Server Info Table -->
+        <ui:VisualElement name="server-info-table" class="table server-info">
+            <!-- Table Header Row Container-->
+            <ui:VisualElement name="server-info-table-header" class="row-container header-row">
+                <!-- Header Row-->
+                <ui:VisualElement name="col-header" class="col-header col-server-info">
+                    <ui:Label text="Server Info"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- Table Body Container-->
+            <ui:VisualElement name="server-info-table-body" class="server-info-table-body">
+                <!-- Table Body Row Container-->
+                <ui:VisualElement class="row-container">
+                    <ui:VisualElement name="col-header" class="col-server-info-key">
+                        <ui:Label text="Status "/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-server-info-value">
+                        <ui:Label text="Inactive" name="server-status-label" class="server-status server-status-default"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="row-container">
+                    <ui:VisualElement name="col-header" class="col-server-info-key">
+                        <ui:Label text="IP "/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-server-info-value">
+                        <ui:Label text="N/A" name="server-ip-label"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="row-container">
+                    <ui:VisualElement name="col-header" class="col-server-info-key">
+                        <ui:Label text="Port "/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="col-server-info-value">
+                        <ui:Label text="N/A" name="server-port-label"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Current Lobby Table-->
+        <ui:VisualElement name="current-lobby-table" class="table">
+            <!-- Table Header Row Container-->
+            <ui:VisualElement name="current-lobby-table-header" class="row-container header-row">
+                <!-- Header Row-->
+                <ui:VisualElement name="col-header" class="col-header col-player-id">
+                    <ui:Label text="Player ID"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-player-name">
+                    <ui:Label text="Player Name"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-last-updated">
+                    <ui:Label text="Last Updated"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-connection-status">
+                    <ui:Label text="Connection Status"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="col-header" class="col-header col-is-host">
+                    <ui:Label text="Is Host"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Table Body Container-->
+            <ui:VisualElement name="current-lobby-table-body" class="table-body">
+                <!-- Table Body Row Container-->
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <ui:VisualElement name="current-lobby-btn-container" class="current-lobby-btn-container">
+            <ui:Button text="Leave Lobby" name="leave-lobby-btn" class="leave-lobby-btn"/>
+            <ui:Button text="Start Game" name="start-game-btn" class="start-game-btn"/>
+            <ui:Button text="Join Game" name="join-game-btn" class="join-game-btn"/>
+        </ui:VisualElement>
+        
+        <!-- Back to Main Menu button -->
+        <ui:VisualElement name="back-btn-container" class="back-btn-container">
+            <ui:Button text="Back" name="back-btn" class="back-btn"/>
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+    
+</ui:UXML>

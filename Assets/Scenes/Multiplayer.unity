@@ -750,6 +750,15 @@ MonoBehaviour:
   gameLobbyManagerObj: {fileID: 485914239}
   gameViewManagerObj: {fileID: 733547716}
   clientManagerObj: {fileID: 1706765618}
+  multiplayerMenuViewTmpl: {fileID: 9197481963319205126, guid: 662cb3722ea04acd99e1ab5d73256394,
+    type: 3}
+  lobbiesViewTmpl: {fileID: 9197481963319205126, guid: f3cd960333b54785bd9bf4771bc01c7c,
+    type: 3}
+  lobbyViewTmpl: {fileID: 9197481963319205126, guid: 27ad0355deb94393a106e75767cac466,
+    type: 3}
+  createLobbyModalTmpl: {fileID: 9197481963319205126, guid: 7e598edb4a4c4704a0151d69d2570bd8,
+    type: 3}
+  exitGameModalTmpl: {fileID: 0}
 --- !u!1 &1706765618
 GameObject:
   m_ObjectHideFlags: 0

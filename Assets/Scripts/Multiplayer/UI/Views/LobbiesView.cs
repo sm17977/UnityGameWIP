@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -8,44 +11,40 @@ namespace Multiplayer.UI {
         private MultiplayerUIController _uiController;
         private VisualElement _table;
         
-        private VisualElement _backBtnContainer;
         private Button _backBtn;    
         
-        public LobbiesView(VisualElement parentContainer, MultiplayerUIController uiController) {
-            _uiController = uiController;
+        public LobbiesView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+            Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            var uiDocument = uiController.uiDocument;
-            Root = uiDocument.rootVisualElement;
+            _uiController = uiController;
             InitializeElements();
         }
         private void InitializeElements() {
-            _table = Root.Q<VisualElement>("lobbies-table-body");
-            _backBtnContainer = Root.Q<VisualElement>("back-btn-container");
+            _table = Template.Q<VisualElement>("lobbies-table-body");
             
-            _backBtn = Root.Q<Button>("back-btn");
+            _backBtn = Template.Q<Button>("back-btn");
             _backBtn.RegisterCallback<ClickEvent>(evt => OnClickBackBtn());
         }
         public override async void Show() {
             base.Show();
-            Show(_backBtnContainer);
+            Debug.Log("Lobbies Frame Showing Element: "  + Time.frameCount);
             _table.Clear();
             await GenerateLobbiesTable(true);
         }
         
         public override void Hide() {
             base.Hide();
-            _table.style.maxHeight = 0;
-            Hide(_backBtnContainer);
+            _table.style.height = 0;
         }
         
-        public void OnClickBackBtn() {
+        private void OnClickBackBtn() {
             _uiController.ReturnToMultiplayerMenu();
         }
         private async Task GenerateLobbiesTable(bool sendNewRequest) {
 
             var lobbies = await _uiController.GetLobbyTableData(sendNewRequest);
             var lobbyCount = 0;
-            var lobbyRowHeight = 100;
+            var lobbyRowHeight = 24;
 
             foreach(var lobby in lobbies){
 
@@ -96,8 +95,10 @@ namespace Multiplayer.UI {
 
                 _table.Add(row);
             }    
-            _table.style.maxHeight = lobbyCount * lobbyRowHeight;
+            _table.style.height = lobbyCount * lobbyRowHeight;
         }
+        
+        
         private async void OnClickJoinLobbyBtn(Lobby lobby) {
             await _uiController.JoinLobby(lobby);
         }
@@ -108,11 +109,13 @@ namespace Multiplayer.UI {
         
         public override void Update() {
             _table.Clear();
+            Debug.Log("updating lobbies");
             GenerateLobbiesTable(true);
         }
 
         public override void RePaint() {
             _table.Clear();
+            Debug.Log("repaitning lobbies");
             GenerateLobbiesTable(false);
         }
     }

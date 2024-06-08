@@ -38,10 +38,6 @@ public class GameLobbyManager : MonoBehaviour {
         lobbyManager = LobbyManager.Instance;
         _uiController = uIControllerGameObject.GetComponent<MultiplayerUIController>();
     }
-
-    async void Start() {
-        playerId = await lobbyManager.SignInUser();
-    }
     
     private void Update(){
         
@@ -51,6 +47,11 @@ public class GameLobbyManager : MonoBehaviour {
         else{
             canRequestGetJoinedLobbies = true;
         }
+    }
+
+    public async Task<string> SignIn() {
+        playerId = await lobbyManager.SignInUser();
+        return playerId;
     }
 
     public async Task CreateLobby(string lobbyName) {

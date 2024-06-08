@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,22 +10,17 @@ namespace Multiplayer.UI {
         
         private List<Button> _buttonsList;
         private Label _playerIdLabel;
-        private VisualElement _createLobbyMenuBtnContainer;
-        private VisualElement _currentLobbyMenuBtnContainer;
-
-        public MultiplayerMenuView(VisualElement parentContainer, MultiplayerUIController uiController) {
-            _uiController = uiController;
+        
+        public MultiplayerMenuView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+            Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            var uiDocument = uiController.uiDocument;
-            Root = uiDocument.rootVisualElement;
+            _uiController = uiController;
             InitializeElements();
         }
 
         private void InitializeElements() {
-            _playerIdLabel = Root.Q<Label>("player-id");
-            _buttonsList = Root.Query<Button>("btn").ToList();
-            _createLobbyMenuBtnContainer = Root.Q<VisualElement>("create-lobby-btn-container");
-            _currentLobbyMenuBtnContainer = Root.Q<VisualElement>("current-lobby-btn-container");
+            _playerIdLabel = _uiController.uiDocument.rootVisualElement.Q<Label>("player-id");
+            _buttonsList = Template.Query<Button>("btn").ToList();
             
             // Multiplayer Menu Buttons
             foreach (var button in _buttonsList){
@@ -52,19 +48,20 @@ namespace Multiplayer.UI {
                         break;
                 }
             }
+
+            _playerIdLabel.text = "Player ID: " + _uiController._client.ID;
         }
 
         public void RunLobbyCheck() {
             if (_uiController.IsPlayerInLobby()) {
-                Debug.Log("Player is in lobby!");
-                var currentLobbyBtnContainer = Root.Q<VisualElement>("lobby-btn-container");
-                var createLobbyBtnContainer = Root.Q<VisualElement>("create-lobby-btn-container");
+                var currentLobbyBtnContainer = Template.Q<VisualElement>("lobby-btn-container");
+                var createLobbyBtnContainer = Template.Q<VisualElement>("create-lobby-btn-container");
                 Show(currentLobbyBtnContainer);
                 Hide(createLobbyBtnContainer);
             }
             else {
-                var currentLobbyBtnContainer = Root.Q<VisualElement>("lobby-btn-container");
-                var createLobbyBtnContainer = Root.Q<VisualElement>("create-lobby-btn-container");
+                var currentLobbyBtnContainer = Template.Q<VisualElement>("lobby-btn-container");
+                var createLobbyBtnContainer = Template.Q<VisualElement>("create-lobby-btn-container");
                 Show(createLobbyBtnContainer);
                 Hide(currentLobbyBtnContainer);
             }

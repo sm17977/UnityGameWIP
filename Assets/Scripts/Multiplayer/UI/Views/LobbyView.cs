@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -9,12 +11,10 @@ namespace Multiplayer.UI {
         private MultiplayerUIController _uiController;
         
         private VisualElement _table;
-        private VisualElement _mainContainer;
         private Button _startGameBtn;
         private Button _joinGameBtn;
         private Button _leaveBtn;
-
-        private VisualElement _backBtnContainer;
+        
         private Button _backBtn;    
     
         private VisualElement _serverInfoTable;
@@ -36,28 +36,23 @@ namespace Multiplayer.UI {
             { "Inactive", "server-status-default" }
         };
         
-        public LobbyView(VisualElement parentContainer, MultiplayerUIController uiController) {
-            _uiController = uiController;
+        public LobbyView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+            Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            var uiDocument = uiController.uiDocument;
-            Root = uiDocument.rootVisualElement;
+            _uiController = uiController;
             InitializeElements();
         }
 
         private void InitializeElements() {
+            _serverStatusLabel = Template.Q<Label>("server-status-label");
+            _serverIPLabel = Template.Q<Label>("server-ip-label");
+            _serverPortLabel = Template.Q<Label>("server-port-label");
             
-            _serverStatusLabel = Root.Q<Label>("server-status-label");
-            _serverIPLabel = Root.Q<Label>("server-ip-label");
-            _serverPortLabel = Root.Q<Label>("server-port-label");
-            
-            _table = Root.Q<VisualElement>("current-lobby-table-body");
-            _leaveBtn = Root.Q<Button>("leave-lobby-btn");
-            _startGameBtn = Root.Q<Button>("start-game-btn");
-            _joinGameBtn = Root.Q<Button>("join-game-btn");
-
-            _backBtnContainer = Root.Q<VisualElement>("back-btn-container");
-            _backBtn = Root.Q<Button>("back-btn");
-            _mainContainer = Root.Q<VisualElement>("main-container");
+            _table = Template.Q<VisualElement>("current-lobby-table-body");
+            _leaveBtn = Template.Q<Button>("leave-lobby-btn");
+            _startGameBtn = Template.Q<Button>("start-game-btn");
+            _joinGameBtn = Template.Q<Button>("join-game-btn");
+            _backBtn = Template.Q<Button>("back-btn");
             
             _startGameBtn.RegisterCallback<ClickEvent>(evt => OnClickStartGameBtn());
             _joinGameBtn.RegisterCallback<ClickEvent>(evt => OnClickJoinGameBtn());
@@ -67,16 +62,15 @@ namespace Multiplayer.UI {
 
         public override async void Show() {
             base.Show();
-            Show(_backBtnContainer);
+            await Task.Delay(50);
+;           _table.Clear();
             DisplayButtons();
-            _table.Clear();
             await GenerateLobbyPlayerTable(false);
         }
 
         public override void Hide() {
             base.Hide();
-            _table.style.maxHeight = 0;
-            Hide(_backBtnContainer);
+            _table.style.height = 0;
         }
 
         private void OnClickBackBtn() {
@@ -131,7 +125,7 @@ namespace Multiplayer.UI {
 
             var lobbyPlayers = await _uiController.GetLobbyPlayerTableData(sendNewRequest);
             var playerCount = 0;
-            var lobbyRowHeight = 100;
+            var lobbyRowHeight = 24;
 
             foreach (var lobbyPlayer in lobbyPlayers) {
 
@@ -158,17 +152,15 @@ namespace Multiplayer.UI {
                 lastUpdated.AddToClassList("col-last-updated");
                 
                 VisualElement connectionStatus = new VisualElement();
+                VisualElement connectionStatusInner = new VisualElement();
                 Label connectionStatusLabel = new Label();
                 var connected = bool.Parse(lobbyPlayer.Data["IsConnected"].Value);
                 connectionStatusLabel.text = connected ? "Connected" : "Not Connected";
                 connectionStatusLabel.AddToClassList(connected ? "player-connection-status-connected" : "player-connection-status-not-connected");
-                connectionStatusLabel.AddToClassList("col-player-label");
-                connectionStatus.Add(connectionStatusLabel);
+                connectionStatusInner.Add(connectionStatusLabel);
+                connectionStatusInner.AddToClassList("col-connection-status-inner");
+                connectionStatus.Add(connectionStatusInner);
                 connectionStatus.AddToClassList("col-connection-status");
-
-                if (lobbyPlayer.Data["IsConnected"].Value == "True") {
-                    connectionStatusLabel.AddToClassList("status-active");
-                }
                 
                 VisualElement playerIsHost = new VisualElement();
                 Label playerIsHostLabel = new Label();
@@ -184,10 +176,11 @@ namespace Multiplayer.UI {
                 
                 _table.Add(row);
             }
-            _table.style.maxHeight = playerCount * lobbyRowHeight;
+            _table.style.height = playerCount * lobbyRowHeight;
         }
         
         public override void Update() {
+            Debug.Log("Lobby calling update");
             _table.Clear();
             UpdateServerInfoTable();
             DisplayButtons();
@@ -195,6 +188,7 @@ namespace Multiplayer.UI {
         }
         
         public override void RePaint() {
+            Debug.Log("Lobby calling repaint");
             _table.Clear();
             UpdateServerInfoTable();
             DisplayButtons();
