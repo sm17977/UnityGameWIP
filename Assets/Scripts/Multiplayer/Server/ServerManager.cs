@@ -52,7 +52,7 @@ namespace Multiplayer {
  await MultiplayService.Instance.SubscribeToServerEventsAsync(multiplayEventCallbacks);
 
                 _serverQueryHandler =
-                    await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)4, "MyServerName", "Arena", "81317",
+                    await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)4, "MyServerName", "Arena", "85662",
                         "map");
 
                 var serverConfig = MultiplayService.Instance.ServerConfig;

@@ -1,8 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 
-public class ProjectileAbility : MonoBehaviour
+public class ProjectileAbility : NetworkBehaviour
 {
     public Vector3 projectileDirection;
     public float projectileSpeed;
@@ -40,6 +41,9 @@ public class ProjectileAbility : MonoBehaviour
     /// <param name="transform"></param>
     /// <param name="initialPosition"></param>
     public void MoveProjectile(Transform transform, Vector3 initialPosition){
+        if (IsServer) {
+            Debug.Log("SERVER MOVEPROJECTILE");
+        }
         // The distance the projectile moves per frame
         float distance = Time.deltaTime * projectileSpeed;
 

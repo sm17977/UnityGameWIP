@@ -46,10 +46,10 @@ namespace Multiplayer.UI {
             _views.Add(typeof(MultiplayerMenuView), new MultiplayerMenuView(viewContainer, uiController, uiController.multiplayerMenuViewTmpl));
             _views.Add(typeof(LobbiesView), new LobbiesView(viewContainer, uiController, uiController.lobbiesViewTmpl));
             _views.Add(typeof(LobbyView), new LobbyView(viewContainer, uiController, uiController.lobbyViewTmpl));
-            _views.Add(typeof(GameView), new GameView(null, uiController));
+            _views.Add(typeof(GameView), new GameView(root, uiController, uiController.gameViewTmpl));
             
             _modals.Add(typeof(CreateLobbyModal), new CreateLobbyModal(root, uiController, uiController.createLobbyModalTmpl));
-            _modals.Add(typeof(ExitGameModal), new ExitGameModal(exitGameElement, uiController));
+            _modals.Add(typeof(ExitGameModal), new ExitGameModal(root, uiController, uiController.exitGameModalTmpl));
 
             ChangeView(typeof(MultiplayerMenuView));
             _currentModal = null;

@@ -164,21 +164,23 @@ public class Lux_Player_Controller : Lux_Controller
         HandleVFX();
     }
 
+    [Rpc(SendTo.Server)] 
+    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId) {
+        Debug.Log("Spawning Lux Q Mis");
+        Debug.Log("Spawn vals, dir: " + direction + ", pos" + position);
+        
+        Ability inputAbility = LuxQAbility;
+       
+        var newProjectile = Instantiate(inputAbility.missile, position, Quaternion.LookRotation(direction, Vector3.up));
+        var networkObject = newProjectile.GetComponent<NetworkObject>();
+        networkObject.Spawn();
 
-    // [Rpc(SendTo.Server, RequireOwnership = false)]
-    // public void SendCommandToServerRpc(Vector3 clickPos){
-    //     Debug.Log("Call from client");
-    //     SendCommandToClientRpc(clickPos);
-    // }
-
-    // [Rpc(SendTo.NotServer)]
-    // public void SendCommandToClientRpc(Vector3 clickPos){
-    //     if(!IsOwner){
-    //         Debug.Log("Call from server!");
-    //         lastClickPosition = clickPos;
-    //         AddInputToQueue(new InputCommand{type = InputCommandType.Movement});
-    //     }
-    // }
+        // Initialize projectile properties on the server
+        var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+        if (projectileScript != null) {
+            projectileScript?.InitProjectileProperties(direction, inputAbility, projectiles, playerType);
+        }
+    }
 
 
     public void OnRightClick (InputAction.CallbackContext context){
@@ -232,9 +234,7 @@ public class Lux_Player_Controller : Lux_Controller
 
                     // Process the movement command
                     case InputCommandType.Movement:
-
-                        Debug.Log("New Movement Command!");
-
+                        
                         ShowMovementIndicator(lastClickPosition);
                         if(canMove){
                             movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject, false);

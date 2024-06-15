@@ -41,7 +41,7 @@ public class MultiplayerUIController : MonoBehaviour {
     public VisualTreeAsset lobbyViewTmpl;
     public VisualTreeAsset createLobbyModalTmpl;
     public VisualTreeAsset exitGameModalTmpl;
-    
+    public VisualTreeAsset gameViewTmpl;
     
     private async void Awake(){
 #if DEDICATED_SERVER
@@ -94,11 +94,13 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     private void OnEscape(InputAction.CallbackContext context) {
-        if (_viewManager.CurrentModal != null) {
-            _viewManager.CloseModal(typeof(ExitGameModal));
-        }
-        else {
-            _viewManager.OpenModal(typeof(ExitGameModal));
+        if (_viewManager.CurrentView?.GetType() == typeof(GameView)) {
+            if (_viewManager.CurrentModal?.GetType() == typeof(ExitGameModal)) {
+                _viewManager.CloseModal(typeof(ExitGameModal));
+            }
+            else {
+                _viewManager.OpenModal(typeof(ExitGameModal));
+            }
         }
     }
 
@@ -268,13 +270,11 @@ public class MultiplayerUIController : MonoBehaviour {
     private void UpdatePlayersServerInfo() {
         
          if(_gameLobbyManager?.GetLobbyData("ServerIP") != null) {
-             Debug.Log("In here1");
              _client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
              _client.Port = _gameLobbyManager?.GetLobbyData("Port");
          }
 
          if (_gameLobbyManager?.GetLobbyData("MachineStatus") != null) {
-             Debug.Log("In here2");
              _client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
              
          }

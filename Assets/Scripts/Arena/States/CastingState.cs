@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 
 public class CastingState : State
@@ -43,14 +44,18 @@ public class CastingState : State
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
             // Create projectile
-            GameObject newProjectile = Lux_Controller.Instantiate(ability.missile, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
+            //GameObject newProjectile = Lux_Controller.Instantiate(ability.missile, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
 
-            // Store projectile in list
-            playerController.projectiles.Add(newProjectile);
+            if (playerController.globalState.currentScene == "Multiplayer") {
+                playerController.SpawnProjectileServerRpc(direction, abilitySpawnPos, playerController.OwnerClientId);
+            }
 
-            // Get script on prefab to initialize propreties
-            ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, playerController.playerType);
+            // // Store projectile in list
+            // playerController.projectiles.Add(newProjectile);
+            //
+            // // Get script on prefab to initialize properties
+            // ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+            // projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, playerController.playerType);
           
             playerController.canCast = false;
         }
@@ -70,7 +75,8 @@ public class CastingState : State
             }
         }
     }
-
+    
+    
     public override void Exit() {
         playerController.isCasting = false;
     }

@@ -204,7 +204,7 @@ namespace Multiplayer.UI {
                 _serverStatusLabel.AddToClassList(newClass);
             }
             else {
-                _serverStatusLabel.AddToClassList(ServerStatusClasses["DEFAULT"]);
+                _serverStatusLabel.AddToClassList(ServerStatusClasses["Inactive"]);
             }
 
             _serverStatusLabel.text = Capitalize(_serverStatusLabel.text);

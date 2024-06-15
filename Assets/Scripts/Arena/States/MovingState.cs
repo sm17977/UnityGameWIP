@@ -38,7 +38,7 @@ public class MovingState : State
         direction.y = 0f;
 
         // if(playerController.globalState.currentScene == "Multiplayer" && playerController.IsOwner){
-        //    playerController.SendMovementToServerRpc(direction);
+        //    playerController.SendCommandToServerRpc(direction);
         // }
        
         MoveAndRotate(direction);

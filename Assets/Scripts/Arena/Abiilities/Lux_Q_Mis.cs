@@ -1,4 +1,5 @@
 using System.Collections;
+using QFSW.QC;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -34,6 +35,9 @@ public class Lux_Q_Mis : ProjectileAbility
     private bool hasHit = false;
 
     void Start(){
+        if (IsServer) {
+            Debug.Log("SERVER START - Lux Q Mis ");
+        }
 
         // Store projectile start position in order to calculate remaining distance
         initialPosition = transform.position;
@@ -46,7 +50,7 @@ public class Lux_Q_Mis : ProjectileAbility
         // Get Orb VFX
         orbVfx = GetComponent<VisualEffect>();
         // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
-        orbVfx.SetFloat("lifetime", projectileLifetime);
+        orbVfx.SetFloat("lifetime", 5);
 
         // Get Trails VFX
         qTrails = gameObject.transform.Find("Q_Trails").gameObject;
@@ -99,10 +103,4 @@ public class Lux_Q_Mis : ProjectileAbility
         hitScript = newQHit.GetComponent<Lux_Q_Hit>();
         hitScript.target = target;
     }
-
-
-
-
-
-
 }
