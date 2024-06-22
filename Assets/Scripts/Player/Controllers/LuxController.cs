@@ -1,5 +1,3 @@
-
-
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,7 +8,7 @@ public class LuxController : NetworkBehaviour
 
     public PlayerType playerType;
     public Champion lux;
-    public BuffManager buffManager;
+    public BuffManager BuffManager;
     public GlobalState globalState;
     public bool canMove = true;
 

@@ -1,24 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using Global.Game_Modes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GlobalState : MonoBehaviour
 {
-    public bool paused = false;
+
     public static GlobalState Instance;
-    public RoundManager roundManager;
-    private List<Round> rounds;
-    public Ability LuxQAbilitySO;
-    public Ability ability;
-    public int countdownTimer;
-    public bool countdownActive;
+    public static bool Paused = false;
     public string currentScene;
-    private bool initArena;
-    private float gameTimer;
-   
+    public GameMode CurrentGameMode;
+
+    public Arena Arena;
+    public Ability LuxQAbilitySO;
+    
     void Awake(){
-          
         if (Instance == null){
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -29,82 +26,38 @@ public class GlobalState : MonoBehaviour
     }
 
     void Start(){
-        gameTimer = 0f;
-        initArena  = false;
-        countdownTimer = 3;
-        rounds = new List<Round>();
-        InitArena();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void Update(){
+        if (CurrentGameMode != null && CurrentGameMode.GetType() == typeof(Arena)) {
+            Arena.Update();
+        }
+    }
 
-        currentScene = SceneManager.GetActiveScene().name;
+    private void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) {
+        currentScene = scene.name;
 
         switch(currentScene){
             case "Arena": 
-                if(!initArena){
-                    InitCountdown();
-                    initArena = true;
-                }
-
-                if(roundManager.inProgress){
-                    gameTimer += Time.deltaTime;
-                    roundManager.Update();
-                }
+                var ability = Object.Instantiate(LuxQAbilitySO);
+                Arena = new Arena(ability);
+                CurrentGameMode = Arena;
+                StartCoroutine(Countdown(Arena));
                 break;
 
             case "Multiplayer":
 
 
                 break;
-
         }
-
-        if(currentScene == "Arena"){
-            
- 
-        }
-
-        
     }
-
-    public void Pause(bool shouldPause) {
+    
+    public static void Pause(bool shouldPause) {
         Time.timeScale = shouldPause ? 0 : 1;
-        paused = shouldPause;
+        Paused = shouldPause;
     }
-
-    public void InitCountdown(){
-        Pause(true);
-        StartCoroutine(Countdown());
-
-    }
-
-    IEnumerator Countdown() {
-        countdownActive = true;
-
-        while (countdownTimer > 0) {
-            yield return new WaitForSecondsRealtime(1f);
-            countdownTimer--;
-        }
-
-        countdownTimer = 0; 
-        yield return new WaitForSecondsRealtime(1f); // Delay 1 sec to show "Go!" after countdown ends
-        countdownActive = false;
-        Pause(false); 
-    }
-
-    private void InitArena(){
-        ability = Object.Instantiate(LuxQAbilitySO);
-
-        rounds.Add(new Round(30f, 1f, 0.6f, ability));
-        rounds.Add(new Round(30f, 1f, 0.45f, ability));
-        rounds.Add(new Round(30f, 1f, 0.35f, ability));
-        rounds.Add(new Round(30f, 1f, 0.25f, ability));
-        rounds.Add(new Round(30f, 1f, 0.2f, ability));
-
-        roundManager = new RoundManager(rounds);
-    }
-
+    
     public void LoadScene(string sceneName){
 
         if (!string.IsNullOrEmpty(sceneName)){
@@ -118,13 +71,18 @@ public class GlobalState : MonoBehaviour
             Debug.LogError("Scene name not found: " + sceneName);
         }
     }
+    
+    IEnumerator Countdown(GameMode gameMode) {
+        gameMode.CountdownActive = true;
 
-    public string GetGameTimer(){
-        decimal decimalValue = System.Math.Round((decimal)gameTimer, 2);
-        return decimalValue.ToString() + "s";
-    }
+        while (gameMode.CountdownTimer > 0) {
+            yield return new WaitForSecondsRealtime(1f);
+            gameMode.CountdownTimer--;
+        }
 
-    public void Reset(){
-        Start();
+        gameMode.CountdownTimer = 0; 
+        yield return new WaitForSecondsRealtime(1f); // Delay 1 sec to show "Go!" after countdown ends
+        gameMode.CountdownActive = false;
+        Pause(false); 
     }
 }

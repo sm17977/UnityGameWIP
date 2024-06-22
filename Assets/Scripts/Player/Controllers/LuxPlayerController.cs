@@ -123,7 +123,7 @@ public class LuxPlayerController : LuxController
     // Start is called before the first frame update
     void Start(){
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-        buffManager = new BuffManager(this);
+        BuffManager = new BuffManager(this);
         playerType = PlayerType.Player;
      
         InitStates();
@@ -150,7 +150,7 @@ public class LuxPlayerController : LuxController
 
         stateManager.Update();
 
-        buffManager.Update();
+        BuffManager.Update();
 
         currentState = stateManager.GetCurrentState();
 
@@ -184,7 +184,7 @@ public class LuxPlayerController : LuxController
 
 
     public void OnRightClick (InputAction.CallbackContext context){
-        if(globalState.paused) return;
+        if(GlobalState.Paused) return;
 
         isNewClick = true;
         InputCommandType inputType = GetClickInput();

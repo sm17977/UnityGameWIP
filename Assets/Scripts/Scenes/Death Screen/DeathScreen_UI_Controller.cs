@@ -33,8 +33,8 @@ public class DeathScreen_UI_Controller : MonoBehaviour
         apm = uiDocument.rootVisualElement.Q<Label>("apm-label");
         accuracy = uiDocument.rootVisualElement.Q<Label>("accuracy-label");
 
-        roundReached.text = globalState.roundManager.GetCurrentRound();
-        timeSurvived.text = globalState.GetGameTimer();
+        roundReached.text = globalState.Arena.RoundManager.GetCurrentRound();
+        timeSurvived.text = globalState.Arena.GetGameTimer();
 
         retryBtn = uiDocument.rootVisualElement.Q<Button>("retry-btn");
         mainMenuBtn = uiDocument.rootVisualElement.Q<Button>("main-menu-btn");
@@ -44,12 +44,12 @@ public class DeathScreen_UI_Controller : MonoBehaviour
     }
 
     private void LoadArena(){
-        globalState.Reset();
+        globalState.Arena.Reset();
         globalState.LoadScene("Arena");
     }
 
     private void LoadMainMenu(){
-        globalState.Reset();
+        globalState.Arena.Reset();
         globalState.LoadScene("Main Menu");
     } 
 

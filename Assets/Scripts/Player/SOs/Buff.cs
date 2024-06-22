@@ -10,7 +10,7 @@ public class Buff : ScriptableObject
     public float currentTimer;
 
     public void Apply(LuxController target){
-        target.buffManager.AddBuff(this);
+        target.BuffManager.AddBuff(this);
         target.canMove = false;
     }
 

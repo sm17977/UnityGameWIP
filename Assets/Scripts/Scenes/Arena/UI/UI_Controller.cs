@@ -26,10 +26,13 @@ public class UI_Controller : MonoBehaviour
     public LuxPlayerController player;
 
     // Global State
-    private GlobalState globalState;
+    private static GlobalState globalState;
 
     void Awake(){
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
+    }
+
+    void Start() {
         InitCountdownTimer();
         InitTimeCounter();  
     }
@@ -81,7 +84,7 @@ public class UI_Controller : MonoBehaviour
     }
 
     void UpdateTimeCounter(){
-        string currentTime = globalState.GetGameTimer();
+        string currentTime = globalState.Arena.GetGameTimer();
         timeCounter.text = currentTime;
     }
 
@@ -94,16 +97,16 @@ public class UI_Controller : MonoBehaviour
     void InitCountdownTimer(){
         countdownContainer = uiDocument.rootVisualElement.Q<VisualElement>("countdown-container");
         countdownTimer = uiDocument.rootVisualElement.Q<Label>("countdown-timer");
-        countdownTimer.text = globalState.countdownTimer.ToString();
+        countdownTimer.text = globalState.Arena.CountdownTimer.ToString();
         countdownContainer.style.visibility = Visibility.Visible;
     }
 
     void UpdateCountdownTimer() {
-        if(globalState.countdownActive){
-            if (globalState.countdownTimer >= 1) {
-                countdownTimer.text = globalState.countdownTimer.ToString();
+        if(globalState.Arena.CountdownActive){
+            if (globalState.Arena.CountdownTimer >= 1) {
+                countdownTimer.text = globalState.Arena.CountdownTimer.ToString();
             }
-            else if (globalState.countdownTimer == 0){
+            else if (globalState.Arena.CountdownTimer == 0){
                 countdownTimer.text = "Go!";
             }
         }
@@ -116,18 +119,18 @@ public class UI_Controller : MonoBehaviour
         debugCurrentState.text = "Current State: " + player.currentState;
         
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round");
-        debugCurrentState.text = "Round: " + globalState.roundManager.GetCurrentRound();
+        debugCurrentState.text = "Round: " + globalState.Arena.RoundManager.GetCurrentRound();
 
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
-        debugCurrentState.text = "Next round starts in " + globalState.roundManager.GetCurrentRoundTime();
+        debugCurrentState.text = "Next round starts in " + globalState.Arena.RoundManager.GetCurrentRoundTime();
     }
 
-    void ShowPauseMenu(){
+     void ShowPauseMenu(){
 
-        globalState.Pause(!globalState.paused);
+        GlobalState.Pause(!GlobalState.Paused);
         pauseMenu = uiDocument.rootVisualElement.Q<VisualElement>("pause-menu");
 
-        if(globalState.paused){
+        if(GlobalState.Paused){
             pauseMenu.style.visibility = Visibility.Visible;
         }
         else{
