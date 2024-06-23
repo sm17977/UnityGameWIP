@@ -26,8 +26,7 @@ public class AttackingState : State
 
     public override void Enter() {
         playerController.canAA = false;
-        playerController.isAttacking = true;
-        playerController.animator.SetBool("isAttacking", playerController.isAttacking);
+        playerController.animator.SetTrigger("isAttacking");
     }
 
     public override void Execute() {
@@ -65,8 +64,6 @@ public class AttackingState : State
     }
 
     public override void Exit() {
-        playerController.isAttacking = false;
-        playerController.animator.SetBool("isAttacking", playerController.isAttacking);
     }
 
 

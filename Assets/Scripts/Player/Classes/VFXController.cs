@@ -17,7 +17,7 @@ public class VFXController : MonoBehaviour
         vfx = GetComponent<VisualEffect>();
 
         // Distance between player and enemy
-        distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.Lux_AI.transform.position);
+        distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.luxAI.transform.position);
         // Particle speed
         speed = 7;
         // Particle lifetime

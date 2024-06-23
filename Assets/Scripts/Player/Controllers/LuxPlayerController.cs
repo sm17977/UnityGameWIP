@@ -8,13 +8,11 @@ using Unity.Netcode;
 public class LuxPlayerController : LuxController {
     
     // Flags
-    public bool isAttacking;
     public bool isAttackClick = false;
     public bool canCast = false;
     public bool canAA = false;
     public bool incompleteMovement = false;
-    private bool isNewClick;
-    public bool inAttackRange = false;
+    private bool _isNewClick;
 
     // Skill-shot Projectile
     public List<GameObject> projectiles;
@@ -23,55 +21,51 @@ public class LuxPlayerController : LuxController {
 
     // AA Projectile
     public VisualEffect projectileAA;
-    public Vector3 projectileAASpawnPos;
     public Vector3 projectileAATargetPosition;
     public double timeSinceLastAttack = 0;
 
     // Hitbox
     public GameObject hitboxGameObj;
     public SphereCollider hitboxCollider;
-    private Vector3 hitboxPos;
     public Vector3 direction;
+    private Vector3 _hitboxPos;
 
     // Movement Indicator
     public GameObject movementIndicatorPrefab;
-    private GameObject movementIndicator;
+    private GameObject _movementIndicator;
 
     // Animation
     public Animator animator;
-    public string attackAnimName = "model|lux_attack1_model";
-    public string attackAnimState = "Attack";
-
+    
     // Camera
     public Camera mainCamera;
-
-    private Plane cameraPlane;
+    private Plane _cameraPlane;
 
     // Input Data
-    private Controls controls;
-    public Queue<InputCommand> inputQueue;
-    public InputCommand previousInput;
-    private InputCommand currentInput;
-    private Vector3 lastClickPosition;
+    private Controls _controls;
+    private Queue<InputCommand> _inputQueue;
+    private InputCommand _previousInput;
+    private InputCommand _currentInput;
+    private Vector3 _lastClickPosition;
 
     // AA Range Indicator
-    public GameObject AARangeIndicatorPrefab;
-    private GameObject AARangeIndicator;
-    private bool isAARangeIndicatorOn = false;
+    public GameObject aaRangeIndicatorPrefab;
+    private GameObject _aaRangeIndicator;
+    private bool _isAARangeIndicatorOn;
 
     // State Management
-    private StateManager stateManager;
-    private MovingState movingState;
-    private AttackingState attackingState;
-    private IdleState idleState;
-    private CastingState castingState;
+    private StateManager _stateManager;
+    private MovingState _movingState;
+    private AttackingState _attackingState;
+    private IdleState _idleState;
+    private CastingState _castingState;
     public string currentState;
 
     // AI
-    public GameObject Lux_AI;
-    public GameObject ai_hitboxGameObj;
-    public SphereCollider ai_hitboxCollider;
-    private Vector3 ai_hitboxPos;
+    public GameObject luxAI;
+    public GameObject aiHitboxGameObj;
+    public SphereCollider aiHitboxCollider;
+    private Vector3 _aiHitboxPos;
 
     // Debugging stuff
     public float attackStartTime;
@@ -85,31 +79,34 @@ public class LuxPlayerController : LuxController {
 
     private void Awake() {
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        
+        // Player
         hitboxGameObj = GameObject.Find("Hitbox");
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
-        hitboxPos = hitboxGameObj.transform.position;
+        _hitboxPos = hitboxGameObj.transform.position;
+        
 
         LuxQAbility = Instantiate(LuxQAbilitySO);
         LuxEAbility = Instantiate(LuxEAbilitySO);
-        previousInput = new InputCommand { type = InputCommandType.Init };
+        _previousInput = new InputCommand { type = InputCommandType.Init };
     }
 
     private void OnEnable() {
-        controls = new Controls();
-        controls.Player.Enable();
-        controls.Player.RightClick.performed += OnRightClick;
-        controls.Player.Q.performed += OnQ;
-        controls.Player.E.performed += OnE;
-        controls.Player.A.performed += OnA;
+        _controls = new Controls();
+        _controls.Player.Enable();
+        _controls.Player.RightClick.performed += OnRightClick;
+        _controls.Player.Q.performed += OnQ;
+        _controls.Player.E.performed += OnE;
+        _controls.Player.A.performed += OnA;
     }
 
     private void OnDisable() {
         // Disable Input Actions/Events
-        controls.Player.RightClick.performed -= OnRightClick;
-        controls.Player.Q.performed -= OnQ;
-        controls.Player.E.performed -= OnE;
-        controls.Player.A.performed -= OnA;
-        controls.Player.Disable();
+        _controls.Player.RightClick.performed -= OnRightClick;
+        _controls.Player.Q.performed -= OnQ;
+        _controls.Player.E.performed -= OnE;
+        _controls.Player.A.performed -= OnA;
+        _controls.Player.Disable();
     }
 
 
@@ -121,12 +118,12 @@ public class LuxPlayerController : LuxController {
 
         InitStates();
         InitAbilities();
-        stateManager.ChangeState(idleState);
+        _stateManager.ChangeState(_idleState);
         
-        ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
-        ai_hitboxPos = ai_hitboxGameObj.transform.position;
+        aiHitboxCollider = aiHitboxGameObj.GetComponent<SphereCollider>();
+        _aiHitboxPos = aiHitboxGameObj.transform.position;
 
-        inputQueue = new Queue<InputCommand>();
+        _inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
         ResetCooldowns();
     }
@@ -136,17 +133,17 @@ public class LuxPlayerController : LuxController {
     private void Update() {
         if (globalState.currentScene == "Multiplayer" && !IsOwner) return;
 
-        hitboxPos = hitboxGameObj.transform.position;
+        _hitboxPos = hitboxGameObj.transform.position;
 
         HandleInput();
 
-        stateManager.Update();
+        _stateManager.Update();
 
         BuffManager.Update();
 
-        currentState = stateManager.GetCurrentState();
+        currentState = _stateManager.GetCurrentState();
 
-        if (stateManager.GetCurrentState() != "AttackingState")
+        if (_stateManager.GetCurrentState() != "AttackingState")
             if (timeSinceLastAttack > 0)
                 timeSinceLastAttack -= Time.deltaTime;
 
@@ -201,12 +198,11 @@ public class LuxPlayerController : LuxController {
         LuxEAbility.SetCastingStrategy(castingStrategy);
         LuxQAbility.SetCastingStrategy(castingStrategy);
     }
-
-
+    
     public void OnRightClick(InputAction.CallbackContext context) {
         if (GlobalState.Paused) return;
 
-        isNewClick = true;
+        _isNewClick = true;
         var inputType = GetClickInput();
 
         if (globalState.currentScene == "Multiplayer" && IsOwner)
@@ -228,47 +224,47 @@ public class LuxPlayerController : LuxController {
     }
 
     private void InitStates() {
-        stateManager = new StateManager();
-        idleState = new IdleState();
+        _stateManager = new StateManager();
+        _idleState = new IdleState();
     }
 
     // Read the input queue to handle movement and casting input commands
     private void HandleInput() {
-        if (inputQueue != null)
+        if (_inputQueue != null)
             // Check the queue for any unconsumed input commands
-            if (inputQueue.Count > 0) {
+            if (_inputQueue.Count > 0) {
                 // Get the next input command
-                currentInput = inputQueue.Peek();
+                _currentInput = _inputQueue.Peek();
 
                 // Set previous input to null on first function call
-                if (previousInput.type == InputCommandType.Init) previousInput = currentInput;
+                if (_previousInput.type == InputCommandType.Init) _previousInput = _currentInput;
 
-                switch (currentInput.type) {
+                switch (_currentInput.type) {
                     // Process the movement command
                     case InputCommandType.Movement:
 
-                        ShowMovementIndicator(lastClickPosition);
+                        ShowMovementIndicator(_lastClickPosition);
                         if (canMove) {
-                            movingState = new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject,
+                            _movingState = new MovingState(this, _lastClickPosition, GetStoppingDistance(), gameObject,
                                 false);
-                            stateManager.ChangeState(movingState);
+                            _stateManager.ChangeState(_movingState);
                         }
 
-                        inputQueue.Dequeue();
+                        _inputQueue.Dequeue();
                         break;
 
                     //Process the attack command
                     case InputCommandType.Attack:
-                        direction = (lastClickPosition - transform.position).normalized;
+                        direction = (_lastClickPosition - transform.position).normalized;
                         // If the player is not within attack range, move until they are
-                        if (!IsInAttackRange(lastClickPosition, GetStoppingDistance()))
-                            stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(),
+                        if (!IsInAttackRange(_lastClickPosition, GetStoppingDistance()))
+                            _stateManager.ChangeState(new MovingState(this, _lastClickPosition, GetStoppingDistance(),
                                 gameObject, true));
                         // If they are in attack range, transition to attack state
                         // Attacking state persists until we input a new command
                         else
-                            stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
-                        inputQueue.Dequeue();
+                            _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+                        _inputQueue.Dequeue();
                         break;
 
                     // Process the cast spell command
@@ -276,34 +272,34 @@ public class LuxPlayerController : LuxController {
 
                         var inputAbility = LuxQAbility;
 
-                        if (currentInput.key == "Q") inputAbility = LuxQAbility;
-                        if (currentInput.key == "E") inputAbility = LuxEAbility;
+                        if (_currentInput.key == "Q") inputAbility = LuxQAbility;
+                        if (_currentInput.key == "E") inputAbility = LuxEAbility;
 
                         if (!inputAbility.OnCooldown()) {
                             GetCastingTargetPosition();
-                            stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
+                            _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
                         }
 
-                        inputQueue.Dequeue();
+                        _inputQueue.Dequeue();
                         break;
 
                     case InputCommandType.None:
-                        inputQueue.Dequeue();
+                        _inputQueue.Dequeue();
                         break;
                 }
             }
     }
 
     private void AddInputToQueue(InputCommand input) {
-        inputQueue.Enqueue(input);
+        _inputQueue.Enqueue(input);
     }
 
-    // Detect if the player has clicked on the ground (movement commmand) or an enemy (attack command)
+    // Detect if the player has clicked on the ground (movement command) or an enemy (attack command)
     // Store the position of the click in lastClickPosition
     // Return the input command type
     private InputCommandType GetClickInput() {
         var worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
-        Plane plane = new(Vector3.up, new Vector3(0, hitboxPos.y, 0));
+        Plane plane = new(Vector3.up, new Vector3(0, _hitboxPos.y, 0));
         var ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         // Detect attack click
@@ -312,21 +308,21 @@ public class LuxPlayerController : LuxController {
                 var Lux_AI = hit.rigidbody.gameObject;
                 ToggleOutlineShader(Lux_AI, "Default");
                 isAttackClick = true;
-                lastClickPosition = hit.transform.position;
+                _lastClickPosition = hit.transform.position;
                 projectileAATargetPosition = hit.transform.position;
                 return InputCommandType.Attack;
             }
 
         // Detect move click
         if (plane.Raycast(ray, out var enter)) {
-            ToggleOutlineShader(Lux_AI, "Selection");
+            ToggleOutlineShader(luxAI, "Selection");
             var hitPoint = ray.GetPoint(enter);
-            var diff = hitPoint - hitboxPos;
+            var diff = hitPoint - _hitboxPos;
             var dist = Mathf.Sqrt(diff.x * diff.x / (mainCamera.aspect * mainCamera.aspect) + diff.z * diff.z);
 
             if (dist > worldRadius) {
                 // Move click is valid (outside the players hitbox)
-                lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
+                _lastClickPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
                 isAttackClick = false;
                 return InputCommandType.Movement;
             }
@@ -336,7 +332,7 @@ public class LuxPlayerController : LuxController {
         return InputCommandType.None;
     }
 
-    // Set the AI gameobject layet to default so the outline renders ('Selection' layer = outline off)
+    // Set the AI game object layer to default so the outline renders ('Selection' layer = outline off)
     private void ToggleOutlineShader(GameObject Lux_AI, string mask) {
         ChangeLayerRecursively(Lux_AI, LayerMask.NameToLayer(mask));
     }
@@ -349,7 +345,7 @@ public class LuxPlayerController : LuxController {
     }
 
     private void GetCastingTargetPosition() {
-        var plane = new Plane(Vector3.up, new Vector3(0, hitboxPos.y, 0));
+        var plane = new Plane(Vector3.up, new Vector3(0, _hitboxPos.y, 0));
         var ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         projectileTargetPosition = transform.position;
 
@@ -379,25 +375,25 @@ public class LuxPlayerController : LuxController {
 
     // Renders a quick animation on the terrain whenever the right mouse is clicked 
     public void ShowMovementIndicator(Vector3 position) {
-        if (isNewClick) {
-            if (movementIndicator != null) Destroy(movementIndicator);
+        if (_isNewClick) {
+            if (_movementIndicator != null) Destroy(_movementIndicator);
 
-            movementIndicator = Instantiate(movementIndicatorPrefab, new Vector3(position.x, 0.51f, position.z),
+            _movementIndicator = Instantiate(movementIndicatorPrefab, new Vector3(position.x, 0.51f, position.z),
                 Quaternion.Euler(90, 0, 0));
-            isNewClick = false;
+            _isNewClick = false;
         }
     }
 
     public void TransitionToIdle() {
-        stateManager.ChangeState(idleState);
+        _stateManager.ChangeState(_idleState);
     }
 
     public void TransitionToAttack() {
-        stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
     }
 
     public void TransitionToMove() {
-        stateManager.ChangeState(new MovingState(this, lastClickPosition, GetStoppingDistance(), gameObject,
+        _stateManager.ChangeState(new MovingState(this, _lastClickPosition, GetStoppingDistance(), gameObject,
             isAttackClick));
     }
 
@@ -438,29 +434,24 @@ public class LuxPlayerController : LuxController {
     }
 
     private void ToggleAARange() {
-        if (!isAARangeIndicatorOn) {
-            isAARangeIndicatorOn = true;
-            AARangeIndicator = Instantiate(AARangeIndicatorPrefab, transform);
+        if (!_isAARangeIndicatorOn) {
+            _isAARangeIndicatorOn = true;
+            _aaRangeIndicator = Instantiate(aaRangeIndicatorPrefab, transform);
         }
         else {
-            Destroy(AARangeIndicator);
-            isAARangeIndicatorOn = false;
+            Destroy(_aaRangeIndicator);
+            _isAARangeIndicatorOn = false;
         }
     }
 
     public void PrintQueue() {
         var output = "Queue: [";
 
-        foreach (var input in inputQueue) output += input.type + ", ";
+        foreach (var input in _inputQueue) output += input.type + ", ";
 
         output += "]";
         Debug.Log(output);
     }
-
-    public float GetAttackRange() {
-        return lux.AA_range;
-    }
-
     private void ResetCooldowns() {
         LuxQAbility.currentCooldown = 0;
         LuxEAbility.currentCooldown = 0;

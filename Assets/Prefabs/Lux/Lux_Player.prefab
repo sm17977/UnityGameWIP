@@ -246,21 +246,15 @@ MonoBehaviour:
   lux: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   globalState: {fileID: 0}
   canMove: 1
-  isRunning: 0
-  isCasting: 0
-  isAttacking: 0
-  isWindingUp: 0
   isAttackClick: 0
   canCast: 0
   canAA: 0
   incompleteMovement: 0
-  inAttackRange: 0
   projectiles: []
   vfxProjectileList: []
   projectileTargetPosition: {x: 0, y: 0, z: 0}
   projectileAA: {fileID: -2805702098513475222, guid: 29fa2eb67abbac245acc53af4efdabf7,
     type: 3}
-  projectileAASpawnPos: {x: 0, y: 0, z: 0}
   projectileAATargetPosition: {x: 0, y: 0, z: 0}
   timeSinceLastAttack: 0
   hitboxGameObj: {fileID: 1108951634745852663}
@@ -269,15 +263,14 @@ MonoBehaviour:
   movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
     type: 3}
   animator: {fileID: 6881271443565087466}
-  attackAnimName: model|lux_attack1_model
-  attackAnimState: Attack
   mainCamera: {fileID: 0}
-  AARangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
+  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
     type: 3}
   currentState: 
-  Lux_AI: {fileID: 0}
-  ai_hitboxGameObj: {fileID: 1108951634745852663}
-  ai_hitboxCollider: {fileID: 4061616120029314635}
+  luxAI: {fileID: 8614434341074625969, guid: 6bfab754a437a5e448e4f16490c68384, type: 3}
+  aiHitboxGameObj: {fileID: 8204268111775070055, guid: 496dcb1505bdf6b43b6101be23f66792,
+    type: 3}
+  aiHitboxCollider: {fileID: 0}
   attackStartTime: 0
   attackStartTimeLogged: 0
   LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
