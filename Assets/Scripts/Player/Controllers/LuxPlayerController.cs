@@ -6,10 +6,9 @@ using UnityEngine.VFX;
 using Unity.Netcode;
 
 public class LuxPlayerController : LuxController {
+    
     // Flags
-    public bool isCasting;
     public bool isAttacking;
-    public bool isWindingUp;
     public bool isAttackClick = false;
     public bool canCast = false;
     public bool canAA = false;
@@ -123,8 +122,7 @@ public class LuxPlayerController : LuxController {
         InitStates();
         InitAbilities();
         stateManager.ChangeState(idleState);
-        isWindingUp = false;
-
+        
         ai_hitboxCollider = ai_hitboxGameObj.GetComponent<SphereCollider>();
         ai_hitboxPos = ai_hitboxGameObj.transform.position;
 
@@ -281,7 +279,7 @@ public class LuxPlayerController : LuxController {
                         if (currentInput.key == "Q") inputAbility = LuxQAbility;
                         if (currentInput.key == "E") inputAbility = LuxEAbility;
 
-                        if (!isCasting && !inputAbility.OnCooldown()) {
+                        if (!inputAbility.OnCooldown()) {
                             GetCastingTargetPosition();
                             stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
                         }

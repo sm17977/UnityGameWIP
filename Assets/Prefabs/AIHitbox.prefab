@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2148490942880545778}
   - component: {fileID: 8349870734017129769}
   m_Layer: 0
-  m_Name: Hitbox
+  m_Name: AIHitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

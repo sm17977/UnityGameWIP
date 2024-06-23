@@ -7,7 +7,7 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
 
-    <Style src="project://database/Assets/UI/Multiplayer/Multiplayer_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
 
     <!-- View Container -->
     <ui:VisualElement name="view-container" class="view-container">

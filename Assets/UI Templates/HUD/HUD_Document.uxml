@@ -6,7 +6,7 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
 
-    <Style src="project://database/Assets/UI/HUD/HUD_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/HUD/HUD_Styles.uss" />
     <VisualElement name="main-container" class="main-container">
         <VisualElement name="debug" class="debug-container">
             <Label text="Debug Info" class="header"/>

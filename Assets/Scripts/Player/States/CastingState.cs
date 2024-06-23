@@ -17,7 +17,6 @@ public class CastingState : State
 
     public override void Enter() {
         ability.PutOnCooldown();
-        playerController.isCasting = true; // This flag was used for the animator, can probs remove if triggers are working
         playerController.canCast = true;
         playerController.animator.SetTrigger(ability.animationTrigger);
     }
@@ -66,6 +65,5 @@ public class CastingState : State
     
     
     public override void Exit() {
-        playerController.isCasting = false;
     }
 }

@@ -7,7 +7,7 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
 
-    <Style src="project://database/Assets/UI/Main Menu/MainMenu_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Main Menu/MainMenu_Styles.uss" />
     <ui:VisualElement name="main-container" class="main-container">
         <ui:VisualElement name="title-container" class="title-container">
             <ui:Label text="A Game™" class="title-label"/>

@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DeathScreen_UI_Controller : MonoBehaviour
+public class DeathScreenUIController : MonoBehaviour
 {
  
     // UI Document

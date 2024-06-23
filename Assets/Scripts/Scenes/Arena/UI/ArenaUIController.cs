@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class UI_Controller : MonoBehaviour
+public class ArenaUIController : MonoBehaviour
 {
 
     // UI Document

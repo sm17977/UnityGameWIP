@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class MainMenu_UI_Controller : MonoBehaviour
+public class MainMenuUIController : MonoBehaviour
 {
  
     // UI Document
