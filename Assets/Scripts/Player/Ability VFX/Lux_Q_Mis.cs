@@ -1,5 +1,6 @@
 using System.Collections;
 using QFSW.QC;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -75,11 +76,19 @@ public class Lux_Q_Mis : ProjectileAbility
     IEnumerator DelayBeforeDestroy(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds);
         canBeDestroyed = true;
+#if DEDICATED_SERVER
+        var networkObject = GetComponent<NetworkObject>();
+        if(networkObject.IsSpawned){
+            networkObject.Despawn();
+        }
+        gameObject.SetActive(false);
+#endif
     }
 
     // Detect projectile hitbox collision with enemy 
     void OnCollisionEnter(Collision collision){
         if(((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") || (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
+            hasHit = true;
             target = collision.gameObject.GetComponent<LuxController>();
 
             if(!target.BuffManager.HasBuffApplied(ability.buff)){
@@ -91,7 +100,13 @@ public class Lux_Q_Mis : ProjectileAbility
             }
 
             ability.buff.Apply(target);
-            hasHit = true;
+#if DEDICATED_SERVER
+            var networkObject = GetComponent<NetworkObject>();
+            if(networkObject.IsSpawned){
+                networkObject.Despawn();
+            }
+            gameObject.SetActive(false);
+#endif
         }
     }
 

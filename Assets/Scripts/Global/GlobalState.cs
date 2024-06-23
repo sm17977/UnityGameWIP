@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Global.Game_Modes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +7,7 @@ public class GlobalState : MonoBehaviour
 {
 
     public static GlobalState Instance;
+    public static bool IsMultiplayer = false;
     public static bool Paused = false;
     public string currentScene;
     public GameMode CurrentGameMode;
@@ -40,6 +40,7 @@ public class GlobalState : MonoBehaviour
 
         switch(currentScene){
             case "Arena": 
+                IsMultiplayer = false;
                 var ability = Object.Instantiate(LuxQAbilitySO);
                 Arena = new Arena(ability);
                 CurrentGameMode = Arena;
@@ -47,7 +48,7 @@ public class GlobalState : MonoBehaviour
                 break;
 
             case "Multiplayer":
-
+                IsMultiplayer = true;
 
                 break;
         }

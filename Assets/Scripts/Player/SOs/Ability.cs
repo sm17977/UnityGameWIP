@@ -33,6 +33,15 @@ public class Ability : ScriptableObject
     public string animationTrigger;
     public string animationState;
    
+    private ICastingStrategy _castingStrategy;
+
+    public void SetCastingStrategy(ICastingStrategy strategy) {
+        _castingStrategy = strategy;
+    }
+
+    public void Cast(Vector3 direction, Vector3 abilitySpawnPos, LuxPlayerController playerController) {
+        _castingStrategy.Cast(this, direction, abilitySpawnPos, playerController);
+    }
  
     public float GetProjectileLifetime(){
         return range / speed;

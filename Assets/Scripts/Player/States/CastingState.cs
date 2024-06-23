@@ -43,19 +43,7 @@ public class CastingState : State
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
-            // Create projectile
-            //GameObject newProjectile = Lux_Controller.Instantiate(ability.missile, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
-
-            if (playerController.globalState.currentScene == "Multiplayer") {
-                playerController.SpawnProjectileServerRpc(direction, abilitySpawnPos, playerController.OwnerClientId);
-            }
-
-            // // Store projectile in list
-            // playerController.projectiles.Add(newProjectile);
-            //
-            // // Get script on prefab to initialize properties
-            // ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-            // projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, playerController.playerType);
+            ability.Cast(direction, abilitySpawnPos, playerController);
           
             playerController.canCast = false;
         }
