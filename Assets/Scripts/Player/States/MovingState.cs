@@ -26,8 +26,7 @@ public class MovingState : State
     }
 
     public override void Execute() {
-
-     
+        
         if(!playerController.canMove){
             playerController.TransitionToIdle();
         }
@@ -35,14 +34,9 @@ public class MovingState : State
         // Calculate the direction the player wants to move in
         Vector3 direction = (targetLocation - player.transform.position).normalized;
         direction.y = 0f;
-
-        // if(playerController.globalState.currentScene == "Multiplayer" && playerController.IsOwner){
-        //    playerController.SendCommandToServerRpc(direction);
-        // }
-       
+        
         MoveAndRotate(direction);
         
-
         float dist = Vector3.Distance(player.transform.position, targetLocation);
         //Debug.Log("Distance from click: " + dist);
         

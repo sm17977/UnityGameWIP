@@ -82,8 +82,9 @@ public class LuxAIController : LuxController
 
     // Start is called before the first frame update
     void Start(){
-
-        BuffManager = new BuffManager(this);
+        BuffManager = BuffManager.Instance;
+        BuffManager.Init(this);
+        
         playerType = PlayerType.Bot;
        
         InitStates();

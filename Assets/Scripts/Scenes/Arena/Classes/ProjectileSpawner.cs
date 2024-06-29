@@ -27,13 +27,13 @@ public class ProjectileSpawner : MonoBehaviour
     void Start(){
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         playerController = player.GetComponent<LuxPlayerController>();
-        currentRound = globalState.Arena.RoundManager.GetCurrentRoundInstance();
+        currentRound = globalState.Arena.RoundManager.GetCurrentRound();
         timer = currentRound.projectileFrequency;
     }
 
     void Update() {
 
-        currentRound = globalState.Arena.RoundManager.GetCurrentRoundInstance();
+        currentRound = globalState.Arena.RoundManager.GetCurrentRound();
 
         if (!canSpawn) {
             timer -= Time.deltaTime;

@@ -112,11 +112,11 @@ namespace Multiplayer.UI {
         
         private void UpdateServerInfoTable() {
             
-            _serverStatusLabel.text = _uiController._client.ServerStatus;
-            _serverPortLabel.text = _uiController._client.Port;
-            _serverIPLabel.text = _uiController._client.ServerIP;
+            _serverStatusLabel.text = _uiController.Client.ServerStatus;
+            _serverPortLabel.text = _uiController.Client.Port;
+            _serverIPLabel.text = _uiController.Client.ServerIP;
             
-            if (_uiController._client.ServerStatus != null &&  _uiController._client.ServerStatus != "") {
+            if (_uiController.Client.ServerStatus != null &&  _uiController.Client.ServerStatus != "") {
                 ApplyServerStatusStyling();
             }
         }
@@ -200,7 +200,7 @@ namespace Multiplayer.UI {
                 _serverStatusLabel.RemoveFromClassList(statusClass);
             }
             
-            if (ServerStatusClasses.TryGetValue(_uiController._client.ServerStatus, out var newClass)) {
+            if (ServerStatusClasses.TryGetValue(_uiController.Client.ServerStatus, out var newClass)) {
                 _serverStatusLabel.AddToClassList(newClass);
             }
             else {

@@ -112,9 +112,10 @@ GameObject:
   - component: {fileID: 1732250947714356030}
   - component: {fileID: 5979128125877560516}
   - component: {fileID: -7789685537750824561}
+  - component: {fileID: 3799837274022872123}
   m_Layer: 3
   m_Name: Lux_Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -273,6 +274,7 @@ MonoBehaviour:
   aiHitboxCollider: {fileID: 0}
   attackStartTime: 0
   attackStartTimeLogged: 0
+  rpcController: {fileID: 0}
   LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   LuxEAbilitySO: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
   LuxQAbility: {fileID: 0}
@@ -378,6 +380,18 @@ MonoBehaviour:
     TriggerNameHash: -330743462
     TransitionIndex: 5
   m_Animator: {fileID: 6881271443565087466}
+--- !u!114 &3799837274022872123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6861d9d593be4676bb8a9a39e3c7f687, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

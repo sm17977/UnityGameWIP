@@ -1,8 +1,4 @@
-﻿
-
-using UnityEngine.Rendering;
-
-namespace Multiplayer {
+﻿namespace Multiplayer {
     public sealed class Client {
         
         private static Client _instance = null;
@@ -12,7 +8,7 @@ namespace Multiplayer {
         private string _name;
         private string _lobbyId;
         private bool _isLobbyHost;
-        private bool _isConnectedToServer = false;
+        private bool _isConnectedToServer;
         
         private string _serverIp;
         private string _port;
@@ -48,9 +44,6 @@ namespace Multiplayer {
             set => _isConnectedToServer = value;
         }
         
-        private Client() {
-        }
-
         public static Client Instance {
             get {
                 lock (Padlock) {

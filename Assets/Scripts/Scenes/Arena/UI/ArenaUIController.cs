@@ -119,7 +119,7 @@ public class ArenaUIController : MonoBehaviour
         debugCurrentState.text = "Current State: " + player.currentState;
         
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round");
-        debugCurrentState.text = "Round: " + globalState.Arena.RoundManager.GetCurrentRound();
+        debugCurrentState.text = "Round: " + globalState.Arena.RoundManager.GetCurrentRoundString();
 
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
         debugCurrentState.text = "Next round starts in " + globalState.Arena.RoundManager.GetCurrentRoundTime();

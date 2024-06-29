@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,14 +10,11 @@ using Unity.Netcode.Transports.UTP;
 namespace Multiplayer {
     public class ClientManager : MonoBehaviour {
 
+        public static ClientManager Instance;
         private Client _client;
         private CancellationTokenSource _cancellationTokenSource;
         
-        public GameObject gameLobbyManagerObj;
         private GameLobbyManager _gameLobbyManager;
-        
-        public GameObject gameViewManagerObj;
-        private GameViewManager _gameViewManager;
         private ViewManager _viewManager;
         
         public Client Client {
@@ -29,12 +25,23 @@ namespace Multiplayer {
                 return _client;
             }
         }
-
         private void Awake() {
+            
+            #if DEDICATED_SERVER
+                gameObject.SetActive(false);
+                return;
+            #endif
+            
+            if(Instance == null){
+                Instance = this;
+            }
+            else if(Instance != this){
+                Destroy(this);
+            }
+            
             _client = Client.Instance;
-            _gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
-            _gameViewManager = gameViewManagerObj.GetComponent<GameViewManager>();
-            _viewManager = _gameViewManager.ViewManager;
+            _gameLobbyManager = GameLobbyManager.Instance;
+            _viewManager = ViewManager.Instance;
         }
 
         private void Start() {
@@ -42,9 +49,9 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Connect the client.
+        /// Connect the client to the multiplay server
         /// </summary>
-        /// <returns>True if the client connected, otherwise false</returns>
+        /// <returns>boolean</returns>
         public async Task<bool> Connect() {
             _cancellationTokenSource = new CancellationTokenSource();
 
@@ -56,19 +63,13 @@ namespace Multiplayer {
         }
 
         /// <summary>
-        /// Disconnect the client.
-        /// Update the player's connection status.
+        /// Disconnect the client form the multiplay server
+        /// Update the player's connection status
         /// </summary>
         public async Task Disconnect() {
             NetworkManager.Singleton.Shutdown();
             _client.IsConnectedToServer = false;
             await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(_client.IsConnectedToServer);
-        }
-
-        public async Task HostDisconnect() {
-            
-            
-            
         }
         
         /// <summary>
@@ -80,7 +81,7 @@ namespace Multiplayer {
         /// the client and server.
         /// </summary>
         /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>True if the client connected, otherwise false</returns>
+        /// <returns>boolean</returns>
         private async Task<bool> StartClientAsLobbyHost(CancellationToken cancellationToken) {
 
             try {
@@ -114,7 +115,7 @@ namespace Multiplayer {
         /// the server will receive this before approving, this enables us to track who has connected both from
         /// the client and server.
         /// </summary>
-        /// <returns>True if the client connected, otherwise false</returns>
+        /// <returns>boolean</returns>
         private bool StartClientAsLobbyPlayer() {
 
             if (_client.ServerIP == null || _client.Port == null) return false;
@@ -232,7 +233,7 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// This function is called whenever a client connects to the server.
+        /// This function is called whenever a client connects to the server
         /// When called, the player updates the lobby with their connection status.
         /// </summary>
         /// <param name="clientId">Client ID</param>
@@ -259,10 +260,16 @@ namespace Multiplayer {
             }
         }
         
+        /// <summary>
+        /// Send a custom message to the multiplay server notifying that the host has disconnected
+        /// </summary>
         public void NotifyServerOfHostDisconnect() {
             NetworkManager.Singleton.SendHostLeavingMessageToServer(NetworkManager.ServerClientId, new HostLeavingMessage());
         }
         
+        /// <summary>
+        /// Log client disconnection message
+        /// </summary>
         private async void OnClientDisconnected(ulong clientId) {
             Debug.Log("Client disconnected (from server): " + clientId);
         }

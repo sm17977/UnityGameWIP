@@ -16,7 +16,8 @@ namespace Global.Game_Modes {
             rounds.Add(new Round(30f, 1f, 0.25f, ability));
             rounds.Add(new Round(30f, 1f, 0.2f, ability));
 
-            RoundManager = new RoundManager(rounds);
+            RoundManager = RoundManager.Instance;
+            RoundManager.Init(rounds);
             
             GlobalState.Pause(true);
             InitCountdown();
@@ -28,7 +29,7 @@ namespace Global.Game_Modes {
         }
 
         public void Update() {
-            if(RoundManager.inProgress){
+            if(RoundManager.InProgress){
                 GameTimer += Time.deltaTime;
                 RoundManager.Update();
             }

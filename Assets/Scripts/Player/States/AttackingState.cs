@@ -1,9 +1,5 @@
 using UnityEngine;
-using System.Timers;
 using UnityEngine.VFX;
-using UnityEditor;
-using System;
-
 public class AttackingState : State
 {
     public LuxPlayerController playerController;

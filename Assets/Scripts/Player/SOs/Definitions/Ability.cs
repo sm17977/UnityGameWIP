@@ -39,8 +39,8 @@ public class Ability : ScriptableObject
         _castingStrategy = strategy;
     }
 
-    public void Cast(Vector3 direction, Vector3 abilitySpawnPos, LuxPlayerController playerController) {
-        _castingStrategy.Cast(this, direction, abilitySpawnPos, playerController);
+    public void Cast(Vector3 direction, Vector3 abilitySpawnPos) {
+        _castingStrategy.Cast(this, direction, abilitySpawnPos);
     }
  
     public float GetProjectileLifetime(){
@@ -52,7 +52,7 @@ public class Ability : ScriptableObject
     }
 
     public void PutOnCooldown(){
-        CooldownManager.instance.StartCooldown(this);
+        CooldownManager.Instance.StartCooldown(this);
     }
 
     public bool OnCooldown(){

@@ -559,7 +559,7 @@ GameObject:
   - component: {fileID: 733547718}
   - component: {fileID: 733547717}
   m_Layer: 0
-  m_Name: Game View Manager
+  m_Name: View Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -574,7 +574,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 733547716}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b3c26f80aeb42639f672aa8eb86cd10, type: 3}
+  m_Script: {fileID: 11500000, guid: e6330e55f5044252bae63d85f218a11a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &733547718
@@ -747,9 +747,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiDocument: {fileID: 1516747484}
-  gameLobbyManagerObj: {fileID: 485914239}
-  gameViewManagerObj: {fileID: 733547716}
-  clientManagerObj: {fileID: 1706765618}
   multiplayerMenuViewTmpl: {fileID: 9197481963319205126, guid: 662cb3722ea04acd99e1ab5d73256394,
     type: 3}
   lobbiesViewTmpl: {fileID: 9197481963319205126, guid: f3cd960333b54785bd9bf4771bc01c7c,
@@ -838,8 +835,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90e48368ff6743baacc2403b3337ed8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameLobbyManagerObj: {fileID: 485914239}
-  gameViewManagerObj: {fileID: 733547716}
 --- !u!4 &1706765620
 Transform:
   m_ObjectHideFlags: 0
@@ -1915,9 +1910,9 @@ SceneRoots:
   - {fileID: 1889110919}
   - {fileID: 112165742}
   - {fileID: 502043957}
+  - {fileID: 1706765620}
   - {fileID: 1516747485}
   - {fileID: 485914240}
   - {fileID: 2029580975}
-  - {fileID: 1706765620}
   - {fileID: 733547718}
   - {fileID: 1599386340}

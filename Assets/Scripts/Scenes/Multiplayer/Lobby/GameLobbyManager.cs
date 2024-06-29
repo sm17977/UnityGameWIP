@@ -3,39 +3,49 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Multiplayer;
-using QFSW.QC;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class GameLobbyManager : MonoBehaviour {
-   
-    private LobbyManager lobbyManager;
-    private Lobby lobby;
-    private string playerId;
-    private List<String> joinedLobbyList;
-    private List<LobbyPlayerData> _lobbyPlayerDatas = new List<LobbyPlayerData>();
+
+    public static GameLobbyManager Instance;
+    private LobbyManager _lobbyManager;
+    
+    private Lobby _lobby;
+    private string _playerId;
+    private LobbyPlayerData _playerData;
+    
+    private List<String> _joinedLobbyList;
     private List<Lobby> _localLobbyList;
+    
+    private List<LobbyPlayerData> _lobbyPlayerDatas = new List<LobbyPlayerData>();
     private LobbyPlayerData _localLobbyPlayerData;
     private ILobbyEvents _lobbyEvents;
 
     public GameObject uIControllerGameObject;
     private MultiplayerUIController _uiController;
-    private LobbyPlayerData _playerData;
-
+    
     // Rate Limit Timers
-
     float getJoinedLobbiesTimer; 
     float getJoinedLobbiesLimit = 30f;
     bool canRequestGetJoinedLobbies = true;
     
     void Awake(){
-#if DEDICATED_SERVER
-        gameObject.SetActive(false);
-        return;
-#endif
-        lobbyManager = LobbyManager.Instance;
+        #if DEDICATED_SERVER
+            gameObject.SetActive(false);
+            return;
+        #endif
+        
+        if(Instance == null){
+            Instance = this;
+        }
+        else if(Instance != this){
+            Destroy(this);
+        }
+        
+        _lobbyManager = LobbyManager.Instance;
         _uiController = uIControllerGameObject.GetComponent<MultiplayerUIController>();
     }
     
@@ -48,116 +58,139 @@ public class GameLobbyManager : MonoBehaviour {
             canRequestGetJoinedLobbies = true;
         }
     }
-
+    
+    /// <summary>
+    /// Sign in the user to Unity Authentication Services
+    /// </summary>
+    /// <returns>Unity Authenticated player ID</returns>
     public async Task<string> SignIn() {
-        playerId = await lobbyManager.SignInUser();
-        return playerId;
+        _playerId = await _lobbyManager.SignInUser();
+        return _playerId;
     }
-
-    public async Task CreateLobby(string lobbyName) {
-
-        // Create a lobby
-        _playerData = new LobbyPlayerData();
-        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Host", "");
-        int maxPlayers = 4;
-        lobby = await lobbyManager.CreateLobby(lobbyName, maxPlayers, _playerData.Serialize());
-        
-        // Subscribe to lobby events
-        var callbacks = new LobbyEventCallbacks();
-        callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
-        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
-        
-        // Initiate lobby heartbeat
-        StartCoroutine(HeartbeatLobbyCoroutine(lobby.Id, 15));
-    }
-
-    public async Task DeleteLobby() {
-        await _lobbyEvents.UnsubscribeAsync();
-        await lobbyManager.DeleteLobby(lobby.Id);
-        lobby = null;
-    }
-
+    
+    /// <summary>
+    /// Send a regular heartbeat ping to the lobby to keep it alive 
+    /// </summary>
     IEnumerator HeartbeatLobbyCoroutine(string lobbyId, float waitTimeSeconds){
         var delay = new WaitForSecondsRealtime(waitTimeSeconds);
 
-        while (true)
-        {
+        while (true) {
             LobbyService.Instance.SendHeartbeatPingAsync(lobbyId.ToString());
             yield return delay;
         }
     }
 
-    public async Task<List<Lobby>> GetLobbiesList(){
-        _localLobbyList = await lobbyManager.GetLobbiesList();
-        return _localLobbyList;
-    }
-    
-    public async Task<List<Lobby>> RefreshLobbyList(){
-        if (_localLobbyList == null) return await GetLobbiesList();
-        return _localLobbyList;
-    }
-    
-    public async Task<List<Player>> GetLobbyPlayers() {
-        lobby = await GetLobby(lobby.Id);
-        return lobby.Players;
-    }
-
-    public async Task<List<Player>> RefreshLobbyPlayers() {
-        if (lobby == null) return await GetLobbyPlayers();
-        return lobby.Players;
-    }
-    
-    private async Task<Lobby> GetLobby(string lobbyId) {
-        return await lobbyManager.GetLobby(lobbyId);
-    }
-
-    public async Task JoinLobby(Lobby lobbyToJoin){
+    /// <summary>
+    /// Create and store reference to a lobby
+    /// <param name="lobbyName">Lobby name</param>
+    /// <param name="maxPlayers">Max player count</param>
+    /// </summary>
+    public async Task CreateLobby(string lobbyName) {
+        
         _playerData = new LobbyPlayerData();
-        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Player", "");
-        lobby = await lobbyManager.JoinLobby(lobbyToJoin, _playerData.Serialize());
+        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Host", "");
+        int maxPlayers = 4;
+        
+        // Create a lobby
+        _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, _playerData.Serialize());
+        
         // Subscribe to lobby events
         var callbacks = new LobbyEventCallbacks();
         callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
-        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobby.Id, callbacks);
+        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_lobby.Id, callbacks);
+        
+        // Initiate lobby heartbeat
+        StartCoroutine(HeartbeatLobbyCoroutine(_lobby.Id, 15));
     }
+    
+    /// <summary>
+    /// Join and store a reference to a lobby
+    /// </summary>
+    /// TODO: Check if we need the clientId in playerData
+    public async Task JoinLobby(Lobby lobbyToJoin){
+        
+        _playerData = new LobbyPlayerData();
+        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Player", "");
+        
+        _lobby = await _lobbyManager.JoinLobby(lobbyToJoin, _playerData.Serialize());
+        
+        // Subscribe to lobby events
+        var callbacks = new LobbyEventCallbacks();
+        callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
+        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_lobby.Id, callbacks);
+    }
+    
+    /// <summary>
+    /// Leave a lobby
+    /// </summary>
     public async Task LeaveLobby() {
         await _lobbyEvents.UnsubscribeAsync();
-        await lobbyManager.LeaveLobby(lobby.Id);
-        lobby = null;
+        await _lobbyManager.LeaveLobby(_lobby.Id);
+        _lobby = null;
     }
 
+    /// <summary>
+    /// Delete the current lobby
+    /// </summary>
+    public async Task DeleteLobby() {
+        await _lobbyEvents.UnsubscribeAsync();
+        await _lobbyManager.DeleteLobby(_lobby.Id);
+        _lobby = null;
+    }
+    
+    /// <summary>
+    /// Invalidate the current lobby reference
+    /// </summary>
     public void InvalidateLobby() {
-        lobby = null;
+        _lobby = null;
     }
     
-    public async Task<bool> IsPlayerInLobby(Lobby lobbyToCheck){
-
-        if(canRequestGetJoinedLobbies){
-            joinedLobbyList = await lobbyManager.GetJoinedLobbies();
-            canRequestGetJoinedLobbies = false;
-            getJoinedLobbiesTimer = getJoinedLobbiesLimit;
-        }
-
-        foreach(string lobbyId in joinedLobbyList){
-            if(lobbyToCheck.Id == lobbyId){
-                return true;
-            }
-        }
-        return false;
+    /// <summary>
+    /// Get a lobby via the Lobby Service
+    /// </summary>
+    /// <returns>A lobby</returns>
+    private async Task<Lobby> GetLobby(string lobbyId) {
+        return await _lobbyManager.GetLobby(lobbyId);
     }
     
-    public bool IsPlayerInLobby() {
-
-        if (lobby == null) return false;
-        
-        foreach (var player in lobby.Players) {
-            if (player.Id == playerId) {
-                return true;
-            }
+    /// <summary>
+    /// Get a field from the current lobby data
+    /// </summary>
+    /// <param name="key">The field key of the lobby data to retrieve</param>
+    /// <returns>The requested lobby data</returns>
+    public string GetLobbyData(string key) {
+        try {
+            return _lobby.Data[key].Value;
         }
-        return false;
+        catch (Exception e) {
+            Debug.Log(e.Message);
+        }
+        return null;
     }
-
+    
+    /// <summary>
+    /// Get and store the list of lobbies via the Lobby Service
+    /// </summary>
+    /// <returns>List of lobbies</returns>
+    public async Task<List<Lobby>> GetLobbiesList(){
+        _localLobbyList = await _lobbyManager.GetLobbiesList();
+        return _localLobbyList;
+    }
+    
+    /// <summary>
+    /// Returns the local lobbies list 
+    /// </summary>
+    /// <returns>Local lobby list</returns>
+    public async Task<List<Lobby>> GetLocalLobbiesList(){
+        return _localLobbyList;
+    }
+    
+    /// <summary>
+    /// Update the lobby data with the multiplay server's network info
+    /// </summary>
+    /// <param name="machineStatus">Machine status</param>
+    /// <param name="serverIP">Server IPv4 address</param>
+    /// <param name="port">Server Port</param>
     public async Task UpdateLobbyWithServerInfo(string machineStatus, string serverIP, string port) {
         
         var lobbyData = new Dictionary<string, DataObject>() {
@@ -181,55 +214,117 @@ public class GameLobbyManager : MonoBehaviour {
             },
         };
         
-        await lobbyManager.UpdateLobbyData(lobbyData, lobby.Id);
-    }
-
-    public string GetPlayerID(){
-        return playerId;
+        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
     }
     
-    public bool IsPlayerHost() {
-        return lobby.HostId == playerId;
+    /// <summary>
+    /// Get the lobby via the Lobby Service and return the player list
+    /// </summary>
+    /// <returns>Lobby player list</returns>
+    public async Task<List<Player>> GetLobbyPlayers() {
+        _lobby = await GetLobby(_lobby.Id);
+        return _lobby.Players;
     }
 
-    public bool IsPlayerHost(string id) {
-        return lobby.HostId == id;
+    /// <summary>
+    /// Get local lobby player list
+    /// </summary>
+    /// <returns>Local lobby player list</returns>
+    public async Task<List<Player>> GetLocalLobbyPlayers() {
+        return _lobby.Players;
     }
     
-    public void ApplyLobbyChanges(ILobbyChanges changes) {
-        changes.ApplyToLobby(lobby);
-    }
+    /// <summary>
+    /// Update each lobby player's data with their multiplay server connection status
+    /// </summary>
+    /// <param name="connected">If the player connected to the multiplay server</param>
+    /// TODO: Move this into to the ClientManager?
     public async Task UpdatePlayerDataWithConnectionStatus(bool connected) {
 
         LobbyPlayerData playerData = new LobbyPlayerData();
         UpdatePlayerOptions options = new UpdatePlayerOptions();
         
-        foreach(Player player in lobby.Players) {
-            if (player.Id == playerId) {
+        foreach(Player player in _lobby.Players) {
+            if (player.Id == _playerId) {
                 var clientId = player.Data["ClientId"].Value;
                 var playerName = player.Data["Name"].Value;
-                playerData.Initialize(playerId, playerName, clientId, connected);
+                playerData.Initialize(_playerId, playerName, clientId, connected);
                 break;
             }
         }
         options.Data = playerData.SerializeUpdate();
-        lobby = await lobbyManager.UpdateLobbyPlayerData(options, playerId, lobby.Id);
+        _lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+    }
+    
+    /// <summary>
+    /// Get the player's ID
+    /// </summary>
+    /// <returns>The player's ID</returns>
+    public string GetPlayerID(){
+        return _playerId;
+    }
+    
+    /// <summary>
+    /// Check if the player is in a certain lobby
+    /// </summary>
+    /// <param name="lobbyToCheck">The lobby to check</param>
+    /// <returns>boolean</returns>
+    public async Task<bool> IsPlayerInLobby(Lobby lobbyToCheck){
+
+        if(canRequestGetJoinedLobbies){
+            _joinedLobbyList = await _lobbyManager.GetJoinedLobbies();
+            canRequestGetJoinedLobbies = false;
+            getJoinedLobbiesTimer = getJoinedLobbiesLimit;
+        }
+
+        foreach(string lobbyId in _joinedLobbyList){
+            if(lobbyToCheck.Id == lobbyId){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Check if the player is in the current lobby
+    /// </summary>
+    /// <returns>boolean</returns>
+    public bool IsPlayerInLobby() {
+
+        if (_lobby == null) return false;
         
+        foreach (var player in _lobby.Players) {
+            if (player.Id == _playerId) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Check if the player is the host of the current lobby
+    /// </summary>
+    /// <returns>boolean</returns>
+    public bool IsPlayerLobbyHost() {
+        return _lobby.HostId == _playerId;
     }
 
-    public string GetLobbyData(string key) {
-        try {
-            return lobby.Data[key].Value;
-        }
-        catch (Exception e) {
-            Debug.Log(e.Message);
-        }
-        return null;
+    /// <summary>
+    /// Check if a player is the host of the current lobby
+    /// </summary>
+    /// <param name="playerId">Lobby ID</param>
+    /// <returns>boolean</returns>
+    public bool IsPlayerLobbyHost(string playerId) {
+        return _lobby.HostId == playerId;
     }
-
+    
+    /// <summary>
+    /// Check if lobby host is connected to the multiplay server
+    /// </summary>
+    /// <returns>boolean</returns>
     public bool HostIsConnected() {
-        foreach(var player in lobby.Players) {
-            if (player.Id == lobby.HostId) {
+        foreach(var player in _lobby.Players) {
+            if (player.Id == _lobby.HostId) {
                 var connected = bool.Parse(player.Data["IsConnected"].Value);
                 if (connected) return true;
                 break;
@@ -238,9 +333,13 @@ public class GameLobbyManager : MonoBehaviour {
         return false;
     }
 
+    /// <summary>
+    /// Check if all lobby players have disconnected from the multiplay server
+    /// </summary>
+    /// <returns>boolean</returns>
     public bool LobbyPlayersDisconnected() {
-        foreach(var player in lobby.Players) {
-            if (player.Id != lobby.HostId) {
+        foreach(var player in _lobby.Players) {
+            if (player.Id != _lobby.HostId) {
                 var connected = bool.Parse(player.Data["IsConnected"].Value);
                 if (connected) return false;
             }
@@ -248,6 +347,11 @@ public class GameLobbyManager : MonoBehaviour {
         return true;
     }
     
-    
-    
+    /// <summary>
+    /// Apply changes to a lobby
+    /// </summary>
+    /// <param name="changes">Lobby changes</param>
+    public void ApplyLobbyChanges(ILobbyChanges changes) {
+        changes.ApplyToLobby(_lobby);
+    }
 }

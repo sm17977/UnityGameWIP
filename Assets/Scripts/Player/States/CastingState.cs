@@ -42,7 +42,7 @@ public class CastingState : State
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
-            ability.Cast(direction, abilitySpawnPos, playerController);
+            ability.Cast(direction, abilitySpawnPos);
           
             playerController.canCast = false;
         }

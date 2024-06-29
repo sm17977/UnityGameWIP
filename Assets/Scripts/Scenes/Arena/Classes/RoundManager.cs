@@ -1,49 +1,82 @@
 using System.Collections.Generic;
 
-public class RoundManager {
+public sealed class RoundManager {
 
-    public bool inProgress = true;
-    private int currentRoundIndex;
-    private Round currentRound;
-    private List<Round> rounds;
+    private static RoundManager _instance = null;
+    private static readonly object Padlock = new object();
+    
+    public bool InProgress = true;
+    private int _currentRoundIndex;
+    private Round _currentRound;
+    private List<Round> _rounds;
 
-    public RoundManager(List<Round> rounds){
-        this.rounds = rounds;
-        currentRoundIndex = 0;
-        currentRound = rounds[currentRoundIndex];
-        currentRound.Start();
+    public static RoundManager Instance {
+        get {
+            lock (Padlock) {
+                _instance ??= new RoundManager();
+                return _instance;
+            }
+        }
+    } 
+
+    /// <summary>
+    /// Initialize Round Manager
+    /// </summary>
+    /// <param name="rounds">A list of rounds</param>
+    public void Init(List<Round> rounds){
+        this._rounds = rounds;
+        _currentRoundIndex = 0;
+        _currentRound = rounds[_currentRoundIndex];
+        _currentRound.Start();
     }
 
+    /// <summary>
+    /// Update the round manager to handle round transitions
+    /// </summary>
     public void Update(){
-        if(!currentRound.IsComplete()){
-            currentRound?.Execute();
+        if(!_currentRound.IsComplete()){
+            _currentRound?.Execute();
         }
         else{
             ProgressToNextRound();
         }
     }
 
-    public void ProgressToNextRound(){
-        if(currentRoundIndex < rounds.Count - 1){
-            currentRoundIndex++;
-            currentRound = rounds[currentRoundIndex];
-            currentRound.Start();
+    /// <summary>
+    /// Transition current round to next round
+    /// </summary>
+    private void ProgressToNextRound(){
+        if(_currentRoundIndex < _rounds.Count - 1){
+            _currentRoundIndex++;
+            _currentRound = _rounds[_currentRoundIndex];
+            _currentRound.Start();
         }
         else{
-            inProgress = false;
+            InProgress = false;
         }
     }
 
-    public string GetCurrentRound(){
-        return (currentRoundIndex + 1).ToString();
+    /// <summary>
+    /// Get the current round as a string
+    /// </summary>
+    /// <returns>Current round as a string</returns>
+    public string GetCurrentRoundString(){
+        return (_currentRoundIndex + 1).ToString();
     }
 
-    public Round GetCurrentRoundInstance(){
-        return currentRound;
+    /// <summary>
+    /// Get the current round
+    /// </summary>
+    /// <returns>Current round object</returns>
+    public Round GetCurrentRound(){
+        return _currentRound;
     }
 
+    /// <summary>
+    /// Get the time of the current round
+    /// </summary>
+    /// <returns>Current round time</returns>
     public float GetCurrentRoundTime(){
-        return currentRound.currentTime;
+        return _currentRound.currentTime;
     }
-
 }

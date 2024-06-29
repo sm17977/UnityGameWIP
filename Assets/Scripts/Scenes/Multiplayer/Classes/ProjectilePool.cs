@@ -36,6 +36,7 @@ namespace Multiplayer {
                 var tmp = Instantiate(projectilePrefab);
                 tmp.SetActive(false);
                 _projectilePool.Add(tmp);
+                Debug.Log("Projectile initialized and added to pool: " + tmp.name);
             }
         }
 
@@ -61,6 +62,19 @@ namespace Multiplayer {
                 }
             }
             return null;
+        }
+        public void ReturnProjectileToPool(GameObject projectile) {
+            if (_projectilePool.Contains(projectile)) {
+                projectile.SetActive(false);
+                var networkObject = projectile.GetComponent<NetworkObject>();
+                if (networkObject != null && networkObject.IsSpawned) {
+                    networkObject.Despawn(false);
+                }
+                Debug.Log("Projectile returned to pool: " + projectile.name);
+            } 
+            else {
+                Debug.LogError("Projectile not part of the pool: " + projectile.name);
+            }
         }
     }
 }

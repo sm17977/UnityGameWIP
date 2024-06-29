@@ -1,4 +1,5 @@
 using System.Collections;
+using Multiplayer;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
@@ -77,40 +78,63 @@ public class Lux_Q_Mis : ProjectileAbility
         yield return new WaitForSeconds(delayInSeconds);
         canBeDestroyed = true;
 #if DEDICATED_SERVER
-        var networkObject = GetComponent<NetworkObject>();
-        if(networkObject.IsSpawned){
-            networkObject.Despawn();
-        }
-        gameObject.SetActive(false);
+        ProjectilePool.Instance.ReturnProjectileToPool(gameObject);
 #endif
     }
 
     // Detect projectile hitbox collision with enemy 
     void OnCollisionEnter(Collision collision){
+        
+        if(GlobalState.IsMultiplayer) ProcessMultiplayerCollision(collision);
+        else ProcessSinglePlayerCollision(collision);
+        
+    }
+
+    void ProcessSinglePlayerCollision(Collision collision) {
         if(((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") || (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player" ))  && !hasHit){
             hasHit = true;
             target = collision.gameObject.GetComponent<LuxController>();
 
             if(!target.BuffManager.HasBuffApplied(ability.buff)){
-               SpawnHitVfx(collision.gameObject);
+                SpawnHitVfx(collision.gameObject);
 
-               if(playerType == PlayerType.Bot){
-                   target.ProcessPlayerDeath();
-               }
+                if(playerType == PlayerType.Bot){
+                    target.ProcessPlayerDeath();
+                }
             }
-
             ability.buff.Apply(target);
-#if DEDICATED_SERVER
-            var networkObject = GetComponent<NetworkObject>();
-            if(networkObject.IsSpawned){
-                networkObject.Despawn();
-            }
-            gameObject.SetActive(false);
-#endif
         }
     }
 
-    // Intantiate the hit vfx prefab
+    void ProcessMultiplayerCollision(Collision collision) {
+        if (!IsServer) return;
+
+        var enemyClientId = collision.gameObject.GetComponent<NetworkObject>().OwnerClientId;
+        var isDifferentPlayer = collision.gameObject.CompareTag("Player") && enemyClientId != sourceClientId;
+        Debug.Log("Attacker ID: " + sourceClientId + " Enemy ID: " + enemyClientId + " Different Player: " + isDifferentPlayer + " playerType: " + playerType + " hasHit: " + hasHit);
+        
+        
+        if(playerType == PlayerType.Player && isDifferentPlayer && !hasHit){
+            Debug.Log("Collision!");
+            hasHit = true;
+            target = collision.gameObject.GetComponent<LuxController>();
+            SpawnHitVfx(collision.gameObject);
+
+            // if(!target.BuffManager.HasBuffApplied(ability.buff)){
+            //     SpawnHitVfx(collision.gameObject);
+            //
+                // if(playerType == PlayerType.Bot){
+                //     target.ProcessPlayerDeath();
+                // }
+            // }
+
+            //ability.buff.Apply(target);
+
+            ProjectilePool.Instance.ReturnProjectileToPool(gameObject);
+        }
+    }
+
+    // Instantiate the hit vfx prefab
     void SpawnHitVfx(GameObject target){
         // Spawn the prefab 
         newQHit = Instantiate(qHit, target.transform.position, Quaternion.identity);
@@ -118,4 +142,5 @@ public class Lux_Q_Mis : ProjectileAbility
         hitScript = newQHit.GetComponent<Lux_Q_Hit>();
         hitScript.target = target;
     }
+    
 }

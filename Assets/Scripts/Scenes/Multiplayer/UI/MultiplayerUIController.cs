@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Multiplayer;
 using Multiplayer.UI;
+using QFSW.QC;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -15,19 +16,13 @@ public class MultiplayerUIController : MonoBehaviour {
     // UI Document
     [SerializeField] public UIDocument uiDocument;
     
-    // Lobby Manager
-    public GameObject gameLobbyManagerObj;
+    // Client
+    public Client Client;
+    
+    // Managers
     private GameLobbyManager _gameLobbyManager;
-    
-    // View Manager
-    public GameObject gameViewManagerObj;
-    private GameViewManager _gameViewManager;
     private ViewManager _viewManager;
-    
-    // Client Manager
-    public GameObject clientManagerObj;
     private ClientManager _clientManager;
-    public Client _client;
     
     // Global State
     private static GlobalState _globalState;
@@ -43,24 +38,24 @@ public class MultiplayerUIController : MonoBehaviour {
     public VisualTreeAsset exitGameModalTmpl;
     public VisualTreeAsset gameViewTmpl;
     
-    private async void Awake(){
-#if DEDICATED_SERVER
-        gameObject.SetActive(false);
-        return;
-#endif
-        _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-        _gameLobbyManager = gameLobbyManagerObj.GetComponent<GameLobbyManager>();
-        _gameViewManager = gameViewManagerObj.GetComponent<GameViewManager>();
-        _clientManager = clientManagerObj.GetComponent<ClientManager>();
+    private void Awake(){
+        #if DEDICATED_SERVER
+            gameObject.SetActive(false);
+            return;
+        #endif
         
-        _client = _clientManager.Client;
-        _client.ID = await _gameLobbyManager.SignIn();
+        _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
+        _gameLobbyManager = GameLobbyManager.Instance;
+        _viewManager = ViewManager.Instance;
     }
 
-     private void Start(){ 
-        _viewManager = _gameViewManager.ViewManager;
-        _viewManager.Initialize(this);
-    }
+     private async void Start() {
+         _clientManager = ClientManager.Instance;
+         Client = _clientManager.Client;
+         _viewManager.Initialize(this);
+         Client.ID = await _gameLobbyManager.SignIn();
+         _viewManager.RePaintView(typeof(MultiplayerMenuView));
+     }
     
     void OnEnable(){
         _controls = new Controls();
@@ -78,7 +73,6 @@ public class MultiplayerUIController : MonoBehaviour {
             _viewManager.CurrentModal.UpdateLoader();
         }
     }
-
     
     public void OnClickMultiplayerMenuBtn(Type type) {
         
@@ -110,31 +104,31 @@ public class MultiplayerUIController : MonoBehaviour {
     
     public async Task CreateLobby(string lobbyName) {
         await _gameLobbyManager.CreateLobby(lobbyName);
-        _client.IsLobbyHost = true;
+        Client.IsLobbyHost = true;
         _viewManager.CloseModal(typeof(CreateLobbyModal));
         _viewManager.ChangeView(typeof(LobbyView));
     }
 
     public async Task<List<Player>> GetLobbyPlayerTableData(bool sendNewRequest) {
         if (!sendNewRequest) {
-            return await _gameLobbyManager.RefreshLobbyPlayers();
+            return await _gameLobbyManager.GetLocalLobbyPlayers();
         } 
         return await _gameLobbyManager.GetLobbyPlayers();
     }
     
     public async Task<List<Lobby>> GetLobbyTableData(bool sendNewRequest) {
         if (!sendNewRequest) {
-            return await _gameLobbyManager.RefreshLobbyList();
+            return await _gameLobbyManager.GetLocalLobbiesList();
         }
         return await _gameLobbyManager.GetLobbiesList();
     }
 
     public bool IsPlayerHost() {
-        return _gameLobbyManager.IsPlayerHost();
+        return _gameLobbyManager.IsPlayerLobbyHost();
     }
 
     public bool IsPlayerHost(string playerId) {
-        return _gameLobbyManager.IsPlayerHost(playerId);
+        return _gameLobbyManager.IsPlayerLobbyHost(playerId);
     }
     
     public async Task<bool> StartGame() {
@@ -150,7 +144,7 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     public async Task LeaveLobby() {
-        if (_client.IsLobbyHost) {
+        if (Client.IsLobbyHost) {
             await _gameLobbyManager.DeleteLobby();
             //Delete allocation?
         }
@@ -170,7 +164,7 @@ public class MultiplayerUIController : MonoBehaviour {
     
    public async Task JoinLobby(Lobby lobby) {
        await _gameLobbyManager.JoinLobby(lobby);
-       _client.IsLobbyHost = false;
+       Client.IsLobbyHost = false;
         UpdatePlayersServerInfo();
        _viewManager.ChangeView(typeof(LobbyView));
    }
@@ -189,7 +183,7 @@ public class MultiplayerUIController : MonoBehaviour {
    public async Task DisconnectClient() {
        
        if (_viewManager.CurrentModal.GetType() == typeof(ExitGameModal)) {
-           if (_client.IsLobbyHost) {
+           if (Client.IsLobbyHost) {
                await DisconnectHost();
            }
            else {
@@ -247,7 +241,7 @@ public class MultiplayerUIController : MonoBehaviour {
 
         if (changes.LobbyDeleted) {
             Debug.Log("Lobby Change - Lobby Deleted");
-            if (!_client.IsLobbyHost) {
+            if (!Client.IsLobbyHost) {
                 _gameLobbyManager.InvalidateLobby();
                 _viewManager.ChangeView(typeof(MultiplayerMenuView));
                 return;
@@ -256,7 +250,7 @@ public class MultiplayerUIController : MonoBehaviour {
         
         _gameLobbyManager.ApplyLobbyChanges(changes);
         
-        if (!_client.IsLobbyHost) {
+        if (!Client.IsLobbyHost) {
             UpdatePlayersServerInfo();
         }
         else {
@@ -270,12 +264,12 @@ public class MultiplayerUIController : MonoBehaviour {
     private void UpdatePlayersServerInfo() {
         
          if(_gameLobbyManager?.GetLobbyData("ServerIP") != null) {
-             _client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
-             _client.Port = _gameLobbyManager?.GetLobbyData("Port");
+             Client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
+             Client.Port = _gameLobbyManager?.GetLobbyData("Port");
          }
 
          if (_gameLobbyManager?.GetLobbyData("MachineStatus") != null) {
-             _client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
+             Client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
              
          }
          _viewManager.RePaintView(typeof(LobbyView));

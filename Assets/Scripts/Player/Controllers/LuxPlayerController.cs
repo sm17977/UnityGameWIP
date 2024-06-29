@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Multiplayer;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.VFX;
-using Unity.Netcode;
+
 
 public class LuxPlayerController : LuxController {
     
@@ -70,6 +70,9 @@ public class LuxPlayerController : LuxController {
     // Debugging stuff
     public float attackStartTime;
     public bool attackStartTimeLogged = false;
+    
+    // RPC Manager
+    public RPCController rpcController;
 
     // Abilities
     public Ability LuxQAbilitySO;
@@ -79,13 +82,12 @@ public class LuxPlayerController : LuxController {
 
     private void Awake() {
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         
-        // Player
         hitboxGameObj = GameObject.Find("Hitbox");
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         _hitboxPos = hitboxGameObj.transform.position;
         
-
         LuxQAbility = Instantiate(LuxQAbilitySO);
         LuxEAbility = Instantiate(LuxEAbilitySO);
         _previousInput = new InputCommand { type = InputCommandType.Init };
@@ -98,6 +100,8 @@ public class LuxPlayerController : LuxController {
         _controls.Player.Q.performed += OnQ;
         _controls.Player.E.performed += OnE;
         _controls.Player.A.performed += OnA;
+        globalState.OnMultiplayerGameMode += InitAbilities;
+        globalState.OnSinglePlayerGameMode += InitAbilities;
     }
 
     private void OnDisable() {
@@ -107,13 +111,16 @@ public class LuxPlayerController : LuxController {
         _controls.Player.E.performed -= OnE;
         _controls.Player.A.performed -= OnA;
         _controls.Player.Disable();
+        globalState.OnMultiplayerGameMode -= InitAbilities;
+        globalState.OnSinglePlayerGameMode -= InitAbilities;
     }
 
 
     // Start is called before the first frame update
     private void Start() {
-        globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-        BuffManager = new BuffManager(this);
+        BuffManager = BuffManager.Instance;
+        BuffManager.Init(this);
+        
         playerType = PlayerType.Player;
 
         InitStates();
@@ -150,51 +157,16 @@ public class LuxPlayerController : LuxController {
         HandleProjectiles();
         HandleVFX();
     }
-
-    [Rpc(SendTo.Server)]
-    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId) {
-        Debug.Log("Spawning Lux Q Missile");
-        Debug.Log("Spawn vals, dir: " + direction + ", pos" + position);
-
-        if (ProjectilePool.Instance == null) {
-            Debug.Log("ProjectilePool instance is not initialized");
-            return;
-        }
-
-        var newProjectile = ProjectilePool.Instance.GetPooledProjectile();
-        if (newProjectile == null) {
-            Debug.Log("No available projectiles in the pool");
-            return;
-        }
-
-        // Set the position and rotation of the projectile
-        newProjectile.transform.position = position;
-        newProjectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
-
-        // Activate the projectile
-        newProjectile.SetActive(true);
-
-        var networkObject = newProjectile.GetComponent<NetworkObject>();
-        if (networkObject == null) {
-            Debug.Log("NetworkObject component is missing on the projectile");
-            return;
-        }
-
-        if (!networkObject.IsSpawned) networkObject.Spawn();
-
-        // Initialize projectile properties on the server
-        var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-        if (projectileScript != null)
-            projectileScript.InitProjectileProperties(direction, LuxQAbility, projectiles, playerType);
-        else
-            Debug.Log("ProjectileAbility component is missing on the projectile");
-    }
-
+    
     private void InitAbilities() {
-        ICastingStrategy castingStrategy = GlobalState.IsMultiplayer
-            ? new MultiplayerCastingStrategy()
-            : new SinglePlayerCastingStrategy();
 
+        ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
+
+        if (GlobalState.IsMultiplayer) {
+            rpcController = GetComponent<RPCController>();
+            castingStrategy = new MultiplayerCastingStrategy(this, rpcController);
+        }
+        
         LuxEAbility.SetCastingStrategy(castingStrategy);
         LuxQAbility.SetCastingStrategy(castingStrategy);
     }
@@ -224,7 +196,7 @@ public class LuxPlayerController : LuxController {
     }
 
     private void InitStates() {
-        _stateManager = new StateManager();
+        _stateManager = StateManager.Instance;
         _idleState = new IdleState();
     }
 
@@ -443,15 +415,7 @@ public class LuxPlayerController : LuxController {
             _isAARangeIndicatorOn = false;
         }
     }
-
-    public void PrintQueue() {
-        var output = "Queue: [";
-
-        foreach (var input in _inputQueue) output += input.type + ", ";
-
-        output += "]";
-        Debug.Log(output);
-    }
+    
     private void ResetCooldowns() {
         LuxQAbility.currentCooldown = 0;
         LuxEAbility.currentCooldown = 0;

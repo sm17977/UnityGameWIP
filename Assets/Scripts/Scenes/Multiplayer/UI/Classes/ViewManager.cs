@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mono.CSharp;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
-    public sealed class ViewManager {
+    public sealed class ViewManager : MonoBehaviour{
         
-        private static ViewManager _instance = null;
+        public static ViewManager Instance = null;
         private static readonly object Padlock = new object();
         
         private static Dictionary<Type, View> _views = new Dictionary<Type, View>();
@@ -24,24 +23,23 @@ namespace Multiplayer.UI {
             get => _currentModal;
         }
 
-        private ViewManager() {
-        }
-
-        public static ViewManager Instance {
-            get {
-                lock (Padlock) {
-                    _instance ??= new ViewManager();
-                    return _instance;
-                }
+        private void Awake() {
+            if(Instance == null){
+                Instance = this;
+            }
+            else if(Instance != this){
+                Destroy(this);
             }
         }
-
+        
+        /// <summary>
+        /// Initialize all views and modals
+        /// </summary>
+        /// <param name="uiController">The multiplayer UI controller</param>
         public void Initialize(MultiplayerUIController uiController) {
             
             var root = uiController.uiDocument.rootVisualElement;
             var viewContainer = root.Q<VisualElement>("view-container");
-            
-            var exitGameElement = root.Q<VisualElement>("exit-game");
             
             _views.Add(typeof(MultiplayerMenuView), new MultiplayerMenuView(viewContainer, uiController, uiController.multiplayerMenuViewTmpl));
             _views.Add(typeof(LobbiesView), new LobbiesView(viewContainer, uiController, uiController.lobbiesViewTmpl));
@@ -54,7 +52,11 @@ namespace Multiplayer.UI {
             ChangeView(typeof(MultiplayerMenuView));
             _currentModal = null;
         }
-
+        
+        /// <summary>
+        /// Change the current view
+        /// </summary>
+        /// <param name="viewType">The type of view to change to</param>
         public void ChangeView(Type viewType) {
             if (_views.ContainsKey(viewType)) {
                 _currentView?.Hide();
@@ -65,6 +67,10 @@ namespace Multiplayer.UI {
             }
         }
 
+        /// <summary>
+        /// Update the current view
+        /// </summary>
+        /// <param name="viewType">The type of view to update</param>
         public void UpdateView(Type viewType) {
             if (_views.ContainsKey(viewType)) {
                 _views[viewType].Update();
@@ -73,6 +79,10 @@ namespace Multiplayer.UI {
             }
         }
         
+        /// <summary>
+        /// Re-paint the current view
+        /// </summary>
+        /// <param name="viewType">The type of view to re-paint</param>
         public void RePaintView(Type viewType) {
             if (_views.ContainsKey(viewType)) {
                 _views[viewType].RePaint();
@@ -81,6 +91,10 @@ namespace Multiplayer.UI {
             }
         }
 
+        /// <summary>
+        /// Open a modal
+        /// </summary>
+        /// <param name="modalType">The type of modal to open</param>
         public void OpenModal(Type modalType) {
             if (_modals.ContainsKey(modalType)) {
                 _currentModal?.HideModal();
@@ -91,6 +105,10 @@ namespace Multiplayer.UI {
             }
         }
 
+        /// <summary>
+        /// Close a modal
+        /// </summary>
+        /// <param name="modalType">The type of modal to close</param>
         public void CloseModal(Type modalType) {
             if (_modals.ContainsKey(modalType)) {
                 _currentModal = _modals[modalType];
@@ -101,6 +119,9 @@ namespace Multiplayer.UI {
             }
         }
         
+        /// <summary>
+        /// Log the modal and view dictionaries
+        /// </summary>
         private void LogDictionaries() {
             Debug.Log("Logging Views Dictionary:");
             foreach (var kvp in _views) {

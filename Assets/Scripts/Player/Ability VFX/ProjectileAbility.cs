@@ -14,6 +14,7 @@ public class ProjectileAbility : NetworkBehaviour
     public Ability ability;
     public List<GameObject> projectiles;
     public PlayerType playerType;
+    public ulong sourceClientId;
 
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
@@ -41,9 +42,7 @@ public class ProjectileAbility : NetworkBehaviour
     /// <param name="transform"></param>
     /// <param name="initialPosition"></param>
     public void MoveProjectile(Transform transform, Vector3 initialPosition){
-        if (IsServer) {
-            Debug.Log("SERVER MOVEPROJECTILE");
-        }
+        
         // The distance the projectile moves per frame
         float distance = Time.deltaTime * projectileSpeed;
 
@@ -55,5 +54,9 @@ public class ProjectileAbility : NetworkBehaviour
 
         // Move the projectile
         transform.Translate(projectileDirection * travelDistance, Space.World);
+    }
+
+    public void SetClientId(ulong id) {
+        sourceClientId = id;
     }
 }

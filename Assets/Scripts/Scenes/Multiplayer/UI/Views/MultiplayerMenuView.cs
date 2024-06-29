@@ -48,8 +48,7 @@ namespace Multiplayer.UI {
                         break;
                 }
             }
-
-            _playerIdLabel.text = "Player ID: " + _uiController._client.ID;
+            DisplayPlayerId();
         }
 
         public void RunLobbyCheck() {
@@ -77,11 +76,17 @@ namespace Multiplayer.UI {
         }
         
         public override void RePaint() {
-            
+            DisplayPlayerId();
         }
 
         private void Placeholder() {
             
+        }
+
+        private void DisplayPlayerId() {
+            if (_uiController.Client != null) {
+                _playerIdLabel.text = "Player ID: " + _uiController.Client.ID;
+            }
         }
         
     }

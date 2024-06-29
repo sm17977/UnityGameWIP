@@ -2,39 +2,38 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class CooldownManager : MonoBehaviour
-{
-    
-    public static CooldownManager instance;
-    private List<Ability> abilitiesOnCooldown = new List<Ability>();
+public class CooldownManager : MonoBehaviour {
+    public static CooldownManager Instance;
+    private List<Ability> _abilitiesOnCooldown = new();
 
-    void Awake(){
-        if(instance == null){
-            instance = this;
+    private void Awake() {
+        if (Instance == null) {
+            Instance = this;
         }
-        else if(instance != this){
+        else if (Instance != this) {
             Destroy(this);
         }
     }
 
-    void Update(){
-
-        foreach(Ability ability in abilitiesOnCooldown.ToList()){
-
+    private void Update() {
+        foreach (var ability in _abilitiesOnCooldown.ToList()) {
             ability.currentCooldown -= Time.deltaTime;
 
-            if(ability.currentCooldown <= 0){
+            if (ability.currentCooldown <= 0) {
                 ability.currentCooldown = 0;
-                abilitiesOnCooldown.Remove(ability);
+                _abilitiesOnCooldown.Remove(ability);
             }
         }
     }
 
-    public void StartCooldown(Ability ability){
-
-        if(!abilitiesOnCooldown.Contains(ability)){
+    /// <summary>
+    /// Start cooldown timer of ability
+    /// </summary>
+    /// <param name="ability">The ability to put on cooldown</param>
+    public void StartCooldown(Ability ability) {
+        if (!_abilitiesOnCooldown.Contains(ability)) {
             ability.currentCooldown = ability.maxCooldown;
-            abilitiesOnCooldown.Add(ability);
+            _abilitiesOnCooldown.Add(ability);
         }
     }
 }

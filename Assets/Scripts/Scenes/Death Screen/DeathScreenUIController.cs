@@ -33,7 +33,7 @@ public class DeathScreenUIController : MonoBehaviour
         apm = uiDocument.rootVisualElement.Q<Label>("apm-label");
         accuracy = uiDocument.rootVisualElement.Q<Label>("accuracy-label");
 
-        roundReached.text = globalState.Arena.RoundManager.GetCurrentRound();
+        roundReached.text = globalState.Arena.RoundManager.GetCurrentRoundString();
         timeSurvived.text = globalState.Arena.GetGameTimer();
 
         retryBtn = uiDocument.rootVisualElement.Q<Button>("retry-btn");
