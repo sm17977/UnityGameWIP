@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Multiplayer;
 using Multiplayer.UI;
-using QFSW.QC;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -21,7 +20,7 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
-    private ViewManager _viewManager;
+    private static ViewManager _viewManager;
     private ClientManager _clientManager;
     
     // Global State
@@ -29,6 +28,18 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // Input System
     private Controls _controls;
+    
+    // Views
+    public List<View> Views;
+    public GameView GameView;
+    public LobbiesView LobbiesView;
+    public LobbyView LobbyView;
+    public static MultiplayerMenuView MultiplayerMenuView;
+    
+    // Modals
+    public List<Modal> Modals;
+    public CreateLobbyModal CreateLobbyModal;
+    public ExitGameModal ExitGameModal;
     
     // Templates
     public VisualTreeAsset multiplayerMenuViewTmpl;
@@ -44,6 +55,9 @@ public class MultiplayerUIController : MonoBehaviour {
             return;
         #endif
         
+        InitViews();
+        InitModals();
+        
         _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         _gameLobbyManager = GameLobbyManager.Instance;
         _viewManager = ViewManager.Instance;
@@ -52,15 +66,23 @@ public class MultiplayerUIController : MonoBehaviour {
      private async void Start() {
          _clientManager = ClientManager.Instance;
          Client = _clientManager.Client;
-         _viewManager.Initialize(this);
+         _viewManager.Initialize(Views, Modals, MultiplayerMenuView);
          Client.ID = await _gameLobbyManager.SignIn();
-         _viewManager.RePaintView(typeof(MultiplayerMenuView));
+         _viewManager.RePaintView(MultiplayerMenuView);
      }
     
     void OnEnable(){
         _controls = new Controls();
         _controls.UI.Enable();
         _controls.UI.ESC.performed += OnEscape;
+        
+        MultiplayerMenuView.OpenCreateLobbyModal += (() => _viewManager.OpenModal(CreateLobbyModal));
+        MultiplayerMenuView.ShowLobbyView += (() => _viewManager.ChangeView(LobbyView));
+        MultiplayerMenuView.ShowLobbiesView += (() => _viewManager.ChangeView(LobbiesView));
+        MultiplayerMenuView.LoadMainMenuScene += (() => _globalState.LoadScene("Main Menu"));
+
+        LobbiesView.JoinLobby += (async (lobby) => await JoinLobby(lobby));
+
     }
 
     void OnDisable(){
@@ -73,40 +95,56 @@ public class MultiplayerUIController : MonoBehaviour {
             _viewManager.CurrentModal.UpdateLoader();
         }
     }
-    
-    public void OnClickMultiplayerMenuBtn(Type type) {
+
+    private void InitViews() {
+        var root = uiDocument.rootVisualElement;
+        var viewContainer = root.Q<VisualElement>("view-container");
+
+        GameView = new GameView(root, this, gameViewTmpl);
+        LobbiesView = new LobbiesView(viewContainer, this, lobbiesViewTmpl);
+        LobbyView = new LobbyView(viewContainer, this, lobbyViewTmpl);
+        MultiplayerMenuView = new MultiplayerMenuView(viewContainer, this, multiplayerMenuViewTmpl);
+
+        Views = new List<View>() {
+            MultiplayerMenuView,
+            GameView,
+            LobbiesView,
+            LobbyView,
+        };
+    }
+
+    private void InitModals() {
+        var root = uiDocument.rootVisualElement;
         
-        if (type.IsSubclassOf(typeof(Modal))) {
-            _viewManager.OpenModal(type);
-        }
-        else if(type.IsSubclassOf(typeof(View))) {
-            _viewManager.ChangeView(type);
-        } 
-        else {
-            Debug.LogError("Type is neither a View nor a Modal.");
-        }
+        CreateLobbyModal = new CreateLobbyModal(root, this, createLobbyModalTmpl);
+        ExitGameModal = new ExitGameModal(root, this, exitGameModalTmpl);
+
+        Modals = new List<Modal>() {
+            CreateLobbyModal,
+            ExitGameModal
+        };
+    }
+    
+    public void OnCloseModal(Modal modal) {
+        _viewManager.CloseModal(modal);
     }
     
     private void OnEscape(InputAction.CallbackContext context) {
-        if (_viewManager.CurrentView?.GetType() == typeof(GameView)) {
-            if (_viewManager.CurrentModal?.GetType() == typeof(ExitGameModal)) {
-                _viewManager.CloseModal(typeof(ExitGameModal));
+        if (_viewManager.CurrentView == GameView) {
+            if (_viewManager.CurrentModal == ExitGameModal) {
+                _viewManager.CloseModal(ExitGameModal);
             }
             else {
-                _viewManager.OpenModal(typeof(ExitGameModal));
+                _viewManager.OpenModal(ExitGameModal);
             }
         }
-    }
-
-    public void OnClickMainMenuBtn() {
-        _globalState.LoadScene("Main Menu");
     }
     
     public async Task CreateLobby(string lobbyName) {
         await _gameLobbyManager.CreateLobby(lobbyName);
         Client.IsLobbyHost = true;
-        _viewManager.CloseModal(typeof(CreateLobbyModal));
-        _viewManager.ChangeView(typeof(LobbyView));
+        _viewManager.CloseModal(CreateLobbyModal);
+        _viewManager.ChangeView(LobbyView);
     }
 
     public async Task<List<Player>> GetLobbyPlayerTableData(bool sendNewRequest) {
@@ -133,13 +171,13 @@ public class MultiplayerUIController : MonoBehaviour {
     
     public async Task<bool> StartGame() {
         var clientConnected = await _clientManager.Connect();
-        _viewManager.ChangeView(typeof(GameView));
+        _viewManager.ChangeView(GameView);
         return clientConnected;
     }
     
     public async Task<bool> JoinGame() {
         var clientConnected = await _clientManager.Connect();
-        _viewManager.ChangeView(typeof(GameView));
+        _viewManager.ChangeView(GameView);
         return clientConnected;
     }
     
@@ -151,7 +189,7 @@ public class MultiplayerUIController : MonoBehaviour {
         else {
             await _gameLobbyManager.LeaveLobby();
         }
-        _viewManager.ChangeView(typeof(MultiplayerMenuView));
+        _viewManager.ChangeView(MultiplayerMenuView);
     }
     
     public async Task<bool> IsPlayerInLobby(Lobby lobby) {
@@ -162,19 +200,15 @@ public class MultiplayerUIController : MonoBehaviour {
         return _gameLobbyManager.IsPlayerInLobby();
     }
     
-   public async Task JoinLobby(Lobby lobby) {
+   private async Task JoinLobby(Lobby lobby) {
        await _gameLobbyManager.JoinLobby(lobby);
        Client.IsLobbyHost = false;
         UpdatePlayersServerInfo();
-       _viewManager.ChangeView(typeof(LobbyView));
+       _viewManager.ChangeView(LobbyView);
    }
    
-   public void CloseModal(Type type) {
-       _viewManager.CloseModal(type);
-   }
-
-   public void ReturnToMultiplayerMenu() {
-       _viewManager.ChangeView(typeof(MultiplayerMenuView));
+   public static void ReturnToMultiplayerMenu() {
+       _viewManager.ChangeView(MultiplayerMenuView);
    }
 
    /// <summary>
@@ -188,9 +222,9 @@ public class MultiplayerUIController : MonoBehaviour {
            }
            else {
                await _clientManager.Disconnect();
-               _viewManager.CloseModal(typeof(ExitGameModal));
-               _viewManager.RePaintView(typeof(LobbyView));
-               _viewManager.ChangeView(typeof(LobbyView));
+               _viewManager.CloseModal(ExitGameModal);
+               _viewManager.RePaintView(LobbyView);
+               _viewManager.ChangeView(LobbyView);
            }
        }
    }
@@ -213,9 +247,9 @@ public class MultiplayerUIController : MonoBehaviour {
        var canDisconnect = _gameLobbyManager.LobbyPlayersDisconnected();
        if (canDisconnect) {
            await _clientManager.Disconnect();
-           _viewManager.CloseModal(typeof(ExitGameModal));
-           _viewManager.RePaintView(typeof(LobbyView));
-           _viewManager.ChangeView(typeof(LobbyView));
+           _viewManager.CloseModal(ExitGameModal);
+           _viewManager.RePaintView(LobbyView);
+           _viewManager.ChangeView(LobbyView);
        }
        else {
            Debug.LogError("Players have not disconnected.");
@@ -243,7 +277,7 @@ public class MultiplayerUIController : MonoBehaviour {
             Debug.Log("Lobby Change - Lobby Deleted");
             if (!Client.IsLobbyHost) {
                 _gameLobbyManager.InvalidateLobby();
-                _viewManager.ChangeView(typeof(MultiplayerMenuView));
+                _viewManager.ChangeView(MultiplayerMenuView);
                 return;
             }
         }
@@ -254,7 +288,7 @@ public class MultiplayerUIController : MonoBehaviour {
             UpdatePlayersServerInfo();
         }
         else {
-            _viewManager.RePaintView(typeof(LobbyView));
+            _viewManager.RePaintView(LobbyView);
         }
     }
 
@@ -272,7 +306,7 @@ public class MultiplayerUIController : MonoBehaviour {
              Client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
              
          }
-         _viewManager.RePaintView(typeof(LobbyView));
+         _viewManager.RePaintView(LobbyView);
     }
 
     public bool CanJoinGame() {

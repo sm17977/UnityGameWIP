@@ -57,7 +57,7 @@ namespace Multiplayer.UI {
             _startGameBtn.RegisterCallback<ClickEvent>(evt => OnClickStartGameBtn());
             _joinGameBtn.RegisterCallback<ClickEvent>(evt => OnClickJoinGameBtn());
             _leaveBtn.RegisterCallback<ClickEvent>( evt => OnClickLeaveLobbyBtn());
-            _backBtn.RegisterCallback<ClickEvent>(evt => OnClickBackBtn());
+            _backBtn.RegisterCallback<ClickEvent>(evt => OnReturnToMultiplayerMenu());
         }
 
         public override async void Show() {
@@ -72,10 +72,7 @@ namespace Multiplayer.UI {
             base.Hide();
             _table.style.height = 0;
         }
-
-        private void OnClickBackBtn() {
-            _uiController.ReturnToMultiplayerMenu();
-        }
+        
         private async void OnClickStartGameBtn() {
             _startGameBtn.SetEnabled(false);
             bool clientConnected = await _uiController.StartGame();

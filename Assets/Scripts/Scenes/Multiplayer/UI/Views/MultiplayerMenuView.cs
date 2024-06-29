@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,6 +11,10 @@ namespace Multiplayer.UI {
         
         private List<Button> _buttonsList;
         private Label _playerIdLabel;
+        public event Action OpenCreateLobbyModal;
+        public event Action ShowLobbyView;
+        public event Action ShowLobbiesView;
+        public event Action LoadMainMenuScene;
         
         public MultiplayerMenuView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -28,15 +33,15 @@ namespace Multiplayer.UI {
                 switch (button.text){
 
                     case "Create new lobby":
-                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(CreateLobbyModal)));
+                        button.RegisterCallback<ClickEvent>(evt => OpenCreateLobbyModal?.Invoke());
                         break;
                 
                     case "Current lobby":
-                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(LobbyView)));
+                        button.RegisterCallback<ClickEvent>(evt => ShowLobbyView?.Invoke());
                         break;
 
                     case "List lobbies":
-                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMultiplayerMenuBtn(typeof(LobbiesView)));
+                        button.RegisterCallback<ClickEvent>(evt => ShowLobbiesView?.Invoke());
                         break;
 
                     case "Leaderboards":
@@ -44,7 +49,7 @@ namespace Multiplayer.UI {
                         break;
 
                     case "Main Menu":
-                        button.RegisterCallback<ClickEvent>(evt => _uiController.OnClickMainMenuBtn());
+                        button.RegisterCallback<ClickEvent>(evt => LoadMainMenuScene?.Invoke());
                         break;
                 }
             }

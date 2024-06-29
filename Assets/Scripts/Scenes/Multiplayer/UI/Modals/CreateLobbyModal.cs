@@ -49,7 +49,7 @@ namespace Multiplayer.UI {
         }
 
         private async void OnClickCancelBtn() {
-            _uiController.CloseModal(typeof(CreateLobbyModal));
+            _uiController.OnCloseModal(this);
         }
         
         private void ClearFormInput() {

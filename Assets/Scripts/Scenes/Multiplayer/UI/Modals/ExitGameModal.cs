@@ -34,7 +34,7 @@ namespace Multiplayer.UI {
         }
         
         private void OnClickCancelExitGameBtn() {
-            _uiController.CloseModal(typeof(ExitGameModal));
+            _uiController.OnCloseModal(this);
         }
         
         public override void ShowLoader() {

@@ -207,7 +207,7 @@ namespace Multiplayer {
             if (status == "") {
                 _client.ServerStatus = "Inactive";
             }
-            _viewManager.RePaintView(typeof(LobbyView));
+            //_viewManager.RePaintView(typeof(LobbyView));
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Multiplayer {
         private void UpdateServerInfoForLobbyHost(string ip, string port) {
             _client.ServerIP = ip;
             _client.Port = port;
-            _viewManager.RePaintView(typeof(LobbyView));
+            //_viewManager.RePaintView(typeof(LobbyView));
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Multiplayer {
             Debug.Log("Updating player data...");
             if (msg.PlayerId == _gameLobbyManager.GetPlayerID()) {
                 await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(msg.IsConnected);
-                _viewManager.RePaintView(typeof(LobbyView));
+                //_viewManager.RePaintView(typeof(LobbyView));
             }
         }
 
@@ -255,8 +255,8 @@ namespace Multiplayer {
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
             if (!_client.IsLobbyHost) {
                 await Disconnect();
-                _viewManager.RePaintView(typeof(LobbyView));
-                _viewManager.ChangeView(typeof(LobbyView));
+                //_viewManager.RePaintView(typeof(LobbyView));
+                //_viewManager.ChangeView(typeof(LobbyView));
             }
         }
         

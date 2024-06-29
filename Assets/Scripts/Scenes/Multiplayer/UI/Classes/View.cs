@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -8,9 +9,6 @@ namespace Multiplayer.UI {
         // Top level container of the view
         protected VisualElement ParentContainer;
         protected VisualElement Template;
-        
-        // Root document element
-        protected VisualElement Root;
         
         public virtual void Show() {
             ParentContainer.Add(Template);
@@ -29,6 +27,10 @@ namespace Multiplayer.UI {
 
         public void Hide(VisualElement ele) {
             ele.style.display = DisplayStyle.None;
+        }
+
+        protected void OnReturnToMultiplayerMenu() {
+            MultiplayerUIController.ReturnToMultiplayerMenu();
         }
     }
 }
