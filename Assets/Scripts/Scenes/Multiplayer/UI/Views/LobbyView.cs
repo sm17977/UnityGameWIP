@@ -1,13 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
+    public delegate Task<bool> OnStartGame();
+    public delegate Task<bool> OnJoinGame();
+    public delegate Task OnLeaveLobby();
+    public delegate bool OnIsThisPlayerHost();
+    public delegate bool OnIsPlayerHost(string playerId);
+    public delegate bool OnCanStartGame();
+    public delegate bool OnCanJoinGame();
+    public delegate Task<List<Player>> OnGetLobbyPlayerTableData(bool sendNewRequest);
+    
+    
     public class LobbyView : View {
+
+        public event OnStartGame StartGame;
+        public event OnJoinGame JoinGame;
+        public event OnLeaveLobby LeaveLobby;
+        public event OnIsThisPlayerHost IsThisPlayerHost;
+        public event OnIsPlayerHost IsPlayerHost;
+        public event OnCanStartGame CanStartGame;
+        public event OnCanJoinGame CanJoinGame;
+        public event OnGetLobbyPlayerTableData GetLobbyPlayerTableData;
         
+
         private MultiplayerUIController _uiController;
         
         private VisualElement _table;
@@ -56,7 +76,9 @@ namespace Multiplayer.UI {
             
             _startGameBtn.RegisterCallback<ClickEvent>(evt => OnClickStartGameBtn());
             _joinGameBtn.RegisterCallback<ClickEvent>(evt => OnClickJoinGameBtn());
-            _leaveBtn.RegisterCallback<ClickEvent>( evt => OnClickLeaveLobbyBtn());
+            _leaveBtn.RegisterCallback<ClickEvent>( (evt) => { 
+               var _= LeaveLobby?.Invoke();
+            });
             _backBtn.RegisterCallback<ClickEvent>(evt => OnReturnToMultiplayerMenu());
         }
 
@@ -75,33 +97,29 @@ namespace Multiplayer.UI {
         
         private async void OnClickStartGameBtn() {
             _startGameBtn.SetEnabled(false);
-            bool clientConnected = await _uiController.StartGame();
+            var clientConnected = await StartGame?.Invoke();
             
             if (clientConnected) {
             }
         }
         private async void OnClickJoinGameBtn() {
             _joinGameBtn.SetEnabled(false);
-            bool clientConnected = await _uiController.JoinGame();
+            var clientConnected = await JoinGame?.Invoke();
             
             if (clientConnected) {
                 _joinGameBtn.SetEnabled(true);
             }
         }
-
-        private async void OnClickLeaveLobbyBtn() {
-            await _uiController.LeaveLobby();
-        }
         
         private void DisplayButtons() {
-            var isPlayerHost = _uiController.IsPlayerHost();
+            var isPlayerHost = IsThisPlayerHost?.Invoke() == true;
             if (isPlayerHost) {
-                _startGameBtn.SetEnabled(_uiController.CanStartGame());
+                _startGameBtn.SetEnabled(CanStartGame?.Invoke() == true);
                 Show(_startGameBtn);
                 Hide(_joinGameBtn);
             }
             else {
-                _joinGameBtn.SetEnabled(_uiController.CanJoinGame());
+                _joinGameBtn.SetEnabled(CanJoinGame?.Invoke() == true);
                 Show(_joinGameBtn);
                 Hide(_startGameBtn);
             }
@@ -120,7 +138,7 @@ namespace Multiplayer.UI {
 
         private async Task GenerateLobbyPlayerTable(bool sendNewRequest) {
 
-            var lobbyPlayers = await _uiController.GetLobbyPlayerTableData(sendNewRequest);
+            var lobbyPlayers = await GetLobbyPlayerTableData.Invoke(sendNewRequest);
             var playerCount = 0;
             var lobbyRowHeight = 24;
 
@@ -161,7 +179,7 @@ namespace Multiplayer.UI {
                 
                 VisualElement playerIsHost = new VisualElement();
                 Label playerIsHostLabel = new Label();
-                playerIsHostLabel.text = _uiController.IsPlayerHost(lobbyPlayer.Id) ? "Yes" : "No";
+                playerIsHostLabel.text = IsPlayerHost.Invoke(lobbyPlayer.Id) ? "Yes" : "No";
                 playerIsHost.Add(playerIsHostLabel);
                 playerIsHost.AddToClassList("col-is-host");
                 
@@ -176,20 +194,20 @@ namespace Multiplayer.UI {
             _table.style.height = playerCount * lobbyRowHeight;
         }
         
-        public override void Update() {
+        public override async void Update() {
             Debug.Log("Lobby calling update");
             _table.Clear();
             UpdateServerInfoTable();
             DisplayButtons();
-            GenerateLobbyPlayerTable(true);
+            await GenerateLobbyPlayerTable(true);
         }
         
-        public override void RePaint() {
+        public override async void RePaint() {
             Debug.Log("Lobby calling repaint");
             _table.Clear();
             UpdateServerInfoTable();
             DisplayButtons();
-            GenerateLobbyPlayerTable(false);
+            await GenerateLobbyPlayerTable(false);
         }
 
         private void ApplyServerStatusStyling() {

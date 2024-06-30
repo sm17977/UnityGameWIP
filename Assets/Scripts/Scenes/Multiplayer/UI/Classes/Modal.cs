@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
+    
+    public delegate void OnCloseModal(Modal modal);
    
     public abstract class Modal : View {
         

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     
@@ -18,14 +16,14 @@ namespace Multiplayer.UI {
             ParentContainer.Remove(Template);
         }
 
-       public abstract void Update();
-       public abstract void RePaint();
+        public abstract void Update();
+        public abstract void RePaint();
         
-        public void Show(VisualElement ele) {
+        protected void Show(VisualElement ele) {
             ele.style.display = DisplayStyle.Flex;
         }
 
-        public void Hide(VisualElement ele) {
+        protected void Hide(VisualElement ele) {
             ele.style.display = DisplayStyle.None;
         }
 

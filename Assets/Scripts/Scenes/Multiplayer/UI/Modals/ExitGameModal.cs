@@ -4,15 +4,14 @@ using Mono.CSharp;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
-
     public class ExitGameModal : Modal {
 
+        public event OnCloseModal CloseModal;
         private MultiplayerUIController _uiController;
 
         private Button _confirmExitBtn;
         private Button _cancelExitBtn;
-        private VisualElement _mainContainer;
-
+        
         public ExitGameModal(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();    
             ParentContainer = parentContainer;
@@ -23,7 +22,6 @@ namespace Multiplayer.UI {
         private void InitializeElements() {
             _confirmExitBtn = Template.Q<Button>("confirm-exit-btn");
             _cancelExitBtn = Template.Q<Button>("cancel-exit-btn");
-            _mainContainer = Template.Q<VisualElement>("main-container");
             
             _confirmExitBtn.RegisterCallback<ClickEvent>(evt => OnClickExitGameBtn());
             _cancelExitBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelExitGameBtn());
@@ -34,7 +32,7 @@ namespace Multiplayer.UI {
         }
         
         private void OnClickCancelExitGameBtn() {
-            _uiController.OnCloseModal(this);
+            CloseModal?.Invoke(this); 
         }
         
         public override void ShowLoader() {

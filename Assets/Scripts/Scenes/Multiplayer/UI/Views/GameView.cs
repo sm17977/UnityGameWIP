@@ -1,19 +1,13 @@
-﻿using System.Collections.Generic;
+﻿
 using System.Linq;
-using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     public class GameView : View {
         
-        private MultiplayerUIController _uiController;
-        
- 
-        public GameView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+        public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            _uiController = uiController;
             InitializeElements();
         }
 

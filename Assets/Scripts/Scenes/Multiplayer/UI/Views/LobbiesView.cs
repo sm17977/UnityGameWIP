@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
@@ -9,18 +8,20 @@ using UnityEngine.UIElements;
 namespace Multiplayer.UI {
     
     public delegate Task OnJoinLobby(Lobby lobby);
+    public delegate Task<List<Lobby>> OnGetLobbyTableData(bool sendNewRequest);
+    public delegate Task<bool> OnIsPlayerInLobby(Lobby lobby);
     public class LobbiesView : View {
 
         public event OnJoinLobby JoinLobby;
+        public event OnGetLobbyTableData GetLobbyTableData;
+        public event OnIsPlayerInLobby IsPlayerInLobby;
         
-        private MultiplayerUIController _uiController;
         private VisualElement _table;
         private Button _backBtn;    
         
-        public LobbiesView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+        public LobbiesView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            _uiController = uiController;
             InitializeElements();
         }
         private void InitializeElements() {
@@ -41,7 +42,8 @@ namespace Multiplayer.UI {
         
         private async Task GenerateLobbiesTable(bool sendNewRequest) {
 
-            var lobbies = await _uiController.GetLobbyTableData(sendNewRequest);
+            //var lobbies = await _uiController.GetLobbyTableData(sendNewRequest);
+            var lobbies = await GetLobbyTableData?.Invoke(sendNewRequest);
             var lobbyCount = 0;
             var lobbyRowHeight = 24;
 
@@ -83,8 +85,8 @@ namespace Multiplayer.UI {
                 joinLobbyBtn.Add(joinLobbyBtnLabel);
                 joinLobby.Add(joinLobbyBtn);
                 joinLobby.AddToClassList("col-join-lobby");
-                joinLobby.RegisterCallback<ClickEvent>( async (evt) => await OnClickJoinLobbyBtn(lobby));
-                joinLobby.SetEnabled(!await IsPlayerInLobby(lobby));
+                joinLobby.RegisterCallback<ClickEvent>( async (evt) => await JoinLobby?.Invoke(lobby));
+                joinLobby.SetEnabled(!await IsPlayerInLobby?.Invoke(lobby));
 
                 row.Add(lobbyID);
                 row.Add(lobbyName);
@@ -96,26 +98,14 @@ namespace Multiplayer.UI {
             }    
             _table.style.height = lobbyCount * lobbyRowHeight;
         }
-        
-        
-        private async Task OnClickJoinLobbyBtn(Lobby lobby) {
-            await JoinLobby.Invoke(lobby);
+        public override async void Update() {
+            _table.Clear();
+            await GenerateLobbiesTable(true);
         }
 
-        private async Task<bool> IsPlayerInLobby(Lobby lobby) {
-            return await _uiController.IsPlayerInLobby(lobby);
-        }
-        
-        public override void Update() {
+        public override async void RePaint() {
             _table.Clear();
-            Debug.Log("updating lobbies");
-            GenerateLobbiesTable(true);
-        }
-
-        public override void RePaint() {
-            _table.Clear();
-            Debug.Log("repaitning lobbies");
-            GenerateLobbiesTable(false);
+            await GenerateLobbiesTable(false);
         }
     }
 }
