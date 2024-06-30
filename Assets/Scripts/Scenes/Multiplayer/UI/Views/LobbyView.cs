@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
@@ -15,7 +16,6 @@ namespace Multiplayer.UI {
     public delegate bool OnCanJoinGame();
     public delegate Task<List<Player>> OnGetLobbyPlayerTableData(bool sendNewRequest);
     
-    
     public class LobbyView : View {
 
         public event OnStartGame StartGame;
@@ -26,9 +26,6 @@ namespace Multiplayer.UI {
         public event OnCanStartGame CanStartGame;
         public event OnCanJoinGame CanJoinGame;
         public event OnGetLobbyPlayerTableData GetLobbyPlayerTableData;
-        
-
-        private MultiplayerUIController _uiController;
         
         private VisualElement _table;
         private Button _startGameBtn;
@@ -56,10 +53,9 @@ namespace Multiplayer.UI {
             { "Inactive", "server-status-default" }
         };
         
-        public LobbyView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+        public LobbyView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            _uiController = uiController;
             InitializeElements();
         }
 
@@ -125,14 +121,14 @@ namespace Multiplayer.UI {
             }
         }
         
-        private void UpdateServerInfoTable() {
+        public void UpdateServerInfoTable(Client client) {
             
-            _serverStatusLabel.text = _uiController.Client.ServerStatus;
-            _serverPortLabel.text = _uiController.Client.Port;
-            _serverIPLabel.text = _uiController.Client.ServerIP;
+            _serverStatusLabel.text = client.ServerStatus;
+            _serverPortLabel.text = client.Port;
+            _serverIPLabel.text = client.ServerIP;
             
-            if (_uiController.Client.ServerStatus != null &&  _uiController.Client.ServerStatus != "") {
-                ApplyServerStatusStyling();
+            if (!String.IsNullOrEmpty(client.ServerStatus)) {
+                ApplyServerStatusStyling(client.ServerStatus);
             }
         }
 
@@ -197,7 +193,6 @@ namespace Multiplayer.UI {
         public override async void Update() {
             Debug.Log("Lobby calling update");
             _table.Clear();
-            UpdateServerInfoTable();
             DisplayButtons();
             await GenerateLobbyPlayerTable(true);
         }
@@ -205,17 +200,16 @@ namespace Multiplayer.UI {
         public override async void RePaint() {
             Debug.Log("Lobby calling repaint");
             _table.Clear();
-            UpdateServerInfoTable();
             DisplayButtons();
             await GenerateLobbyPlayerTable(false);
         }
 
-        private void ApplyServerStatusStyling() {
+        private void ApplyServerStatusStyling(string serverStatus) {
             foreach (var statusClass in ServerStatusClasses.Values){
                 _serverStatusLabel.RemoveFromClassList(statusClass);
             }
             
-            if (ServerStatusClasses.TryGetValue(_uiController.Client.ServerStatus, out var newClass)) {
+            if (ServerStatusClasses.TryGetValue(serverStatus, out var newClass)) {
                 _serverStatusLabel.AddToClassList(newClass);
             }
             else {

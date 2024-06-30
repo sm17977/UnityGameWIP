@@ -8,14 +8,20 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 
 namespace Multiplayer {
+    public delegate void OnUpdateServerDataInLobbyView(Client client); 
+    public delegate void OnRePaintLobbyView(); 
+    public delegate void OnHostDisconnection(); 
     public class ClientManager : MonoBehaviour {
+
+        public event OnUpdateServerDataInLobbyView UpdateServerDataInLobbyView;
+        public event OnRePaintLobbyView RePaintLobbyView;
+        public event OnHostDisconnection HostDisconnection;
 
         public static ClientManager Instance;
         private Client _client;
         private CancellationTokenSource _cancellationTokenSource;
         
         private GameLobbyManager _gameLobbyManager;
-        private ViewManager _viewManager;
         
         public Client Client {
             get {
@@ -41,7 +47,6 @@ namespace Multiplayer {
             
             _client = Client.Instance;
             _gameLobbyManager = GameLobbyManager.Instance;
-            _viewManager = ViewManager.Instance;
         }
 
         private void Start() {
@@ -207,18 +212,18 @@ namespace Multiplayer {
             if (status == "") {
                 _client.ServerStatus = "Inactive";
             }
-            //_viewManager.RePaintView(typeof(LobbyView));
+            UpdateServerDataInLobbyView?.Invoke(_client);
         }
 
         /// <summary>
-        /// Update the server info in the Lobby View for the lobby host
+        /// Update the server info (IP and Port) in the Lobby View for the lobby host
         /// </summary>
         /// <param name="ip">Server IP</param>
         /// <param name="port">Server Port</param>
         private void UpdateServerInfoForLobbyHost(string ip, string port) {
             _client.ServerIP = ip;
             _client.Port = port;
-            //_viewManager.RePaintView(typeof(LobbyView));
+            UpdateServerDataInLobbyView?.Invoke(_client);
         }
 
         /// <summary>
@@ -245,7 +250,7 @@ namespace Multiplayer {
             Debug.Log("Updating player data...");
             if (msg.PlayerId == _gameLobbyManager.GetPlayerID()) {
                 await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(msg.IsConnected);
-                //_viewManager.RePaintView(typeof(LobbyView));
+                RePaintLobbyView?.Invoke();
             }
         }
 
@@ -255,8 +260,7 @@ namespace Multiplayer {
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
             if (!_client.IsLobbyHost) {
                 await Disconnect();
-                //_viewManager.RePaintView(typeof(LobbyView));
-                //_viewManager.ChangeView(typeof(LobbyView));
+                HostDisconnection?.Invoke();
             }
         }
         
@@ -270,7 +274,7 @@ namespace Multiplayer {
         /// <summary>
         /// Log client disconnection message
         /// </summary>
-        private async void OnClientDisconnected(ulong clientId) {
+        private void OnClientDisconnected(ulong clientId) {
             Debug.Log("Client disconnected (from server): " + clientId);
         }
     }

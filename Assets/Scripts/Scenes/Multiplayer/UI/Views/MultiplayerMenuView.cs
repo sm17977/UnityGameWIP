@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
-    public class MultiplayerMenuView : View {
 
-        private MultiplayerUIController _uiController;
+    public delegate bool OnIsThisPlayerInLobby();
+    public class MultiplayerMenuView : View {
+        public event OnIsThisPlayerInLobby IsThisPlayerInLobby;
         
         private List<Button> _buttonsList;
         private Label _playerIdLabel;
@@ -16,15 +16,13 @@ namespace Multiplayer.UI {
         public event Action ShowLobbiesView;
         public event Action LoadMainMenuScene;
         
-        public MultiplayerMenuView(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+        public MultiplayerMenuView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            _uiController = uiController;
             InitializeElements();
         }
 
         private void InitializeElements() {
-            _playerIdLabel = _uiController.uiDocument.rootVisualElement.Q<Label>("player-id");
             _buttonsList = Template.Query<Button>("btn").ToList();
             
             // Multiplayer Menu Buttons
@@ -53,11 +51,10 @@ namespace Multiplayer.UI {
                         break;
                 }
             }
-            DisplayPlayerId();
         }
 
-        public void RunLobbyCheck() {
-            if (_uiController.IsPlayerInLobby()) {
+        private void RunLobbyCheck() {
+            if (IsThisPlayerInLobby?.Invoke() == true) {
                 var currentLobbyBtnContainer = Template.Q<VisualElement>("lobby-btn-container");
                 var createLobbyBtnContainer = Template.Q<VisualElement>("create-lobby-btn-container");
                 Show(currentLobbyBtnContainer);
@@ -81,18 +78,13 @@ namespace Multiplayer.UI {
         }
         
         public override void RePaint() {
-            DisplayPlayerId();
         }
 
         private void Placeholder() {
             
         }
-
-        private void DisplayPlayerId() {
-            if (_uiController.Client != null) {
-                _playerIdLabel.text = "Player ID: " + _uiController.Client.ID;
-            }
+        public void DisplayPlayerId(string clientId, Label label) {
+            label.text = "Player ID: " + clientId;
         }
-        
     }
 }

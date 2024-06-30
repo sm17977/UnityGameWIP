@@ -4,18 +4,19 @@ using Mono.CSharp;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
+
+    public delegate Task OnDisconnectClient();
     public class ExitGameModal : Modal {
 
         public event OnCloseModal CloseModal;
-        private MultiplayerUIController _uiController;
-
+        public event OnDisconnectClient DisconnectClient;
+        
         private Button _confirmExitBtn;
         private Button _cancelExitBtn;
         
-        public ExitGameModal(VisualElement parentContainer, MultiplayerUIController uiController, VisualTreeAsset vta) {
+        public ExitGameModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();    
             ParentContainer = parentContainer;
-            _uiController = uiController;
             InitializeElements();
         }
         
@@ -28,7 +29,7 @@ namespace Multiplayer.UI {
         }
 
         private async void OnClickExitGameBtn() {
-            await _uiController.DisconnectClient();
+            await DisconnectClient?.Invoke();
         }
         
         private void OnClickCancelExitGameBtn() {

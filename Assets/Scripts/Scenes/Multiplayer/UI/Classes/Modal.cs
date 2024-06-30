@@ -13,13 +13,7 @@ namespace Multiplayer.UI {
         // Loader
         private float _rotation = 0;
         private float _timer = 0;
-
-
-        // protected override void OnInitialize() {
-        //     closeButton = _parentContainer.Q<Button>("close-button");
-        //     closeButton.RegisterCallback<ClickEvent>(evt => Hide());
-        // }
-
+        
         public void ShowModal() {
             ParentContainer.Add(Template);
         }

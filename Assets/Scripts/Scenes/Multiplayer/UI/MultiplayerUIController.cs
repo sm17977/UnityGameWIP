@@ -67,7 +67,20 @@ public class MultiplayerUIController : MonoBehaviour {
          Client = _clientManager.Client;
          _viewManager.Initialize(_views, _modals, _multiplayerMenuView);
          Client.ID = await _gameLobbyManager.SignIn();
-         _viewManager.RePaintView(_multiplayerMenuView);
+         
+         var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
+         _multiplayerMenuView.DisplayPlayerId(Client.ID, playerIdLabel);
+         
+         // Client Manager Events
+         _clientManager.UpdateServerDataInLobbyView += (client) => {
+             _lobbyView.UpdateServerInfoTable(client);
+             _viewManager.RePaintView(_lobbyView);
+         };
+         _clientManager.RePaintLobbyView += () => _viewManager.RePaintView(_lobbyView);
+         _clientManager.HostDisconnection += () => {
+             _viewManager.RePaintView(_lobbyView);
+             _viewManager.ChangeView(_lobbyView);
+         };
      }
     
     void OnEnable(){
@@ -82,6 +95,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _multiplayerMenuView.ShowLobbyView += (() => _viewManager.ChangeView(_lobbyView));
         _multiplayerMenuView.ShowLobbiesView += (() => _viewManager.ChangeView(_lobbiesView));
         _multiplayerMenuView.LoadMainMenuScene += (() => _globalState.LoadScene("Main Menu"));
+        _multiplayerMenuView.IsThisPlayerInLobby += IsPlayerInLobby;
 
         // Lobbies View Events
         _lobbiesView.JoinLobby += (async (lobby) => await JoinLobby(lobby));
@@ -104,7 +118,7 @@ public class MultiplayerUIController : MonoBehaviour {
 
         // Exit Game Modal Events
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
-
+        _exitGameModal.DisconnectClient += (async () => await DisconnectClient());
     }
 
     void OnDisable(){
@@ -127,8 +141,8 @@ public class MultiplayerUIController : MonoBehaviour {
 
         _gameView = new GameView(root, gameViewTmpl);
         _lobbiesView = new LobbiesView(viewContainer, lobbiesViewTmpl);
-        _lobbyView = new LobbyView(viewContainer, this, lobbyViewTmpl);
-        _multiplayerMenuView = new MultiplayerMenuView(viewContainer, this, multiplayerMenuViewTmpl);
+        _lobbyView = new LobbyView(viewContainer, lobbyViewTmpl);
+        _multiplayerMenuView = new MultiplayerMenuView(viewContainer, multiplayerMenuViewTmpl);
 
         _views = new List<View>() {
             _multiplayerMenuView,
@@ -145,16 +159,12 @@ public class MultiplayerUIController : MonoBehaviour {
         var root = uiDocument.rootVisualElement;
         
         _createLobbyModal = new CreateLobbyModal(root, createLobbyModalTmpl);
-        _exitGameModal = new ExitGameModal(root, this, exitGameModalTmpl);
+        _exitGameModal = new ExitGameModal(root, exitGameModalTmpl);
 
         _modals = new List<Modal>() {
             _createLobbyModal,
             _exitGameModal
         };
-    }
-    
-    public void OnCloseModal(Modal modal) {
-        _viewManager.CloseModal(modal);
     }
     
     private void OnEscape(InputAction.CallbackContext context) {
@@ -242,9 +252,9 @@ public class MultiplayerUIController : MonoBehaviour {
    /// <summary>
    /// Process player initiated disconnect 
    /// </summary>
-   public async Task DisconnectClient() {
+   private async Task DisconnectClient() {
        
-       if (_viewManager.CurrentModal.GetType() == typeof(ExitGameModal)) {
+       if (_viewManager.CurrentModal == _exitGameModal) {
            if (Client.IsLobbyHost) {
                await DisconnectHost();
            }
@@ -334,6 +344,7 @@ public class MultiplayerUIController : MonoBehaviour {
              Client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
              
          }
+         _lobbyView.UpdateServerInfoTable(Client);
          _viewManager.RePaintView(_lobbyView);
     }
 
