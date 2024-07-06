@@ -5,35 +5,33 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace Multiplayer {
-    public class ProjectilePool : MonoBehaviour {
-        public static ProjectilePool Instance { get; private set; }
+    public class ServerProjectilePool : MonoBehaviour {
+        public static ServerProjectilePool Instance { get; private set; }
 
         public int poolSize;
         private List<GameObject> _projectilePool;
         public GameObject projectilePrefab;
 
         private void Awake() {
-#if DEDICATED_SERVER            
             if (Instance == null) {
                 Instance = this;
             }
             else {
                 Destroy(gameObject);
             }
-#endif
         }
 
         private void Start() {
-#if DEDICATED_SERVER            
-            InitializePool();
-#endif
+            #if DEDICATED_SERVER
+                InitializePool();
+            #endif
         }
 
         private void InitializePool() {
             _projectilePool = new List<GameObject>();
 
             for (int i = 0; i < poolSize; i++) {
-                var tmp = Instantiate(projectilePrefab);
+                var tmp = Instantiate(projectilePrefab, transform);
                 tmp.SetActive(false);
                 _projectilePool.Add(tmp);
                 Debug.Log("Projectile initialized and added to pool: " + tmp.name);
@@ -53,7 +51,8 @@ namespace Multiplayer {
                         Debug.LogError("NetworkObject component is missing on projectile: " + projectile.name);
                         continue;
                     }
-                    if (!projectile.activeInHierarchy && !networkObject.IsSpawned) {
+                    if (!projectile.activeInHierarchy) {
+                        Debug.Log("Getting projectile");
                         return projectile;
                     }
                 }

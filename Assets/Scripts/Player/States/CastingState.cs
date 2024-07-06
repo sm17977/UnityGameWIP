@@ -35,9 +35,9 @@ public class CastingState : State
         // Rotate the player in the direction the spell was cast
         playerController.RotateTowardsTarget(direction);
         
-
+        
         if (playerController.canCast) {
-
+            
             // Set the spawn position of the projectile
             float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;

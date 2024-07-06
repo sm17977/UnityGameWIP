@@ -9,12 +9,14 @@ public class ProjectileAbility : NetworkBehaviour
     public float projectileSpeed;
     public float projectileRange;
     public float projectileLifetime;
-    public float remainingDistance = Mathf.Infinity;
+    public float remainingDistance;
     public bool canBeDestroyed = false;  
     public Ability ability;
     public List<GameObject> projectiles;
     public PlayerType playerType;
     public ulong sourceClientId;
+    public bool hasHit;
+    public int instanceId;
 
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
@@ -33,7 +35,9 @@ public class ProjectileAbility : NetworkBehaviour
         projectiles = projectileList;
         ability = abilityData;
         playerType = type;
-
+        hasHit = false;
+        remainingDistance = Mathf.Infinity;
+        canBeDestroyed = false;
     }
 
     /// <summary>
@@ -41,7 +45,7 @@ public class ProjectileAbility : NetworkBehaviour
     /// </summary>
     /// <param name="transform"></param>
     /// <param name="initialPosition"></param>
-    public void MoveProjectile(Transform transform, Vector3 initialPosition){
+    protected void MoveProjectile(Transform transform, Vector3 initialPosition){
         
         // The distance the projectile moves per frame
         float distance = Time.deltaTime * projectileSpeed;

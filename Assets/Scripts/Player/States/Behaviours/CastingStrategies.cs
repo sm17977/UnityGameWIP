@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Multiplayer;
+using UnityEngine;
 
 public class SinglePlayerCastingStrategy : ICastingStrategy {
 
@@ -27,6 +28,32 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
     }
     
     public void Cast(Ability ability, Vector3 direction, Vector3 abilitySpawnPos) {
-        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, _playerController.OwnerClientId);
+        
+        Debug.Log("OWNER Spawning Lux Q Missile");
+        
+        var newProjectile = ClientProjectilePool.Instance.GetPooledProjectile();
+        if (newProjectile == null) {
+            Debug.Log("No available projectiles in the pool");
+            return;
+        }
+
+        // Set the position and rotation of the projectile
+        newProjectile.transform.position = abilitySpawnPos;
+        newProjectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        // Activate the projectile
+        newProjectile.SetActive(true);
+            
+        // Initialize projectile properties on the server
+        var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+        if (projectileScript != null) {
+            projectileScript.SetClientId(_playerController.OwnerClientId);
+            projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
+                _playerController.projectiles, _playerController.playerType);
+        }
+        else {
+            Debug.Log("ProjectileAbility component is missing on the projectile");
+        }
+        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, _playerController.OwnerClientId, newProjectile.transform.GetInstanceID());
     }
 }
