@@ -22,6 +22,7 @@ public class Ability : ScriptableObject
 
     [Header("Object Data")]
     public GameObject missile;
+    public GameObject networkMissile;
     public float spawnHeight;
 
     [Header("Scripts")]

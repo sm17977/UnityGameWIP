@@ -23,6 +23,8 @@ MonoBehaviour:
   lingeringLifetime: 0
   buff: {fileID: 11400000, guid: e047f18e11ea22b44a0d1c4f8cc525c8, type: 2}
   missile: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94, type: 3}
+  networkMissile: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,
+    type: 3}
   spawnHeight: 1
   spawnScript: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}
   hitScript: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}

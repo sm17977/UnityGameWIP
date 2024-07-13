@@ -1,9 +1,10 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Multiplayer;
 using Unity.Netcode;
 
-public class ProjectileAbility : MonoBehaviour {
+public class NetworkProjectileAbility : NetworkBehaviour {
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
@@ -15,6 +16,9 @@ public class ProjectileAbility : MonoBehaviour {
     public PlayerType playerType;
     public bool hasHit;
     
+    public Dictionary<int, ulong> Mappings;
+    public ulong spawnedByClientId;
+    
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
    /// </summary>
@@ -22,24 +26,25 @@ public class ProjectileAbility : MonoBehaviour {
    /// <param name="ability"></param>
    /// <param name="playerProjectiles"></param>
    /// <param name="playerType"></param>
-    public void InitProjectileProperties(Vector3 direction, Ability abilityData, List<GameObject> projectileList, PlayerType type){
+    public void InitProjectileProperties(Vector3 direction, Ability abilityData, PlayerType type, ulong clientId){
 
         projectileDirection = direction;
         projectileSpeed = abilityData.speed;
         projectileRange = abilityData.range;
         projectileLifetime = abilityData.GetProjectileLifetime();
         
-        projectiles = projectileList;
         ability = abilityData;
         playerType = type;
         hasHit = false;
         remainingDistance = Mathf.Infinity;
         canBeDestroyed = false;
         
-        Debug.Log("InitProjectileProperties - ProjectileAbility");
+        Mappings = new Dictionary<int, ulong>();
+        spawnedByClientId = clientId;
+        
+        Debug.Log("InitProjectileProperties - NetworkProjectileAbility");
         Debug.Log("Direction: " + projectileDirection);
         Debug.Log("Ability Data: speed: " + projectileSpeed + ", range: " + projectileRange + ", lifetime: " + projectileLifetime);
-       
     }
 
     /// <summary>

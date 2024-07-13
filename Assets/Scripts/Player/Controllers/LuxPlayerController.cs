@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Multiplayer;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.VFX;
@@ -73,6 +74,10 @@ public class LuxPlayerController : LuxController {
     
     // RPC Manager
     public RPCController rpcController;
+    
+    // Client
+    private ClientManager _clientManager;
+    public Client Client;
 
     // Abilities
     public Ability LuxQAbilitySO;
@@ -118,6 +123,11 @@ public class LuxPlayerController : LuxController {
 
     // Start is called before the first frame update
     private void Start() {
+        if (GlobalState.IsMultiplayer && IsOwner) {
+            _clientManager = ClientManager.Instance;
+            Client = _clientManager.Client;
+        }
+        
         BuffManager = BuffManager.Instance;
         BuffManager.Init(this);
         
@@ -164,7 +174,7 @@ public class LuxPlayerController : LuxController {
 
         if (GlobalState.IsMultiplayer) {
             rpcController = GetComponent<RPCController>();
-            castingStrategy = new MultiplayerCastingStrategy(this, rpcController);
+            castingStrategy = new MultiplayerCastingStrategy(gameObject, rpcController);
         }
         
         LuxEAbility.SetCastingStrategy(castingStrategy);

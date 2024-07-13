@@ -14,7 +14,7 @@ namespace Multiplayer {
         private const string EnvId = "5a3b71b7-e73a-4cdd-8c5b-d855a2787d9e";
         private const string ProjectId = "365c4d7c-99f6-4eda-82f9-c2940d90904c";
         private const string FleetId = "89e28258-1a94-480a-9fe8-f547da5a516e";
-        private const int BuildConfigurationId = 1266240;
+        private const int BuildConfigurationId = 1268952;
         private const string AllocationId = "9ec871ce-3363-4de2-8f79-062881067628"; // TODO - Generate this
         private const string RegionId = "34ca86e6-7050-4276-b889-9ba3d11db960";
 

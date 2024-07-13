@@ -1,4 +1,5 @@
 ﻿using Multiplayer;
+using Unity.Netcode;
 using UnityEngine;
 
 public class SinglePlayerCastingStrategy : ICastingStrategy {
@@ -20,10 +21,12 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
 public class MultiplayerCastingStrategy : ICastingStrategy {
     
     private readonly RPCController _rpcController;
-    private readonly LuxPlayerController _playerController; 
+    private readonly LuxPlayerController _playerController;
+    private readonly GameObject _player;
     
-    public MultiplayerCastingStrategy(LuxPlayerController playerController, RPCController rpcController) {
-        _playerController = playerController;
+    public MultiplayerCastingStrategy(GameObject player, RPCController rpcController) {
+        _player = player;
+        _playerController = player.GetComponent<LuxPlayerController>();
         _rpcController = rpcController;
     }
     
@@ -47,13 +50,16 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         // Initialize projectile properties on the server
         var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
         if (projectileScript != null) {
-            projectileScript.SetClientId(_playerController.OwnerClientId);
             projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
                 _playerController.projectiles, _playerController.playerType);
         }
         else {
             Debug.Log("ProjectileAbility component is missing on the projectile");
         }
-        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, _playerController.OwnerClientId, newProjectile.transform.GetInstanceID());
+
+        var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
+        var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
+        
+        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, localClientId, newProjectile.transform.GetInstanceID());
     }
 }
