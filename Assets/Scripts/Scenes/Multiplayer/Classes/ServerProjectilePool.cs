@@ -8,7 +8,7 @@ public class ServerProjectilePool : MonoBehaviour {
 
     public int poolSize;
     private List<GameObject> _projectilePool;
-    public GameObject projectilePrefab;
+    public Ability ability;
 
     private void Awake() {
         if (Instance == null) {
@@ -29,11 +29,11 @@ public class ServerProjectilePool : MonoBehaviour {
         _projectilePool = new List<GameObject>();
 
         for (int i = 0; i < poolSize; i++) {
-            var tmp = Instantiate(projectilePrefab, transform);
-            tmp.SetActive(false);
-            tmp.GetComponent<Rigidbody>().isKinematic = false; // Network Objects default this to true
-            _projectilePool.Add(tmp);
-            Debug.Log("Projectile initialized and added to pool: " + tmp.name);
+            var projectile = Instantiate(ability.networkMissilePrefab, transform);
+            projectile.SetActive(false);
+            projectile.GetComponent<Rigidbody>().isKinematic = false; // Network Objects default this to true
+            _projectilePool.Add(projectile);
+            Debug.Log("Projectile initialized and added to pool: " + projectile.name);
         }
     }
 

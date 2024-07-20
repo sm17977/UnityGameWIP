@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Ability", menuName = "Scriptable Objects/Ability")]
 public class Ability : ScriptableObject
@@ -20,9 +21,10 @@ public class Ability : ScriptableObject
     [Header("Buffs/Debuffs")]
     public Buff buff;
 
-    [Header("Object Data")]
-    public GameObject missile;
-    public GameObject networkMissile;
+   [Header("Prefab Data")]
+    public GameObject missilePrefab;
+    public GameObject networkMissilePrefab;
+    public GameObject hitPrefab;
     public float spawnHeight;
 
     [Header("Scripts")]

@@ -41,10 +41,6 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         
         Mappings = new Dictionary<int, ulong>();
         spawnedByClientId = clientId;
-        
-        Debug.Log("InitProjectileProperties - NetworkProjectileAbility");
-        Debug.Log("Direction: " + projectileDirection);
-        Debug.Log("Ability Data: speed: " + projectileSpeed + ", range: " + projectileRange + ", lifetime: " + projectileLifetime);
     }
 
     /// <summary>

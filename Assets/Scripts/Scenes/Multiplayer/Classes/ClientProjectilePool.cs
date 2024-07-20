@@ -7,7 +7,7 @@ public class ClientProjectilePool : MonoBehaviour {
 
     public int poolSize;
     private List<GameObject> _projectilePool;
-    public GameObject projectilePrefab;
+    public Ability ability;
 
     private void Awake() {
         if (Instance == null) {
@@ -28,15 +28,21 @@ public class ClientProjectilePool : MonoBehaviour {
         _projectilePool = new List<GameObject>();
 
         for (int i = 0; i < poolSize; i++) {
-            var tmp = Instantiate(projectilePrefab, transform);
-            tmp.SetActive(false);
-            tmp.name = tmp.transform.GetInstanceID().ToString();
-            _projectilePool.Add(tmp);
-            Debug.Log("Projectile initialized and added to pool: " + tmp.name);
+            var projectile = Instantiate(ability.missilePrefab, transform);
+            projectile.SetActive(false);
+            projectile.name = projectile.transform.GetInstanceID().ToString();
+            
+            var hit = Instantiate(ability.hitPrefab, transform);
+            hit.SetActive(false);
+            hit.name = hit.transform.GetInstanceID().ToString();
+            
+            _projectilePool.Add(projectile);
+            _projectilePool.Add(hit);
+            Debug.Log("Prefab initialized and added to pool: " + projectile.name);
         }
     }
 
-    public GameObject GetPooledProjectile() {
+    public GameObject GetPooledObject(ProjectileType type) {
         foreach (var projectile in _projectilePool) {
             try {
                 if (projectile == null) {
@@ -44,7 +50,7 @@ public class ClientProjectilePool : MonoBehaviour {
                     continue;
                 }
                 
-                if (!projectile.activeInHierarchy) {
+                if (!projectile.activeInHierarchy && projectile.gameObject.CompareTag(type.ToString())) {
                     Debug.Log("Getting projectile");
                     return projectile;
                 }
@@ -55,7 +61,7 @@ public class ClientProjectilePool : MonoBehaviour {
         }
         return null;
     }
-    public void ReturnProjectileToPool(GameObject projectile) {
+    public void ReturnObjectToPool(GameObject projectile) {
         if (_projectilePool.Contains(projectile)) {
             projectile.SetActive(false);
         

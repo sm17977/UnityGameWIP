@@ -44,7 +44,7 @@ public class AI_CastingState : State
             Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
             
             // Create projectile
-            GameObject newProjectile = LuxAIController.Instantiate(ability.missile, abilitySpawnPos,  Quaternion.LookRotation(direction, Vector3.up));
+            GameObject newProjectile = LuxAIController.Instantiate(ability.missilePrefab, abilitySpawnPos,  Quaternion.LookRotation(direction, Vector3.up));
 
             // Store projectile in list
             agent.projectiles.Add(newProjectile);

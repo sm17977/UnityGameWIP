@@ -22,8 +22,11 @@ MonoBehaviour:
   speed: 2
   lingeringLifetime: 0
   buff: {fileID: 11400000, guid: e047f18e11ea22b44a0d1c4f8cc525c8, type: 2}
-  missile: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94, type: 3}
-  networkMissile: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,
+  missilePrefab: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94,
+    type: 3}
+  networkMissilePrefab: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,
+    type: 3}
+  hitPrefab: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483,
     type: 3}
   spawnHeight: 1
   spawnScript: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}

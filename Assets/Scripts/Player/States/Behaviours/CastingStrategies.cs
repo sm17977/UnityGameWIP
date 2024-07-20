@@ -11,7 +11,7 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
     }
     
     public void Cast(Ability ability, Vector3 direction, Vector3 abilitySpawnPos) {
-        GameObject newProjectile = Object.Instantiate(ability.missile, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
+        GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
         _playerController.projectiles.Add(newProjectile);
         ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
         projectileScript?.InitProjectileProperties(direction, ability, _playerController.projectiles, _playerController.playerType);
@@ -34,7 +34,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         
         Debug.Log("OWNER Spawning Lux Q Missile");
         
-        var newProjectile = ClientProjectilePool.Instance.GetPooledProjectile();
+        var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
         if (newProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;

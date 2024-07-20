@@ -36,10 +36,6 @@ public class ProjectileAbility : MonoBehaviour {
         remainingDistance = Mathf.Infinity;
         canBeDestroyed = false;
         
-        Debug.Log("InitProjectileProperties - ProjectileAbility");
-        Debug.Log("Direction: " + projectileDirection);
-        Debug.Log("Ability Data: speed: " + projectileSpeed + ", range: " + projectileRange + ", lifetime: " + projectileLifetime);
-       
     }
 
     /// <summary>

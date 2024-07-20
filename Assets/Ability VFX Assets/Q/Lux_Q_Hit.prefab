@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -6104259439357245805}
   m_Layer: 0
   m_Name: Lux_Q_Hit
-  m_TagString: Untagged
+  m_TagString: Hit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

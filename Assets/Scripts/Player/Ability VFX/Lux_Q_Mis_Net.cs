@@ -27,11 +27,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     private GameObject _localProjectile;
     private Transform _localProjectilePool;
     
-    // Hit VFX
-    public GameObject qHit;
-    public Lux_Q_Hit hitScript;
-    private GameObject _newQHit;
-
     // Collision
     private LuxController _target;
 
@@ -72,18 +67,14 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         
         try {
             if (!collision.gameObject.CompareTag("Player")) return;
-            
-            Debug.Log("Collision with " + collision.gameObject.name + " " + collision.gameObject.transform.GetInstanceID());
-  
-            var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
-            var playerNetworkBehaviour= collision.gameObject.GetComponent<NetworkBehaviour>();
-            var enemyClientId = playerNetworkObject.OwnerClientId;
-            var otherId = playerNetworkBehaviour.NetworkManager.LocalClientId;
 
-            Debug.Log("networkObject.OwnerClientId: " + enemyClientId);
-            Debug.Log("networkBehaviour.NetworkManager.LocalClientId: " + otherId);
-        
+            Debug.Log("Collision with Player: " + collision.gameObject.name);
+
+            var collisionPos = collision.gameObject.transform.position;
+            var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
+            var enemyClientId = playerNetworkObject.OwnerClientId;
             var isDifferentPlayer = enemyClientId != spawnedByClientId;
+            
             Debug.Log("Source ID: " + spawnedByClientId + ", Enemy ID: " + enemyClientId + ", Different Player?: " +
                       isDifferentPlayer + ", hasHit: " + hasHit);
 
@@ -108,16 +99,10 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 // }
 
                 //ability.buff.Apply(target);
-                
-                Debug.Log("Before calling ToJSON");
-                if (Mappings == null) {
-                    Debug.Log("Mappings is null!");
-                    Debug.Log("IsServer? " + IsServer);
-                }
+
+
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
-                Debug.Log("Before calling Client RPC to update mappings: " + jsonMappings);
-                Debug.Log("Mappings keys length: " + (Mappings?.Keys?.Count));
-                TriggerCollisionClientRpc(jsonMappings);
+                TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
                 DestroyProjectile();
             }
         }
@@ -125,35 +110,36 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
             Debug.LogError(e);
         }
     }
-
-    // Instantiate the hit vfx prefab
-    private void SpawnHitVfx(GameObject target) {
-        // Spawn the prefab 
-        _newQHit = Instantiate(qHit, target.transform.position, Quaternion.identity);
-        projectiles.Add(_newQHit);
-        hitScript = _newQHit.GetComponent<Lux_Q_Hit>();
-        hitScript.target = target;
-    }
-
+    
     private void DestroyProjectile() {
-        Debug.Log("Destroying network projectile");
         ServerProjectilePool.Instance.ReturnProjectileToPool(gameObject);
         canBeDestroyed = false;
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void TriggerCollisionClientRpc(string jsonMappings) {
+    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId) {
         _localProjectilePool = GameObject.Find("Client Projectile Pool").transform;
         Debug.Log("Client RPC Trigger Collision");
-        Debug.Log("Mappings string: " + jsonMappings);
         Dictionary<int, ulong> mappings = JsonConvert.DeserializeObject<Dictionary<int, ulong>>(jsonMappings);
         foreach (var key in mappings.Keys) {
             if (NetworkManager.LocalClientId == mappings[key]) {
-                Debug.Log("Local Projectile: " + key);
                 _localProjectile = _localProjectilePool?.Find(key.ToString())?.gameObject;
                 if (_localProjectile != null) {
                     Debug.Log("Detected client collision on " + _localProjectile.gameObject.name + " " + _localProjectile.transform.GetInstanceID());
-                    ClientProjectilePool.Instance.ReturnProjectileToPool(_localProjectile);
+                    ClientProjectilePool.Instance.ReturnObjectToPool(_localProjectile);
+                    var hit = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
+                    hit.transform.position = position;
+                    var hitScript = hit.GetComponent<Lux_Q_Hit>();
+                    var players = GameObject.Find("Players").transform;
+
+                    if (NetworkManager.LocalClient.PlayerObject.NetworkObjectId == collisionNetworkObjectId) {
+                        hitScript.target = NetworkManager.LocalClient.PlayerObject.gameObject;
+                    }
+                    else {
+                        hitScript.target = players.Find(collisionNetworkObjectId.ToString()).gameObject;
+                    }
+                    
+                    hit.SetActive(true);
                 }
                 else {
                     Debug.Log("Couldn't find the local projectile!");
