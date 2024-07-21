@@ -1,5 +1,6 @@
 ﻿using System;
 using Multiplayer;
+using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -31,6 +32,8 @@ public class RPCController : NetworkBehaviour {
             Debug.Log("No available projectiles in the pool");
             return;
         }
+
+        var networkInstanceId = newNetworkProjectile.transform.GetInstanceID();
         
         // Set the position and rotation of the projectile
         newNetworkProjectile.transform.position = position;
@@ -50,11 +53,11 @@ public class RPCController : NetworkBehaviour {
             projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility, _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
         }
-        SpawnProjectileClientRpc(direction, position);
+        SpawnProjectileClientRpc(direction, position, networkInstanceId);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position) {
+    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId) {
         if (!IsOwner && !IsServer) {
             Debug.Log("CLIENT Spawning Lux Q Missile");
         
@@ -75,6 +78,7 @@ public class RPCController : NetworkBehaviour {
             if (projectileScript != null) {
                 projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
                     _playerController.projectiles, _playerController.playerType);
+                projectileScript.ResetVFX();
             }
             else {
                 Debug.Log("ProjectileAbility component is missing on the projectile");
@@ -82,14 +86,15 @@ public class RPCController : NetworkBehaviour {
             
             var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
             var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
+            var localInstanceId = newProjectile.transform.GetInstanceID();
             
-            UpdateMappingsServerRpc(localClientId, newProjectile.transform.GetInstanceID());
+            UpdateMappingsServerRpc(localClientId, localInstanceId, networkInstanceId);
         }
     }
 
     [Rpc(SendTo.Server)]
-    private void UpdateMappingsServerRpc(ulong clientId, int localProjectileId) {
-        var networkProjectile = GameObject.FindWithTag("NetworkProjectile");
+    private void UpdateMappingsServerRpc(ulong clientId, int localProjectileId, int networkInstanceId) {
+        var networkProjectile = GameObject.Find(networkInstanceId.ToString());
         var networkProjectileScript = networkProjectile.GetComponent<Lux_Q_Mis_Net>();
         networkProjectileScript.Mappings[localProjectileId] = clientId;
     }

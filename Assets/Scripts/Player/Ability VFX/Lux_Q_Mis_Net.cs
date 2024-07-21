@@ -23,8 +23,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
 
     // Projectile hitbox
     private GameObject _hitbox;
-    
-    private GameObject _localProjectile;
     private Transform _localProjectilePool;
     
     // Collision
@@ -88,8 +86,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 catch (Exception e) {
                     Debug.Log("Error trying to get LuxController: " + e.Message);
                 }
-                //SpawnHitVfx(collision.gameObject);
-
+                
                 // if(!target.BuffManager.HasBuffApplied(ability.buff)){
                 //     SpawnHitVfx(collision.gameObject);
                 //
@@ -99,8 +96,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 // }
 
                 //ability.buff.Apply(target);
-
-
+                
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
                 TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
                 DestroyProjectile();
@@ -118,33 +114,79 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
 
     [Rpc(SendTo.ClientsAndHost)]
     private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId) {
+
+        // Get the projectile that collided
+        var clientProjectile = GetClientCollidedProjectile(jsonMappings);
+        if (clientProjectile == null) return;
+        
+        // Deactivate the projectile
+        ClientProjectilePool.Instance.ReturnObjectToPool(clientProjectile);
+
+        // Get player that was hit
+        var player = GetHitPlayer(collisionNetworkObjectId);
+        if(player == null) return;
+        
+        // Spawn the hit VFX
+        SpawnClientHitVFX(position, player);
+    }
+    
+    /// <summary>
+    /// Get the client version of the projectile game object that collided with a player (on the server)
+    /// </summary>
+    /// <param name="jsonMappings">The JSON string mappings of projectile game objects to client IDs</param>
+    /// <returns>The client projectile game object</returns>
+    private GameObject GetClientCollidedProjectile(string jsonMappings) {
+
+        GameObject localProjectile = null;
+        
+        // First find the parent game object that holds all the projectiles
         _localProjectilePool = GameObject.Find("Client Projectile Pool").transform;
-        Debug.Log("Client RPC Trigger Collision");
+        
+        // Deserialize the json mappings into a dictionary
         Dictionary<int, ulong> mappings = JsonConvert.DeserializeObject<Dictionary<int, ulong>>(jsonMappings);
+
+        // Iterate over mappings to find the correct projectile for this client
         foreach (var key in mappings.Keys) {
             if (NetworkManager.LocalClientId == mappings[key]) {
-                _localProjectile = _localProjectilePool?.Find(key.ToString())?.gameObject;
-                if (_localProjectile != null) {
-                    Debug.Log("Detected client collision on " + _localProjectile.gameObject.name + " " + _localProjectile.transform.GetInstanceID());
-                    ClientProjectilePool.Instance.ReturnObjectToPool(_localProjectile);
-                    var hit = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
-                    hit.transform.position = position;
-                    var hitScript = hit.GetComponent<Lux_Q_Hit>();
-                    var players = GameObject.Find("Players").transform;
-
-                    if (NetworkManager.LocalClient.PlayerObject.NetworkObjectId == collisionNetworkObjectId) {
-                        hitScript.target = NetworkManager.LocalClient.PlayerObject.gameObject;
-                    }
-                    else {
-                        hitScript.target = players.Find(collisionNetworkObjectId.ToString()).gameObject;
-                    }
-                    
-                    hit.SetActive(true);
-                }
-                else {
-                    Debug.Log("Couldn't find the local projectile!");
-                }
+                localProjectile = _localProjectilePool?.Find(key.ToString())?.gameObject;
+                break;
             }
         }
+        return localProjectile;
+    }
+    
+    /// <summary>
+    /// Get the game object of the player hit by the projectile
+    /// </summary>
+    /// <param name="networkObjectId">The network object ID of the player</param>
+    /// <returns>The player game object</returns>
+    private GameObject GetHitPlayer(ulong networkObjectId) {
+
+        GameObject player;
+        
+        // If the local client has been hit
+        if (NetworkManager.LocalClient.PlayerObject.NetworkObjectId == networkObjectId) {
+            player = NetworkManager.LocalClient.PlayerObject.gameObject;
+        }
+        // If a different client has been hit
+        else {
+            var players = GameObject.Find("Players").transform;
+            player = players.Find(networkObjectId.ToString()).gameObject;
+        }
+        return player;
+    }
+    
+    /// <summary>
+    /// Spawn the hit VFX on the client when a projectile collides with a player
+    /// </summary>
+    /// <param name="position">The position to spawn the hit VFX</param>
+    /// <param name="player">The player that was hit</param>
+    private void SpawnClientHitVFX(Vector3 position, GameObject player) {
+        var hit = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
+        var hitScript = hit.GetComponent<Lux_Q_Hit>();
+        hitScript.target = player;
+        hit.transform.position = position;
+        hit.SetActive(true);
+        hitScript.ResetVFX();
     }
 }

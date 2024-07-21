@@ -53,6 +53,7 @@ public class Lux_Q_Mis : ProjectileAbility {
         // Get Trails VFX
         _qTrails = gameObject.transform.Find("Q_Trails").gameObject;
         _qTrailsVfx = _qTrails.GetComponent<VisualEffect>();
+        _qTrailsVfx.SetBool("setActive", true);
     }
 
     private void Update() {
@@ -108,5 +109,9 @@ public class Lux_Q_Mis : ProjectileAbility {
     private void DestroyProjectile() {
         ClientProjectilePool.Instance.ReturnObjectToPool(gameObject);
         canBeDestroyed = false;
+    }
+
+    public override void ResetVFX() {
+        Start();
     }
 }

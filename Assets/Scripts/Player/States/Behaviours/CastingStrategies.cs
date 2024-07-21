@@ -47,11 +47,13 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         // Activate the projectile
         newProjectile.SetActive(true);
             
-        // Initialize projectile properties on the server
+        // Initialize projectile properties
         var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
         if (projectileScript != null) {
             projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
                 _playerController.projectiles, _playerController.playerType);
+            projectileScript.ResetVFX();
+     
         }
         else {
             Debug.Log("ProjectileAbility component is missing on the projectile");

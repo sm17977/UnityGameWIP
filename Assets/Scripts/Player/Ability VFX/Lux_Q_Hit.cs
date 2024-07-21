@@ -55,13 +55,13 @@ public class Lux_Q_Hit : ProjectileAbility
     private float _timer;
     private bool _vfxPlaying = true;
 
-    void Start(){
+    private void Start(){
         CalculateVfxDuration();
         _timer = totalDuration;
         InitVfx();
     }
 
-    void CalculateVfxDuration(){
+    private void CalculateVfxDuration(){
         _stunDuration = ability.buff.duration;
         // If the stun duration is longer than the minimum stun time, add the difference to totalDuration
         totalDuration = (_fadeDuration * 2f) + _delayTime;
@@ -71,7 +71,7 @@ public class Lux_Q_Hit : ProjectileAbility
         }
     }
 
-    void Update(){
+    private void Update(){
 
         // Start timer after rings have prewarmed
         if(_vfxPlaying && _timer > 0){
@@ -91,7 +91,7 @@ public class Lux_Q_Hit : ProjectileAbility
         }
     }
 
-    void InitVfx(){
+    private void InitVfx(){
         _vfxPlaying = true;
 
         // Calculate the y position to spawn the 2 rings and rays using the target's capsule collider
@@ -132,8 +132,9 @@ public class Lux_Q_Hit : ProjectileAbility
     }
 
     IEnumerator DelayRingAndRaysVFX(float delayInSeconds){
-        yield return new WaitForSeconds(delayInSeconds); 
-        
+        yield return new WaitForSeconds(delayInSeconds);
+
+        Debug.Log("Lux_Q_Hit: Play Rings");
         _topRingVfx.Play(); 
         _bottomRingVfx.Play(); 
 
@@ -153,7 +154,7 @@ public class Lux_Q_Hit : ProjectileAbility
         _raysVfx.Play();
     }
 
-    void Fade(bool fadeIn, float fadeDuration){
+    private void Fade(bool fadeIn, float fadeDuration){
         // Set start time for fading out
         if(_fadeStartTime == 0){
             _fadeStartTime = Time.time;
@@ -213,9 +214,13 @@ public class Lux_Q_Hit : ProjectileAbility
         }
     }
 
-    void SetRingRadii(VisualEffect ringVfx, Dictionary<string, float> ringRadii){
+    private void SetRingRadii(VisualEffect ringVfx, Dictionary<string, float> ringRadii){
         foreach(KeyValuePair<string, float> entry in ringRadii){
             ringVfx.SetFloat(entry.Key, entry.Value);
         }
+    }
+
+    public override void ResetVFX() {
+        Start();
     }
 }

@@ -32,6 +32,7 @@ public class ServerProjectilePool : MonoBehaviour {
             var projectile = Instantiate(ability.networkMissilePrefab, transform);
             projectile.SetActive(false);
             projectile.GetComponent<Rigidbody>().isKinematic = false; // Network Objects default this to true
+            projectile.name = projectile.transform.GetInstanceID().ToString();
             _projectilePool.Add(projectile);
             Debug.Log("Projectile initialized and added to pool: " + projectile.name);
         }

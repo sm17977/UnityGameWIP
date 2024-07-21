@@ -38,6 +38,9 @@ public class ProjectileAbility : MonoBehaviour {
         
     }
 
+    public virtual void ResetVFX() {}
+   
+
     /// <summary>
     /// Moves a projectile transform towards target position
     /// </summary>
