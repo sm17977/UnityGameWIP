@@ -6,47 +6,72 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
     
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/CreateLobbyModal/CreateLobbyModal_Styles.uss" />
+    
     <!-- Create Lobby Modal -->
     <ui:VisualElement name="create-lobby" class="lobby-modal-container">
         <OuterGlow name="container-shadow">
-            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
+            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content lobby-modal-active">
                 <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
                     <ui:Label text="Create a lobby" class="lobby-modal-header-label"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="lobby-modal-form" class="lobby-modal-form">
-                    <ui:VisualElement class="form-columns-container">
-                        <ui:VisualElement name="form-left-column" class="form-left-column">
+                    
+                    <ui:VisualElement class="form-inputs-container">
+                   
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:Label text="Lobby Name:" class="lobby-name-label"/>
+                                <ui:Label text="Lobby Name" class=""/>
                             </ui:VisualElement>
+                        
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:Label text="Max Players:" class="lobby-name-label"/>
+                                <ui:TextField name="lobby-name-input" class="modal-input-field" value="My Lobby Name" />
+                            </ui:VisualElement>
+                        
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:Label text="Max Player Count" class=""/>
+                            </ui:VisualElement>
+                        
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:TextField name="" class="modal-input-field" value="1" />
+                            </ui:VisualElement>
+                        
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:Label text="Access Type" class=""/>
+                            </ui:VisualElement>
+                            
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:TextField name="" class="modal-input-field" value="Public/Private" />
+                            </ui:VisualElement>
+                        
+                    </ui:VisualElement>
+                    
+                    <ui:VisualElement class="btn-columns-container">
+                        
+                        <ui:VisualElement class="btn-column">
+                            <ui:VisualElement class="btn-container">
+                                <ui:Button text="Cancel" name="cancel-lobby-btn" class="btn cancel-btn"/>
                             </ui:VisualElement>
                         </ui:VisualElement>
                         
-                        <ui:VisualElement name="form-right-column" class="form-right-column">
-                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:TextField name="lobby-name-input" class="lobby-name-input" value="" />
-                            </ui:VisualElement>
-                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:TextField name="lobby-name-input" class="lobby-name-input" value="" />
+                        <ui:VisualElement class="btn-column">
+                            <ui:VisualElement class="btn-container">
+                                <ui:VisualElement class="btn-border">
+                                    <ui:Button text="Confirm" name="create-lobby-btn" class="btn confirm-btn"/>
+                                </ui:VisualElement>
                             </ui:VisualElement>
                         </ui:VisualElement>
-                    </ui:VisualElement>
-                    
-                    <ui:VisualElement class="form-buttons-container">
-                        <ui:VisualElement class="create-lobby-btn-container">
-                            <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn create-lobby-btn"/>
-                        </ui:VisualElement>
+                        
                         <ui:VisualElement name="lobby-loader-container" class="lobby-loader-container">
                             <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
                         </ui:VisualElement>
-                        <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
+                        
                     </ui:VisualElement>
-                    
                 </ui:VisualElement>
             </ui:VisualElement>
         </OuterGlow>
     </ui:VisualElement>
+    
+
     
 </ui:UXML>

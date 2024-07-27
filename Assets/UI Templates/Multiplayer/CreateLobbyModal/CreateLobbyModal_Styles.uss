@@ -15,8 +15,8 @@
     display: flex;
     flex-direction: column;
     background-color: white;
-    width: 400px;
-    height: 150px;
+    width: 600px;
+    height: 400px;
     align-items: center;
     align-content: center;
     padding: 20px;
@@ -24,6 +24,12 @@
     border-color: black;
     border-radius: 20px;
     opacity: 0;
+}
+
+.lobby-modal-active{
+    width: 800px;
+    height: 600px;
+    opacity: 1;
 }
 
 OuterGlow {
@@ -44,30 +50,36 @@ OuterGlow {
     transition: all 0.2s ease-in-back, opacity 0.2s;
 }
 
-.lobby-modal-active{
-    width: 800px;
-    height: 600px;
-    opacity: 1;
-}
-
 .lobby-modal-header{
-    -unity-font-style: bold;
-    font-size: 80px;
-    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .lobby-modal-header-label{
     color: black;
+    padding: 10px;
+    -unity-font-style: bold;
+    font-size: 80px;
 }
 
 .lobby-modal-form{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+    align-items: center;
     border-color: white;
-    padding: 20px;
     width: 100%;
+    min-width: 100%;
+    max-width: 100%;
     height: 100%;
+}
+
+.form-inputs-container{
+    display: flex;
+    width: 60%;
+    min-width: 60%;
+    max-width: 60%;
 }
 
 .modal-input-container{
@@ -75,60 +87,50 @@ OuterGlow {
     flex-direction: row;
 }
 
-
-.form-columns-container{
-    display: flex;
-    flex-direction: row;
+.modal-input-field{
     width: 100%;
+    font-size: 22px;
 }
 
-.form-left-column{
-    width: 50%;
-    -unity-text-align: middle-right;
-    align-items: flex-end;
-    justify-content: space-evenly;
-}
-
-.form-left-column Label{
-    font-size: 32px;
-}
-
-.form-right-column{
-    width: 50%;
-    justify-content: space-between;
-    font-size: 32px;
-}
-
-.form-right-column TextField{
-    width: 70%;
+.modal-input-field TextInput{
     border-color: white;
+    border-radius: 5px;
 }
 
-.form-buttons-container{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.create-lobby-btn-container{
+.btn-columns-container{
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    width: 80%;
+    margin-top: 10px;
+}
+
+.btn-column{
+    display: flex;
+    width: 50%;
+    -unity-text-align: middle-center;
+    font-size: 40px;
+}
+
+.btn-container{
+    width: 100%;
+    display: flex;
     align-items: center;
 }
 
-.form-buttons-container Button{
-    font-size: 32px;
-}
-
-.create-lobby-btn{
-
+.btn-border{
+    display: flex;
+    flex-direction: row;
 }
 
 .lobby-loader-container{
     position: absolute;
-    right: 25%;
-    top: 4px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 50%;
+    top: 10px;
+    right: 0;
+    display: flex;
+    align-items: center;
 }
 
 .lobby-status-label{
@@ -146,11 +148,34 @@ OuterGlow {
     transition: rotate 1s linear;
 }
 
-.list-item-btn{
+.btn{
     background-color: white;
     border-color: white;
+    border-width: 3px;
+    -unity-font-style: bold;
+    /*padding-left: 30px;*/
+    /*padding-right: 30px;*/
 }
 
-.list-item-btn:hover{
-    -unity-font-style: bold;
+.confirm-btn{
+    background-color: #50dcb5;
+    color: white;
+    border-radius: 10px;
+    transition: 0.3s background-color;
 }
+
+.confirm-btn:hover{
+    background-color: #45bc9b;
+}
+
+.cancel-btn{
+    background-color: #dc5050;
+    color: white;
+    border-radius: 10px;
+    transition: 0.3s background-color;
+}
+
+.cancel-btn:hover{
+    background-color: #9a3b3b;
+}
+
