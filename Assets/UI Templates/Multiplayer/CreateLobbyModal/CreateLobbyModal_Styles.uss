@@ -1,0 +1,156 @@
+﻿/* Create Lobby Modal */
+.lobby-modal-container{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    display: flex;
+}
+
+.lobby-modal-content{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 400px;
+    height: 150px;
+    align-items: center;
+    align-content: center;
+    padding: 20px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 20px;
+    opacity: 0;
+}
+
+OuterGlow {
+    border-radius: 20px;
+    --glow-color: clear;
+    --glow-size: 50;
+}
+
+.shadow-active{
+    --glow-color: rgba(100, 100, 111, 0.1);
+}
+
+.lobby-modal-show-transition{
+    transition: all 0.2s ease-out-back, opacity 0.2s;
+}
+
+.lobby-modal-hide-transition{
+    transition: all 0.2s ease-in-back, opacity 0.2s;
+}
+
+.lobby-modal-active{
+    width: 800px;
+    height: 600px;
+    opacity: 1;
+}
+
+.lobby-modal-header{
+    -unity-font-style: bold;
+    font-size: 80px;
+    padding: 10px;
+}
+
+.lobby-modal-header-label{
+    color: black;
+}
+
+.lobby-modal-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    border-color: white;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.modal-input-container{
+    display: flex;
+    flex-direction: row;
+}
+
+
+.form-columns-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.form-left-column{
+    width: 50%;
+    -unity-text-align: middle-right;
+    align-items: flex-end;
+    justify-content: space-evenly;
+}
+
+.form-left-column Label{
+    font-size: 32px;
+}
+
+.form-right-column{
+    width: 50%;
+    justify-content: space-between;
+    font-size: 32px;
+}
+
+.form-right-column TextField{
+    width: 70%;
+    border-color: white;
+}
+
+.form-buttons-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.create-lobby-btn-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-buttons-container Button{
+    font-size: 32px;
+}
+
+.create-lobby-btn{
+
+}
+
+.lobby-loader-container{
+    position: absolute;
+    right: 25%;
+    top: 4px;
+}
+
+.lobby-status-label{
+    display: flex;
+}
+
+.lobby-loader {
+    display: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border-width: 9px;
+    border-color: #dbdcef;
+    border-right-color: #474bff;
+    transition: rotate 1s linear;
+}
+
+.list-item-btn{
+    background-color: white;
+    border-color: white;
+}
+
+.list-item-btn:hover{
+    -unity-font-style: bold;
+}

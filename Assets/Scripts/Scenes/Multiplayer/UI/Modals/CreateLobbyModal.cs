@@ -1,18 +1,20 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     public delegate Task OnCreateLobby(string lobbyName);
     public class CreateLobbyModal : Modal {
         public event OnCreateLobby CreateLobby;
-        
         public event OnCloseModal CloseModal;
         
         // Create Lobby Modal
         private Button _createLobbyBtn;
         private Button _cancelLobbyBtn;
         private TextField _lobbyNameInput;
+        private VisualElement _contentContainer;
+        private OuterGlow _containerShadow;
         
         public CreateLobbyModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -26,12 +28,32 @@ namespace Multiplayer.UI {
             _createLobbyBtn = Template.Q<Button>("create-lobby-btn");
             _cancelLobbyBtn = Template.Q<Button>("cancel-lobby-btn");
             
+            _contentContainer = Template.Q("lobby-modal-content");
+            _containerShadow = Template.Q<OuterGlow>("container-shadow");
+            
             _createLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCreateLobbyBtn());
             _cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelBtn());
             
             Loader = Template.Q<VisualElement>("lobby-loader");
         }
-        
+
+        public override async void ShowModal() {
+            _contentContainer.AddToClassList("lobby-modal-show-transition");
+            base.ShowModal();
+            await Task.Delay(100);
+            _contentContainer.AddToClassList("lobby-modal-active");
+            _containerShadow.AddToClassList("shadow-active");
+        }
+
+        public override async void HideModal() {
+            _contentContainer.AddToClassList("lobby-modal-hide-transition");
+            _containerShadow.RemoveFromClassList("shadow-active");
+            _contentContainer.RemoveFromClassList("lobby-modal-active");
+            await Task.Delay(200);
+            base.HideModal();
+            _contentContainer.RemoveFromClassList("lobby-modal-hide-transition");
+        }
+
         private async void OnClickCreateLobbyBtn() {
             ShowLoader();
             _createLobbyBtn.SetEnabled(false);

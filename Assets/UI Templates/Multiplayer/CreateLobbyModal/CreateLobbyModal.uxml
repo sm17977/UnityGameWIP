@@ -1,0 +1,52 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <!-- Create Lobby Modal -->
+    <ui:VisualElement name="create-lobby" class="lobby-modal-container">
+        <OuterGlow name="container-shadow">
+            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
+                <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
+                    <ui:Label text="Create a lobby" class="lobby-modal-header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="lobby-modal-form" class="lobby-modal-form">
+                    <ui:VisualElement class="form-columns-container">
+                        <ui:VisualElement name="form-left-column" class="form-left-column">
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:Label text="Lobby Name:" class="lobby-name-label"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:Label text="Max Players:" class="lobby-name-label"/>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        
+                        <ui:VisualElement name="form-right-column" class="form-right-column">
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:TextField name="lobby-name-input" class="lobby-name-input" value="" />
+                            </ui:VisualElement>
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:TextField name="lobby-name-input" class="lobby-name-input" value="" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    
+                    <ui:VisualElement class="form-buttons-container">
+                        <ui:VisualElement class="create-lobby-btn-container">
+                            <ui:Button text="Create Lobby" name="create-lobby-btn" class="list-item-btn create-lobby-btn"/>
+                        </ui:VisualElement>
+                        <ui:VisualElement name="lobby-loader-container" class="lobby-loader-container">
+                            <ui:VisualElement name="lobby-loader" class="lobby-loader"></ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Button text="Cancel" name="cancel-lobby-btn" class="list-item-btn"/>
+                    </ui:VisualElement>
+                    
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </OuterGlow>
+    </ui:VisualElement>
+    
+</ui:UXML>

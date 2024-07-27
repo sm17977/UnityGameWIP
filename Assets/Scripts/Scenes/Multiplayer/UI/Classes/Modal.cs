@@ -14,10 +14,11 @@ namespace Multiplayer.UI {
         private float _rotation = 0;
         private float _timer = 0;
         
-        public void ShowModal() {
+        public virtual void ShowModal() {
             ParentContainer.Add(Template);
+
         }
-        public void HideModal() {
+        public virtual void HideModal() {
             ParentContainer.Remove(Template);
         }
 
@@ -43,3 +44,4 @@ namespace Multiplayer.UI {
         }
     }
 }
+

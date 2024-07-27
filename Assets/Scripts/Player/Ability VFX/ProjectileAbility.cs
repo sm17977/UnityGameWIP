@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 
 public class ProjectileAbility : MonoBehaviour {
     public Vector3 projectileDirection;
