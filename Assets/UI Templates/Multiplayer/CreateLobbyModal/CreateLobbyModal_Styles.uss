@@ -152,15 +152,13 @@ OuterGlow {
     background-color: white;
     border-color: white;
     border-width: 3px;
+    border-radius: 10px;
     -unity-font-style: bold;
-    /*padding-left: 30px;*/
-    /*padding-right: 30px;*/
 }
 
 .confirm-btn{
     background-color: #50dcb5;
     color: white;
-    border-radius: 10px;
     transition: 0.3s background-color;
 }
 
@@ -171,7 +169,6 @@ OuterGlow {
 .cancel-btn{
     background-color: #dc5050;
     color: white;
-    border-radius: 10px;
     transition: 0.3s background-color;
 }
 

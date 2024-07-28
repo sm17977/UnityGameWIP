@@ -7,6 +7,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class GameLobbyManager : MonoBehaviour {
 
@@ -26,6 +27,8 @@ public class GameLobbyManager : MonoBehaviour {
 
     public GameObject uIControllerGameObject;
     private MultiplayerUIController _uiController;
+
+    public bool gameStarted;
     
     // Rate Limit Timers
     float getJoinedLobbiesTimer; 
@@ -326,7 +329,9 @@ public class GameLobbyManager : MonoBehaviour {
         foreach(var player in _lobby.Players) {
             if (player.Id == _lobby.HostId) {
                 var connected = bool.Parse(player.Data["IsConnected"].Value);
-                if (connected) return true;
+                if (connected) {
+                    return true;
+                }
                 break;
             }
         }

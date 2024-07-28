@@ -178,7 +178,7 @@ public class MultiplayerUIController : MonoBehaviour {
         }
     }
     
-    public async Task CreateLobby(string lobbyName) {
+    private async Task CreateLobby(string lobbyName) {
         await _gameLobbyManager.CreateLobby(lobbyName);
         Client.IsLobbyHost = true;
         _viewManager.CloseModal(_createLobbyModal);
@@ -208,6 +208,7 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     private async Task<bool> StartGame() {
+        _gameLobbyManager.gameStarted = true;
         var clientConnected = await _clientManager.Connect();
         _viewManager.ChangeView(_gameView);
         return clientConnected;
@@ -268,7 +269,6 @@ public class MultiplayerUIController : MonoBehaviour {
    }
 
    private async Task DisconnectHost() {
-       Debug.Log("Host is sending disconnect message to server.");
        _clientManager.NotifyServerOfHostDisconnect();
        
        var maxRetries = 10;
@@ -285,6 +285,7 @@ public class MultiplayerUIController : MonoBehaviour {
        var canDisconnect = _gameLobbyManager.LobbyPlayersDisconnected();
        if (canDisconnect) {
            await _clientManager.Disconnect();
+           _gameLobbyManager.gameStarted = false;
            _viewManager.CloseModal(_exitGameModal);
            _viewManager.RePaintView(_lobbyView);
            _viewManager.ChangeView(_lobbyView);
@@ -352,7 +353,12 @@ public class MultiplayerUIController : MonoBehaviour {
         return _gameLobbyManager.HostIsConnected();
     }
 
+    /// <summary>
+    /// Check if the host can start a game
+    /// A host can start a game if they are not already connected to the server and a game is not currently in progress
+    /// </summary>
+    /// <returns>boolean</returns>
     private bool CanStartGame() {
-        return !_gameLobbyManager.HostIsConnected();
+        return !_gameLobbyManager.HostIsConnected() && !_gameLobbyManager.gameStarted;
     }
 }

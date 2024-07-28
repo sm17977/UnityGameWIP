@@ -43,15 +43,42 @@ namespace Multiplayer.UI {
         private string _serverIP;
         private string _serverPort;
         private string _playerConnectionStatus;
-        
-        private static readonly Dictionary<string, string> ServerStatusClasses = new Dictionary<string, string>
-        {
-            { "SHUTDOWN", "server-status-default" },
-            { "BOOTING", "server-status-booting" },
-            { "AWAITING_SETUP", "server-status-awaiting-setup" },
-            { "ONLINE", "server-status-online" },
-            { "Inactive", "server-status-default" }
-        };
+
+        // Excluding "INACTIVE", these are all the possible multi-play machine statuses
+        // They are assigned a USS class name for styling and a text value for the UI label
+        private static readonly Dictionary<string, Dictionary<string, string>> ServerStatusTypes =
+            new(){
+                { "SHUTDOWN",
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-default"},
+                        {"text", "Shutdown"}
+                    }
+                },
+                { "BOOTING",
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-booting"},
+                        {"text", "Booting"}
+                    }
+                },
+                { "AWAITING_SETUP",
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-awaiting-setup"},
+                        {"text", "Awaiting Setup"}
+                    }
+                },
+                { "ONLINE",
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-online"},
+                        {"text", "Online"}
+                    }
+                },
+                { "INACTIVE",
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-default"},
+                        {"text", "Inactive"}
+                    }
+                },
+            };
         
         public LobbyView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -123,7 +150,8 @@ namespace Multiplayer.UI {
         
         public void UpdateServerInfoTable(Client client) {
             
-            _serverStatusLabel.text = client.ServerStatus;
+            var rawStatus = client.ServerStatus;
+            _serverStatusLabel.text = ServerStatusTypes[rawStatus]["text"];
             _serverPortLabel.text = client.Port;
             _serverIPLabel.text = client.ServerIP;
             
@@ -205,26 +233,16 @@ namespace Multiplayer.UI {
         }
 
         private void ApplyServerStatusStyling(string serverStatus) {
-            foreach (var statusClass in ServerStatusClasses.Values){
-                _serverStatusLabel.RemoveFromClassList(statusClass);
+            foreach (var statusClass in ServerStatusTypes.Values){
+                _serverStatusLabel.RemoveFromClassList(statusClass["className"]);
             }
             
-            if (ServerStatusClasses.TryGetValue(serverStatus, out var newClass)) {
-                _serverStatusLabel.AddToClassList(newClass);
+            if (ServerStatusTypes.TryGetValue(serverStatus, out var newClass)) {
+                _serverStatusLabel.AddToClassList(newClass["className"]);
             }
             else {
-                _serverStatusLabel.AddToClassList(ServerStatusClasses["Inactive"]);
+                _serverStatusLabel.AddToClassList(ServerStatusTypes["Inactive"]["className"]);
             }
-
-            _serverStatusLabel.text = Capitalize(_serverStatusLabel.text);
-        }
-        
-        private string Capitalize(string input) {
-            if (string.IsNullOrEmpty(input))
-                return input;
-
-            input = input.ToLower();
-            return char.ToUpper(input[0]) + input.Substring(1);
         }
     }
 }

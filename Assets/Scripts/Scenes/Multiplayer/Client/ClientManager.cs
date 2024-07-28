@@ -210,7 +210,7 @@ namespace Multiplayer {
         private void UpdateServerStatusForLobbyHost(string status) {
             _client.ServerStatus = status;
             if (status == "") {
-                _client.ServerStatus = "Inactive";
+                _client.ServerStatus = "INACTIVE";
             }
             UpdateServerDataInLobbyView?.Invoke(_client);
         }
