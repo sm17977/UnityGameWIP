@@ -1,13 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
+    
     public delegate Task OnCreateLobby(string lobbyName);
+    
+    public delegate Task OnSetLobbyGameMode(string gamemode);
     public class CreateLobbyModal : Modal {
         public event OnCreateLobby CreateLobby;
         public event OnCloseModal CloseModal;
+        public event OnSetLobbyGameMode SetLobbyGameMode;
         
         // Create Lobby Modal
         private Button _createLobbyBtn;
@@ -15,6 +20,7 @@ namespace Multiplayer.UI {
         private TextField _lobbyNameInput;
         private VisualElement _contentContainer;
         private OuterGlow _containerShadow;
+        private DropdownField _gameModeDropdown;
         
         public CreateLobbyModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -31,6 +37,9 @@ namespace Multiplayer.UI {
             _contentContainer = Template.Q("lobby-modal-content");
             _containerShadow = Template.Q<OuterGlow>("container-shadow");
             
+            _gameModeDropdown = Template.Q<DropdownField>("lobby-gamemode-dropdown");
+            PopulateGameModeDropdown(GlobalState.MultiplayerGameModes);
+            
             _createLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCreateLobbyBtn());
             _cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelBtn());
             
@@ -40,7 +49,7 @@ namespace Multiplayer.UI {
         public override async void ShowModal() {
             _contentContainer.AddToClassList("lobby-modal-show-transition");
             base.ShowModal();
-            await Task.Delay(100);
+            await Task.Delay(200);
             _contentContainer.AddToClassList("lobby-modal-active");
             _containerShadow.AddToClassList("shadow-active");
         }
@@ -59,6 +68,7 @@ namespace Multiplayer.UI {
             _createLobbyBtn.SetEnabled(false);
             var lobbyNameInput = _lobbyNameInput.text;
             await CreateLobby?.Invoke(lobbyNameInput);
+            await SetLobbyGameMode?.Invoke(_gameModeDropdown.value);
             _createLobbyBtn.SetEnabled(true);
             HideLoader();
             ClearFormInput();
@@ -70,6 +80,11 @@ namespace Multiplayer.UI {
         
         private void ClearFormInput() {
             _lobbyNameInput.SetValueWithoutNotify("");
+        }
+        
+        private void PopulateGameModeDropdown(List<string> gamemodes) {
+            _gameModeDropdown.choices = gamemodes;
+            _gameModeDropdown.index = 0;
         }
         
         public override void ShowLoader() {

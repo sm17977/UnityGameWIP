@@ -1,4 +1,5 @@
 using System;
+using Global.Game_Modes;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -33,8 +34,10 @@ public class DeathScreenUIController : MonoBehaviour
         apm = uiDocument.rootVisualElement.Q<Label>("apm-label");
         accuracy = uiDocument.rootVisualElement.Q<Label>("accuracy-label");
 
-        roundReached.text = globalState.Arena.RoundManager.GetCurrentRoundString();
-        timeSurvived.text = globalState.Arena.GetGameTimer();
+        if (GlobalState.GameModeManager.CurrentGameMode is Arena arena) {
+            roundReached.text = arena.RoundManager.GetCurrentRoundString();
+            timeSurvived.text = arena.GetGameTimer();
+        }
 
         retryBtn = uiDocument.rootVisualElement.Q<Button>("retry-btn");
         mainMenuBtn = uiDocument.rootVisualElement.Q<Button>("main-menu-btn");
@@ -44,12 +47,10 @@ public class DeathScreenUIController : MonoBehaviour
     }
 
     private void LoadArena(){
-        globalState.Arena.Reset();
         globalState.LoadScene("Arena");
     }
 
     private void LoadMainMenu(){
-        globalState.Arena.Reset();
         globalState.LoadScene("Main Menu");
     } 
 

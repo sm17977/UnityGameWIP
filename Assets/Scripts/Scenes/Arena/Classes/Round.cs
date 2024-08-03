@@ -42,6 +42,4 @@ public class Round{
     public bool IsComplete(){
         return complete;
     }
-
-
 }

@@ -9,6 +9,7 @@
 
     <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/CreateLobbyModal/CreateLobbyModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
 
     <!-- View Container -->
     <ui:VisualElement name="view-container" class="view-container">

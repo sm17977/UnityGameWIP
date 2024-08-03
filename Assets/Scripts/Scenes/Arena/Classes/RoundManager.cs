@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class RoundManager {
 
@@ -24,7 +25,7 @@ public sealed class RoundManager {
     /// </summary>
     /// <param name="rounds">A list of rounds</param>
     public void Init(List<Round> rounds){
-        this._rounds = rounds;
+        _rounds = rounds;
         _currentRoundIndex = 0;
         _currentRound = rounds[_currentRoundIndex];
         _currentRound.Start();

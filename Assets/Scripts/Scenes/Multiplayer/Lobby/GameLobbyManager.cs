@@ -219,6 +219,20 @@ public class GameLobbyManager : MonoBehaviour {
         
         _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
     }
+
+    public async Task UpdateLobbyWithGameMode(string gamemode) {
+
+        var lobbyData = new Dictionary<string, DataObject>() {
+            {
+                "GameMode", new DataObject(
+                    visibility: DataObject.VisibilityOptions.Public,
+                    value: gamemode,
+                    index: DataObject.IndexOptions.S4)
+            }
+        };
+
+        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+    }
     
     /// <summary>
     /// Get the lobby via the Lobby Service and return the player list

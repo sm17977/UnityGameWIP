@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Global.Game_Modes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,12 +7,18 @@ public delegate void Notify();
 
 public class GlobalState : MonoBehaviour {
  
-    public static bool IsMultiplayer = false;
-    public static bool Paused = false;
+    public static bool IsMultiplayer;
+    public static bool Paused;
+    public static GameModeManager GameModeManager;
+    
+    public static readonly List<string> MultiplayerGameModes = new() {
+        "Duel",
+        "Test1",
+        "Test2",
+        "Test3",
+    };
     
     public string currentScene;
-    public GameMode CurrentGameMode;
-    public Arena Arena;
     public Ability LuxQAbilitySO;
     public event Notify OnMultiplayerGameMode;
     public event Notify OnSinglePlayerGameMode;
@@ -24,10 +31,16 @@ public class GlobalState : MonoBehaviour {
 
     private void Start() {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        GameModeManager = GameModeManager.Instance;
+        var ability = Instantiate(LuxQAbilitySO);
+        GameModeManager.AddGameMode(new Arena(ability));
+        GameModeManager.AddGameMode(new Duel());
     }
 
     private void Update() {
-        if (CurrentGameMode != null && CurrentGameMode.GetType() == typeof(Arena)) Arena.Update();
+        if (GameModeManager.CurrentGameMode != null) {
+            GameModeManager.Update();
+        }
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) {
@@ -35,12 +48,10 @@ public class GlobalState : MonoBehaviour {
 
         switch (currentScene) {
             case "Arena":
+                GameModeManager.ChangeGameMode("Arena");
                 IsMultiplayer = false;
                 OnSinglePlayerGameMode?.Invoke();
-                var ability = Instantiate(LuxQAbilitySO);
-                Arena = new Arena(ability);
-                CurrentGameMode = Arena;
-                StartCoroutine(Countdown(Arena));
+        
                 break;
 
             case "Multiplayer":
@@ -49,12 +60,7 @@ public class GlobalState : MonoBehaviour {
                 break;
         }
     }
-
-    public static void Pause(bool shouldPause) {
-        Time.timeScale = shouldPause ? 0 : 1;
-        Paused = shouldPause;
-    }
-
+    
     public void LoadScene(string sceneName) {
         if (!string.IsNullOrEmpty(sceneName)) {
             if (sceneName == "Exit") {
@@ -68,18 +74,9 @@ public class GlobalState : MonoBehaviour {
             Debug.LogError("Scene name not found: " + sceneName);
         }
     }
-
-    private IEnumerator Countdown(GameMode gameMode) {
-        gameMode.CountdownActive = true;
-
-        while (gameMode.CountdownTimer > 0) {
-            yield return new WaitForSecondsRealtime(1f);
-            gameMode.CountdownTimer--;
-        }
-
-        gameMode.CountdownTimer = 0;
-        yield return new WaitForSecondsRealtime(1f); // Delay 1 sec to show "Go!" after countdown ends
-        gameMode.CountdownActive = false;
-        Pause(false);
+    
+    public static void Pause(bool shouldPause) {
+        Time.timeScale = shouldPause ? 0 : 1;
+        Paused = shouldPause;
     }
 }

@@ -44,6 +44,14 @@
                                 <ui:TextField name="" class="modal-input-field" value="Public/Private" />
                             </ui:VisualElement>
                         
+                        <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                            <ui:Label text="Game Mode" class=""/>
+                        </ui:VisualElement>
+                            
+                        <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                            <ui:DropdownField name="lobby-gamemode-dropdown" class="modal-input-field" /> 
+                        </ui:VisualElement>
+                        
                     </ui:VisualElement>
                     
                     <ui:VisualElement class="btn-columns-container">

@@ -1,3 +1,4 @@
+using Global.Game_Modes;
 using UnityEngine;
 
 public class ProjectileSpawner : MonoBehaviour
@@ -9,7 +10,7 @@ public class ProjectileSpawner : MonoBehaviour
     private LuxPlayerController playerController;
     private GlobalState globalState;
     private Round currentRound;
-
+    
     // Properties
     private Vector3 direction;
     public float timer;
@@ -27,13 +28,18 @@ public class ProjectileSpawner : MonoBehaviour
     void Start(){
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         playerController = player.GetComponent<LuxPlayerController>();
-        currentRound = globalState.Arena.RoundManager.GetCurrentRound();
+        if (GlobalState.GameModeManager.CurrentGameMode is Arena arena) {
+            currentRound = arena.RoundManager.GetCurrentRound();
+        }
+
         timer = currentRound.projectileFrequency;
     }
 
     void Update() {
 
-        currentRound = globalState.Arena.RoundManager.GetCurrentRound();
+        if (GlobalState.GameModeManager.CurrentGameMode is Arena arena) {
+            currentRound = arena.RoundManager.GetCurrentRound();
+        }
 
         if (!canSpawn) {
             timer -= Time.deltaTime;

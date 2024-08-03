@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Global.Game_Modes;
 
 public class ArenaUIController : MonoBehaviour
 {
@@ -84,7 +85,7 @@ public class ArenaUIController : MonoBehaviour
     }
 
     void UpdateTimeCounter(){
-        string currentTime = globalState.Arena.GetGameTimer();
+        string currentTime = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
         timeCounter.text = currentTime;
     }
 
@@ -97,16 +98,16 @@ public class ArenaUIController : MonoBehaviour
     void InitCountdownTimer(){
         countdownContainer = uiDocument.rootVisualElement.Q<VisualElement>("countdown-container");
         countdownTimer = uiDocument.rootVisualElement.Q<Label>("countdown-timer");
-        countdownTimer.text = globalState.Arena.CountdownTimer.ToString();
+        countdownTimer.text = GlobalState.GameModeManager.CurrentGameMode.CountdownTimer.ToString();
         countdownContainer.style.visibility = Visibility.Visible;
     }
 
     void UpdateCountdownTimer() {
-        if(globalState.Arena.CountdownActive){
-            if (globalState.Arena.CountdownTimer >= 1) {
-                countdownTimer.text = globalState.Arena.CountdownTimer.ToString();
+        if(GlobalState.GameModeManager.CurrentGameMode.CountdownActive){
+            if (GlobalState.GameModeManager.CurrentGameMode.CountdownTimer >= 1) {
+                countdownTimer.text = GlobalState.GameModeManager.CurrentGameMode.CountdownTimer.ToString();
             }
-            else if (globalState.Arena.CountdownTimer == 0){
+            else if (GlobalState.GameModeManager.CurrentGameMode.CountdownTimer == 0){
                 countdownTimer.text = "Go!";
             }
         }
@@ -117,12 +118,14 @@ public class ArenaUIController : MonoBehaviour
     void ShowDebugInfo(){
         debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-state");
         debugCurrentState.text = "Current State: " + player.currentState;
-        
-        debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round");
-        debugCurrentState.text = "Round: " + globalState.Arena.RoundManager.GetCurrentRoundString();
 
-        debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
-        debugCurrentState.text = "Next round starts in " + globalState.Arena.RoundManager.GetCurrentRoundTime();
+        if (GlobalState.GameModeManager.CurrentGameMode is Arena arena) {
+            debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round");
+            debugCurrentState.text = "Round: " + arena.RoundManager.GetCurrentRoundString();
+
+            debugCurrentState = uiDocument.rootVisualElement.Q<Label>("debug-current-round-timer");
+            debugCurrentState.text = "Next round starts in " + arena.RoundManager.GetCurrentRoundTime();
+        }
     }
 
      void ShowPauseMenu(){
@@ -144,6 +147,5 @@ public class ArenaUIController : MonoBehaviour
         box.style.visibility = Visibility.Hidden;
         box.RemoveFromClassList("bar-transition");
     }
-  
 }
 

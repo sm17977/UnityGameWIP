@@ -10,12 +10,7 @@ public class CameraController : MonoBehaviour
     private Vector3 dragOrigin;
     private Controls controls;
     private bool isDragging = false;
-    private GlobalState globalState;
     
-    void Awake(){
-        globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-    }
-
     void OnEnable(){
         controls = new Controls();
         controls.Player.Enable();
@@ -33,18 +28,18 @@ public class CameraController : MonoBehaviour
 
 
     public void OnMiddleBtnDown (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if( GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         dragOrigin = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         isDragging = true;
     }
 
     public void OnMiddleBtnReleased (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if( GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         isDragging = false;
     }
 
     public void OnSpacebarDown (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if( GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         Vector3 cameraPosition = playerTransform.position;
         cameraPosition -= Vector3.forward * depthOffset;
         cameraPosition += Vector3.up * heightOffset;

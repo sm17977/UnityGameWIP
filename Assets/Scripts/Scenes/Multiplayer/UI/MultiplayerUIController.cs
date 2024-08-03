@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Global.Game_Modes;
 using Multiplayer;
 using Multiplayer.UI;
 using Unity.Services.Lobbies;
@@ -47,6 +48,9 @@ public class MultiplayerUIController : MonoBehaviour {
     public VisualTreeAsset createLobbyModalTmpl;
     public VisualTreeAsset exitGameModalTmpl;
     public VisualTreeAsset gameViewTmpl;
+    
+    //Gamemode
+    private GameMode _currentGameMode;
     
     private void Awake(){
         #if DEDICATED_SERVER
@@ -111,10 +115,11 @@ public class MultiplayerUIController : MonoBehaviour {
         _lobbyView.CanStartGame += CanStartGame;
         _lobbyView.CanJoinGame += CanJoinGame;
         _lobbyView.GetLobbyPlayerTableData += (async (sendNewRequest) => await GetLobbyPlayerTableData(sendNewRequest));
-
+        
         // Create Lobby Modal Events
         _createLobbyModal.CreateLobby += (async (lobbyName) => await CreateLobby(lobbyName));
         _createLobbyModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
+        _createLobbyModal.SetLobbyGameMode += (async (gamemode) => await SetLobbyGameMode(gamemode));
 
         // Exit Game Modal Events
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
@@ -209,6 +214,7 @@ public class MultiplayerUIController : MonoBehaviour {
     
     private async Task<bool> StartGame() {
         _gameLobbyManager.gameStarted = true;
+        GlobalState.GameModeManager.ChangeGameMode(_currentGameMode.Name);
         var clientConnected = await _clientManager.Connect();
         _viewManager.ChangeView(_gameView);
         return clientConnected;
@@ -360,5 +366,15 @@ public class MultiplayerUIController : MonoBehaviour {
     /// <returns>boolean</returns>
     private bool CanStartGame() {
         return !_gameLobbyManager.HostIsConnected() && !_gameLobbyManager.gameStarted;
+    }
+
+    /// <summary>
+    /// Write the gamemode to the lobby data
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task SetLobbyGameMode(string gamemode) {
+        var tempGameMode = new Duel();
+        _currentGameMode = tempGameMode;
+        await _gameLobbyManager.UpdateLobbyWithGameMode(gamemode);
     }
 }

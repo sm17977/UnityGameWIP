@@ -47,18 +47,18 @@ public class Multiplayer_Camera : NetworkBehaviour
 
 
     public void OnMiddleBtnDown (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if(GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         dragOrigin = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         isDragging = true;
     }
 
     public void OnMiddleBtnReleased (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if(GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         isDragging = false;
     }
 
     public void OnSpacebarDown (InputAction.CallbackContext context){
-        if(globalState.Arena.CountdownActive || GlobalState.Paused) return;
+        if(GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         Vector3 cameraPosition = playerTransform.position;
         cameraPosition -= Vector3.forward * depthOffset;
         cameraPosition += Vector3.up * heightOffset;

@@ -1,4 +1,4 @@
-﻿/* Create Lobby Modal */
+﻿/* Top level container */
 .lobby-modal-container{
     position: absolute;
     left: 0;
@@ -11,6 +11,7 @@
     display: flex;
 }
 
+/* Modal */
 .lobby-modal-content{
     display: flex;
     flex-direction: column;
@@ -26,26 +27,31 @@
     opacity: 0;
 }
 
+/* Modal size and opacity values to transition to when opened */
 .lobby-modal-active{
     width: 800px;
     height: 600px;
     opacity: 1;
 }
 
+/* This is called OuterGlow (custom element) but is actually used as a shadow for the Modal */
 OuterGlow {
     border-radius: 20px;
     --glow-color: clear;
     --glow-size: 50;
 }
 
+/* The shadow is only shown when the modal is not transitioning to avoid artifacts (it looked a bit laggy too) */
 .shadow-active{
     --glow-color: rgba(100, 100, 111, 0.1);
 }
 
+/* Modal opening transitions */
 .lobby-modal-show-transition{
     transition: all 0.2s ease-out-back, opacity 0.2s;
 }
 
+/* Modal closing transitions */
 .lobby-modal-hide-transition{
     transition: all 0.2s ease-in-back, opacity 0.2s;
 }
@@ -89,7 +95,9 @@ OuterGlow {
 
 .modal-input-field{
     width: 100%;
-    font-size: 22px;
+    font-size: 18px;
+    border-radius: 5px;
+    border-color: white;
 }
 
 .modal-input-field TextInput{
@@ -97,10 +105,15 @@ OuterGlow {
     border-radius: 5px;
 }
 
+.modal-input-field DropdownField {
+    background-color: red;
+}
+
 .btn-columns-container{
     display: flex;
     flex-direction: row;
     width: 80%;
+    height: 100px;
     margin-top: 10px;
 }
 
@@ -108,7 +121,6 @@ OuterGlow {
     display: flex;
     width: 50%;
     -unity-text-align: middle-center;
-    font-size: 40px;
 }
 
 .btn-container{
@@ -122,6 +134,39 @@ OuterGlow {
     flex-direction: row;
 }
 
+.btn{
+    background-color: white;
+    border-color: white;
+    border-width: 3px;
+    border-radius: 10px;
+    -unity-font-style: bold;
+    font-size: 40px;
+}
+
+.confirm-btn{
+    background-color: #50dcb5;
+    color: white;
+    transition: 0.3s background-color, 0.1s font-size;
+}
+
+.confirm-btn:hover{
+    background-color: #45bc9b;
+}
+
+.confirm-btn:active, .cancel-btn:active{
+    font-size: 43px;
+}
+
+.cancel-btn{
+    background-color: #dc5050;
+    color: white;
+    transition: 0.3s background-color, 0.1s font-size;
+}
+
+.cancel-btn:hover{
+    background-color: #9a3b3b;
+}
+
 .lobby-loader-container{
     position: absolute;
     margin-left: auto;
@@ -133,46 +178,14 @@ OuterGlow {
     align-items: center;
 }
 
-.lobby-status-label{
-    display: flex;
-}
-
 .lobby-loader {
     display: none;
     width: 56px;
     height: 56px;
     border-radius: 50%;
     border-width: 9px;
-    border-color: #dbdcef;
+    border-color: #ffffff;
     border-right-color: #474bff;
     transition: rotate 1s linear;
-}
-
-.btn{
-    background-color: white;
-    border-color: white;
-    border-width: 3px;
-    border-radius: 10px;
-    -unity-font-style: bold;
-}
-
-.confirm-btn{
-    background-color: #50dcb5;
-    color: white;
-    transition: 0.3s background-color;
-}
-
-.confirm-btn:hover{
-    background-color: #45bc9b;
-}
-
-.cancel-btn{
-    background-color: #dc5050;
-    color: white;
-    transition: 0.3s background-color;
-}
-
-.cancel-btn:hover{
-    background-color: #9a3b3b;
 }
 

@@ -1,7 +1,6 @@
 .view-container{
     width: 100%;
     height: 100%;
-    
 }
 
 .title-container{
@@ -50,11 +49,6 @@
     margin-top: 20px;
     margin-bottom: 0;
     width: 80%;
-}
-
-.server-info{
-    width: 25%;
-    margin-left: 10%;
 }
 
 .row-container{
@@ -115,64 +109,6 @@
     justify-content: center;
 }
 
-/* Lobby Table Columns */
-
-.col-player-id{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-player-name{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-last-updated{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-connection-status{
-    flex: 0 0 20%;
-    padding-left: 10px;
-    padding-right: 10px;
-    -unity-text-align: middle-left;
-    -unity-font-style: bold;
-}
-
-.col-connection-status-inner{
-    flex-direction: row;
-}
-
-.col-is-host{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-right;
-}
-
-/* Server Info */
-.col-server-info{
-    flex: 1;
-    padding: 10px;
-    -unity-text-align: middle-center;
-}
-
-.col-server-info-key{
-    flex: 0 0 30%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-server-info-value{
-    flex: 1;
-    padding: 10px;
-    -unity-text-align: middle-left;
-    flex-direction: row;
-}
-
 Label{
     white-space: normal;
 }
@@ -180,7 +116,7 @@ Label{
 .table-body{
     display: flex;
     width: 100%;
-    transition: height 0.5s;
+    transition: height 0.5s ease-out-back;
     height: 0;
     overflow: hidden;
 }
@@ -235,33 +171,6 @@ Label{
     -unity-font-style: bold;
 }
 
-/* Current Lobby */
-.current-lobby-container{
-    display: flex;
-    height: 100%;
-    background-color: white;
-}
-
-.current-lobby-btn-container{
-    margin-top: 50px;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-}
-
-.start-game-btn{
-    display: none;
-}
-
-.join-game-btn{
-    display: none;
-}
-
-.current-lobby-btn-container Button {
-    font-size: 42px;
-}
-
 .current-lobby-menu-btn-container{
     display: none;
 }
@@ -303,48 +212,4 @@ Label{
 .exit-game-btn-container Button{
     font-size: 52px;
     width: 40%;
-}
-
-.server-status{
-    -unity-text-align: middle-center;
-    -unity-font-style: bold;
-    border-radius: 12px;
-    font-size: 16px;
-    height: 25px;
-    padding: 10px;
-}
-
-.server-status-default{
-    background-color: #e4e4e4;
-    color: #474747;
-}
-
-.server-status-online{
-    background-color: #adf8ad;
-    color: #06ac06;
-}
-
-.server-status-booting{
-    background-color: #8eb4fa;
-    color: #114dc5;
-    width: 120px;
-}
-
-.server-status-awaiting-setup{
-    background-color: #db91fa;
-    color: #880eb1;
-}
-
-.player-connection-status-connected{
-    background-color: #adf8ad;
-    color: #06ac06;
-    border-radius: 10px;
-    padding: 10px;
-}
-
-.player-connection-status-not-connected{
-    background-color: #f8adad;
-    color: #c11111;
-    border-radius: 10px;
-    padding: 10px;
 }

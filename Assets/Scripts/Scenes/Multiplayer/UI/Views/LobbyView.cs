@@ -15,6 +15,7 @@ namespace Multiplayer.UI {
     public delegate bool OnCanStartGame();
     public delegate bool OnCanJoinGame();
     public delegate Task<List<Player>> OnGetLobbyPlayerTableData(bool sendNewRequest);
+
     
     public class LobbyView : View {
 
@@ -26,7 +27,7 @@ namespace Multiplayer.UI {
         public event OnCanStartGame CanStartGame;
         public event OnCanJoinGame CanJoinGame;
         public event OnGetLobbyPlayerTableData GetLobbyPlayerTableData;
-        
+     
         private VisualElement _table;
         private Button _startGameBtn;
         private Button _joinGameBtn;
@@ -43,7 +44,7 @@ namespace Multiplayer.UI {
         private string _serverIP;
         private string _serverPort;
         private string _playerConnectionStatus;
-
+        
         // Excluding "INACTIVE", these are all the possible multi-play machine statuses
         // They are assigned a USS class name for styling and a text value for the UI label
         private static readonly Dictionary<string, Dictionary<string, string>> ServerStatusTypes =
@@ -80,6 +81,8 @@ namespace Multiplayer.UI {
                 },
             };
         
+        private readonly List<string> _tempGameModes = new(){"Duel", "Free For All", "Dodge Party", "Fruit Salad"};
+        
         public LobbyView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
@@ -92,6 +95,7 @@ namespace Multiplayer.UI {
             _serverPortLabel = Template.Q<Label>("server-port-label");
             
             _table = Template.Q<VisualElement>("current-lobby-table-body");
+            
             _leaveBtn = Template.Q<Button>("leave-lobby-btn");
             _startGameBtn = Template.Q<Button>("start-game-btn");
             _joinGameBtn = Template.Q<Button>("join-game-btn");
@@ -110,6 +114,7 @@ namespace Multiplayer.UI {
             await Task.Delay(50);
 ;           _table.Clear();
             DisplayButtons();
+
             await GenerateLobbyPlayerTable(false);
         }
 
