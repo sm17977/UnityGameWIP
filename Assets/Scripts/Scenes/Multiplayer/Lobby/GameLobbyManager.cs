@@ -88,14 +88,13 @@ public class GameLobbyManager : MonoBehaviour {
     /// <param name="lobbyName">Lobby name</param>
     /// <param name="maxPlayers">Max player count</param>
     /// </summary>
-    public async Task CreateLobby(string lobbyName) {
+    public async Task CreateLobby(string lobbyName, int maxPlayers, string gameMode) {
         
         _playerData = new LobbyPlayerData();
         _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Host", "");
-        int maxPlayers = 4;
         
         // Create a lobby
-        _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, _playerData.Serialize());
+        _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, gameMode, _playerData.Serialize());
         
         // Subscribe to lobby events
         var callbacks = new LobbyEventCallbacks();
@@ -227,6 +226,20 @@ public class GameLobbyManager : MonoBehaviour {
                 "GameMode", new DataObject(
                     visibility: DataObject.VisibilityOptions.Public,
                     value: gamemode,
+                    index: DataObject.IndexOptions.S4)
+            }
+        };
+
+        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+    }
+    
+    public async Task UpdateLobbyWithGameStart(bool startGame) {
+
+        var lobbyData = new Dictionary<string, DataObject>() {
+            {
+                "StartGame", new DataObject(
+                    visibility: DataObject.VisibilityOptions.Public,
+                    value: startGame.ToString(),
                     index: DataObject.IndexOptions.S4)
             }
         };
@@ -372,5 +385,48 @@ public class GameLobbyManager : MonoBehaviour {
     /// <param name="changes">Lobby changes</param>
     public void ApplyLobbyChanges(ILobbyChanges changes) {
         changes.ApplyToLobby(_lobby);
+    }
+
+    /// <summary>
+    /// Get number of players in the current lobby
+    /// </summary>
+    /// <returns>The number of players currently in the lobby</returns>
+    public int GetLobbyPlayerCount() {
+        return _lobby.Players.Count;
+    }
+    
+    /// <summary>
+    /// Get current game mode 
+    /// </summary>
+    /// <returns>The name of the current lobby's game mode</returns>
+    public string GetLobbyGameMode() {
+        return GetLobbyData("GameMode");
+    }
+
+    public bool PlayersReady() {
+        foreach (var player in _lobby.Players) {
+            if (player.Id != _lobby.HostId && !bool.Parse(player.Data["IsReady"].Value)) return false;
+        }
+
+        return true;
+    }
+
+    public async Task UpdatePlayerIsReadyData() {
+        LobbyPlayerData playerData = new LobbyPlayerData();
+        UpdatePlayerOptions options = new UpdatePlayerOptions();
+        
+        
+        foreach(Player player in _lobby.Players) {
+            if (player.Id == _playerId) {
+                var clientId = player.Data["ClientId"].Value;
+                var playerName = player.Data["Name"].Value;
+                var connected = bool.Parse(player.Data["IsConnected"].Value);
+                var ready = !bool.Parse(player.Data["IsReady"].Value);
+                playerData.Initialize(_playerId, playerName, clientId, connected, ready);
+                break;
+            }
+        }
+        options.Data = playerData.SerializeUpdate();
+        _lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
     }
 }

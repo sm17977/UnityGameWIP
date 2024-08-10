@@ -9,6 +9,9 @@
     
     <!-- Game View -->
     <ui:VisualElement name="" class="">
+        <ui:VisualElement name="countdown-container" class="countdown-container">
+            <ui:Label text="Countdown: " name="countdown-text" class="countdown-text"/>
+        </ui:VisualElement>
     </ui:VisualElement>
     
 </ui:UXML>

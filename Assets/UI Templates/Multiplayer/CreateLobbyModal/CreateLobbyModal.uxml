@@ -33,7 +33,7 @@
                             </ui:VisualElement>
                         
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:TextField name="" class="modal-input-field" value="1" />
+                                <ui:UnsignedIntegerField  name="lobby-max-players-input" class="modal-input-field" value="1" />
                             </ui:VisualElement>
                         
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
@@ -49,7 +49,7 @@
                         </ui:VisualElement>
                             
                         <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                            <ui:DropdownField name="lobby-gamemode-dropdown" class="modal-input-field" /> 
+                            <ui:DropdownField name="lobby-gamemode-input" class="modal-input-field" /> 
                         </ui:VisualElement>
                         
                     </ui:VisualElement>

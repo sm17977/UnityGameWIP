@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Global.Game_Modes;
@@ -14,9 +15,6 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // UI Document
     [SerializeField] public UIDocument uiDocument;
-    
-    // Client
-    public Client Client;
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
@@ -68,12 +66,11 @@ public class MultiplayerUIController : MonoBehaviour {
 
      private async void Start() {
          _clientManager = ClientManager.Instance;
-         Client = _clientManager.Client;
          _viewManager.Initialize(_views, _modals, _multiplayerMenuView);
-         Client.ID = await _gameLobbyManager.SignIn();
+         _clientManager.Client.ID = await _gameLobbyManager.SignIn();
          
          var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
-         _multiplayerMenuView.DisplayPlayerId(Client.ID, playerIdLabel);
+         _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
          
          // Client Manager Events
          _clientManager.UpdateServerDataInLobbyView += (client) => {
@@ -109,18 +106,20 @@ public class MultiplayerUIController : MonoBehaviour {
         // Lobby View Events
         _lobbyView.LeaveLobby += (async () => await LeaveLobby());
         _lobbyView.StartGame += (async () => await StartGame());
-        _lobbyView.JoinGame += (async () => await JoinGame());
+        _lobbyView.StartServer += (async () => await StartServer());
+        //_lobbyView.JoinGame += (async () => await JoinGame());
+        _lobbyView.ReadyUp += (async () => await ReadyUp());
         _lobbyView.IsThisPlayerHost += IsPlayerHost;
         _lobbyView.IsPlayerHost += IsPlayerHost;
         _lobbyView.CanStartGame += CanStartGame;
+        _lobbyView.CanStartServer += CanStartServer;
         _lobbyView.CanJoinGame += CanJoinGame;
         _lobbyView.GetLobbyPlayerTableData += (async (sendNewRequest) => await GetLobbyPlayerTableData(sendNewRequest));
         
         // Create Lobby Modal Events
-        _createLobbyModal.CreateLobby += (async (lobbyName) => await CreateLobby(lobbyName));
+        _createLobbyModal.CreateLobby += (async (lobbyName, maxPlayers, gameMode) => await CreateLobby(lobbyName, maxPlayers, gameMode));
         _createLobbyModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
-        _createLobbyModal.SetLobbyGameMode += (async (gamemode) => await SetLobbyGameMode(gamemode));
-
+        
         // Exit Game Modal Events
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
         _exitGameModal.DisconnectClient += (async () => await DisconnectClient());
@@ -183,11 +182,55 @@ public class MultiplayerUIController : MonoBehaviour {
         }
     }
     
-    private async Task CreateLobby(string lobbyName) {
-        await _gameLobbyManager.CreateLobby(lobbyName);
-        Client.IsLobbyHost = true;
+    /// <summary>
+    /// Create a new lobby as the host
+    /// Show the lobby view
+    /// </summary>
+    /// <returns>boolean</returns>
+    private async Task CreateLobby(string lobbyName, uint maxPlayers, string gameMode) {
+        await _gameLobbyManager.CreateLobby(lobbyName, (int)maxPlayers, gameMode);
+        _clientManager.Client.IsLobbyHost = true;
         _viewManager.CloseModal(_createLobbyModal);
+        _lobbyView.UpdateServerInfoTable(_clientManager.Client);
         _viewManager.ChangeView(_lobbyView);
+    }
+    
+    private async Task JoinLobby(Lobby lobby) {
+        await _gameLobbyManager.JoinLobby(lobby);
+        _clientManager.Client.IsLobbyHost = false;
+        UpdatePlayersServerInfo();
+        _viewManager.ChangeView(_lobbyView);
+    }
+    
+    private async Task LeaveLobby() {
+        if (_clientManager.Client.IsLobbyHost) {
+            await _gameLobbyManager.DeleteLobby();
+            //TODO Implement delete allocation logic
+            _clientManager.DeleteAllocation();
+        }
+        else {
+            await _gameLobbyManager.LeaveLobby();
+        }
+        _viewManager.ChangeView(_multiplayerMenuView);
+    }
+    
+    private async Task<bool> StartServer() {
+        var canConnectToServer = await _clientManager.StartServer();
+        return canConnectToServer;
+    }
+    
+    private async Task StartGame() {
+        await _gameLobbyManager.UpdateLobbyWithGameStart(true);
+        _gameLobbyManager.gameStarted = true;
+         _clientManager.StartClient();
+         GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
+        _viewManager.ChangeView(_gameView);
+    }
+    
+    private void JoinGame() {
+        _clientManager.StartClient();
+        GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
+        _viewManager.ChangeView(_gameView);
     }
 
     private async Task<List<Player>> GetLobbyPlayerTableData(bool sendNewRequest) {
@@ -203,6 +246,16 @@ public class MultiplayerUIController : MonoBehaviour {
         }
         return await _gameLobbyManager.GetLobbiesList();
     }
+    
+    /// <summary>
+    /// Handling the removal of a lobby player when the host leaves
+    /// </summary>
+    private void RemoveLobbyPlayer() {
+        _gameLobbyManager.InvalidateLobby();
+        _clientManager.ResetClient();
+        _lobbyView.UpdateServerInfoTable(_clientManager.Client);
+        _viewManager.ChangeView(_multiplayerMenuView);
+    }
 
     private bool IsPlayerHost() {
         return _gameLobbyManager.IsPlayerLobbyHost();
@@ -210,31 +263,6 @@ public class MultiplayerUIController : MonoBehaviour {
 
     private bool IsPlayerHost(string playerId) {
         return _gameLobbyManager.IsPlayerLobbyHost(playerId);
-    }
-    
-    private async Task<bool> StartGame() {
-        _gameLobbyManager.gameStarted = true;
-        GlobalState.GameModeManager.ChangeGameMode(_currentGameMode.Name);
-        var clientConnected = await _clientManager.Connect();
-        _viewManager.ChangeView(_gameView);
-        return clientConnected;
-    }
-    
-    private async Task<bool> JoinGame() {
-        var clientConnected = await _clientManager.Connect();
-        _viewManager.ChangeView(_gameView);
-        return clientConnected;
-    }
-    
-    private async Task LeaveLobby() {
-        if (Client.IsLobbyHost) {
-            await _gameLobbyManager.DeleteLobby();
-            //Delete allocation?
-        }
-        else {
-            await _gameLobbyManager.LeaveLobby();
-        }
-        _viewManager.ChangeView(_multiplayerMenuView);
     }
     
     private async Task<bool> IsPlayerInLobby(Lobby lobby) {
@@ -245,13 +273,6 @@ public class MultiplayerUIController : MonoBehaviour {
         return _gameLobbyManager.IsPlayerInLobby();
     }
     
-   private async Task JoinLobby(Lobby lobby) {
-       await _gameLobbyManager.JoinLobby(lobby);
-       Client.IsLobbyHost = false;
-        UpdatePlayersServerInfo();
-       _viewManager.ChangeView(_lobbyView);
-   }
-   
    public static void ReturnToMultiplayerMenu() {
        _viewManager.ChangeView(_multiplayerMenuView);
    }
@@ -262,8 +283,9 @@ public class MultiplayerUIController : MonoBehaviour {
    private async Task DisconnectClient() {
        
        if (_viewManager.CurrentModal == _exitGameModal) {
-           if (Client.IsLobbyHost) {
+           if (_clientManager.Client.IsLobbyHost) {
                await DisconnectHost();
+               await _gameLobbyManager.UpdateLobbyWithGameStart(false);
            }
            else {
                await _clientManager.Disconnect();
@@ -320,16 +342,27 @@ public class MultiplayerUIController : MonoBehaviour {
 
         if (changes.LobbyDeleted) {
             Debug.Log("Lobby Change - Lobby Deleted");
-            if (!Client.IsLobbyHost) {
-                _gameLobbyManager.InvalidateLobby();
-                _viewManager.ChangeView(_multiplayerMenuView);
+            if (!_clientManager.Client.IsLobbyHost) {
+                RemoveLobbyPlayer();
                 return;
+            }
+        }
+
+        if (changes.Data.Changed) {
+            try {
+                var gameStarted = bool.Parse(changes.Data.Value["StartGame"].Value.Value);
+                if (gameStarted && !IsPlayerHost()) {
+                    JoinGame();
+                }
+            }
+            catch (Exception e) {
+                Debug.LogError(e);
             }
         }
         
         _gameLobbyManager.ApplyLobbyChanges(changes);
         
-        if (!Client.IsLobbyHost) {
+        if (!_clientManager.Client.IsLobbyHost) {
             UpdatePlayersServerInfo();
         }
         else {
@@ -341,17 +374,15 @@ public class MultiplayerUIController : MonoBehaviour {
     /// Update the server info in the Lobby View for players (non lobby host)
     /// </summary>
     private void UpdatePlayersServerInfo() {
-        
-         if(_gameLobbyManager?.GetLobbyData("ServerIP") != null) {
-             Client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
-             Client.Port = _gameLobbyManager?.GetLobbyData("Port");
-         }
 
-         if (_gameLobbyManager?.GetLobbyData("MachineStatus") != null) {
-             Client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
-             
-         }
-         _lobbyView.UpdateServerInfoTable(Client);
+        if (_gameLobbyManager?.GetLobbyData("ServerIP") == null ||
+            _gameLobbyManager?.GetLobbyData("MachineStatus") == null) return;
+        
+         _clientManager.Client.ServerIP = _gameLobbyManager?.GetLobbyData("ServerIP");
+         _clientManager.Client.Port = _gameLobbyManager?.GetLobbyData("Port");
+         _clientManager.Client.ServerStatus = _gameLobbyManager?.GetLobbyData("MachineStatus");
+         
+         _lobbyView.UpdateServerInfoTable(_clientManager.Client);
          _viewManager.RePaintView(_lobbyView);
     }
 
@@ -365,16 +396,21 @@ public class MultiplayerUIController : MonoBehaviour {
     /// </summary>
     /// <returns>boolean</returns>
     private bool CanStartGame() {
-        return !_gameLobbyManager.HostIsConnected() && !_gameLobbyManager.gameStarted;
+        return !_gameLobbyManager.HostIsConnected() &&
+               !_gameLobbyManager.gameStarted &&
+               _gameLobbyManager.PlayersReady();
     }
 
     /// <summary>
-    /// Write the gamemode to the lobby data
+    /// Check if the host can start a server
+    /// A host can start a server if there isn't already server connection info stored
     /// </summary>
-    /// <returns>Task</returns>
-    public async Task SetLobbyGameMode(string gamemode) {
-        var tempGameMode = new Duel();
-        _currentGameMode = tempGameMode;
-        await _gameLobbyManager.UpdateLobbyWithGameMode(gamemode);
+    /// <returns>boolean</returns>
+    private bool CanStartServer() {
+        return !_clientManager.Client.ServerStarted;
+    }
+    
+    private async Task ReadyUp() {
+        await _gameLobbyManager.UpdatePlayerIsReadyData();
     }
 }

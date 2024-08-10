@@ -90,6 +90,8 @@
             <ui:Button text="Leave Lobby" name="leave-lobby-btn" class="leave-lobby-btn"/>
             <ui:Button text="Start Game" name="start-game-btn" class="start-game-btn"/>
             <ui:Button text="Join Game" name="join-game-btn" class="join-game-btn"/>
+            <ui:Button text="Ready Up!" name="ready-game-btn" class="ready-game-btn"/>
+            <ui:Button text="Start Server" name="start-server-btn" class=""/>
         </ui:VisualElement>
         
         <!-- Back to Main Menu button -->

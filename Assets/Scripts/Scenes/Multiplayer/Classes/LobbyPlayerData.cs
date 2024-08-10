@@ -8,6 +8,7 @@ namespace Multiplayer {
         private string _name;
         private string _clientId;
         private bool _isConnected;
+        private bool _isReady;
         public string Id => _id;
         public string Name => _name;
         public string ClientId {
@@ -20,11 +21,12 @@ namespace Multiplayer {
             set => _isConnected = value;
         }
         
-        public void Initialize(string id, string name, string clientId, bool isConnected = false) {
+        public void Initialize(string id, string name, string clientId, bool isConnected = false, bool isReady = false) {
             _id = id;
             _name = name;
             _clientId = clientId;
             _isConnected = isConnected;
+            _isReady = isReady;
         }
 
         public void Initialize(Dictionary<string, PlayerDataObject> playerData) {
@@ -45,7 +47,11 @@ namespace Multiplayer {
             }
             
             if (playerData.ContainsKey("IsConnected")) {
-                _clientId = playerData["IsConnected"].Value;
+                _isConnected = bool.Parse(playerData["IsConnected"].Value);
+            }
+            
+            if (playerData.ContainsKey("IsReady")) {
+                _isReady = bool.Parse(playerData["IsReady"].Value);
             }
         }
 
@@ -54,7 +60,8 @@ namespace Multiplayer {
                 { "Id", _id },
                 { "Name", _name },
                 { "ClientId", _name },
-                { "IsConnected", _isConnected.ToString()}
+                { "IsConnected", _isConnected.ToString()},
+                { "IsReady", _isReady.ToString()}
             };
         }
 
@@ -79,6 +86,11 @@ namespace Multiplayer {
                     "IsConnected", new PlayerDataObject(
                         visibility: PlayerDataObject.VisibilityOptions.Member,
                         value: _isConnected.ToString())
+                },
+                {
+                    "IsReady", new PlayerDataObject(
+                        visibility: PlayerDataObject.VisibilityOptions.Member,
+                        value: _isReady.ToString())
                 }
             };
         }

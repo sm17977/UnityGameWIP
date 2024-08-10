@@ -6,11 +6,11 @@ namespace Global.Game_Modes {
         
         private static GameModeManager _instance = null;
         private static readonly object Padlock = new object();
-        private List<GameMode> _gameModes;
+        public List<GameMode> GameModes;
         public GameMode CurrentGameMode;
         
         private GameModeManager() {
-            _gameModes = new List<GameMode>();
+            GameModes = new List<GameMode>();
         }
         
         public static GameModeManager Instance {
@@ -23,12 +23,12 @@ namespace Global.Game_Modes {
         }
 
         public void AddGameMode(GameMode gameMode) {
-            _gameModes.Add(gameMode);
+            GameModes.Add(gameMode);
         }
         
         public void ChangeGameMode(string gameModeName) {
             
-            GameMode nextGameMode = _gameModes.Find(g => g.Name == gameModeName);
+            GameMode nextGameMode = GameModes.Find(gm => gm.Name == gameModeName);
 
             if (nextGameMode == null) return;
             
@@ -40,6 +40,10 @@ namespace Global.Game_Modes {
 
         public void Update() {
             CurrentGameMode.Update();
+        }
+
+        public void FixedUpdate() {
+            CurrentGameMode.FixedUpdate();
         }
     }
 }

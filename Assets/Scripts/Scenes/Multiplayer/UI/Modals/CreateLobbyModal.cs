@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -6,20 +7,21 @@ using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     
-    public delegate Task OnCreateLobby(string lobbyName);
+    public delegate Task OnCreateLobby(string lobbyName, uint maxPlayers, string gameMode);
     
-    public delegate Task OnSetLobbyGameMode(string gamemode);
     public class CreateLobbyModal : Modal {
         public event OnCreateLobby CreateLobby;
         public event OnCloseModal CloseModal;
-        public event OnSetLobbyGameMode SetLobbyGameMode;
         
         // Create Lobby Modal
         private Button _createLobbyBtn;
         private Button _cancelLobbyBtn;
-        private TextField _lobbyNameInput;
         private VisualElement _contentContainer;
         private OuterGlow _containerShadow;
+        
+        // User Input Fields
+        private TextField _lobbyNameInput;
+        private UnsignedIntegerField _lobbyMaxPlayersInput;
         private DropdownField _gameModeDropdown;
         
         public CreateLobbyModal(VisualElement parentContainer, VisualTreeAsset vta) {
@@ -30,20 +32,37 @@ namespace Multiplayer.UI {
         
         private void InitializeElements() {
             _lobbyNameInput = Template.Q<TextField>("lobby-name-input");
-          
+            _lobbyMaxPlayersInput = Template.Q<UnsignedIntegerField>("lobby-max-players-input");
+            _gameModeDropdown = Template.Q<DropdownField>("lobby-gamemode-input");
+            
+            PopulateGameModeDropdown(GlobalState.MultiplayerGameModes.Select(gm => gm.Name).ToList());
+            
+            _gameModeDropdown.RegisterValueChangedCallback(evt => {
+                if (evt.newValue == "Duel") {
+                    _lobbyMaxPlayersInput.value = 2;
+                    _lobbyMaxPlayersInput.SetEnabled(false);
+                }
+                else {
+                    _lobbyMaxPlayersInput.SetEnabled(true);
+                }
+            });
+            
+            if (_gameModeDropdown.value == "Duel") {
+                _lobbyMaxPlayersInput.value = 2;
+                _lobbyMaxPlayersInput.SetEnabled(false);
+            }
+            
             _createLobbyBtn = Template.Q<Button>("create-lobby-btn");
             _cancelLobbyBtn = Template.Q<Button>("cancel-lobby-btn");
             
             _contentContainer = Template.Q("lobby-modal-content");
             _containerShadow = Template.Q<OuterGlow>("container-shadow");
             
-            _gameModeDropdown = Template.Q<DropdownField>("lobby-gamemode-dropdown");
-            PopulateGameModeDropdown(GlobalState.MultiplayerGameModes);
-            
             _createLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCreateLobbyBtn());
             _cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelBtn());
             
             Loader = Template.Q<VisualElement>("lobby-loader");
+           
         }
 
         public override async void ShowModal() {
@@ -67,8 +86,10 @@ namespace Multiplayer.UI {
             ShowLoader();
             _createLobbyBtn.SetEnabled(false);
             var lobbyNameInput = _lobbyNameInput.text;
-            await CreateLobby?.Invoke(lobbyNameInput);
-            await SetLobbyGameMode?.Invoke(_gameModeDropdown.value);
+            var maxPlayersInput = _lobbyMaxPlayersInput.value;
+            var gameModeInput = _gameModeDropdown.value;
+          
+            await CreateLobby?.Invoke(lobbyNameInput, maxPlayersInput, gameModeInput);
             _createLobbyBtn.SetEnabled(true);
             HideLoader();
             ClearFormInput();
@@ -80,10 +101,18 @@ namespace Multiplayer.UI {
         
         private void ClearFormInput() {
             _lobbyNameInput.SetValueWithoutNotify("");
+            InitializeElements();
+        }
+
+        private void ValidateFormInput() {
+            if (_gameModeDropdown.value == "Duel") {
+                _lobbyMaxPlayersInput.value = 2;
+                _lobbyMaxPlayersInput.SetEnabled(false);
+            }
         }
         
-        private void PopulateGameModeDropdown(List<string> gamemodes) {
-            _gameModeDropdown.choices = gamemodes;
+        private void PopulateGameModeDropdown(List<string> gameModes) {
+            _gameModeDropdown.choices = gameModes;
             _gameModeDropdown.index = 0;
         }
         

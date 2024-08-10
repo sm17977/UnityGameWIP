@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
 using Multiplayer.UI;
+using QFSW.QC;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -18,19 +19,11 @@ namespace Multiplayer {
         public event OnHostDisconnection HostDisconnection;
 
         public static ClientManager Instance;
-        private Client _client;
+        public Client Client;
         private CancellationTokenSource _cancellationTokenSource;
         
         private GameLobbyManager _gameLobbyManager;
         
-        public Client Client {
-            get {
-                if (_client == null) {
-                    _client = Client.Instance;
-                }
-                return _client;
-            }
-        }
         private void Awake() {
             
             #if DEDICATED_SERVER
@@ -45,7 +38,7 @@ namespace Multiplayer {
                 Destroy(this);
             }
             
-            _client = Client.Instance;
+            Client = Client.Instance;
             _gameLobbyManager = GameLobbyManager.Instance;
         }
 
@@ -54,17 +47,21 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Connect the client to the multiplay server
+        /// Allocate and provision a multiplay server, share the connection details with the lobby
         /// </summary>
         /// <returns>boolean</returns>
-        public async Task<bool> Connect() {
+        public async Task<bool> StartServer() {
             _cancellationTokenSource = new CancellationTokenSource();
-
-            if (_client.IsLobbyHost) {
-                return await StartClientAsLobbyHost(_cancellationTokenSource.Token);
+            if (Client.IsLobbyHost) {
+                var tmp = await ProvisionServer(_cancellationTokenSource.Token);
+                Debug.Log("Server Started: " + tmp);
+                Client.ServerStarted = tmp;
             }
-         
-            return StartClientAsLobbyPlayer();
+            else {
+                Client.ServerStarted = false;
+            }
+            
+            return Client.ServerStarted;
         }
 
         /// <summary>
@@ -73,21 +70,18 @@ namespace Multiplayer {
         /// </summary>
         public async Task Disconnect() {
             NetworkManager.Singleton.Shutdown();
-            _client.IsConnectedToServer = false;
-            await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(_client.IsConnectedToServer);
+            Debug.Log("Disconnecting and deleting client");
+            ResetClient();
+            await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(Client.IsConnectedToServer);
         }
         
         /// <summary>
-        /// Start client as the lobby host.
         /// Queues a server allocation request and waits till server connection info has been returned.
         /// Once returned, updates the lobby with the connection info required to join the server.
-        /// Before connecting to the server, the client sends their playerId in the connection approval payload,
-        /// the server will receive this before approving, this enables us to track who has connected both from
-        /// the client and server.
         /// </summary>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>boolean</returns>
-        private async Task<bool> StartClientAsLobbyHost(CancellationToken cancellationToken) {
+        private async Task<bool> ProvisionServer(CancellationToken cancellationToken) {
 
             try {
                 WebServicesAPI webServicesAPI = new WebServicesAPI();
@@ -95,57 +89,51 @@ namespace Multiplayer {
                 var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, webServicesAPI);
                 
                 if (clientConnectionInfo.IP != null || clientConnectionInfo.IP != "") {
-                    
                     UpdateServerInfoForLobbyHost(clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    await _gameLobbyManager.UpdateLobbyWithServerInfo(_client.ServerStatus, clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(clientConnectionInfo.IP, (ushort)clientConnectionInfo.Port);
-                    SendPlayerIdWithConnectionRequest();
-                    NetworkManager.Singleton.StartClient();
-                    NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
-                        OnPlayerStatusMessage);
-                    _client.IsConnectedToServer = true;
+                    await _gameLobbyManager.UpdateLobbyWithServerInfo(Client.ServerStatus, clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
                     return true;
                 }
             }
             catch (OperationCanceledException) {
            
             }
-            _client.IsConnectedToServer = false;
             return false;
         }
         
         /// <summary>
-        /// Start client to join the game server as a player (a.k.a not the lobby host).
+        /// Start client to join the game server
         /// Before connecting to the server, the client sends their playerId in the connection approval payload,
         /// the server will receive this before approving, this enables us to track who has connected both from
         /// the client and server.
         /// </summary>
         /// <returns>boolean</returns>
-        private bool StartClientAsLobbyPlayer() {
+        public bool StartClient() {
 
-            if (_client.ServerIP == null || _client.Port == null) return false;
+            if (Client.ServerIP == null || Client.Port == null) return false;
        
             try {
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(_client.ServerIP, (ushort)int.Parse(_client.Port));
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(Client.ServerIP, (ushort)int.Parse(Client.Port));
                 SendPlayerIdWithConnectionRequest();
                 NetworkManager.Singleton.StartClient();
                 NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
                     OnPlayerStatusMessage);
-                NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
-                _client.IsConnectedToServer = true;
+                if (!Client.IsLobbyHost) {
+                    NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
+                }
+                Client.IsConnectedToServer = true;
                 return true;
             }
             catch (OperationCanceledException) {
            
             }
-            _client.IsConnectedToServer = false;
+            Client.IsConnectedToServer = false;
             return false;
         }
         
         /// <summary>
         /// Request a server allocation and return the connection information required to join the server.
-        /// While the server allocation request is in process, the status of the machine hosting
-        /// the server is stored and the UI updated.
+        /// While the server allocation request is in process, the current status of the machine hosting the
+        /// server is stored and the lobby UI is updated.
         /// </summary>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <param name="webServicesAPI">WebServicesAPI</param>
@@ -176,14 +164,17 @@ namespace Multiplayer {
                
                // Once a machine is found, poll for its status until it's online
                while (retryCount < maxRetries) {
-                   Debug.Log("Polling Machine Status");
+                   //Debug.Log("Polling Machine Status");
                    var newStatus = await webServicesAPI.GetMachineStatus();
+                   Debug.Log("New Status: " + newStatus);
+                   Debug.Log("Retry count: " + retryCount);
                    if (status != newStatus) {
                        Debug.Log("Machine Status Change: " + newStatus);
                        status = newStatus;
                        await _gameLobbyManager.UpdateLobbyWithServerInfo(status, "", "");
                        UpdateServerStatusForLobbyHost(status);
                        if (status == MachineStatus.Online) {
+                           Debug.Log("BREAK!");
                            break;
                        }
                    }
@@ -196,6 +187,7 @@ namespace Multiplayer {
                UpdateServerStatusForLobbyHost(status);
            }
            
+           UpdateServerStatusForLobbyHost(status);
            // Now the machine is online, poll for the IP and Port of allocated game server
            var response = await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
            return response != null
@@ -208,11 +200,11 @@ namespace Multiplayer {
         /// </summary>
         /// <param name="status">Server Status</param>
         private void UpdateServerStatusForLobbyHost(string status) {
-            _client.ServerStatus = status;
+            Client.ServerStatus = status;
             if (status == "") {
-                _client.ServerStatus = "INACTIVE";
+                Client.ServerStatus = "INACTIVE";
             }
-            UpdateServerDataInLobbyView?.Invoke(_client);
+            UpdateServerDataInLobbyView?.Invoke(Client);
         }
 
         /// <summary>
@@ -221,9 +213,9 @@ namespace Multiplayer {
         /// <param name="ip">Server IP</param>
         /// <param name="port">Server Port</param>
         private void UpdateServerInfoForLobbyHost(string ip, string port) {
-            _client.ServerIP = ip;
-            _client.Port = port;
-            UpdateServerDataInLobbyView?.Invoke(_client);
+            Client.ServerIP = ip;
+            Client.Port = port;
+            UpdateServerDataInLobbyView?.Invoke(Client);
         }
 
         /// <summary>
@@ -258,7 +250,7 @@ namespace Multiplayer {
         /// Process server initiated disconnect because lobby host has disconnected 
         /// </summary>
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
-            if (!_client.IsLobbyHost) {
+            if (!Client.IsLobbyHost) {
                 await Disconnect();
                 HostDisconnection?.Invoke();
             }
@@ -276,6 +268,21 @@ namespace Multiplayer {
         /// </summary>
         private void OnClientDisconnected(ulong clientId) {
             Debug.Log("Client disconnected (from server): " + clientId);
+        }
+        
+        /// <summary>
+        /// Delete the existing server allocation
+        /// </summary>
+        public void DeleteAllocation() {
+            ResetClient();
+        }
+
+        /// <summary>
+        /// Reset the client instance
+        /// </summary>
+        public void ResetClient() {
+            Client.Delete();
+            Client = Client.Instance;
         }
     }
 }

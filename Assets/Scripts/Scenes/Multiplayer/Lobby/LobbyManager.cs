@@ -51,15 +51,22 @@ public sealed class LobbyManager {
     /// 2 requests per 6 seconds
     /// </summary>
     /// <returns>The created lobby</returns>
-    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, Dictionary<string, string> data) {
+    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, string gameMode, Dictionary<string, string> data) {
         var playerData = SerializePlayerData(data);
         var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
-
+       
         var options = new CreateLobbyOptions() {
             IsPrivate = false,
-            Player = player
+            Player = player,
+            Data = new Dictionary<string, DataObject>() {
+                {
+                    "GameMode", new DataObject(
+                        DataObject.VisibilityOptions.Public,
+                         value: gameMode)
+                }
+            }
         };
-
+        
         var lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
         Debug.Log("Created new lobby: " + lobbyName);
         return lobby;

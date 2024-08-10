@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Global.Game_Modes;
@@ -10,13 +11,8 @@ public class GlobalState : MonoBehaviour {
     public static bool IsMultiplayer;
     public static bool Paused;
     public static GameModeManager GameModeManager;
-    
-    public static readonly List<string> MultiplayerGameModes = new() {
-        "Duel",
-        "Test1",
-        "Test2",
-        "Test3",
-    };
+
+    public static List<GameMode> MultiplayerGameModes;
     
     public string currentScene;
     public Ability LuxQAbilitySO;
@@ -27,19 +23,32 @@ public class GlobalState : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
-    }
-
-    private void Start() {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        
         GameModeManager = GameModeManager.Instance;
         var ability = Instantiate(LuxQAbilitySO);
         GameModeManager.AddGameMode(new Arena(ability));
         GameModeManager.AddGameMode(new Duel());
+        GameModeManager.AddGameMode(new MultiplayerPlaceholder());
+        MultiplayerGameModes = GameModeManager.GameModes.FindAll(gm => gm.GameModeType == GameMode.Type.Multiplayer);
+    }
+
+    private void OnEnable() {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start() {
+ 
     }
 
     private void Update() {
         if (GameModeManager.CurrentGameMode != null) {
             GameModeManager.Update();
+        }
+    }
+
+    private void FixedUpdate() {
+        if (GameModeManager.CurrentGameMode != null) {
+            GameModeManager.FixedUpdate();
         }
     }
 

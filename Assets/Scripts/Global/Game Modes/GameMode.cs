@@ -27,6 +27,12 @@ namespace Global.Game_Modes {
         public abstract void Update();
         
         /// <summary>
+        /// Update the gamemode (fixed)
+        /// Used for timers or anything that needs to run in fixed update
+        /// </summary>
+        public abstract void FixedUpdate();
+        
+        /// <summary>
         /// End the gamemode
         /// </summary>
         public abstract void End();

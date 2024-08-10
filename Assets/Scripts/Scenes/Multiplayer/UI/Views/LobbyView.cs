@@ -7,32 +7,39 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
-    public delegate Task<bool> OnStartGame();
+    public delegate Task OnStartGame();
+    public delegate Task<bool> OnStartServer();
     public delegate Task<bool> OnJoinGame();
     public delegate Task OnLeaveLobby();
     public delegate bool OnIsThisPlayerHost();
     public delegate bool OnIsPlayerHost(string playerId);
     public delegate bool OnCanStartGame();
+    public delegate bool OnCanStartServer();
     public delegate bool OnCanJoinGame();
     public delegate Task<List<Player>> OnGetLobbyPlayerTableData(bool sendNewRequest);
+    public delegate Task OnReadyUp();
 
     
     public class LobbyView : View {
 
         public event OnStartGame StartGame;
+        public event OnStartServer StartServer;
         public event OnJoinGame JoinGame;
         public event OnLeaveLobby LeaveLobby;
         public event OnIsThisPlayerHost IsThisPlayerHost;
         public event OnIsPlayerHost IsPlayerHost;
         public event OnCanStartGame CanStartGame;
+        public event OnCanStartServer CanStartServer;
         public event OnCanJoinGame CanJoinGame;
         public event OnGetLobbyPlayerTableData GetLobbyPlayerTableData;
+        public event OnReadyUp ReadyUp;
      
         private VisualElement _table;
         private Button _startGameBtn;
         private Button _joinGameBtn;
-        private Button _leaveBtn;
-        
+        private Button _leaveLobbyBtn;
+        private Button _readyUpBtn;
+        private Button _startServerBtn;
         private Button _backBtn;    
     
         private VisualElement _serverInfoTable;
@@ -49,25 +56,25 @@ namespace Multiplayer.UI {
         // They are assigned a USS class name for styling and a text value for the UI label
         private static readonly Dictionary<string, Dictionary<string, string>> ServerStatusTypes =
             new(){
-                { "SHUTDOWN",
+                { MachineStatus.Shutdown,
                     new Dictionary<string, string>() {
                         {"className", "server-status-default"},
                         {"text", "Shutdown"}
                     }
                 },
-                { "BOOTING",
+                { MachineStatus.Booting,
                     new Dictionary<string, string>() {
                         {"className", "server-status-booting"},
                         {"text", "Booting"}
                     }
                 },
-                { "AWAITING_SETUP",
+                { MachineStatus.AwaitingSetup,
                     new Dictionary<string, string>() {
                         {"className", "server-status-awaiting-setup"},
                         {"text", "Awaiting Setup"}
                     }
                 },
-                { "ONLINE",
+                { MachineStatus.Online,
                     new Dictionary<string, string>() {
                         {"className", "server-status-online"},
                         {"text", "Online"}
@@ -80,8 +87,6 @@ namespace Multiplayer.UI {
                     }
                 },
             };
-        
-        private readonly List<string> _tempGameModes = new(){"Duel", "Free For All", "Dodge Party", "Fruit Salad"};
         
         public LobbyView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -96,16 +101,22 @@ namespace Multiplayer.UI {
             
             _table = Template.Q<VisualElement>("current-lobby-table-body");
             
-            _leaveBtn = Template.Q<Button>("leave-lobby-btn");
+            _leaveLobbyBtn = Template.Q<Button>("leave-lobby-btn");
             _startGameBtn = Template.Q<Button>("start-game-btn");
             _joinGameBtn = Template.Q<Button>("join-game-btn");
+            _readyUpBtn = Template.Q<Button>("ready-game-btn");
+            _startServerBtn = Template.Q<Button>("start-server-btn");
+            
             _backBtn = Template.Q<Button>("back-btn");
             
             _startGameBtn.RegisterCallback<ClickEvent>(evt => OnClickStartGameBtn());
             _joinGameBtn.RegisterCallback<ClickEvent>(evt => OnClickJoinGameBtn());
-            _leaveBtn.RegisterCallback<ClickEvent>( (evt) => { 
+            _leaveLobbyBtn.RegisterCallback<ClickEvent>( (evt) => { 
                var _= LeaveLobby?.Invoke();
             });
+            _readyUpBtn.RegisterCallback<ClickEvent>((evt) => ReadyUp?.Invoke());
+            _startServerBtn.RegisterCallback<ClickEvent>(evt => OnClickStartServerBtn());
+            
             _backBtn.RegisterCallback<ClickEvent>(evt => OnReturnToMultiplayerMenu());
         }
 
@@ -114,7 +125,6 @@ namespace Multiplayer.UI {
             await Task.Delay(50);
 ;           _table.Clear();
             DisplayButtons();
-
             await GenerateLobbyPlayerTable(false);
         }
 
@@ -122,13 +132,15 @@ namespace Multiplayer.UI {
             base.Hide();
             _table.style.height = 0;
         }
+
+        private async void OnClickStartServerBtn() {
+            await StartServer?.Invoke();
+            RePaint();
+        }
         
         private async void OnClickStartGameBtn() {
             _startGameBtn.SetEnabled(false);
-            var clientConnected = await StartGame?.Invoke();
-            
-            if (clientConnected) {
-            }
+            await StartGame?.Invoke();
         }
         private async void OnClickJoinGameBtn() {
             _joinGameBtn.SetEnabled(false);
@@ -143,17 +155,25 @@ namespace Multiplayer.UI {
             var isPlayerHost = IsThisPlayerHost?.Invoke() == true;
             if (isPlayerHost) {
                 _startGameBtn.SetEnabled(CanStartGame?.Invoke() == true);
+                _startServerBtn.SetEnabled(CanStartServer?.Invoke() == true);
                 Show(_startGameBtn);
+                Show(_startServerBtn);
                 Hide(_joinGameBtn);
+                Hide(_readyUpBtn);
             }
             else {
                 _joinGameBtn.SetEnabled(CanJoinGame?.Invoke() == true);
                 Show(_joinGameBtn);
+                Show(_readyUpBtn);
                 Hide(_startGameBtn);
+                Hide(_startServerBtn);
             }
         }
         
         public void UpdateServerInfoTable(Client client) {
+
+            var tmp = client == null;
+            Debug.Log("Is Client Null? " + tmp);
             
             var rawStatus = client.ServerStatus;
             _serverStatusLabel.text = ServerStatusTypes[rawStatus]["text"];
@@ -246,7 +266,7 @@ namespace Multiplayer.UI {
                 _serverStatusLabel.AddToClassList(newClass["className"]);
             }
             else {
-                _serverStatusLabel.AddToClassList(ServerStatusTypes["Inactive"]["className"]);
+                _serverStatusLabel.AddToClassList(ServerStatusTypes["INACTIVE"]["className"]);
             }
         }
     }

@@ -39,6 +39,9 @@ namespace Global.Game_Modes {
             }
         }
 
+        public override void FixedUpdate() {
+        }
+
         public override void End() {
         }
         
