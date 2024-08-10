@@ -215,8 +215,8 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     private async Task<bool> StartServer() {
-        var canConnectToServer = await _clientManager.StartServer();
-        return canConnectToServer;
+        _gameLobbyManager.serverProvisioned = await _clientManager.StartServer();
+        return _gameLobbyManager.serverProvisioned;
     }
     
     private async Task StartGame() {
@@ -392,13 +392,27 @@ public class MultiplayerUIController : MonoBehaviour {
 
     /// <summary>
     /// Check if the host can start a game
-    /// A host can start a game if they are not already connected to the server and a game is not currently in progress
+    /// A host can start a game if...
+    /// A server has been provisioned
+    /// The minimum required count of players are in the lobby
+    /// All players are ready
     /// </summary>
     /// <returns>boolean</returns>
     private bool CanStartGame() {
-        return !_gameLobbyManager.HostIsConnected() &&
-               !_gameLobbyManager.gameStarted &&
-               _gameLobbyManager.PlayersReady();
+
+        var lobbyGameModeName = _gameLobbyManager.GetLobbyGameMode();
+        var selectedGameMode = GlobalState.GameModeManager.GetGameMode(lobbyGameModeName);
+
+        Debug.Log("1. HostIsConnected: " + !_gameLobbyManager.HostIsConnected());
+        Debug.Log("2. gameStarted: " + !_gameLobbyManager.gameStarted);
+        Debug.Log("3. PlayersReady: " + _gameLobbyManager.PlayersReady());
+        Debug.Log("4. LobbyPlayers>=RequiredPlayers: " + (_gameLobbyManager.GetLobbyPlayerCount() >=
+                  selectedGameMode.MinimumRequiredPlayers));
+        
+        return _gameLobbyManager.serverProvisioned &&
+               _gameLobbyManager.PlayersReady() &&
+               _gameLobbyManager.GetLobbyPlayerCount() >=
+               selectedGameMode.MinimumRequiredPlayers;
     }
 
     /// <summary>
@@ -407,7 +421,7 @@ public class MultiplayerUIController : MonoBehaviour {
     /// </summary>
     /// <returns>boolean</returns>
     private bool CanStartServer() {
-        return !_clientManager.Client.ServerStarted;
+        return !_gameLobbyManager.serverProvisioned;
     }
     
     private async Task ReadyUp() {

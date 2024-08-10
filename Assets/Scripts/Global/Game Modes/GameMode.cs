@@ -9,6 +9,7 @@ namespace Global.Game_Modes {
         public int CountdownTimer;
         public bool CountdownActive;
         public Type GameModeType;
+        public int MinimumRequiredPlayers;
         
         public enum Type {
             SinglePlayer,

@@ -171,9 +171,6 @@ namespace Multiplayer.UI {
         }
         
         public void UpdateServerInfoTable(Client client) {
-
-            var tmp = client == null;
-            Debug.Log("Is Client Null? " + tmp);
             
             var rawStatus = client.ServerStatus;
             _serverStatusLabel.text = ServerStatusTypes[rawStatus]["text"];

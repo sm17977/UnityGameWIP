@@ -7,11 +7,12 @@ namespace Global.Game_Modes {
 
         public event OnUpdateCountdownText UpdateCountdownText;
 
-        private int _requiredPlayeCount = 2;        
+        private readonly int _requiredPlayeCount = 2;        
         private readonly int _countdownTime = 1;
         
         public Duel() {
             GameModeType = Type.Multiplayer;
+            MinimumRequiredPlayers = _requiredPlayeCount;
             Name = "Duel";
         }
         
@@ -40,10 +41,6 @@ namespace Global.Game_Modes {
             GameTimer = 0f;
             SetCountdownTimer(_countdownTime);
             UpdateCountdownText?.Invoke(CountdownTimer);
-        }
-
-        public bool ValidatePlayerCount(int playerCount) {
-            return playerCount == _requiredPlayeCount;
         }
         
         private void OnCountdownComplete() {

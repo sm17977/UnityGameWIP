@@ -29,6 +29,7 @@ public class GameLobbyManager : MonoBehaviour {
     private MultiplayerUIController _uiController;
 
     public bool gameStarted;
+    public bool serverProvisioned;
     
     // Rate Limit Timers
     float getJoinedLobbiesTimer; 

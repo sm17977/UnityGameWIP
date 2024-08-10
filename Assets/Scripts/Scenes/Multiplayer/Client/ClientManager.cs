@@ -53,15 +53,10 @@ namespace Multiplayer {
         public async Task<bool> StartServer() {
             _cancellationTokenSource = new CancellationTokenSource();
             if (Client.IsLobbyHost) {
-                var tmp = await ProvisionServer(_cancellationTokenSource.Token);
-                Debug.Log("Server Started: " + tmp);
-                Client.ServerStarted = tmp;
+                return await ProvisionServer(_cancellationTokenSource.Token);
             }
-            else {
-                Client.ServerStarted = false;
-            }
-            
-            return Client.ServerStarted;
+
+            return false;
         }
 
         /// <summary>

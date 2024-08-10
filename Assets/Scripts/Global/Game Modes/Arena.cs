@@ -11,6 +11,7 @@ namespace Global.Game_Modes {
         public Arena(Ability ability) {
             _ability = ability;
             GameModeType = Type.SinglePlayer;
+            MinimumRequiredPlayers = 1;
             Name = "Arena";
 
             RoundManager = RoundManager.Instance;

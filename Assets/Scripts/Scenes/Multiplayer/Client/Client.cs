@@ -11,7 +11,6 @@ namespace Multiplayer {
         private string _lobbyId;
         private bool _isLobbyHost;
         private bool _isConnectedToServer;
-        public bool ServerStarted;
         
         private string _serverIp;
         private string _port;
@@ -50,9 +49,7 @@ namespace Multiplayer {
         public static Client Instance {
             get {
                 lock (Padlock) {
-                    Debug.Log("Getting client instance");
                     var tmp = _instance == null;
-                    Debug.Log("Is client null? " + tmp);
                     _instance ??= new Client();
                     return _instance;
                 }
@@ -62,7 +59,6 @@ namespace Multiplayer {
         /// Make the client null to ensure next access creates a new client
         /// </summary>
         public void Delete() {
-            Debug.Log("instance = null");
             _instance = null;
         }
     }

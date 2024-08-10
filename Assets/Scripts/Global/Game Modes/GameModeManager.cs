@@ -45,5 +45,9 @@ namespace Global.Game_Modes {
         public void FixedUpdate() {
             CurrentGameMode.FixedUpdate();
         }
+
+        public GameMode GetGameMode(string name) {
+            return GameModes.Find(gm => gm.Name == name);
+        }
     }
 }
