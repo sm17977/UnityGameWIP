@@ -505,6 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uIControllerGameObject: {fileID: 1516747482}
   gameStarted: 0
+  serverProvisioned: 0
 --- !u!1 &502043955
 GameObject:
   m_ObjectHideFlags: 0

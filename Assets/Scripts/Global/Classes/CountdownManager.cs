@@ -23,8 +23,17 @@ public class CountdownManager : MonoBehaviour {
         gameMode.CountdownActive = true;
 
         while (gameMode.CountdownTimer > 0) {
+
+            if (gameMode is Duel duel) {
+                duel.SetCountdownTimer(gameMode.CountdownTimer);
+            }
+            
             yield return new WaitForSecondsRealtime(1f);
             gameMode.CountdownTimer--;
+        }
+        
+        if (gameMode is Duel duelModeFinal) {
+            duelModeFinal.SetCountdownTimer(0); 
         }
 
         gameMode.CountdownTimer = 0;

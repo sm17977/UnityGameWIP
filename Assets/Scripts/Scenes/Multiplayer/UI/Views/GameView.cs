@@ -9,6 +9,7 @@ namespace Multiplayer.UI {
 
         private Label _countdownText;
         private GameMode _gameMode;
+        private Duel _duelMode;
         
         public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -19,16 +20,15 @@ namespace Multiplayer.UI {
         private void InitializeElements() {
             _countdownText = Template.Q<Label>("countdown-text");
             Debug.Log("GameMode: " + GlobalState.GameModeManager.CurrentGameMode);
-
-            if (GlobalState.GameModeManager.CurrentGameMode is Duel duel) {
-                Debug.Log("Subsicribed to countdown events");
-                duel.UpdateCountdownText += timer => _countdownText.text = timer.ToString();
-            }
         }   
 
         public override async void Show() {
             base.Show();
             InitializeElements();
+            _duelMode = GlobalState.GameModeManager.CurrentGameMode as Duel;
+            if (_duelMode != null) {
+                _duelMode.UpdateCountdownText += OnUpdateCountdownText;
+            }
         }
 
         public override void Hide() {
@@ -41,6 +41,10 @@ namespace Multiplayer.UI {
         
         public override void RePaint() {
 
+        }
+        
+        private void OnUpdateCountdownText(int timer) {
+            _countdownText.text = timer > 0 ? timer.ToString() : "Duel!";
         }
     }
 }

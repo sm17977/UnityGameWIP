@@ -402,12 +402,6 @@ public class MultiplayerUIController : MonoBehaviour {
 
         var lobbyGameModeName = _gameLobbyManager.GetLobbyGameMode();
         var selectedGameMode = GlobalState.GameModeManager.GetGameMode(lobbyGameModeName);
-
-        Debug.Log("1. HostIsConnected: " + !_gameLobbyManager.HostIsConnected());
-        Debug.Log("2. gameStarted: " + !_gameLobbyManager.gameStarted);
-        Debug.Log("3. PlayersReady: " + _gameLobbyManager.PlayersReady());
-        Debug.Log("4. LobbyPlayers>=RequiredPlayers: " + (_gameLobbyManager.GetLobbyPlayerCount() >=
-                  selectedGameMode.MinimumRequiredPlayers));
         
         return _gameLobbyManager.serverProvisioned &&
                _gameLobbyManager.PlayersReady() &&

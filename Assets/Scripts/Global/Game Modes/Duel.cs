@@ -8,7 +8,7 @@ namespace Global.Game_Modes {
         public event OnUpdateCountdownText UpdateCountdownText;
 
         private readonly int _requiredPlayeCount = 2;        
-        private readonly int _countdownTime = 1;
+        private readonly int _countdownTime = 5;
         
         public Duel() {
             GameModeType = Type.Multiplayer;
@@ -18,7 +18,6 @@ namespace Global.Game_Modes {
         
         public override void Start() {
             SetCountdownTimer(_countdownTime);
-            UpdateCountdownText?.Invoke(CountdownTimer);
             GlobalState.Pause(true);
             Debug.Log("START - Update Countdown Text: " + CountdownTimer);
             CountdownManager.Instance.StartCountdown(this, OnCountdownComplete);
@@ -26,12 +25,9 @@ namespace Global.Game_Modes {
 
         public override void Update() {
             GameTimer += Time.deltaTime;
-            
         }
 
         public override void FixedUpdate() {
-            Debug.Log("FIXED UPDATE - Update Countdown Text: " + CountdownTimer);
-            UpdateCountdownText?.Invoke(CountdownTimer);
         }
         
         public override void End() {
@@ -40,7 +36,11 @@ namespace Global.Game_Modes {
         public override void Reset() {
             GameTimer = 0f;
             SetCountdownTimer(_countdownTime);
-            UpdateCountdownText?.Invoke(CountdownTimer);
+        }
+
+        public override void SetCountdownTimer(int time) {
+            CountdownTimer = time;
+            UpdateCountdownText?.Invoke(time);
         }
         
         private void OnCountdownComplete() {

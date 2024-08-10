@@ -48,7 +48,7 @@ namespace Global.Game_Modes {
         /// Set a countdown timer in seconds for the start of the gamemode
         /// </summary>
         /// <param name="seconds">Duration of the gamemode countdown in seconds</param>
-        public void SetCountdownTimer(int seconds) {
+        public virtual void SetCountdownTimer(int seconds) {
             CountdownActive = false;
             CountdownTimer = seconds;
         }
