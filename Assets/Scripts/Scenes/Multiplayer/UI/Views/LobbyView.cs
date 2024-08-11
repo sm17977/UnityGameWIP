@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     public delegate Task OnStartGame();
-    public delegate Task<bool> OnStartServer();
+    public delegate Task OnStartServer();
     public delegate Task<bool> OnJoinGame();
     public delegate Task OnLeaveLobby();
     public delegate bool OnIsThisPlayerHost();

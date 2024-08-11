@@ -49,14 +49,11 @@ namespace Multiplayer {
         /// <summary>
         /// Allocate and provision a multiplay server, share the connection details with the lobby
         /// </summary>
-        /// <returns>boolean</returns>
-        public async Task<bool> StartServer() {
+        public async Task StartServer() {
             _cancellationTokenSource = new CancellationTokenSource();
             if (Client.IsLobbyHost) {
-                return await ProvisionServer(_cancellationTokenSource.Token);
+                await ProvisionServer(_cancellationTokenSource.Token);
             }
-
-            return false;
         }
 
         /// <summary>
@@ -76,7 +73,7 @@ namespace Multiplayer {
         /// </summary>
         /// <param name="cancellationToken">Cancellation Token</param>
         /// <returns>boolean</returns>
-        private async Task<bool> ProvisionServer(CancellationToken cancellationToken) {
+        private async Task ProvisionServer(CancellationToken cancellationToken) {
 
             try {
                 WebServicesAPI webServicesAPI = new WebServicesAPI();
@@ -86,13 +83,14 @@ namespace Multiplayer {
                 if (clientConnectionInfo.IP != null || clientConnectionInfo.IP != "") {
                     UpdateServerInfoForLobbyHost(clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
                     await _gameLobbyManager.UpdateLobbyWithServerInfo(Client.ServerStatus, clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    return true;
+                    _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Provisioned;
+                    return;
                 }
             }
             catch (OperationCanceledException) {
            
             }
-            return false;
+            _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Failed;
         }
         
         /// <summary>

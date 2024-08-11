@@ -29,7 +29,8 @@ public class GameLobbyManager : MonoBehaviour {
     private MultiplayerUIController _uiController;
 
     public bool gameStarted;
-    public bool serverProvisioned;
+    
+    public ServerProvisionState currentServerProvisionState = ServerProvisionState.Idle;
     
     // Rate Limit Timers
     float getJoinedLobbiesTimer; 

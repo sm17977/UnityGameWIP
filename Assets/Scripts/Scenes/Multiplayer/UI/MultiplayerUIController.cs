@@ -207,7 +207,7 @@ public class MultiplayerUIController : MonoBehaviour {
             await _gameLobbyManager.DeleteLobby();
             //TODO Implement delete allocation logic
             _clientManager.DeleteAllocation();
-            _gameLobbyManager.serverProvisioned = false;
+            _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
         }
         else {
             await _gameLobbyManager.LeaveLobby();
@@ -215,9 +215,10 @@ public class MultiplayerUIController : MonoBehaviour {
         _viewManager.ChangeView(_multiplayerMenuView);
     }
     
-    private async Task<bool> StartServer() {
-        _gameLobbyManager.serverProvisioned = await _clientManager.StartServer();
-        return _gameLobbyManager.serverProvisioned;
+    private async Task StartServer() {
+        _gameLobbyManager.currentServerProvisionState = ServerProvisionState.InProgress;
+        _lobbyView.RePaint();
+        await _clientManager.StartServer();
     }
     
     private async Task StartGame() {
@@ -404,7 +405,7 @@ public class MultiplayerUIController : MonoBehaviour {
         var lobbyGameModeName = _gameLobbyManager.GetLobbyGameMode();
         var selectedGameMode = GlobalState.GameModeManager.GetGameMode(lobbyGameModeName);
         
-        return _gameLobbyManager.serverProvisioned &&
+        return _gameLobbyManager.currentServerProvisionState == ServerProvisionState.Provisioned &&
                _gameLobbyManager.PlayersReady() &&
                _gameLobbyManager.GetLobbyPlayerCount() >=
                selectedGameMode.MinimumRequiredPlayers;
@@ -412,11 +413,11 @@ public class MultiplayerUIController : MonoBehaviour {
 
     /// <summary>
     /// Check if the host can start a server
-    /// A host can start a server if there isn't already server connection info stored
+    /// A host can start a server if there isn't already server connection info stored (server hasn't been provisioned)
     /// </summary>
     /// <returns>boolean</returns>
     private bool CanStartServer() {
-        return !_gameLobbyManager.serverProvisioned;
+        return _gameLobbyManager.currentServerProvisionState == ServerProvisionState.Idle;
     }
     
     private async Task ReadyUp() {
