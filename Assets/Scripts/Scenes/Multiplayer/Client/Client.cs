@@ -58,8 +58,11 @@ namespace Multiplayer {
         /// <summary>
         /// Make the client null to ensure next access creates a new client
         /// </summary>
-        public void Delete() {
-            _instance = null;
+        public void ClearConnectionData() {
+            _serverIp = "";
+            _port = "";
+            _serverStatus = "INACTIVE";
+            _isConnectedToServer = false;
         }
     }
 }

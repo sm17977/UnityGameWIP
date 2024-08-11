@@ -273,11 +273,10 @@ namespace Multiplayer {
         }
 
         /// <summary>
-        /// Reset the client instance
+        /// Reset the client instance by removing the server connection info
         /// </summary>
         public void ResetClient() {
-            Client.Delete();
-            Client = Client.Instance;
+            Client.ClearConnectionData();
         }
     }
 }
