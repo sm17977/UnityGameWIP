@@ -13,7 +13,6 @@ namespace Multiplayer {
     public delegate void OnRePaintLobbyView(); 
     public delegate void OnHostDisconnection(); 
     public class ClientManager : MonoBehaviour {
-
         public event OnUpdateServerDataInLobbyView UpdateServerDataInLobbyView;
         public event OnRePaintLobbyView RePaintLobbyView;
         public event OnHostDisconnection HostDisconnection;
@@ -21,6 +20,7 @@ namespace Multiplayer {
         public static ClientManager Instance;
         public Client Client;
         private CancellationTokenSource _cancellationTokenSource;
+        private WebServicesAPI _webServicesAPI;
         
         private GameLobbyManager _gameLobbyManager;
         
@@ -40,6 +40,7 @@ namespace Multiplayer {
             
             Client = Client.Instance;
             _gameLobbyManager = GameLobbyManager.Instance;
+            _webServicesAPI = new WebServicesAPI();
         }
 
         private void Start() {
@@ -62,8 +63,7 @@ namespace Multiplayer {
         /// </summary>
         public async Task Disconnect() {
             NetworkManager.Singleton.Shutdown();
-            Debug.Log("Disconnecting and deleting client");
-            ResetClient();
+            Client.IsConnectedToServer = false;
             await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(Client.IsConnectedToServer);
         }
         
@@ -76,9 +76,7 @@ namespace Multiplayer {
         private async Task ProvisionServer(CancellationToken cancellationToken) {
 
             try {
-                WebServicesAPI webServicesAPI = new WebServicesAPI();
-                await webServicesAPI.RequestAPIToken();
-                var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, webServicesAPI);
+                var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, _webServicesAPI);
                 
                 if (clientConnectionInfo.IP != null || clientConnectionInfo.IP != "") {
                     UpdateServerInfoForLobbyHost(clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
@@ -264,9 +262,15 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Delete the existing server allocation
+        /// Remove any server allocations and stop the game server
         /// </summary>
-        public void DeleteAllocation() {
+        public async void StopServer() {
+            await _webServicesAPI.RemoveAllocation();
+            Debug.Log("IP: " + Client.ServerIP);
+            var server = await _webServicesAPI.GetServer(Client.ServerIP, Int32.Parse(Client.Port));
+            if (server != null) {
+                await _webServicesAPI.TriggerServerAction(ServerAction.STOP, server);
+            }
             ResetClient();
         }
 

@@ -206,7 +206,7 @@ public class MultiplayerUIController : MonoBehaviour {
         if (_clientManager.Client.IsLobbyHost) {
             await _gameLobbyManager.DeleteLobby();
             //TODO Implement delete allocation logic
-            _clientManager.DeleteAllocation();
+            _clientManager.StopServer();
             _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
         }
         else {

@@ -27,6 +27,9 @@ namespace Multiplayer {
 
         private static readonly string ListServersEndpoint =
             $"/multiplay/servers/v1/projects/{ProjectId}/environments/{EnvId}/servers";
+        
+        private static readonly string TriggerServerActionEndpoint =
+            $"/multiplay/servers/v1/projects/{ProjectId}/environments/{EnvId}/servers";
 
         private static readonly string ListMachinesEndpoint =
             $"/multiplay/machines/v1/projects/{ProjectId}/environments/{EnvId}/machines";
@@ -40,6 +43,9 @@ namespace Multiplayer {
         private static readonly string GetAllocationEndpoint =
             $"/v1/allocations/projects/{ProjectId}/environments/{EnvId}/fleets/{FleetId}/allocations/{AllocationId}";
 
+        private static readonly string RemoveAllocationEndpoint =
+            $"/v1/allocations/projects/{ProjectId}/environments/{EnvId}/fleets/{FleetId}/allocations/{AllocationId}";
+        
         public WebServicesAPI() {
             _authHeader = GenerateAuthHeader();
         }
@@ -50,10 +56,10 @@ namespace Multiplayer {
         }
 
         private async Task<UnityWebRequest> SendRequest(string uri, string method, string payload = null,
-            string token = null) {
+            bool tokenRequired = false) {
             UnityWebRequest www;
-            if (method == "POST") {
-                www = new UnityWebRequest(uri, "POST");
+            if (method == "POST" || method == "DELETE") {
+                www = new UnityWebRequest(uri, method);
                 if (!string.IsNullOrEmpty(payload)) {
                     byte[] bodyRaw = Encoding.UTF8.GetBytes(payload);
                     www.uploadHandler = new UploadHandlerRaw(bodyRaw);
@@ -65,8 +71,10 @@ namespace Multiplayer {
             }
 
             www.downloadHandler = new DownloadHandlerBuffer();
-            if (!string.IsNullOrEmpty(token)) {
-                www.SetRequestHeader("Authorization", token);
+            if (tokenRequired) {
+                if (_apiToken.IsNullOrEmpty()) await RequestAPIToken();
+                var auth = "Bearer " + _apiToken;
+                www.SetRequestHeader("Authorization", auth);
             }
             else {
                 www.SetRequestHeader("Authorization", "Basic " + _authHeader);
@@ -94,11 +102,11 @@ namespace Multiplayer {
             }
         }
 
-        public async Task RequestAPIToken() {
+        private async Task RequestAPIToken() {
             var payload = new {
                 scopes = new[] {
                     "multiplay.allocations.create", "multiplay.allocations.list", "multiplay.allocations.get",
-                    "multiplay.machines.list"
+                    "multiplay.machines.list", "multiplay.allocations.delete", "multiplay.servers.start_stop"
                 }
             };
             var jsonPayload = JsonConvert.SerializeObject(payload);
@@ -119,7 +127,7 @@ namespace Multiplayer {
             var jsonPayload = JsonConvert.SerializeObject(payload);
             var uri = Protocol + MultiplayDomain + QueueAllocationRequestEndpoint;
 
-            using var www = await SendRequest(uri, "POST", jsonPayload, "Bearer " + _apiToken);
+            using var www = await SendRequest(uri, "POST", jsonPayload, true);
             var response = await HandleResponse<QueueAllocationResponse>(www);
             Debug.Log($"Allocation ID: {response?.allocationId}");
             Debug.Log($"href: {response?.href}");
@@ -127,7 +135,7 @@ namespace Multiplayer {
 
         public async Task<GetAllocationResponse> GetAllocationRequest() {
             var uri = Protocol + MultiplayDomain + GetAllocationEndpoint;
-            using var www = await SendRequest(uri, "GET", token: "Bearer " + _apiToken);
+            using var www = await SendRequest(uri, "GET", tokenRequired: true);
             return await HandleResponse<GetAllocationResponse>(www);
         }
 
@@ -148,6 +156,24 @@ namespace Multiplayer {
 
             Debug.LogError("Polling timed out.");
             return null;
+        }
+        
+        public async Task RemoveAllocation() {
+            var uri = Protocol + MultiplayDomain + RemoveAllocationEndpoint;
+            using var www = await SendRequest(uri, "DELETE", tokenRequired: true);
+            var response = await HandleResponse<RemoveAllocationResponse>(www);
+        }
+
+        public async Task TriggerServerAction(ServerAction action, Server server) {
+            
+            var payload = new {
+                action = action.ToString()
+            };
+            var jsonPayload = JsonConvert.SerializeObject(payload);
+
+            var uri = Protocol + ServicesDomain + TriggerServerActionEndpoint + "/" + server.id + "/actions";
+            using var www = await SendRequest(uri, "POST", jsonPayload);
+            var response = await HandleResponse<RemoveAllocationResponse>(www);
         }
         
         public async Task<Machine[]> PollForMachine(int timeoutSeconds,
@@ -187,6 +213,16 @@ namespace Multiplayer {
             var uri = Protocol + ServicesDomain + ListServersEndpoint;
             using var www = await SendRequest(uri, "GET");
             return await HandleResponse<Server[]>(www) ?? Array.Empty<Server>();
+        }
+
+        public async Task<Server> GetServer(string ip, int port) {
+            var servers = await GetServerList();
+            foreach (var server in servers) {
+                if (server.ip == ip && server.port == port) {
+                    return server;
+                }
+            }
+            return null;
         }
     }
 }
