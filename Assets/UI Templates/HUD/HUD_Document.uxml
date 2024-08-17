@@ -17,7 +17,6 @@
         <engine:VisualElement name="pause-menu" class="pause-menu-container">
             <engine:Label text="Paused" class="header pause-menu-header" />
         </engine:VisualElement>
-        <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
         <engine:VisualElement name="time-count-container" class="time-count-container">
             <engine:Label name="time-count" class="time-count" />
         </engine:VisualElement>
@@ -42,4 +41,5 @@
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
+    <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
 </UXML>

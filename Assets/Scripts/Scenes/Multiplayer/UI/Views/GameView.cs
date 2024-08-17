@@ -27,7 +27,7 @@ namespace Multiplayer.UI {
             InitializeElements();
             _duelMode = GlobalState.GameModeManager.CurrentGameMode as Duel;
             if (_duelMode != null) {
-                _duelMode.UpdateCountdownText += OnUpdateCountdownText;
+                //_duelMode.UpdateCountdownText += OnUpdateCountdownText;
             }
         }
 

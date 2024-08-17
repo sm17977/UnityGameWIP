@@ -2,10 +2,10 @@
 
 namespace Global.Game_Modes {
     
-    public delegate void OnUpdateCountdownText(int timer);
+    //public delegate void OnUpdateCountdownText(int timer);
     public class Duel : GameMode {
 
-        public event OnUpdateCountdownText UpdateCountdownText;
+        //public event OnUpdateCountdownText UpdateCountdownText;
 
         private readonly int _requiredPlayeCount = 2;        
         private readonly int _countdownTime = 5;
@@ -38,10 +38,10 @@ namespace Global.Game_Modes {
             SetCountdownTimer(_countdownTime);
         }
 
-        public override void SetCountdownTimer(int time) {
-            CountdownTimer = time;
-            UpdateCountdownText?.Invoke(time);
-        }
+        // public override void SetCountdownTimer(int time) {
+        //     CountdownTimer = time;
+        //     //UpdateCountdownText?.Invoke(time);
+        // }
         
         private void OnCountdownComplete() {
             GlobalState.Pause(false);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Global.Game_Modes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public delegate void Notify();
+public delegate void NotifyGameModeType();
 
 public class GlobalState : MonoBehaviour {
  
@@ -16,8 +16,8 @@ public class GlobalState : MonoBehaviour {
     
     public string currentScene;
     public Ability LuxQAbilitySO;
-    public event Notify OnMultiplayerGameMode;
-    public event Notify OnSinglePlayerGameMode;
+    public event NotifyGameModeType OnMultiplayerGameMode;
+    public event NotifyGameModeType OnSinglePlayerGameMode;
 
     private void Awake() {
         DontDestroyOnLoad(gameObject);
@@ -34,6 +34,7 @@ public class GlobalState : MonoBehaviour {
 
     private void OnEnable() {
         SceneManager.sceneLoaded += OnSceneLoaded;
+        //SceneManager.activeSceneChanged += OnSceneChanged;
     }
 
     private void Start() {
@@ -52,15 +53,15 @@ public class GlobalState : MonoBehaviour {
         }
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) {
-        currentScene = scene.name;
+    private void OnSceneLoaded(Scene nextScene, LoadSceneMode mode) {
+        currentScene = nextScene.name;
 
         switch (currentScene) {
             case "Arena":
                 GameModeManager.ChangeGameMode("Arena");
                 IsMultiplayer = false;
                 OnSinglePlayerGameMode?.Invoke();
-        
+                
                 break;
 
             case "Multiplayer":

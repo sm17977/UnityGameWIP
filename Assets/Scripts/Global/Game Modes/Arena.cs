@@ -3,6 +3,7 @@ using QFSW.QC;
 using UnityEngine;
 
 namespace Global.Game_Modes {
+    
     public class Arena : GameMode {
         
         public readonly RoundManager RoundManager;
@@ -27,10 +28,9 @@ namespace Global.Game_Modes {
         }
 
         public override void Start() {
-
             GlobalState.Pause(true);
-            SetCountdownTimer(_countdownTime);
-            CountdownManager.Instance.StartCountdown(this, OnCountdownComplete);
+            ArenaUIController.OnStartGameModeCountdown += () => StartCountdown(this);
+            CountdownTimer = _countdownTime;
         }
         
         public override void Update() {
@@ -39,15 +39,15 @@ namespace Global.Game_Modes {
                 RoundManager.Update();
             }
         }
-
         public override void FixedUpdate() {
         }
 
         public override void End() {
+            ArenaUIController.OnStartGameModeCountdown -= () => StartCountdown(this);
         }
         
         public override void Reset(){
-            SetCountdownTimer(_countdownTime);
+            CountdownTimer = _countdownTime;
             GameTimer = 0f;
             // Initialise multiple rounds and store them in a list
             var rounds = new List<Round>(){
@@ -58,10 +58,6 @@ namespace Global.Game_Modes {
                 new (30f, 1f, 0.2f, _ability),
             };
             RoundManager.Init(rounds);
-        }
-
-        private void OnCountdownComplete() {
-            GlobalState.Pause(false);
         }
     }
 }

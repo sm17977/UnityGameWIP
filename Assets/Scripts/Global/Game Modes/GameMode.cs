@@ -2,7 +2,9 @@
 using UnityEngine;
 
 namespace Global.Game_Modes {
+    public delegate void OnUpdateCountdownText(int timer);
     public abstract class GameMode {
+        public event OnUpdateCountdownText UpdateCountdownText;
         
         public string Name;
         public float GameTimer;
@@ -46,11 +48,13 @@ namespace Global.Game_Modes {
         
         /// <summary>
         /// Set a countdown timer in seconds for the start of the gamemode
+        /// Triggers event for UI scripts to update the countdown in the UI
         /// </summary>
-        /// <param name="seconds">Duration of the gamemode countdown in seconds</param>
-        public virtual void SetCountdownTimer(int seconds) {
-            CountdownActive = false;
-            CountdownTimer = seconds;
+        /// <param name="time">Duration of the gamemode countdown in seconds</param>
+        public void SetCountdownTimer(int time) {
+            CountdownTimer = time;
+            Debug.Log("Send Event: " + time);
+            UpdateCountdownText?.Invoke(time);
         }
         
         /// <summary>
@@ -60,6 +64,16 @@ namespace Global.Game_Modes {
         public string GetGameTimer(){
             decimal decimalValue = System.Math.Round((decimal)GameTimer, 2);
             return decimalValue + "s";
+        }
+
+        public void StartCountdown(GameMode gameMode) {
+            if (!CountdownActive) {
+                CountdownManager.Instance.StartCountdown(gameMode, OnCountdownComplete);
+            }
+        }
+        
+        public void OnCountdownComplete() {
+            GlobalState.Pause(false);
         }
     }
 }
