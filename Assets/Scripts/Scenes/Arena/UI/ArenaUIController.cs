@@ -39,6 +39,7 @@ public class ArenaUIController : MonoBehaviour
     void Start() {
         InitTimeCounter();  
         GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
+        GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
         OnStartGameModeCountdown?.Invoke();
     }
 

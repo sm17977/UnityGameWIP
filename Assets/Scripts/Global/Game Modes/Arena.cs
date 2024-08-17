@@ -29,6 +29,7 @@ namespace Global.Game_Modes {
 
         public override void Start() {
             GlobalState.Pause(true);
+            // Subscribe to events sent from the UI Controller to start the countdown
             ArenaUIController.OnStartGameModeCountdown += () => StartCountdown(this);
             CountdownTimer = _countdownTime;
         }

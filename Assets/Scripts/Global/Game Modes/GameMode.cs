@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace Global.Game_Modes {
     public delegate void OnUpdateCountdownText(int timer);
+    public delegate void OnHideCountdown();
+
     public abstract class GameMode {
         public event OnUpdateCountdownText UpdateCountdownText;
+        public event OnHideCountdown HideCountdown;
         
         public string Name;
         public float GameTimer;
@@ -48,7 +51,7 @@ namespace Global.Game_Modes {
         
         /// <summary>
         /// Set a countdown timer in seconds for the start of the gamemode
-        /// Triggers event for UI scripts to update the countdown in the UI
+        /// Sends event to UI scripts to update the countdown in the UI
         /// </summary>
         /// <param name="time">Duration of the gamemode countdown in seconds</param>
         public void SetCountdownTimer(int time) {
@@ -74,6 +77,7 @@ namespace Global.Game_Modes {
         
         public void OnCountdownComplete() {
             GlobalState.Pause(false);
+            HideCountdown?.Invoke();
         }
     }
 }
