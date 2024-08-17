@@ -1,52 +1,45 @@
 <UXML 
-    xmlns="UnityEngine.UIElements" 
-    xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    engine="UnityEngine.UIElements" 
-    editor="UnityEditor.UIElements" 
-    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
-    editor-extension-mode="False">
-
-    <Style src="project://database/Assets/UI Templates/HUD/HUD_Styles.uss" />
-    <VisualElement name="main-container" class="main-container">
-        <VisualElement name="debug" class="debug-container">
-            <Label text="Debug Info" class="header"/>
-            <Label text="Current State: " name="debug-current-state"/>
-            <Label text="Round: " name="debug-current-round"/>
-            <Label text="Next round starts in " name="debug-current-round-timer"/>
-        </VisualElement>   
-        <VisualElement name="pause-menu" class="pause-menu-container">
-            <Label text="Paused" class="header pause-menu-header"/>
-        </VisualElement>
-        <VisualElement name="countdown-container" class="countdown-container">
-            <Label text="" name="countdown-timer" class="countdown-timer header"/>
-        </VisualElement>
-        <VisualElement name="time-count-container" class="time-count-container">
-            <Label text="" name="time-count" class="time-count"/>
-        </VisualElement>
-        <VisualElement name="player-center" class="player-center-container">
-            <VisualElement class="skills-container">
-                <VisualElement name="q-box" class="skill">
-                    <VisualElement name="q-overlay" class="bar">
-                    </VisualElement>
-                    <Label text="Q" class="skill-label"/>
-                </VisualElement>
-                <VisualElement name="w-box" class="skill">   
-                    <VisualElement name="w-overlay" class="bar">
-                    </VisualElement> 
-                    <Label text="W" class="skill-label"/>
-                </VisualElement>
-                <VisualElement name="e-box" class="skill">
-                    <VisualElement name="e-overlay" class="bar">
-                    </VisualElement>     
-                    <Label text="E" class="skill-label"/>
-                </VisualElement>
-                <VisualElement name="r-box" class="skill">  
-                    <VisualElement name="r-overlay" class="bar">
-                    </VisualElement>   
-                    <Label text="R" class="skill-label"/>
-                </VisualElement>
-            </VisualElement>
-        </VisualElement>
-    </VisualElement>
-
+      xmlns:engine="UnityEngine.UIElements"
+      xmlns:editor="UnityEditor.UIElements"
+      xmlns:custom="CustomElements"
+      xsi="http://www.w3.org/2001/XMLSchema-instance"
+      noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd"
+      editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI%20Templates/HUD/HUD_Styles.uss?fileID=7433441132597879392&amp;guid=c1b4d08261a306b429eb20d32dc944de&amp;type=3#HUD_Styles" />
+    <engine:VisualElement name="main-container" class="main-container">
+        <engine:VisualElement name="debug" class="debug-container">
+            <engine:Label text="Debug Info" class="header" />
+            <engine:Label text="Current State: " name="debug-current-state" />
+            <engine:Label text="Round: " name="debug-current-round" />
+            <engine:Label text="Next round starts in " name="debug-current-round-timer" />
+        </engine:VisualElement>
+        <engine:VisualElement name="pause-menu" class="pause-menu-container">
+            <engine:Label text="Paused" class="header pause-menu-header" />
+        </engine:VisualElement>
+        <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
+        <engine:VisualElement name="time-count-container" class="time-count-container">
+            <engine:Label name="time-count" class="time-count" />
+        </engine:VisualElement>
+        <engine:VisualElement name="player-center" class="player-center-container">
+            <engine:VisualElement class="skills-container">
+                <engine:VisualElement name="q-box" class="skill">
+                    <engine:VisualElement name="q-overlay" class="bar" />
+                    <engine:Label text="Q" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="w-box" class="skill">
+                    <engine:VisualElement name="w-overlay" class="bar" />
+                    <engine:Label text="W" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="e-box" class="skill">
+                    <engine:VisualElement name="e-overlay" class="bar" />
+                    <engine:Label text="E" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="r-box" class="skill">
+                    <engine:VisualElement name="r-overlay" class="bar" />
+                    <engine:Label text="R" class="skill-label" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
 </UXML>
