@@ -6,11 +6,11 @@ using System;
 using CustomElements;
 using Global.Game_Modes;
 
-public delegate void StartGameModeCountdown();
+public delegate void StartArenaCountdown();
 
 public class ArenaUIController : MonoBehaviour
 {
-    public static event StartGameModeCountdown OnStartGameModeCountdown; 
+    public static event StartDuelCountdown OnStartGameModeCountdown; 
 
     // UI Document
     [SerializeField] private UIDocument uiDocument;
@@ -21,7 +21,7 @@ public class ArenaUIController : MonoBehaviour
     private VisualElement _timeCounterContainer;
     private Label _timeCounter;
     private VisualElement _pauseMenu;
-    private CountdownTimerElement _countdownTimerElement; // New custom countdown element
+    private CountdownTimerElement _countdownTimerElement;
     private GlobalState _globalState;
     private Arena arena;
 

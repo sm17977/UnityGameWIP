@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Multiplayer.UI;
+using UnityEngine;
 
 namespace Global.Game_Modes {
     
@@ -17,10 +18,9 @@ namespace Global.Game_Modes {
         }
         
         public override void Start() {
-            SetCountdownTimer(_countdownTime);
             GlobalState.Pause(true);
-            Debug.Log("START - Update Countdown Text: " + CountdownTimer);
-            CountdownManager.Instance.StartCountdown(this, OnCountdownComplete);
+            GameView.OnStartGameModeCountdown += () => StartCountdown(this);
+            CountdownTimer = _countdownTime;
         }
 
         public override void Update() {
@@ -31,20 +31,12 @@ namespace Global.Game_Modes {
         }
         
         public override void End() {
+            GameView.OnStartGameModeCountdown -= () => StartCountdown(this);
         }
 
         public override void Reset() {
+            CountdownTimer = _countdownTime;
             GameTimer = 0f;
-            SetCountdownTimer(_countdownTime);
-        }
-
-        // public override void SetCountdownTimer(int time) {
-        //     CountdownTimer = time;
-        //     //UpdateCountdownText?.Invoke(time);
-        // }
-        
-        private void OnCountdownComplete() {
-            GlobalState.Pause(false);
         }
     }
 }

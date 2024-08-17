@@ -1,34 +1,35 @@
 ﻿using System.Linq;
+using CustomElements;
 using Global.Game_Modes;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public delegate void StartDuelCountdown();
 
 namespace Multiplayer.UI {
     public class GameView : View {
 
-        private Label _countdownText;
-        private GameMode _gameMode;
-        private Duel _duelMode;
+        private CountdownTimerElement _countdownTimerElement;
+        public static event StartDuelCountdown OnStartGameModeCountdown; 
         
         public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             InitializeElements();
+
         }
         
         private void InitializeElements() {
-            _countdownText = Template.Q<Label>("countdown-text");
-            Debug.Log("GameMode: " + GlobalState.GameModeManager.CurrentGameMode);
+            _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
         }   
 
         public override async void Show() {
             base.Show();
             InitializeElements();
-            _duelMode = GlobalState.GameModeManager.CurrentGameMode as Duel;
-            if (_duelMode != null) {
-                //_duelMode.UpdateCountdownText += OnUpdateCountdownText;
-            }
+            GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
+            GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
+            GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
+            OnStartGameModeCountdown?.Invoke();
         }
 
         public override void Hide() {
@@ -43,8 +44,8 @@ namespace Multiplayer.UI {
 
         }
         
-        private void OnUpdateCountdownText(int timer) {
-            _countdownText.text = timer > 0 ? timer.ToString() : "Duel!";
-        }
+        // private void OnUpdateCountdownText(int timer) {
+        //     _countdownText.text = timer > 0 ? timer.ToString() : "Duel!";
+        // }
     }
 }

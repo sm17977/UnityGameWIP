@@ -12,14 +12,10 @@ namespace CustomElements {
 
         private readonly Label _countdownLabel;
         private VisualElement _countdownLabelContainer;
-        private Arena arena;
-        
         
         public CountdownTimerElement() {
-            
-            
-            // _countdownContainer = new VisualElement();
-            // _countdownContainer.AddToClassList("countdown-container");
+
+            Debug.Log("CountdownTimerElement Constructor");
             
             AddToClassList("countdown-container");
             
@@ -37,9 +33,15 @@ namespace CustomElements {
             _countdownLabel.text = timeLeft > 0 ? timeLeft.ToString() : "Go!";
         }
 
+        public void ShowCountdown() {
+            AddToClassList("countdown-container");
+            _countdownLabelContainer.style.visibility = Visibility.Visible;
+        }
+
         public void HideCountdown() {
             _countdownLabel.text = string.Empty;
             RemoveFromClassList("countdown-container");
+            _countdownLabelContainer.style.visibility = Visibility.Hidden;
         }
         
         

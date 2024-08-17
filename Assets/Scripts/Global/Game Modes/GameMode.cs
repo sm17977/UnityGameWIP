@@ -4,10 +4,12 @@ using UnityEngine;
 namespace Global.Game_Modes {
     public delegate void OnUpdateCountdownText(int timer);
     public delegate void OnHideCountdown();
+    public delegate void OnShowCountdown();
 
     public abstract class GameMode {
         public event OnUpdateCountdownText UpdateCountdownText;
         public event OnHideCountdown HideCountdown;
+        public event OnShowCountdown ShowCountdown;
         
         public string Name;
         public float GameTimer;
@@ -71,6 +73,7 @@ namespace Global.Game_Modes {
 
         public void StartCountdown(GameMode gameMode) {
             if (!CountdownActive) {
+                ShowCountdown?.Invoke();
                 CountdownManager.Instance.StartCountdown(gameMode, OnCountdownComplete);
             }
         }

@@ -10,11 +10,28 @@
 }
 
 .countdown-container{
-    width: 300px;
-    height: 300px;
-    -unity-text-align: middle-center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
     align-items: center;
     justify-content: center;
-    font-size: 48px;
-    color: white;
+    padding: 20px;
+    display: flex;
+}
+
+.countdown-label{
+    margin: auto;
+    font-size: 112px;
+}
+
+.countdown-label-container{
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 50px;
+    border-radius: 20px;
+    visibility: visible;
 }

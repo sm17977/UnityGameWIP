@@ -1,18 +1,17 @@
-<ui:UXML 
-    xmlns:ui="UnityEngine.UIElements"
+<UXML
     xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    engine="UnityEngine.UIElements" 
+    xmlns:engine="UnityEngine.UIElements" 
+    xmlns:custom="CustomElements"
     editor="UnityEditor.UIElements" 
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
-    <!-- <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" /> -->
-    <!-- <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" /> -->
     
     <!-- Game View -->
-    <ui:VisualElement name="gameview-container" class="gameview-container">
-        <ui:VisualElement name="countdown-container" class="countdown-container">
-            <ui:Label text="Countdown: " name="countdown-text" class="countdown-text"/>
-        </ui:VisualElement>
-    </ui:VisualElement>
+    <engine:VisualElement name="gameview-container" class="gameview-container">
+        <!-- <ui:VisualElement name="countdown-container" class="countdown-container"> -->
+        <!--     <ui:Label text="Countdown: " name="countdown-text" class="countdown-text"/> -->
+        <!-- </ui:VisualElement> -->
+        <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
+    </engine:VisualElement>
     
-</ui:UXML>
+</UXML>
