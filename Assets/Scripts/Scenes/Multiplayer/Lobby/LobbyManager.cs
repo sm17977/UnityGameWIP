@@ -2,6 +2,7 @@ using Unity.Services.Lobbies;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Unity.Services.Authentication;
@@ -24,15 +25,16 @@ public sealed class LobbyManager {
     /// Sign in the user to Unity Authentication Services
     /// </summary>
     /// <returns></returns>
+    [ItemCanBeNull]
     public async Task<string> SignInUser() {
         var random = new System.Random();
         var randomNumber = random.Next();
 
         var options = new InitializationOptions();
         options.SetProfile("Player" + randomNumber.ToString());
-        await UnityServices.InitializeAsync(options);
-
+        
         try {
+            await UnityServices.InitializeAsync(options);
             if (!AuthenticationService.Instance.IsSignedIn) {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 Debug.Log("Signed in user: " + AuthenticationService.Instance.PlayerId);
@@ -42,7 +44,7 @@ public sealed class LobbyManager {
         }
         catch (AuthenticationException e) {
             Debug.LogException(e);
-            return "";
+            return null;
         }
     }
     

@@ -186,6 +186,12 @@ OuterGlow {
     border-width: 9px;
     border-color: #ffffff;
     border-right-color: #474bff;
-    transition: rotate 1s linear;
 }
 
+.loader-rotation{
+    rotate: 360deg;
+}
+
+.loader-transition{
+    transition: rotate 1s linear;
+}

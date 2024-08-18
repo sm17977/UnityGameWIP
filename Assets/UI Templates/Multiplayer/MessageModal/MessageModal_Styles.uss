@@ -1,0 +1,105 @@
+﻿/* Top level container */
+.message-modal-container{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    display: flex;
+}
+
+/* Modal */
+.message-modal-content{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 100px;
+    height: 100px;
+    align-items: center;
+    align-content: center;
+    padding: 20px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 20px;
+    opacity: 0;
+}
+
+/* Modal size and opacity values to transition to when opened */
+.message-modal-active{
+    width: 600px;
+    height: 220px;
+    opacity: 1;
+}
+
+/* This is called OuterGlow (custom element) but is actually used as a shadow for the Modal */
+OuterGlow {
+    border-radius: 20px;
+    --glow-color: clear;
+    --glow-size: 50;
+}
+
+/* The shadow is only shown when the modal is not transitioning to avoid artifacts (it looked a bit laggy too) */
+.shadow-active{
+    --glow-color: rgba(100, 100, 111, 0.1);
+}
+
+/* Modal opening transitions */
+.message-modal-show-transition{
+    transition: all 0.2s ease-out-back, opacity 0.2s;
+}
+
+/* Modal closing transitions */
+.message-modal-hide-transition{
+    transition: all 0.2s ease-in-back, opacity 0.2s;
+}
+
+.message-modal-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-modal-header-label{
+    color: black;
+    padding: 10px;
+    -unity-font-style: bold;
+    font-size: 40px;
+}
+
+message-modal-body-label{
+    color: black;
+    padding: 10px;
+    -unity-font-style: normal;
+    font-size: 80px;
+}
+
+.loader-container{
+    margin-left: auto;
+    margin-right: auto;
+    top: 10px;
+    right: 0;
+    display: flex;
+    align-items: center;
+}
+
+.loader {
+    display: flex;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border-width: 9px;
+    border-color: #ffffff;
+    border-right-color: #474bff;
+}
+
+.loader-rotation{
+    rotate: 360deg;
+}
+
+.loader-transition{
+    transition: rotate 1s linear;
+}
+

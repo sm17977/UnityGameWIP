@@ -36,14 +36,6 @@ namespace Multiplayer.UI {
             CloseModal?.Invoke(this); 
         }
         
-        public override void ShowLoader() {
-
-        }
-        
-        public override void HideLoader() {
-      
-        }
-        
         public override void Update() {
             
         }

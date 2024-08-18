@@ -505,7 +505,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uIControllerGameObject: {fileID: 1516747482}
   gameStarted: 0
-  serverProvisioned: 0
+  currentServerProvisionState: 0
 --- !u!1 &502043955
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,11 +854,13 @@ MonoBehaviour:
     type: 3}
   lobbyViewTmpl: {fileID: 9197481963319205126, guid: 27ad0355deb94393a106e75767cac466,
     type: 3}
+  gameViewTmpl: {fileID: 9197481963319205126, guid: 713d2423497c41f29bca02e6c3437072,
+    type: 3}
   createLobbyModalTmpl: {fileID: 9197481963319205126, guid: 7e598edb4a4c4704a0151d69d2570bd8,
     type: 3}
   exitGameModalTmpl: {fileID: 9197481963319205126, guid: f169c3dd518c4dc382f6ddecfe4764ac,
     type: 3}
-  gameViewTmpl: {fileID: 9197481963319205126, guid: 713d2423497c41f29bca02e6c3437072,
+  messageModalTmpl: {fileID: 9197481963319205126, guid: 37b72af13b2649da87f9abd12c03bcd5,
     type: 3}
 --- !u!1 &1599386338
 GameObject:

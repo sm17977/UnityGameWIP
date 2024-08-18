@@ -116,14 +116,6 @@ namespace Multiplayer.UI {
             _gameModeDropdown.index = 0;
         }
         
-        public override void ShowLoader() {
-            Show(Loader);
-        }
-        
-        public override void HideLoader() {
-            Hide(Loader);
-        }
-
         public override void Update() {
    
         }

@@ -1,0 +1,29 @@
+﻿<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/MessageModal/MessageModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    
+    <!-- Message Modal -->
+    <ui:VisualElement name="message-modal" class="message-modal-container">
+        <OuterGlow name="container-shadow">
+            <ui:VisualElement name="message-modal-content" class="message-modal-content">
+                <ui:VisualElement name="message-modal-header" class="message-modal-header">
+                    <ui:Label text="Signing in..." class="message-modal-header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="message-modal-body" class="message-modal-body">
+                    <ui:Label text="Please wait while we get everything ready" class="message-modal-body-label"/>
+                    <ui:VisualElement name="loader-container" class="loader-container">
+                        <ui:VisualElement name="loader" class="loader"></ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </OuterGlow>
+    </ui:VisualElement>
+    
+</ui:UXML>

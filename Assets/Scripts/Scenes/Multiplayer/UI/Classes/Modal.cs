@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -9,9 +10,10 @@ namespace Multiplayer.UI {
         
         protected Button CloseButton;
         protected VisualElement Loader;
+    
         
         // Loader
-        private float _rotation = 0;
+        private int _rotation = 0;
         private float _timer = 0;
         
         public virtual void ShowModal() {
@@ -22,25 +24,30 @@ namespace Multiplayer.UI {
             ParentContainer.Remove(Template);
         }
 
-        public abstract void ShowLoader();
-        public abstract void HideLoader();
-        
-        private void RotateLoader() {
-            _rotation += 360;
-            Loader.style.rotate =
-                new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(_rotation, AngleUnit.Degree)));
+        protected void ShowLoader() {
+            if (Loader != null) {
+                Loader.RegisterCallback<TransitionEndEvent>(evt => {
+                    Loader.ToggleInClassList("loader-transition");
+
+                    Loader.style.rotate =
+                        new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(0, AngleUnit.Degree)));
+                    
+                    Loader.schedule.Execute(() => Loader.ToggleInClassList("loader-transition")).StartingIn(1);
+                    
+                    Loader.schedule.Execute(() => {
+                        Loader.style.rotate =
+                            new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(360, AngleUnit.Degree)));
+                    }).StartingIn(20);
+                });
+                
+                Show(Loader);
+                Loader.ToggleInClassList("loader-transition");
+                Loader.ToggleInClassList("loader-rotation");
+            }
         }
 
-        public void UpdateLoader() {
-            if (Loader != null) {
-                if (_timer >= 1) {
-                    RotateLoader();
-                    _timer = 0;
-                }
-                else {
-                    _timer += Time.deltaTime;
-                }
-            }
+        protected void HideLoader() {
+            if(Loader != null) Hide(Loader);
         }
     }
 }

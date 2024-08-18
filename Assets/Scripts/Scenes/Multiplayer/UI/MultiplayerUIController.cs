@@ -38,14 +38,18 @@ public class MultiplayerUIController : MonoBehaviour {
     private List<Modal> _modals;
     private CreateLobbyModal _createLobbyModal;
     private ExitGameModal _exitGameModal;
+    private MessageModal _messageModal;
     
     // Templates
     public VisualTreeAsset multiplayerMenuViewTmpl;
     public VisualTreeAsset lobbiesViewTmpl;
     public VisualTreeAsset lobbyViewTmpl;
+    public VisualTreeAsset gameViewTmpl;
+    
     public VisualTreeAsset createLobbyModalTmpl;
     public VisualTreeAsset exitGameModalTmpl;
-    public VisualTreeAsset gameViewTmpl;
+    public VisualTreeAsset messageModalTmpl;
+
     
     //Gamemode
     private GameMode _currentGameMode;
@@ -67,7 +71,19 @@ public class MultiplayerUIController : MonoBehaviour {
      private async void Start() {
          _clientManager = ClientManager.Instance;
          _viewManager.Initialize(_views, _modals, _multiplayerMenuView);
-         _clientManager.Client.ID = await _gameLobbyManager.SignIn();
+         
+         _viewManager.OpenModal(_messageModal);
+         var clientId = await _gameLobbyManager.SignIn();
+         
+
+         if (clientId != null) {
+             _clientManager.Client.ID = clientId;
+             await Task.Delay(500);
+             _viewManager.CloseModal(_messageModal);
+         }
+         else {
+             Debug.Log("fail");
+         }
          
          var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
          _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
@@ -131,9 +147,7 @@ public class MultiplayerUIController : MonoBehaviour {
     }
 
     private void Update() {
-        if (_viewManager != null && _viewManager.CurrentModal != null) {
-            _viewManager.CurrentModal.UpdateLoader();
-        }
+       
     }
 
     /// <summary>
@@ -164,10 +178,12 @@ public class MultiplayerUIController : MonoBehaviour {
         
         _createLobbyModal = new CreateLobbyModal(root, createLobbyModalTmpl);
         _exitGameModal = new ExitGameModal(root, exitGameModalTmpl);
+        _messageModal = new MessageModal(root, messageModalTmpl);
 
         _modals = new List<Modal>() {
             _createLobbyModal,
-            _exitGameModal
+            _exitGameModal,
+            _messageModal
         };
     }
     
@@ -205,9 +221,12 @@ public class MultiplayerUIController : MonoBehaviour {
     private async Task LeaveLobby() {
         if (_clientManager.Client.IsLobbyHost) {
             await _gameLobbyManager.DeleteLobby();
-            //TODO Implement delete allocation logic
-            _clientManager.StopServer();
-            _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
+            if (_gameLobbyManager.currentServerProvisionState != ServerProvisionState.Idle &&
+                _gameLobbyManager.currentServerProvisionState != ServerProvisionState.Failed) {
+                
+                _clientManager.StopServer();
+                _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
+            }
         }
         else {
             await _gameLobbyManager.LeaveLobby();

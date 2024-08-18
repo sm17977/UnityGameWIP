@@ -6,13 +6,10 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
     
-    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
-    <Style src="project://database/Assets/UI Templates/Multiplayer/CreateLobbyModal/CreateLobbyModal_Styles.uss" />
-    
     <!-- Create Lobby Modal -->
     <ui:VisualElement name="create-lobby" class="lobby-modal-container">
         <OuterGlow name="container-shadow">
-            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content lobby-modal-active">
+            <ui:VisualElement name="lobby-modal-content" class="lobby-modal-content">
                 <ui:VisualElement name="lobby-modal-header" class="lobby-modal-header">
                     <ui:Label text="Create a lobby" class="lobby-modal-header-label"/>
                 </ui:VisualElement>

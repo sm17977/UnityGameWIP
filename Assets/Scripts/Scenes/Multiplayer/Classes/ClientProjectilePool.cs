@@ -38,7 +38,6 @@ public class ClientProjectilePool : MonoBehaviour {
             
             _projectilePool.Add(projectile);
             _projectilePool.Add(hit);
-            Debug.Log("Prefab initialized and added to pool: " + projectile.name);
         }
     }
 
@@ -51,12 +50,11 @@ public class ClientProjectilePool : MonoBehaviour {
                 }
                 
                 if (!projectile.activeInHierarchy && projectile.gameObject.CompareTag(type.ToString())) {
-                    Debug.Log("Getting projectile");
                     return projectile;
                 }
             }
             catch (Exception e) {
-                Debug.Log("Error getting pooled projectile: " + e);
+                Debug.LogError("Error getting pooled projectile: " + e);
             }
         }
         return null;
@@ -64,8 +62,6 @@ public class ClientProjectilePool : MonoBehaviour {
     public void ReturnObjectToPool(GameObject projectile) {
         if (_projectilePool.Contains(projectile)) {
             projectile.SetActive(false);
-        
-            Debug.Log("Projectile returned to pool: " + projectile.name);
         } 
         else {
             Debug.LogError("Projectile not part of the pool: " + projectile.name);
