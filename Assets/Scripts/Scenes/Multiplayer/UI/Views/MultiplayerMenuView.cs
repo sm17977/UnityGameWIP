@@ -6,15 +6,18 @@ using UnityEngine.UIElements;
 namespace Multiplayer.UI {
 
     public delegate bool OnIsThisPlayerInLobby();
+    public delegate bool OnIsPlayerSignedIn();
     public class MultiplayerMenuView : View {
-        public event OnIsThisPlayerInLobby IsThisPlayerInLobby;
         
         private List<Button> _buttonsList;
         private Label _playerIdLabel;
+        public event OnIsThisPlayerInLobby IsPlayerInLobby;
+        public event OnIsPlayerSignedIn IsPlayerSignedIn;
         public event Action OpenCreateLobbyModal;
         public event Action ShowLobbyView;
         public event Action ShowLobbiesView;
         public event Action LoadMainMenuScene;
+        
         
         public MultiplayerMenuView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -54,7 +57,7 @@ namespace Multiplayer.UI {
         }
 
         private void RunLobbyCheck() {
-            if (IsThisPlayerInLobby?.Invoke() == true) {
+            if (IsPlayerInLobby?.Invoke() == true) {
                 var currentLobbyBtnContainer = Template.Q<VisualElement>("lobby-btn-container");
                 var createLobbyBtnContainer = Template.Q<VisualElement>("create-lobby-btn-container");
                 Show(currentLobbyBtnContainer);
@@ -67,13 +70,25 @@ namespace Multiplayer.UI {
                 Hide(currentLobbyBtnContainer);
             }
         }
+
+        private void ValidateButtons() {
+
+            var signedIn = IsPlayerSignedIn?.Invoke() == true;
+            
+            foreach (var button in _buttonsList) {
+                if (button.text == "Main Menu") continue;
+                button.SetEnabled(signedIn);
+            }
+        }
         
         public override async void Show() {
             base.Show();
+            ValidateButtons();
             RunLobbyCheck();
         }
         
         public override void Update() {
+            ValidateButtons();
             RunLobbyCheck();
         }
         

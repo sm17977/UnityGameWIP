@@ -72,6 +72,19 @@ public class GameLobbyManager : MonoBehaviour {
         _playerId = await _lobbyManager.SignInUser();
         return _playerId;
     }
+
+    /// <summary>
+    /// Is the player signed in to Unity Authentication Services
+    /// <returns>boolean</returns>
+    /// </summary>
+    public bool IsPlayerSignedIn() {
+        try {
+            return AuthenticationService.Instance.IsSignedIn;
+        }
+        catch (Exception) {
+            return false;
+        }
+    }
     
     /// <summary>
     /// Send a regular heartbeat ping to the lobby to keep it alive 

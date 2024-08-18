@@ -75,15 +75,15 @@ public class MultiplayerUIController : MonoBehaviour {
          _viewManager.OpenModal(_messageModal);
          var clientId = await _gameLobbyManager.SignIn();
          
-
          if (clientId != null) {
              _clientManager.Client.ID = clientId;
              await Task.Delay(500);
              _viewManager.CloseModal(_messageModal);
          }
          else {
-             Debug.Log("fail");
+             //TODO show error message in modal 
          }
+         _viewManager.CurrentView.Update();
          
          var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
          _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
@@ -112,7 +112,8 @@ public class MultiplayerUIController : MonoBehaviour {
         _multiplayerMenuView.ShowLobbyView += (() => _viewManager.ChangeView(_lobbyView));
         _multiplayerMenuView.ShowLobbiesView += (() => _viewManager.ChangeView(_lobbiesView));
         _multiplayerMenuView.LoadMainMenuScene += (() => _globalState.LoadScene("Main Menu"));
-        _multiplayerMenuView.IsThisPlayerInLobby += IsPlayerInLobby;
+        _multiplayerMenuView.IsPlayerInLobby += IsPlayerInLobby;
+        _multiplayerMenuView.IsPlayerSignedIn += (() => _gameLobbyManager.IsPlayerSignedIn());
 
         // Lobbies View Events
         _lobbiesView.JoinLobby += (async (lobby) => await JoinLobby(lobby));

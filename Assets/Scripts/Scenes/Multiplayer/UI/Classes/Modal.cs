@@ -10,11 +10,6 @@ namespace Multiplayer.UI {
         
         protected Button CloseButton;
         protected VisualElement Loader;
-    
-        
-        // Loader
-        private int _rotation = 0;
-        private float _timer = 0;
         
         public virtual void ShowModal() {
             ParentContainer.Add(Template);
@@ -26,6 +21,8 @@ namespace Multiplayer.UI {
 
         protected void ShowLoader() {
             if (Loader != null) {
+                
+                // Handles the looping of the loader rotation transition
                 Loader.RegisterCallback<TransitionEndEvent>(evt => {
                     Loader.ToggleInClassList("loader-transition");
 
