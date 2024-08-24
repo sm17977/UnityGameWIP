@@ -864,6 +864,8 @@ MonoBehaviour:
     type: 3}
   messageModalSignInFailedTmpl: {fileID: 9197481963319205126, guid: 94919d8198584bf287859603b3c99a5e,
     type: 3}
+  messageModalLobbyFailedTmpl: {fileID: 9197481963319205126, guid: b46d23a1b86148ba82d35bed97b6e1fa,
+    type: 3}
 --- !u!1 &1599386338
 GameObject:
   m_ObjectHideFlags: 0

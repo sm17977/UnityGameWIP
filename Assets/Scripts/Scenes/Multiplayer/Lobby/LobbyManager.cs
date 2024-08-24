@@ -8,10 +8,12 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
+using Exception = System.Exception;
 
 public sealed class LobbyManager {
     private static LobbyManager _instance = null;
     private static readonly object Padlock = new object();
+    private Queue<Func<Task>> _requestQueue = new Queue<Func<Task>>();
     
     public static LobbyManager Instance {
         get {
@@ -21,7 +23,97 @@ public sealed class LobbyManager {
             }
         }
     }
+
+    private enum LobbyRequestType {
+        CreateLobby,
+        JoinLobby,
+        LeaveLobby,
+        GetLobby,
+        GetLobbiesList,
+        GetJoinedLobbies,
+        UpdateLobbyData,
+        UpdateLobbyPlayerData,
+        RemovePlayer
+    }
+
+    private Dictionary<LobbyRequestType, DateTime> _lastRequestTime = new Dictionary<LobbyRequestType, DateTime>();
+    private readonly Dictionary<LobbyRequestType, TimeSpan> _requestLimits = new Dictionary<LobbyRequestType, TimeSpan> {
+        { LobbyRequestType.CreateLobby, TimeSpan.FromSeconds(3) },    // 2 requests per 6 seconds
+        { LobbyRequestType.JoinLobby, TimeSpan.FromSeconds(3) },      // 2 requests per 6 seconds
+        { LobbyRequestType.LeaveLobby, TimeSpan.FromMilliseconds(200) }, // 5 requests per second
+        { LobbyRequestType.GetLobby, TimeSpan.FromSeconds(1) },       // 1 request per second
+        { LobbyRequestType.GetLobbiesList, TimeSpan.FromSeconds(1) }, // 1 request per second
+        { LobbyRequestType.GetJoinedLobbies, TimeSpan.FromSeconds(30) }, // 1 request per 30 seconds
+        { LobbyRequestType.UpdateLobbyData, TimeSpan.FromSeconds(1) }, // 5 requests per 5 seconds
+        { LobbyRequestType.UpdateLobbyPlayerData, TimeSpan.FromSeconds(1) }, // 5 requests per 5 seconds
+    };
     
+    private Dictionary<LobbyRequestType, bool> _isRequestInProgress = new Dictionary<LobbyRequestType, bool>
+    {
+        { LobbyRequestType.CreateLobby, false },
+        { LobbyRequestType.JoinLobby, false },
+        { LobbyRequestType.LeaveLobby, false },
+        { LobbyRequestType.GetLobby, false },
+        { LobbyRequestType.GetLobbiesList, false },
+        { LobbyRequestType.GetJoinedLobbies, false },
+        { LobbyRequestType.UpdateLobbyData, false },
+        { LobbyRequestType.UpdateLobbyPlayerData, false },
+        { LobbyRequestType.RemovePlayer, false }
+    };
+    
+    private async Task<T> HandleRequest<T>(LobbyRequestType requestType, Func<Task<T>> requestFunc) {
+
+        if (_isRequestInProgress[requestType]) {
+            var tcs = new TaskCompletionSource<T>();
+            _requestQueue.Enqueue(async () => tcs.SetResult(await HandleRequest(requestType, requestFunc)));
+            return await tcs.Task;
+        }
+
+        _isRequestInProgress[requestType] = true;
+
+        try {
+            if (!ValidateRequest(requestType)) {
+                var delayTime = _requestLimits[requestType] - (DateTime.UtcNow - _lastRequestTime[requestType]);
+                if (delayTime > TimeSpan.Zero) {
+                    Debug.Log($"Throttling request. Waiting {delayTime.TotalSeconds} seconds before retrying.");
+                    await Task.Delay(delayTime);
+                }
+            }
+            
+            _lastRequestTime[requestType] = DateTime.UtcNow;
+            return await requestFunc();
+        }
+        finally {
+            _isRequestInProgress[requestType] = false;
+            
+            if (_requestQueue.Count > 0) {
+                var nextRequest = _requestQueue.Dequeue();
+                await nextRequest();
+            }
+        }
+    }
+
+    
+    private bool ValidateRequest(LobbyRequestType requestType) {
+        if (!_requestLimits.ContainsKey(requestType)) {
+            Debug.LogError($"Unknown request type: {requestType}");
+            return false;
+        }
+
+        var now = DateTime.UtcNow;
+        if (_lastRequestTime.TryGetValue(requestType, out var lastRequestTime)) {
+            var timeSinceLastRequest = now - lastRequestTime;
+            if (timeSinceLastRequest < _requestLimits[requestType]) {
+                Debug.Log("Limiting Request: " + requestType);
+                return false;
+            }
+        }
+        
+        _lastRequestTime[requestType] = now;
+        return true;
+    }
+
+
     /// <summary>
     /// Sign in the user to Unity Authentication Services
     /// </summary>
@@ -54,26 +146,40 @@ public sealed class LobbyManager {
     /// 2 requests per 6 seconds
     /// </summary>
     /// <returns>The created lobby</returns>
-    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, string gameMode, Dictionary<string, string> data) {
-        var playerData = SerializePlayerData(data);
-        var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
-       
-        var options = new CreateLobbyOptions() {
-            IsPrivate = false,
-            Player = player,
-            Data = new Dictionary<string, DataObject>() {
+    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, string gameMode, Dictionary<string, string> data)
+    {
+        return await HandleRequest(LobbyRequestType.CreateLobby, async () =>
+        {
+            var playerData = SerializePlayerData(data);
+            var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
+
+            var options = new CreateLobbyOptions()
+            {
+                IsPrivate = false,
+                Player = player,
+                Data = new Dictionary<string, DataObject>()
                 {
-                    "GameMode", new DataObject(
-                        DataObject.VisibilityOptions.Public,
-                         value: gameMode)
+                    {
+                        "GameMode", new DataObject(
+                            DataObject.VisibilityOptions.Public,
+                            value: gameMode)
+                    }
                 }
+            };
+
+            try
+            {
+                var lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+                return lobby;
             }
-        };
-        
-        var lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
-        Debug.Log("Created new lobby: " + lobbyName);
-        return lobby;
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+        });
     }
+
     
     /// <summary>
     /// Join a lobby via the Lobby Service
@@ -81,46 +187,57 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>The joined lobby</returns>
     public async Task<Lobby> JoinLobby(Lobby lobby, Dictionary<string, string> data) {
-        var playerData = SerializePlayerData(data);
-        var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
 
-        try {
-            var joinLobbyByIdOptions = new JoinLobbyByIdOptions() {
-                Player = player
-            };
-            lobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
-            return lobby;
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-        }
+        return await HandleRequest(LobbyRequestType.JoinLobby, async () => {
 
-        return null;
+            var playerData = SerializePlayerData(data);
+            var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
+
+            try {
+                var joinLobbyByIdOptions = new JoinLobbyByIdOptions() {
+                    Player = player
+                };
+                lobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
+                return lobby;
+            }
+            catch (LobbyServiceException e) {
+                Debug.Log(e);
+                return null;
+            }
+        });
     }
     
     /// <summary>
     /// Leave a lobby via the Lobby Service
     /// 5 requests per second
     /// </summary>
-    public async Task LeaveLobby(string lobbyId) {
-        try {
-            var playerId = AuthenticationService.Instance.PlayerId;
-            await LobbyService.Instance.RemovePlayerAsync(lobbyId, playerId);
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-        }
+    public async Task<bool> LeaveLobby(string lobbyId) {
+
+        return await HandleRequest(LobbyRequestType.LeaveLobby, async () => {
+            try {
+                var playerId = AuthenticationService.Instance.PlayerId;
+                await LobbyService.Instance.RemovePlayerAsync(lobbyId, playerId);
+                return true;
+            }
+            catch (LobbyServiceException e) {
+                Debug.LogError(e);
+                return false;
+            }
+        });
     }
     
     /// <summary>
     /// Delete a lobby via the Lobby Service
     /// </summary>
-    public async Task DeleteLobby(string lobbyId) {
+    public async Task<bool> DeleteLobby(string lobbyId) {
+        
         try {
             await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+            return true;
         }
         catch (LobbyServiceException e) {
-            Debug.Log(e);
+            Debug.LogError(e);
+            return false;
         }
     }
     
@@ -130,13 +247,17 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>The requested lobby</returns>
     public async Task<Lobby> GetLobby(string lobbyId) {
-        try {
-            return await LobbyService.Instance.GetLobbyAsync(lobbyId);
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-        }
-        return null;
+
+        return await HandleRequest(LobbyRequestType.GetLobby, async () => {
+
+            try {
+                return await LobbyService.Instance.GetLobbyAsync(lobbyId);
+            }
+            catch (LobbyServiceException e) {
+                Debug.LogError(e);
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -145,14 +266,17 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>List of lobbies</returns>
     public async Task<List<Lobby>> GetLobbiesList() {
-        try {
-            var queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
-            return queryResponse.Results.ToList<Lobby>();
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-        }
-        return new List<Lobby>();
+
+        return await HandleRequest(LobbyRequestType.GetLobbiesList, async () => {
+            try {
+                var queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+                return queryResponse.Results.ToList<Lobby>();
+            }
+            catch (LobbyServiceException e) {
+                Debug.LogError(e);
+                return null;
+            }
+        });
     }
     
     /// <summary>
@@ -161,13 +285,17 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>List of joined lobbies</returns>
     public async Task<List<string>> GetJoinedLobbies() {
-        try {
-            return await LobbyService.Instance.GetJoinedLobbiesAsync();
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-            return new List<string>();
-        }
+
+        return await HandleRequest(LobbyRequestType.GetJoinedLobbies, async () => {
+
+            try {
+                return await LobbyService.Instance.GetJoinedLobbiesAsync();
+            }
+            catch (Exception e) {
+                Debug.LogError(e);
+                return null;
+            }
+        });
     }
     
     /// <summary>
@@ -176,18 +304,21 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>The updated lobby</returns>
     public async Task<Lobby> UpdateLobbyData(Dictionary<string, DataObject> lobbyData, string lobbyId) {
-        try {
-            var options = new UpdateLobbyOptions() {
-                HostId = AuthenticationService.Instance.PlayerId,
-                Data = lobbyData
-            };
-            return await LobbyService.Instance.UpdateLobbyAsync(lobbyId, options);
-        }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
-        }
 
-        return null;
+        return await HandleRequest(LobbyRequestType.UpdateLobbyData, async () => {
+
+            try {
+                var options = new UpdateLobbyOptions() {
+                    HostId = AuthenticationService.Instance.PlayerId,
+                    Data = lobbyData
+                };
+                return await LobbyService.Instance.UpdateLobbyAsync(lobbyId, options);
+            }
+            catch (LobbyServiceException e) {
+                Debug.LogError(e);
+                return null;
+            }
+        });
     }
     
     /// <summary>
@@ -196,14 +327,41 @@ public sealed class LobbyManager {
     /// </summary>
     /// <returns>The updated lobby</returns>
     public async Task<Lobby> UpdateLobbyPlayerData(UpdatePlayerOptions options, string playerId, string lobbyId) {
+
+        return await HandleRequest(LobbyRequestType.JoinLobby, async () => {
+
+            try {
+                var lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, options);
+                return lobby;
+            }
+            catch (LobbyServiceException e) {
+                Debug.LogError(e);
+                return null;
+            }
+        });
+    }
+
+    public async Task<ILobbyEvents> SubscribeToLobbyEvents(string lobbyId, LobbyEventCallbacks callbacks) {
+        
         try {
-            var lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, options);
-            return lobby;
+            return await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobbyId, callbacks);
         }
-        catch (LobbyServiceException e) {
-            Debug.Log(e);
+        catch (Exception e) {
+            Debug.LogError(e);
+            return null;
         }
-        return null;
+        
+    }
+    
+    public async Task<bool> UnsubscribeToLobbyEvents(ILobbyEvents lobbyEvents) {
+        try {
+            await lobbyEvents.UnsubscribeAsync();
+            return true;
+        }
+        catch (Exception e) {
+            Debug.LogError(e);
+            return false;
+        }
     }
     
     /// <summary>

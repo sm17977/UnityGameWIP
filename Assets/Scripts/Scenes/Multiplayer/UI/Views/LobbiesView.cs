@@ -41,9 +41,10 @@ namespace Multiplayer.UI {
         }
         
         private async Task GenerateLobbiesTable(bool sendNewRequest) {
-
-            //var lobbies = await _uiController.GetLobbyTableData(sendNewRequest);
+            
             var lobbies = await GetLobbyTableData?.Invoke(sendNewRequest);
+            if (lobbies == null) return;
+            
             var lobbyCount = 0;
             var lobbyRowHeight = 24;
 

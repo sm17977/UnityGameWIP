@@ -55,6 +55,7 @@ public class MultiplayerUIController : MonoBehaviour {
     // Message Modals
    public VisualTreeAsset messageModalSignInConnectingTmpl;
    public VisualTreeAsset messageModalSignInFailedTmpl;
+   public VisualTreeAsset messageModalLobbyFailedTmpl;
 
     
     //Gamemode
@@ -133,6 +134,9 @@ public class MultiplayerUIController : MonoBehaviour {
         // Exit Game Modal Events
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
         _exitGameModal.DisconnectClient += (async () => await DisconnectClient());
+
+        // Lobby errors
+        _gameLobbyManager.OnShowMessage += ShowMessage;
     }
 
     void OnDisable(){
@@ -192,6 +196,10 @@ public class MultiplayerUIController : MonoBehaviour {
         }
     }
 
+    private void ShowMessage() {
+        _viewManager.OpenModal(_messageModal, messageModalLobbyFailedTmpl);
+    }
+
     /// <summary>
     /// Sign-in to Unity Services to access the Lobby service
     /// </summary>
@@ -209,7 +217,7 @@ public class MultiplayerUIController : MonoBehaviour {
             _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
         }
         else {
-            _viewManager.ChangeModalTemplate(messageModalSignInFailedTmpl);
+            _viewManager.ChangeOpenModalTemplate(messageModalSignInFailedTmpl);
         }
         _viewManager.CurrentView.Update();
     }
@@ -220,7 +228,8 @@ public class MultiplayerUIController : MonoBehaviour {
     /// </summary>
     /// <returns>boolean</returns>
     private async Task CreateLobby(string lobbyName, uint maxPlayers, string gameMode) {
-        await _gameLobbyManager.CreateLobby(lobbyName, (int)maxPlayers, gameMode);
+        var success = await _gameLobbyManager.CreateLobby(lobbyName, (int)maxPlayers, gameMode);
+        if (!success) return;
         _clientManager.Client.IsLobbyHost = true;
         _viewManager.CloseModal(_createLobbyModal);
         _lobbyView.UpdateServerInfoTable(_clientManager.Client);
@@ -228,25 +237,29 @@ public class MultiplayerUIController : MonoBehaviour {
     }
     
     private async Task JoinLobby(Lobby lobby) {
-        await _gameLobbyManager.JoinLobby(lobby);
+        var success = await _gameLobbyManager.JoinLobby(lobby);
+        if (!success) return;
         _clientManager.Client.IsLobbyHost = false;
         UpdatePlayersServerInfo();
         _viewManager.ChangeView(_lobbyView);
     }
     
     private async Task LeaveLobby() {
+        var success = false;
         if (_clientManager.Client.IsLobbyHost) {
-            await _gameLobbyManager.DeleteLobby();
+            success = await _gameLobbyManager.DeleteLobby();
+            if (!success) return;
             if (_gameLobbyManager.currentServerProvisionState != ServerProvisionState.Idle &&
                 _gameLobbyManager.currentServerProvisionState != ServerProvisionState.Failed) {
-                
                 _clientManager.StopServer();
                 _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
             }
         }
         else {
-            await _gameLobbyManager.LeaveLobby();
+            success = await _gameLobbyManager.LeaveLobby();
         }
+
+        if (!success) return;
         _viewManager.ChangeView(_multiplayerMenuView);
     }
     
@@ -274,7 +287,9 @@ public class MultiplayerUIController : MonoBehaviour {
         if (!sendNewRequest) {
             return await _gameLobbyManager.GetLocalLobbyPlayers();
         } 
-        return await _gameLobbyManager.GetLobbyPlayers();
+        var lobbyPlayers = await _gameLobbyManager.GetLobbyPlayers();
+        if (lobbyPlayers != null) return lobbyPlayers;
+        return null;
     }
     
     private async Task<List<Lobby>> GetLobbyTableData(bool sendNewRequest) {

@@ -100,7 +100,25 @@ namespace Multiplayer.UI {
                 Debug.LogError("Modal not found.");
             }
         }
-
+        
+        /// <summary>
+        /// Open a modal with a template
+        /// </summary>
+        /// <param name="modal">The modal to open</param>
+        /// <param name="vta">The template to use</param>
+        public void OpenModal(Modal modal, VisualTreeAsset vta) {
+            if (_modalsList.Contains(modal)) {
+                _currentModal?.HideModal();
+                var index = _modalsList.IndexOf(modal);
+                _currentModal = _modalsList[index];
+                _currentModal?.ChangeTemplate(vta);
+                _currentModal?.ShowModal();
+            } else {
+                Debug.LogError("Modal not found.");
+            }
+        }
+        
+        
         /// <summary>
         /// Close a modal
         /// </summary>
@@ -133,9 +151,9 @@ namespace Multiplayer.UI {
         /// Change a Modal's UXML template
         /// </summary>
         /// <param name="vta">A VisualTreeAsset template</param>
-        public void ChangeModalTemplate(VisualTreeAsset vta) {
+        public void ChangeOpenModalTemplate(VisualTreeAsset vta) {
             if (vta != null && CurrentModal != null) {
-                CurrentModal.ChangeTemplate(vta);
+                CurrentModal.ChangeTemplateOfOpenModal(vta);
             }
         }
     }

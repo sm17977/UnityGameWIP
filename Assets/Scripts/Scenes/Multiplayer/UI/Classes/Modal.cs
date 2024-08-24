@@ -23,7 +23,7 @@ namespace Multiplayer.UI {
         /// <summary>
         /// Change the Modal's UXML current template
         /// </summary>
-        public virtual void ChangeTemplate(VisualTreeAsset vta) { }
+        public virtual void ChangeTemplateOfOpenModal(VisualTreeAsset vta) { }
 
         protected void ShowLoader() {
             if (Loader != null) {
@@ -48,9 +48,13 @@ namespace Multiplayer.UI {
                 Loader.ToggleInClassList("loader-rotation");
             }
         }
-
+        
         protected void HideLoader() {
             if(Loader != null) Hide(Loader);
+        }
+        
+        public void ChangeTemplate(VisualTreeAsset vta) {
+            Template = vta.Instantiate().Children().FirstOrDefault();
         }
     }
 }

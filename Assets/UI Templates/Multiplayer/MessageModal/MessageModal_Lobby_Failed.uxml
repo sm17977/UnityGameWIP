@@ -1,0 +1,29 @@
+﻿<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/MessageModal/MessageModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    
+    <!-- Message Modal -->
+    <ui:VisualElement name="message-modal-lobby-failed" class="message-modal-container">
+        <OuterGlow name="container-shadow">
+            <ui:VisualElement name="message-modal-content" class="message-modal-content">
+                <ui:VisualElement name="message-modal-header" class="message-modal-header">
+                    <ui:Label name="message-modal-header-label" text="Oops!" class="message-modal-header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="message-modal-body" class="message-modal-body">
+                    <ui:Label name="message-modal-body-label" text="...something went wrong, please try again later." class="message-modal-body-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="message-modal-btn-container" class="message-modal-btn-container">
+                    <ui:Button name="message-modal-btn" text="Go Back" class="message-modal-btn message-modal-continue-btn"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </OuterGlow>
+    </ui:VisualElement>
+    
+</ui:UXML>

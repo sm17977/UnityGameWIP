@@ -185,6 +185,8 @@ namespace Multiplayer.UI {
         private async Task GenerateLobbyPlayerTable(bool sendNewRequest) {
 
             var lobbyPlayers = await GetLobbyPlayerTableData.Invoke(sendNewRequest);
+            if (lobbyPlayers == null) return;
+            
             var playerCount = 0;
             var lobbyRowHeight = 24;
 

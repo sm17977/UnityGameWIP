@@ -16,7 +16,7 @@ namespace Multiplayer.UI {
         private ModalType _messageModalType;
         
         public enum ModalType {
-            SignInFailed,
+            Error,
             SignInConnecting,
         }
 
@@ -39,7 +39,7 @@ namespace Multiplayer.UI {
                 Loader = Template.Q<VisualElement>("loader");
             }
 
-            if (_messageModalType == ModalType.SignInFailed) {
+            if (_messageModalType == ModalType.Error) {
                 _modalBtn = Template.Q<Button>("message-modal-btn");
                 _modalBtn.RegisterCallback<ClickEvent>( async (evt) => {
                     HideModal();
@@ -52,7 +52,8 @@ namespace Multiplayer.UI {
         private ModalType GetModalType(string name) {
             return name switch {
                 "message-modal-signin-connecting" => ModalType.SignInConnecting,
-                "message-modal-signin-failed" => ModalType.SignInFailed,
+                "message-modal-signin-failed" => ModalType.Error,
+                "message-modal-lobby-failed" => ModalType.Error,
                 _ => throw new ArgumentException($"Unknown modal type: {name}")
             };
         }
@@ -60,6 +61,7 @@ namespace Multiplayer.UI {
         public override async void ShowModal() {
             _contentContainer.AddToClassList("message-modal-show-transition");
             base.ShowModal();
+            InitializeElements();
             await Task.Delay(200);
             _contentContainer.AddToClassList("message-modal-active");
             _containerShadow.AddToClassList("shadow-active");
@@ -76,7 +78,7 @@ namespace Multiplayer.UI {
             HideLoader();
         }
         
-        public override async void ChangeTemplate(VisualTreeAsset vta) {
+        public override async void ChangeTemplateOfOpenModal(VisualTreeAsset vta) {
             HideModal();
             await Task.Delay(200);
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -86,11 +88,11 @@ namespace Multiplayer.UI {
         }
         
         public override void Update() {
-            throw new System.NotImplementedException();
+            InitializeElements();
         }
 
         public override void RePaint() {
-            throw new System.NotImplementedException();
+            InitializeElements();
         }
     }
 }

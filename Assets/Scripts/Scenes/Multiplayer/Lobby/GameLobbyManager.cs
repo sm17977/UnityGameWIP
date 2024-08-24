@@ -9,7 +9,10 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+public delegate void ShowMessage();
 public class GameLobbyManager : MonoBehaviour {
+
+    public event ShowMessage OnShowMessage;
 
     public static GameLobbyManager Instance;
     private LobbyManager _lobbyManager;
@@ -103,56 +106,78 @@ public class GameLobbyManager : MonoBehaviour {
     /// <param name="lobbyName">Lobby name</param>
     /// <param name="maxPlayers">Max player count</param>
     /// </summary>
-    public async Task CreateLobby(string lobbyName, int maxPlayers, string gameMode) {
+    public async Task<bool> CreateLobby(string lobbyName, int maxPlayers, string gameMode) {
         
         _playerData = new LobbyPlayerData();
         _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Host", "");
         
         // Create a lobby
         _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, gameMode, _playerData.Serialize());
+
+        if (_lobby == null) {
+            OnShowMessage?.Invoke();
+            return false;
+        }
         
         // Subscribe to lobby events
         var callbacks = new LobbyEventCallbacks();
         callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
-        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_lobby.Id, callbacks);
+        _lobbyEvents = await _lobbyManager.SubscribeToLobbyEvents(_lobby.Id, callbacks);
         
         // Initiate lobby heartbeat
         StartCoroutine(HeartbeatLobbyCoroutine(_lobby.Id, 15));
+        return true;
     }
     
     /// <summary>
     /// Join and store a reference to a lobby
     /// </summary>
     /// TODO: Check if we need the clientId in playerData
-    public async Task JoinLobby(Lobby lobbyToJoin){
+    public async Task<bool> JoinLobby(Lobby lobbyToJoin){
         
         _playerData = new LobbyPlayerData();
         _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Player", "");
         
         _lobby = await _lobbyManager.JoinLobby(lobbyToJoin, _playerData.Serialize());
+
+        if (_lobby == null) {
+            OnShowMessage?.Invoke();
+            return false;
+        }
         
         // Subscribe to lobby events
         var callbacks = new LobbyEventCallbacks();
         callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
-        _lobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_lobby.Id, callbacks);
+        _lobbyEvents = await _lobbyManager.SubscribeToLobbyEvents(_lobby.Id, callbacks);
+        return true;
     }
     
     /// <summary>
     /// Leave a lobby
     /// </summary>
-    public async Task LeaveLobby() {
-        await _lobbyEvents.UnsubscribeAsync();
-        await _lobbyManager.LeaveLobby(_lobby.Id);
+    public async Task<bool> LeaveLobby() {
+        await _lobbyManager.UnsubscribeToLobbyEvents(_lobbyEvents);
+        var success = await _lobbyManager.LeaveLobby(_lobby.Id);
+        if (!success) {
+            OnShowMessage?.Invoke();
+            return false;
+        }
         _lobby = null;
+        return true;
     }
 
     /// <summary>
     /// Delete the current lobby
     /// </summary>
-    public async Task DeleteLobby() {
-        await _lobbyEvents.UnsubscribeAsync();
-        await _lobbyManager.DeleteLobby(_lobby.Id);
+    public async Task<bool> DeleteLobby() {
+        await _lobbyManager.UnsubscribeToLobbyEvents(_lobbyEvents);
+        var success = await _lobbyManager.DeleteLobby(_lobby.Id);
+        if (!success) {
+            OnShowMessage?.Invoke();
+            return false;
+        }
         _lobby = null;
+        return true;
     }
     
     /// <summary>
@@ -167,7 +192,9 @@ public class GameLobbyManager : MonoBehaviour {
     /// </summary>
     /// <returns>A lobby</returns>
     private async Task<Lobby> GetLobby(string lobbyId) {
-        return await _lobbyManager.GetLobby(lobbyId);
+        var lobby = await _lobbyManager.GetLobby(lobbyId);
+        if(lobby == null) OnShowMessage?.Invoke();
+        return lobby;
     }
     
     /// <summary>
@@ -190,8 +217,9 @@ public class GameLobbyManager : MonoBehaviour {
     /// </summary>
     /// <returns>List of lobbies</returns>
     public async Task<List<Lobby>> GetLobbiesList(){
-        _localLobbyList = await _lobbyManager.GetLobbiesList();
-        return _localLobbyList;
+       var lobbies = await _lobbyManager.GetLobbiesList();
+       if(lobbies == null) OnShowMessage?.Invoke();
+       return lobbies;
     }
     
     /// <summary>
@@ -231,7 +259,11 @@ public class GameLobbyManager : MonoBehaviour {
             },
         };
         
-        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        var lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        if (lobby != null){
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
     }
 
     public async Task UpdateLobbyWithGameMode(string gamemode) {
@@ -245,7 +277,11 @@ public class GameLobbyManager : MonoBehaviour {
             }
         };
 
-        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        var lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        if (lobby != null) {
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
     }
     
     public async Task UpdateLobbyWithGameStart(bool startGame) {
@@ -259,7 +295,11 @@ public class GameLobbyManager : MonoBehaviour {
             }
         };
 
-        _lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        var lobby = await _lobbyManager.UpdateLobbyData(lobbyData, _lobby.Id);
+        if (lobby != null) {
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
     }
     
     /// <summary>
@@ -268,7 +308,9 @@ public class GameLobbyManager : MonoBehaviour {
     /// <returns>Lobby player list</returns>
     public async Task<List<Player>> GetLobbyPlayers() {
         _lobby = await GetLobby(_lobby.Id);
-        return _lobby.Players;
+        if(_lobby != null) return _lobby.Players;
+        OnShowMessage?.Invoke();
+        return null;
     }
 
     /// <summary>
@@ -298,7 +340,11 @@ public class GameLobbyManager : MonoBehaviour {
             }
         }
         options.Data = playerData.SerializeUpdate();
-        _lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+        var lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+        if (lobby != null) {
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
     }
     
     /// <summary>
@@ -318,6 +364,7 @@ public class GameLobbyManager : MonoBehaviour {
 
         if(canRequestGetJoinedLobbies){
             _joinedLobbyList = await _lobbyManager.GetJoinedLobbies();
+            if (_joinedLobbyList == null) return false;
             canRequestGetJoinedLobbies = false;
             getJoinedLobbiesTimer = getJoinedLobbiesLimit;
         }
@@ -422,7 +469,6 @@ public class GameLobbyManager : MonoBehaviour {
         foreach (var player in _lobby.Players) {
             if (player.Id != _lobby.HostId && !bool.Parse(player.Data["IsReady"].Value)) return false;
         }
-
         return true;
     }
 
@@ -442,6 +488,10 @@ public class GameLobbyManager : MonoBehaviour {
             }
         }
         options.Data = playerData.SerializeUpdate();
-        _lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+        var lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+        if (lobby != null) {
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
     }
 }
