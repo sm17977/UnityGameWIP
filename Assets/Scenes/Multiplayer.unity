@@ -860,7 +860,9 @@ MonoBehaviour:
     type: 3}
   exitGameModalTmpl: {fileID: 9197481963319205126, guid: f169c3dd518c4dc382f6ddecfe4764ac,
     type: 3}
-  messageModalTmpl: {fileID: 9197481963319205126, guid: 37b72af13b2649da87f9abd12c03bcd5,
+  messageModalSignInConnectingTmpl: {fileID: 9197481963319205126, guid: 37b72af13b2649da87f9abd12c03bcd5,
+    type: 3}
+  messageModalSignInFailedTmpl: {fileID: 9197481963319205126, guid: 94919d8198584bf287859603b3c99a5e,
     type: 3}
 --- !u!1 &1599386338
 GameObject:

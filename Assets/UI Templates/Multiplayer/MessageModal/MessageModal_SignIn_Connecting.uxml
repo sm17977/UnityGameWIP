@@ -10,14 +10,14 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
     
     <!-- Message Modal -->
-    <ui:VisualElement name="message-modal" class="message-modal-container">
+    <ui:VisualElement name="message-modal-signin-connecting" class="message-modal-container">
         <OuterGlow name="container-shadow">
             <ui:VisualElement name="message-modal-content" class="message-modal-content">
                 <ui:VisualElement name="message-modal-header" class="message-modal-header">
-                    <ui:Label text="Signing in..." class="message-modal-header-label"/>
+                    <ui:Label name="message-modal-header-label" text="Signing in..." class="message-modal-header-label"/>
                 </ui:VisualElement>
                 <ui:VisualElement name="message-modal-body" class="message-modal-body">
-                    <ui:Label text="Please wait while we get everything ready" class="message-modal-body-label"/>
+                    <ui:Label name="message-modal-body-label" text="Please wait while we get everything ready" class="message-modal-body-label"/>
                     <ui:VisualElement name="loader-container" class="loader-container">
                         <ui:VisualElement name="loader" class="loader"></ui:VisualElement>
                     </ui:VisualElement>

@@ -1,3 +1,4 @@
+using System;
 using Unity.Services.Lobbies;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public sealed class LobbyManager {
 
             return AuthenticationService.Instance.PlayerId;
         }
-        catch (AuthenticationException e) {
+        catch (Exception e) {
             Debug.LogException(e);
             return null;
         }

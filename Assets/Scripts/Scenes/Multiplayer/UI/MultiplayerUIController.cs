@@ -8,6 +8,7 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 using LobbyView = Multiplayer.UI.LobbyView;
 
@@ -40,15 +41,20 @@ public class MultiplayerUIController : MonoBehaviour {
     private ExitGameModal _exitGameModal;
     private MessageModal _messageModal;
     
-    // Templates
+    // UXML Templates
+    // Views
     public VisualTreeAsset multiplayerMenuViewTmpl;
     public VisualTreeAsset lobbiesViewTmpl;
     public VisualTreeAsset lobbyViewTmpl;
     public VisualTreeAsset gameViewTmpl;
     
+    // Modals
     public VisualTreeAsset createLobbyModalTmpl;
     public VisualTreeAsset exitGameModalTmpl;
-    public VisualTreeAsset messageModalTmpl;
+    
+    // Message Modals
+   public VisualTreeAsset messageModalSignInConnectingTmpl;
+   public VisualTreeAsset messageModalSignInFailedTmpl;
 
     
     //Gamemode
@@ -72,21 +78,8 @@ public class MultiplayerUIController : MonoBehaviour {
          _clientManager = ClientManager.Instance;
          _viewManager.Initialize(_views, _modals, _multiplayerMenuView);
          
-         _viewManager.OpenModal(_messageModal);
-         var clientId = await _gameLobbyManager.SignIn();
-         
-         if (clientId != null) {
-             _clientManager.Client.ID = clientId;
-             await Task.Delay(500);
-             _viewManager.CloseModal(_messageModal);
-         }
-         else {
-             //TODO show error message in modal 
-         }
-         _viewManager.CurrentView.Update();
-         
-         var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
-         _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
+         // Sign-in to Unity Services
+         await LobbySignIn();
          
          // Client Manager Events
          _clientManager.UpdateServerDataInLobbyView += (client) => {
@@ -179,7 +172,7 @@ public class MultiplayerUIController : MonoBehaviour {
         
         _createLobbyModal = new CreateLobbyModal(root, createLobbyModalTmpl);
         _exitGameModal = new ExitGameModal(root, exitGameModalTmpl);
-        _messageModal = new MessageModal(root, messageModalTmpl);
+        _messageModal = new MessageModal(root, messageModalSignInConnectingTmpl);
 
         _modals = new List<Modal>() {
             _createLobbyModal,
@@ -197,6 +190,28 @@ public class MultiplayerUIController : MonoBehaviour {
                 _viewManager.OpenModal(_exitGameModal);
             }
         }
+    }
+
+    /// <summary>
+    /// Sign-in to Unity Services to access the Lobby service
+    /// </summary>
+    private async Task LobbySignIn() {
+          
+        _viewManager.OpenModal(_messageModal);
+         
+        var clientId = await _gameLobbyManager.SignIn();
+        
+        if (clientId != null) {
+            _clientManager.Client.ID = clientId;
+            await Task.Delay(500);
+            _viewManager.CloseModal();
+            var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
+            _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
+        }
+        else {
+            _viewManager.ChangeModalTemplate(messageModalSignInFailedTmpl);
+        }
+        _viewManager.CurrentView.Update();
     }
     
     /// <summary>

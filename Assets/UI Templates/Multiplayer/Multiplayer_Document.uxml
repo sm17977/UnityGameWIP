@@ -19,7 +19,7 @@
     
     <!-- Player ID -->
     <ui:VisualElement name="player-id-container" class="player-id-container">
-        <ui:Label text="Player ID: " name="player-id" class="player-id"/>
+        <ui:Label text="" name="player-id" class="player-id"/>
     </ui:VisualElement>
     
 </ui:UXML>

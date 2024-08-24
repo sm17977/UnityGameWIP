@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -18,6 +19,11 @@ namespace Multiplayer.UI {
         public virtual void HideModal() {
             ParentContainer.Remove(Template);
         }
+
+        /// <summary>
+        /// Change the Modal's UXML current template
+        /// </summary>
+        public virtual void ChangeTemplate(VisualTreeAsset vta) { }
 
         protected void ShowLoader() {
             if (Loader != null) {

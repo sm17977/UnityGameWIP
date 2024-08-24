@@ -99,7 +99,7 @@ namespace Multiplayer.UI {
             
         }
         public void DisplayPlayerId(string clientId, Label label) {
-            label.text = "Player ID: " + clientId;
+            label.text = "Unity Services Player ID: " + clientId;
         }
     }
 }

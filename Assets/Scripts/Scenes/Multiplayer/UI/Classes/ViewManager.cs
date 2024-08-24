@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Mono.CSharp;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
     public sealed class ViewManager : MonoBehaviour{
@@ -111,6 +113,29 @@ namespace Multiplayer.UI {
                 _currentModal = null;
             } else {
                 Debug.LogError("Modal not found.");
+            }
+        }
+        
+        /// <summary>
+        /// Close the current open modal
+        /// </summary>
+        /// <param name="modal">The modal to close</param>
+        public void CloseModal() {
+            if (CurrentModal != null) {
+                CurrentModal?.HideModal();
+                _currentModal = null;
+            } else {
+                Debug.LogError("Modal not found.");
+            }
+        }
+
+        /// <summary>
+        /// Change a Modal's UXML template
+        /// </summary>
+        /// <param name="vta">A VisualTreeAsset template</param>
+        public void ChangeModalTemplate(VisualTreeAsset vta) {
+            if (vta != null && CurrentModal != null) {
+                CurrentModal.ChangeTemplate(vta);
             }
         }
     }

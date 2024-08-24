@@ -13,9 +13,6 @@ namespace CustomElements {
         private VisualElement _countdownLabelContainer;
         
         public CountdownTimerElement() {
-
-            Debug.Log("CountdownTimerElement Constructor");
-            
             AddToClassList("countdown-container");
             
             _countdownLabelContainer = new VisualElement();
@@ -52,5 +49,3 @@ namespace CustomElements {
     
     }
 }
-   
-

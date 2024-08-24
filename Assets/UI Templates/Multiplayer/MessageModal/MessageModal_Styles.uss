@@ -103,3 +103,30 @@ message-modal-body-label{
     transition: rotate 1s linear;
 }
 
+.message-modal-btn-container{
+    margin-top: 20px;
+}
+
+.message-modal-btn{
+    background-color: white;
+    border-color: white;
+    border-width: 3px;
+    border-radius: 10px;
+    -unity-font-style: bold;
+    font-size: 25px;
+}
+
+.message-modal-continue-btn{
+    background-color: #508ddc;
+    color: white;
+    transition: 0.3s background-color, 0.1s font-size;
+}
+
+.message-modal-continue-btn:hover{
+    background-color: #4478bd;
+}
+
+.message-modal-continue-btn:active{
+    font-size: 28px;
+}
+
