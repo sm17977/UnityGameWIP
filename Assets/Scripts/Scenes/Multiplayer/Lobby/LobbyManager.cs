@@ -61,6 +61,16 @@ public sealed class LobbyManager {
         { LobbyRequestType.RemovePlayer, false }
     };
     
+    /// <summary>
+    /// Handle each lobby request
+    /// First checks to see if an existing lobby request type is in progress
+    /// If it is, the pending request is queued up to run when the current one is finished
+    /// If there is no existing lobby request type in progress then it's validated to check
+    /// the time of the previous request of the same type. If validation fails then it's delayed
+    /// until enough time has passed to avoid a rate limit error.
+    /// If validation passes the lobby request is executed
+    /// </summary>
+    /// <returns>boolean</returns>
     private async Task<T> HandleRequest<T>(LobbyRequestType requestType, Func<Task<T>> requestFunc) {
 
         if (_isRequestInProgress[requestType]) {
@@ -94,6 +104,11 @@ public sealed class LobbyManager {
     }
 
     
+    /// <summary>
+    /// Check if this request can be sent according to Unity's usage limits for Lobby
+    /// Each request time is recorded so we know if enough time has passed since the last request
+    /// </summary>
+    /// <returns>boolean</returns>
     private bool ValidateRequest(LobbyRequestType requestType) {
         if (!_requestLimits.ContainsKey(requestType)) {
             Debug.LogError($"Unknown request type: {requestType}");

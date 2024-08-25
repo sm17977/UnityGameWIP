@@ -51,28 +51,7 @@
     width: 80%;
 }
 
-.row-container{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    height: 35px;
-}
 
-.header-row{
-    background-color: lightgrey;
-}
-
-.body-row {
-    
-}
-
-.col-header{
-    -unity-font-style: bold;
-    font-size: 18px;
-}
 
 /* Lobbies Table Columns */
 .col-lobby-id{
@@ -112,15 +91,6 @@
 Label{
     white-space: normal;
 }
-
-.table-body{
-    display: flex;
-    width: 100%;
-    transition: height 0.5s ease-out-back;
-    height: 0;
-    overflow: hidden;
-}
-
 
 .server-info-table-body{
     

@@ -1,133 +1,272 @@
-﻿/* Current Lobby */
-.current-lobby-container{
+﻿/* Lobby container */
+.lobby-container{
     display: flex;
     height: 100%;
     background-color: white;
+    padding: 20px;
+    color: #3a3d7c
 }
 
-.current-lobby-btn-container{
-    margin-top: 50px;
-    width: 100%;
+/* Lobby title container */
+.lobby-title-container{
+    /*margin-top: 80px;*/
+    /*margin-bottom: 50px;*/
+}
+
+/* Lobby title */
+.lobby-title{
+    font-size: 82px;
+}
+
+/* Gamemode info container */
+.gamemode-info-container{
+    display: flex;
+    flex-direction: row;
+}
+
+/* Gamemode info text */
+.gamemode-info-text{
+    font-size: 28px;
+}
+
+/* Lobby status container */
+.lobby-status-container{
+    -unity-text-align: middle-center;
+    padding: 20px;
+}
+
+/* Lobby status text */
+.lobby-status{
+    font-size: 64px;
+}
+
+/* Lobby tables container (contains multiple tables) */
+.lobby-tables-container{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
 }
 
+/* Lobby table container (contains single table) */
+.lobby-table-container{
+    width: 40%;
+    padding: 20px;
+    /*height: 400px;*/
+}
+
+/* Lobby table general styling */
+.lobby-table{
+}
+
+/* Lpbby table drop shadow */
+.lobby-table-shadow {
+    --glow-color: rgba(0, 0, 0, 0.08);
+    --glow-size: 35;
+    --glow-offset-x: 0;
+    --glow-offset-y: 0;
+}
+
+/* Shared table header and body styles */
+.table-header, .table-body{
+    display: flex;
+    width: 100%;
+    padding: 5px;
+    font-size: 22px;
+}
+
+/* Table header */
+.table-header{
+    background-color: #4fffcd;
+    -unity-text-align: middle-center;
+}
+
+/* Table header column */
+.header-col{
+    -unity-font-style: bold;
+}
+
+/* Table body (contains the rows excluding the header) */
+.table-body{
+    /*transition: height 0.5s ease-out-back;*/
+    /*height: 0;*/
+    /*overflow: hidden;*/
+}
+
+/* Table row */
+.table-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    transition: 0.1s background-color;
+}
+
+/* Table row hover */
+.table-row:hover{
+    background-color: #ececec;
+}
+
+/* Player text highlights */
+.player-name-highlight{
+    -unity-font-style: bold;
+}
+
+/* Player host indicator */
+.player-host-indicator{
+    -unity-font-style: bold;
+}
+
+/* Player ready indicator */
+.player-ready-indicator{
+    -unity-font-style: bold;
+    border-radius: 12px;
+    font-size: 16px;
+    padding: 4px 20px 4px 20px;
+    background-color: #4edf4e;
+    color: white;
+}
+
+/* Character select container */
+.char-select-container{
+    display: flex;
+    margin: 20px;
+}
+
+/* Character select title */
+.char-select-title{
+    -unity-text-align: middle-center;
+    font-size: 32px;
+    padding: 20px;
+}
+
+/* Character select grid */
+.char-select-grid{
+    margin: auto;
+    width: 440px;
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+}
+
+/* Character select portrait */
+.char-select-portrait{
+    height: 100px;
+    width: 100px;
+    display: flex;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+/* Character select placeholder colours */
+.char-a, .char-a:hover .char-inner{background-color: #4fffcd}
+.char-b, .char-b:hover .char-inner{background-color: #4fffcd}
+.char-c, .char-c:hover .char-inner{background-color: #4fffcd}
+.char-d, .char-d:hover .char-inner{background-color: #4fffcd}
+.char-inner{
+    background-color: white;
+    height: 80px;
+    width: 80px;
+    margin: auto;
+    border-radius: 10px;
+}
+
+/* Action button container */
+.action-btn-container{
+    padding: 20px;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.action-btn-shadow{
+    --glow-color: rgba(184, 41, 41, 0);
+    --glow-size: 10;
+    --glow-offset-x: -20;
+    --glow-offset-y: -20;
+    --glow-background-color: #3a3d7c;
+    --glow-border-radius: 10;
+}
+
+/* Action button */
+.action-btn{
+    margin-top: auto;
+    background-color: #4fffcd;
+    color: white;
+    border-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    -unity-font-style: bold;
+    padding: 4px 50px 4px 50px;
+    transition: 0.1s background-color, 0.1s color, transform 0.3s;
+}
+
+/*Ready up button hover */
+.action-btn:hover{
+    color:  #3a3d7c;
+}
+
+/* Action button font sizes */
+.ready-btn{font-size: 102px;}
+.start-server-btn, .start-game-btn{font-size: 80px;}
+
+/* Start game btn */
 .start-game-btn{
     display: none;
 }
 
-.join-game-btn{
-    display: none;
-}
-
-.current-lobby-btn-container Button {
-    font-size: 42px;
-}
-
-.server-status{
-    -unity-text-align: middle-center;
-    -unity-font-style: bold;
+/* Ready up button backdrop */
+.ready-btn-backdrop{
+    position: relative;
+    font-size: 102px;
+    background-color: #3a3d7c;
+    width: 463px; /* Match the width of the button */
+    height: 134px; /* Match the height of the button */
     border-radius: 12px;
-    font-size: 16px;
-    height: 25px;
-    padding: 10px;
+    top: 115px;
+    right: 15px;
 }
 
-.server-info{
-    width: 25%;
-    margin-left: 10%;
+/* Back button container */
+.back-btn-container{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    display: flex;
+    height: 200px;
 }
 
-.server-status-default{
-    background-color: #e4e4e4;
-    color: #474747;
+/* Back button */
+.back-btn{
+    color: #3a3d7c;
+    font-size: 40px;
+    border-color: #3a3d7c;
+    border-width: 4px;
+    border-radius: 12px;
+    background-color: white;
+    transition: 0.1s background-color, 0.1s color;
 }
 
-.server-status-online{
-    background-color: #adf8ad;
-    color: #06ac06;
+/* Back button hover */
+.back-btn:hover{
+    background-color: #3a3d7c;
+    color: white;
 }
 
-.server-status-booting{
-    background-color: #8eb4fa;
-    color: #114dc5;
-    width: 120px;
+/* Connection status container */
+.connection-status-container{
+    color: #3a3d7c;
+    font-size: 12px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 20px;
+    display: flex;
 }
 
-.server-status-awaiting-setup{
-    background-color: #db91fa;
-    color: #880eb1;
-}
-
-.player-connection-status-connected{
-    background-color: #adf8ad;
-    color: #06ac06;
-    border-radius: 10px;
-    padding: 10px;
-}
-
-.player-connection-status-not-connected{
-    background-color: #f8adad;
-    color: #c11111;
-    border-radius: 10px;
-    padding: 10px;
-}
-
-/* Lobby Table Columns */
-
-.col-player-id{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-player-name{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-last-updated{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-connection-status{
-    flex: 0 0 20%;
-    padding-left: 10px;
-    padding-right: 10px;
-    -unity-text-align: middle-left;
-    -unity-font-style: bold;
-}
-
-.col-connection-status-inner{
-    flex-direction: row;
-}
-
-.col-is-host{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-right;
-}
-
-/* Server Info */
-.col-server-info{
-    flex: 1;
-    padding: 10px;
-    -unity-text-align: middle-center;
-}
-
-.col-server-info-key{
-    flex: 0 0 30%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-server-info-value{
-    flex: 1;
-    padding: 10px;
-    -unity-text-align: middle-left;
-    flex-direction: row;
+/* Connection status text */
+.connection-status-text{
+    padding: 0;
 }

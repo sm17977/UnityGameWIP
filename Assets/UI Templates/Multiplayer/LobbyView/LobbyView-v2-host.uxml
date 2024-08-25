@@ -1,0 +1,185 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
+    
+    <!-- Current Lobby -->
+    <ui:VisualElement name="lobby" class="lobby-container">
+        
+        <!-- Multiplayer Heading -->
+        <ui:VisualElement name="title-container" class="lobby-title-container">
+            <ui:Label text="Sean's Lobby" class="lobby-title"/>
+        </ui:VisualElement>
+        
+        <!-- Game Mode Info -->
+        <ui:VisualElement name="gamemode-info-container" class="gamemode-info-container">
+            <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
+                <ui:Label text="Duel" class="gamemode-info-text"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
+                <ui:Label text=" - " class="gamemode-info-text"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
+                <ui:Label text="5v5" class="gamemode-info-text"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
+                <ui:Label text=" - " class="gamemode-info-text"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
+                <ui:Label text="Grassy Meadows" class="gamemode-info-text"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Lobby Status Label -->
+        <ui:VisualElement name="lobby-status-container" class="lobby-status-container">
+            <ui:Label name="lobby-status" text="Game starts in 3..." class="lobby-status"/>
+        </ui:VisualElement>
+        
+        <!-- Lobby Tables Container -->
+        <ui:VisualElement name="lobby-tables-container" class="lobby-tables-container">
+            
+            <!-- Lobby Left Table Container -->
+            <ui:VisualElement name="lobby-table-container" class="lobby-table-container">
+            
+                <OuterGlow name="container-shadow" class="lobby-table-shadow">
+                    <!-- Lobby Left Table -->
+                    <ui:VisualElement name="lobby-table-a" class="lobby-table">
+                        
+                        <!-- Table Header-->
+                        <ui:VisualElement name="lobby-table-header" class="table-header">
+                            
+                            <!-- Header Row-->
+                            <ui:VisualElement name="col-header" class="header-col">
+                                <ui:Label text="TEAM A"/>
+                            </ui:VisualElement>
+                            
+                        </ui:VisualElement>
+                        
+                        <!-- Table Body Container-->
+                        <ui:VisualElement name="lobby-table-body" class="table-body">
+                            
+                            <!-- Table Body Row Container-->
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="fireball22"/>
+                                <ui:Label text="H" class="player-host-indicator"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="l1ttl3d3mon"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="Conneltius" class="player-name-highlight"/>
+                                <ui:Label text="Ready" class="player-ready-indicator"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="LunarEchoes"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="BlazePhantom"/>
+                            </ui:VisualElement>
+                            
+                        </ui:VisualElement>
+                    
+                    </ui:VisualElement>
+                </OuterGlow>
+                    
+            </ui:VisualElement>
+            
+            <!-- Lobby Right Table Container -->
+            <ui:VisualElement name="lobby-table-container" class="lobby-table-container">
+            
+                <OuterGlow name="container-shadow" class="lobby-table-shadow">
+                    <!-- Lobby Right Table -->
+                    <ui:VisualElement name="lobby-table-a" class="lobby-table">
+                        
+                        <!-- Table Header-->
+                        <ui:VisualElement name="lobby-table-header" class="table-header">
+                            
+                            <!-- Header Row-->
+                            <ui:VisualElement name="col-header" class="header-col">
+                                <ui:Label text="TEAM B"/>
+                            </ui:VisualElement>
+                            
+                        </ui:VisualElement>
+                        
+                        <!-- Table Body Container-->
+                        <ui:VisualElement name="lobby-table-body" class="table-body">
+                            
+                            <!-- Table Body Row Container-->
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="chill_vibes24"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="CyberTitan07"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="VortexSeraph"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="ghost_hunter13"/>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="" class="table-row">
+                                <ui:Label text="xXshadowWolfXx"/>
+                            </ui:VisualElement>
+                            
+                        </ui:VisualElement>
+                    
+                    </ui:VisualElement>
+                </OuterGlow>
+                
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Character Select -->
+        <ui:VisualElement name="char-select-container" class="char-select-container">
+            <ui:VisualElement name="char-select-title" class="char-select-title">
+                <ui:Label text="Select your character"/>
+            </ui:VisualElement>
+            <ui:VisualElement name="char-select-grid" class="char-select-grid">
+                <ui:VisualElement name="char-select-portrait" class="char-select-portrait char-a">
+                    <ui:VisualElement class="char-inner"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="char-select-portrait" class="char-select-portrait char-b">
+                    <ui:VisualElement class="char-inner"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="char-select-portrait" class="char-select-portrait char-c">
+                    <ui:VisualElement class="char-inner"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="char-select-portrait" class="char-select-portrait char-d">
+                    <ui:VisualElement class="char-inner"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Start game button -->
+        <!-- <ui:VisualElement name="start-game-btn-container" class="action-btn-container"> -->
+        <!--     <ui:VisualElement class="ready-btn-backdrop"/> -->
+        <!--     <ui:Button text="Start Game" name="ready-btn" class="action-btn start-game-btn"/> -->
+        <!-- </ui:VisualElement> -->
+        
+        <!-- Start server button -->
+        
+        <ui:VisualElement name="start-server-btn-container" class="action-btn-container">
+            <OuterGlow class="action-btn-shadow">
+                <ui:Button text="Start Server" name="ready-btn" class="action-btn start-server-btn"/>
+            </OuterGlow>
+        </ui:VisualElement>
+        
+        <!-- Back button -->
+        <ui:VisualElement name="back-btn-container" class="back-btn-container">
+            <ui:Button text="Back" name="back-btn" class="back-btn"/>
+        </ui:VisualElement>
+        
+        <!-- Connection status container -->
+        <ui:VisualElement name="connection-status-container" class="connection-status-container">
+            <ui:Label text="Status: CONNECTED" class="connection-status-text"/>
+            <ui:Label text="asd2koksad09ikaoksdok9k2kdd" class="connection-status-text"/>
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+</ui:UXML>
