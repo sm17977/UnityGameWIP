@@ -63,7 +63,7 @@
                         </ui:VisualElement>
                         
                         <!-- Table Body Container-->
-                        <ui:VisualElement name="lobby-table-body" class="table-body">
+                        <ui:VisualElement name="lobby-table-body-a" class="table-body">
                             
                             <!-- Table Body Row Container-->
                             <ui:VisualElement name="" class="table-row">
@@ -96,7 +96,7 @@
             
                 <OuterGlow name="container-shadow" class="lobby-table-shadow">
                     <!-- Lobby Right Table -->
-                    <ui:VisualElement name="lobby-table-a" class="lobby-table">
+                    <ui:VisualElement name="lobby-table-b" class="lobby-table">
                         
                         <!-- Table Header-->
                         <ui:VisualElement name="lobby-table-header" class="table-header">
@@ -109,7 +109,7 @@
                         </ui:VisualElement>
                         
                         <!-- Table Body Container-->
-                        <ui:VisualElement name="lobby-table-body" class="table-body">
+                        <ui:VisualElement name="lobby-table-body-b" class="table-body">
                             
                             <!-- Table Body Row Container-->
                             <ui:VisualElement name="" class="table-row">

@@ -22,7 +22,8 @@ namespace Multiplayer.UI {
         public event OnGetLobbyPlayerId GetLobbyPlayerId;
         public event OnGetLobbyGameMode GetLobbyGameMode;
         
-        private VisualElement _playersTable;
+        private VisualElement _playersTableA;
+        private VisualElement _playersTableB;
         private Label _playerId;
         private Label _gameModeName;
         private Button _leaveLobbyBtn;
@@ -73,7 +74,8 @@ namespace Multiplayer.UI {
         private void BindUIElements() {
             
             // Lobby Players Table
-            _playersTable = Template.Q<VisualElement>("lobby-table-body");
+            _playersTableA = Template.Q<VisualElement>("lobby-table-body-a");
+            _playersTableB = Template.Q<VisualElement>("lobby-table-body-b");
             
             // Text Labels
             _playerId = Template.Q<Label>("player-id-text");
@@ -99,7 +101,8 @@ namespace Multiplayer.UI {
 
         public override void Hide() {
             base.Hide();
-            _playersTable.style.height = 0;
+            _playersTableA.style.height = 0;
+            _playersTableB.style.height = 0;
         }
         
         /// <summary>
@@ -107,16 +110,21 @@ namespace Multiplayer.UI {
         /// </summary>
         /// <param name="sendNewRequest">If true, request new lobby data from the Lobby service</param>
         private async Task GenerateLobbyPlayerTable(bool sendNewRequest) {
-            _playersTable.Clear();
+            _playersTableA.Clear();
+            _playersTableB.Clear();
             var lobbyPlayers = await GetLobbyPlayerTableData.Invoke(sendNewRequest);
             if (lobbyPlayers == null) return;
             
             var playerCount = 0;
             var lobbyRowHeight = 61;
+            var countTeamA = 0;
+            var countTeamB = 0;
 
             foreach (var lobbyPlayer in lobbyPlayers) {
 
+                var tableA = playerCount % 2 == 0;
                 playerCount++;
+                
                 VisualElement row = new VisualElement();
                 row.AddToClassList("table-row");
                 
@@ -148,14 +156,25 @@ namespace Multiplayer.UI {
                     row.Add(hostLabel);
                 }
                 
-                _playersTable.Add(row);
+                if (tableA) {
+                    countTeamA++;
+                    _playersTableA.Add(row);
+                }
+                else {
+                    countTeamB++;
+                    _playersTableB.Add(row);
+                }
             }
             
             // Delay setting the height of the table to ensure the USS transition is triggered
             // The transition is set on the height of the table body, so when the table is generated,
             // it unravels downwards showing each entry
-            _playersTable.schedule.Execute(() => {
-                _playersTable.style.height = playerCount * lobbyRowHeight;
+            _playersTableA.schedule.Execute(() => {
+                _playersTableA.style.height = countTeamA * lobbyRowHeight;
+            }).StartingIn(50);
+            
+            _playersTableB.schedule.Execute(() => {
+                _playersTableB.style.height = countTeamB * lobbyRowHeight;
             }).StartingIn(50);
         }
         
