@@ -13,13 +13,15 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" />
 
-    <!-- View Container -->
-    <ui:VisualElement name="view-container" class="view-container">
-    </ui:VisualElement>
-    
     <!-- Player ID -->
     <ui:VisualElement name="player-id-container" class="player-id-container">
         <ui:Label text="" name="player-id" class="player-id"/>
     </ui:VisualElement>
+    
+    <!-- View Container -->
+    <ui:VisualElement name="view-container" class="view-container">
+    </ui:VisualElement>
+    
+   
     
 </ui:UXML>

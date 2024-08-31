@@ -852,7 +852,9 @@ MonoBehaviour:
     type: 3}
   lobbiesViewTmpl: {fileID: 9197481963319205126, guid: f3cd960333b54785bd9bf4771bc01c7c,
     type: 3}
-  lobbyViewTmpl: {fileID: 9197481963319205126, guid: 27ad0355deb94393a106e75767cac466,
+  lobbyHostViewTmpl: {fileID: 9197481963319205126, guid: f2cce8bc8b914e94b1e8759990ff65fe,
+    type: 3}
+  lobbyPlayerViewTmpl: {fileID: 9197481963319205126, guid: c8af3425746148d3a9909d2db49bc2c0,
     type: 3}
   gameViewTmpl: {fileID: 9197481963319205126, guid: 713d2423497c41f29bca02e6c3437072,
     type: 3}
@@ -865,6 +867,8 @@ MonoBehaviour:
   messageModalSignInFailedTmpl: {fileID: 9197481963319205126, guid: 94919d8198584bf287859603b3c99a5e,
     type: 3}
   messageModalLobbyFailedTmpl: {fileID: 9197481963319205126, guid: b46d23a1b86148ba82d35bed97b6e1fa,
+    type: 3}
+  messageModalServerStartPendingTmpl: {fileID: 9197481963319205126, guid: e5ef6862bb59499dae0eb95c6002b4dd,
     type: 3}
 --- !u!1 &1599386338
 GameObject:

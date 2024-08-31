@@ -42,7 +42,7 @@
             </ui:VisualElement>
     
             <!-- Table Body Container-->
-            <ui:VisualElement name="lobbies-table-body" class="table-body">
+            <ui:VisualElement name="lobbies-table-body" class="">
                 <!-- Table Body Row Container-->
             </ui:VisualElement>
         </ui:VisualElement>

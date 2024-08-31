@@ -28,6 +28,7 @@
 }
 
 /* Modal size and opacity values to transition to when opened */
+/* Add this class to message-modal-content when developing */
 .message-modal-active{
     width: 600px;
     height: 220px;

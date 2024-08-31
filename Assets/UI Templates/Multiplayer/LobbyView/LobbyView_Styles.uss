@@ -56,6 +56,7 @@
 
 /* Lobby table general styling */
 .lobby-table{
+    display: flex;
 }
 
 /* Lpbby table drop shadow */
@@ -87,9 +88,9 @@
 
 /* Table body (contains the rows excluding the header) */
 .table-body{
-    /*transition: height 0.5s ease-out-back;*/
-    /*height: 0;*/
-    /*overflow: hidden;*/
+    transition: height 0.5s ease-out-back;
+    height: 0;
+    overflow: hidden;
 }
 
 /* Table row */
@@ -99,6 +100,7 @@
     justify-content: space-between;
     align-items: center;
     background-color: white;
+    padding: 5px;
     transition: 0.1s background-color;
 }
 
@@ -211,9 +213,14 @@
 .ready-btn{font-size: 102px;}
 .start-server-btn, .start-game-btn{font-size: 80px;}
 
-/* Start game btn */
-.start-game-btn{
+/* Start game btn container */
+.start-game-btn-container{
     display: none;
+}
+
+/* Start server btn container */
+.start-server-btn-container{
+    display: flex;
 }
 
 /* Ready up button backdrop */

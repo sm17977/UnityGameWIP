@@ -1,5 +1,6 @@
 <ui:UXML 
     xmlns:ui="UnityEngine.UIElements"
+    xmlns:custom="CustomElements"
     xsi="http://www.w3.org/2001/XMLSchema-instance" 
     engine="UnityEngine.UIElements" 
     editor="UnityEditor.UIElements" 
@@ -20,7 +21,7 @@
         <!-- Game Mode Info -->
         <ui:VisualElement name="gamemode-info-container" class="gamemode-info-container">
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text="Duel" class="gamemode-info-text"/>
+                <ui:Label name="gamemode-name" text="" class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
                 <ui:Label text=" - " class="gamemode-info-text"/>
@@ -156,17 +157,10 @@
             </ui:VisualElement>
         </ui:VisualElement>
         
-        <!-- Start game button -->
-        <!-- <ui:VisualElement name="start-game-btn-container" class="action-btn-container"> -->
-        <!--     <ui:VisualElement class="ready-btn-backdrop"/> -->
-        <!--     <ui:Button text="Start Game" name="ready-btn" class="action-btn start-game-btn"/> -->
-        <!-- </ui:VisualElement> -->
-        
-        <!-- Start server button -->
-        
-        <ui:VisualElement name="start-server-btn-container" class="action-btn-container">
-            <OuterGlow class="action-btn-shadow">
-                <ui:Button text="Start Server" name="ready-btn" class="action-btn start-server-btn"/>
+        <!-- Ready Up button -->
+        <ui:VisualElement name="ready-btn-container" class="action-btn-container">
+            <OuterGlow class="action-btn-shadow ready-btn-container">
+                <ui:Button text="READY" name="ready-btn" class="action-btn ready-btn"/>
             </OuterGlow>
         </ui:VisualElement>
         
@@ -178,7 +172,7 @@
         <!-- Connection status container -->
         <ui:VisualElement name="connection-status-container" class="connection-status-container">
             <ui:Label text="Status: CONNECTED" class="connection-status-text"/>
-            <ui:Label text="asd2koksad09ikaoksdok9k2kdd" class="connection-status-text"/>
+            <ui:Label name="player-id-text" text="" class="player-id-text"/>
         </ui:VisualElement>
         
     </ui:VisualElement>

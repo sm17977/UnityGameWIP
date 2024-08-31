@@ -16,17 +16,18 @@ namespace Multiplayer.UI {
         private ModalType _messageModalType;
         
         public enum ModalType {
-            Error,
+            LobbyError,
             SignInConnecting,
+            ServerStartPending
         }
 
         public MessageModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            InitializeElements();
+            BindUIElements();
         }
 
-        private void InitializeElements() {
+        private void BindUIElements() {
 
             _messageModalType = GetModalType(Template.name);
             
@@ -35,11 +36,11 @@ namespace Multiplayer.UI {
             _headerLabel = Template.Q<Label>("message-modal-header-label");
             _bodyLabel = Template.Q<Label>("message-modal-body-label");
 
-            if (_messageModalType == ModalType.SignInConnecting) {
+            if (_messageModalType == ModalType.SignInConnecting || _messageModalType == ModalType.ServerStartPending) {
                 Loader = Template.Q<VisualElement>("loader");
             }
 
-            if (_messageModalType == ModalType.Error) {
+            if (_messageModalType == ModalType.LobbyError) {
                 _modalBtn = Template.Q<Button>("message-modal-btn");
                 _modalBtn.RegisterCallback<ClickEvent>( async (evt) => {
                     HideModal();
@@ -52,8 +53,9 @@ namespace Multiplayer.UI {
         private ModalType GetModalType(string name) {
             return name switch {
                 "message-modal-signin-connecting" => ModalType.SignInConnecting,
-                "message-modal-signin-failed" => ModalType.Error,
-                "message-modal-lobby-failed" => ModalType.Error,
+                "message-modal-signin-failed" => ModalType.LobbyError,
+                "message-modal-lobby-failed" => ModalType.LobbyError,
+                "message-modal-server-start-pending" => ModalType.ServerStartPending,
                 _ => throw new ArgumentException($"Unknown modal type: {name}")
             };
         }
@@ -61,7 +63,7 @@ namespace Multiplayer.UI {
         public override async void ShowModal() {
             _contentContainer.AddToClassList("message-modal-show-transition");
             base.ShowModal();
-            InitializeElements();
+            BindUIElements();
             await Task.Delay(200);
             _contentContainer.AddToClassList("message-modal-active");
             _containerShadow.AddToClassList("shadow-active");
@@ -82,17 +84,21 @@ namespace Multiplayer.UI {
             HideModal();
             await Task.Delay(200);
             Template = vta.Instantiate().Children().FirstOrDefault();
-            InitializeElements();
+            BindUIElements();
             await Task.Delay(200);
             ShowModal();
         }
+
+        public void UpdateBodyLabel(string text) {
+            _bodyLabel.text = text;
+        }
         
         public override void Update() {
-            InitializeElements();
+            BindUIElements();
         }
 
         public override void RePaint() {
-            InitializeElements();
+            BindUIElements();
         }
     }
 }

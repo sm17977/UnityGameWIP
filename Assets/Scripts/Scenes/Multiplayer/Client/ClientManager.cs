@@ -9,11 +9,11 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 
 namespace Multiplayer {
-    public delegate void OnUpdateServerDataInLobbyView(Client client); 
+    public delegate void OnUpdateServerData(Client client); 
     public delegate void OnRePaintLobbyView(); 
     public delegate void OnHostDisconnection(); 
     public class ClientManager : MonoBehaviour {
-        public event OnUpdateServerDataInLobbyView UpdateServerDataInLobbyView;
+        public event OnUpdateServerData UpdateServerData;
         public event OnRePaintLobbyView RePaintLobbyView;
         public event OnHostDisconnection HostDisconnection;
 
@@ -21,7 +21,6 @@ namespace Multiplayer {
         public Client Client;
         private CancellationTokenSource _cancellationTokenSource;
         private WebServicesAPI _webServicesAPI;
-        
         private GameLobbyManager _gameLobbyManager;
         
         private void Awake() {
@@ -72,7 +71,7 @@ namespace Multiplayer {
         /// Once returned, updates the lobby with the connection info required to join the server.
         /// </summary>
         /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns>boolean</returns>
+        /// <returns></returns>
         private async Task ProvisionServer(CancellationToken cancellationToken) {
 
             try {
@@ -136,9 +135,6 @@ namespace Multiplayer {
            
            // Check for an active machine
            var status  = await webServicesAPI.GetMachineStatus();
-           UpdateServerStatusForLobbyHost(status);
-           await _gameLobbyManager.UpdateLobbyWithServerInfo(status, "", "");
-           
            Debug.Log("Initial Machine Status: " + status);
            
            // If no machine is found yet, keep polling until one is
@@ -195,7 +191,7 @@ namespace Multiplayer {
             if (status == "") {
                 Client.ServerStatus = "INACTIVE";
             }
-            UpdateServerDataInLobbyView?.Invoke(Client);
+            UpdateServerData?.Invoke(Client);
         }
 
         /// <summary>
@@ -206,7 +202,7 @@ namespace Multiplayer {
         private void UpdateServerInfoForLobbyHost(string ip, string port) {
             Client.ServerIP = ip;
             Client.Port = port;
-            UpdateServerDataInLobbyView?.Invoke(Client);
+            UpdateServerData?.Invoke(Client);
         }
 
         /// <summary>
@@ -265,7 +261,7 @@ namespace Multiplayer {
         /// Remove any server allocations and stop the game server
         /// </summary>
         public async void StopServer() {
-            await _webServicesAPI.RemoveAllocation();
+            //await _webServicesAPI.RemoveAllocation(); TODO: Remove this?
             Debug.Log("IP: " + Client.ServerIP);
             var server = await _webServicesAPI.GetServer(Client.ServerIP, Int32.Parse(Client.Port));
             if (server != null) {
