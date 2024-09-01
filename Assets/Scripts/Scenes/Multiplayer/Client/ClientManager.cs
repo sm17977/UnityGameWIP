@@ -78,9 +78,10 @@ namespace Multiplayer {
                 var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, _webServicesAPI);
                 
                 if (clientConnectionInfo.IP != null || clientConnectionInfo.IP != "") {
+                    _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Provisioned;
                     UpdateServerInfoForLobbyHost(clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
                     await _gameLobbyManager.UpdateLobbyWithServerInfo(Client.ServerStatus, clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Provisioned;
+                    
                     return;
                 }
             }
@@ -183,7 +184,7 @@ namespace Multiplayer {
         }
 
         /// <summary>
-        /// Update the server status in the Lobby View for the lobby host
+        /// Update the server status in the Lobby Host View 
         /// </summary>
         /// <param name="status">Server Status</param>
         private void UpdateServerStatusForLobbyHost(string status) {
@@ -195,7 +196,7 @@ namespace Multiplayer {
         }
 
         /// <summary>
-        /// Update the server info (IP and Port) in the Lobby View for the lobby host
+        /// Update the server info (IP and Port) in the Lobby Host View 
         /// </summary>
         /// <param name="ip">Server IP</param>
         /// <param name="port">Server Port</param>

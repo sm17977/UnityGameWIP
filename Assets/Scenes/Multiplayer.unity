@@ -868,7 +868,7 @@ MonoBehaviour:
     type: 3}
   messageModalLobbyFailedTmpl: {fileID: 9197481963319205126, guid: b46d23a1b86148ba82d35bed97b6e1fa,
     type: 3}
-  messageModalServerStartPendingTmpl: {fileID: 9197481963319205126, guid: e5ef6862bb59499dae0eb95c6002b4dd,
+  messageModalServerConnectingTmpl: {fileID: 9197481963319205126, guid: e5ef6862bb59499dae0eb95c6002b4dd,
     type: 3}
 --- !u!1 &1599386338
 GameObject:

@@ -10,7 +10,7 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss"/>
     
     <!-- Message Modal -->
-    <ui:VisualElement name="message-modal-server-start-pending" class="message-modal-container">
+    <ui:VisualElement name="message-modal-server-connecting" class="message-modal-container">
         <OuterGlow name="container-shadow">
             <ui:VisualElement name="message-modal-content" class="message-modal-content message-modal-active">
                 <ui:VisualElement name="message-modal-header" class="message-modal-header">

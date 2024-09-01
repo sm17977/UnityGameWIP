@@ -18,7 +18,7 @@ namespace Multiplayer.UI {
         public enum ModalType {
             LobbyError,
             SignInConnecting,
-            ServerStartPending
+            ServerConnecting
         }
 
         public MessageModal(VisualElement parentContainer, VisualTreeAsset vta) {
@@ -36,7 +36,7 @@ namespace Multiplayer.UI {
             _headerLabel = Template.Q<Label>("message-modal-header-label");
             _bodyLabel = Template.Q<Label>("message-modal-body-label");
 
-            if (_messageModalType == ModalType.SignInConnecting || _messageModalType == ModalType.ServerStartPending) {
+            if (_messageModalType == ModalType.SignInConnecting || _messageModalType == ModalType.ServerConnecting) {
                 Loader = Template.Q<VisualElement>("loader");
             }
 
@@ -55,7 +55,7 @@ namespace Multiplayer.UI {
                 "message-modal-signin-connecting" => ModalType.SignInConnecting,
                 "message-modal-signin-failed" => ModalType.LobbyError,
                 "message-modal-lobby-failed" => ModalType.LobbyError,
-                "message-modal-server-start-pending" => ModalType.ServerStartPending,
+                "message-modal-server-connecting" => ModalType.ServerConnecting,
                 _ => throw new ArgumentException($"Unknown modal type: {name}")
             };
         }

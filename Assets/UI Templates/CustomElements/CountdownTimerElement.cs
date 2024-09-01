@@ -1,8 +1,5 @@
-﻿using UnityEditor.UIElements;
-using UnityEngine;
-using UnityEngine.UIElements;
+﻿using UnityEngine.UIElements;
 
-[assembly: UxmlNamespacePrefix("CustomElements", "custom")]
 
 namespace CustomElements {
     

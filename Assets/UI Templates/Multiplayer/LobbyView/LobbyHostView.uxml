@@ -161,9 +161,6 @@
             <OuterGlow name="start-game-btn-container" class="action-btn-shadow start-game-btn-container">
                 <ui:Button text="START GAME" name="start-game-btn" class="action-btn start-game-btn"/>
             </OuterGlow>
-            <OuterGlow name="start-server-btn-container" class="action-btn-shadow start-server-btn-container">
-                <ui:Button text="START SERVER" name="start-server-btn" class="action-btn start-server-btn"/>
-            </OuterGlow>
         </ui:VisualElement>
         
         <!-- Back button -->

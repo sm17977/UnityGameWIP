@@ -211,28 +211,11 @@
 
 /* Action button font sizes */
 .ready-btn{font-size: 102px;}
-.start-server-btn, .start-game-btn{font-size: 80px;}
+.start-game-btn{font-size: 80px;}
 
 /* Start game btn container */
 .start-game-btn-container{
-    display: none;
-}
-
-/* Start server btn container */
-.start-server-btn-container{
     display: flex;
-}
-
-/* Ready up button backdrop */
-.ready-btn-backdrop{
-    position: relative;
-    font-size: 102px;
-    background-color: #3a3d7c;
-    width: 463px; /* Match the width of the button */
-    height: 134px; /* Match the height of the button */
-    border-radius: 12px;
-    top: 115px;
-    right: 15px;
 }
 
 /* Back button container */
