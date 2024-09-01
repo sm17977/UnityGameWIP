@@ -8,12 +8,12 @@ namespace Global.Game_Modes {
 
         //public event OnUpdateCountdownText UpdateCountdownText;
 
-        private readonly int _requiredPlayeCount = 2;        
+        private readonly int _requiredPlayerCount = 2;        
         private readonly int _countdownTime = 5;
         
         public Duel() {
             GameModeType = Type.Multiplayer;
-            MinimumRequiredPlayers = _requiredPlayeCount;
+            MinimumRequiredPlayers = _requiredPlayerCount;
             Name = "Duel";
         }
         

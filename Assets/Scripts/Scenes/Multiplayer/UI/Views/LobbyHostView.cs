@@ -83,7 +83,16 @@ public class LobbyHostView : LobbyView {
     /// </summary>
     public override async void RePaint() {
         Debug.Log("Lobby Host calling repaint");
-        _startGameBtn.SetEnabled(CanStartGame?.Invoke() == true);
+        var canStartGame = CanStartGame?.Invoke() == true;
+        _startGameBtn.SetEnabled(canStartGame);
+        if (!canStartGame) {
+            _startGameBtnContainer.AddToClassList("action-btn-shadow-disabled");
+        }
+        else {
+            _startGameBtnContainer.RemoveFromClassList("action-btn-shadow-disabled");
+        }
+        
+        
         base.RePaint();
     }
 }

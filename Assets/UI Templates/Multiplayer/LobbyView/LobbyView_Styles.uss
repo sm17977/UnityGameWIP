@@ -59,7 +59,7 @@
     display: flex;
 }
 
-/* Lpbby table drop shadow */
+/* Lobby table drop shadow */
 .lobby-table-shadow {
     --glow-color: rgba(0, 0, 0, 0.08);
     --glow-size: 35;
@@ -183,6 +183,7 @@
     flex-shrink: 0;
 }
 
+/* Back drop effect */
 .action-btn-shadow{
     --glow-color: rgba(184, 41, 41, 0);
     --glow-size: 10;
@@ -190,6 +191,12 @@
     --glow-offset-y: -20;
     --glow-background-color: #3a3d7c;
     --glow-border-radius: 10;
+}
+
+/* Back drop effect - disabled */
+.action-btn-shadow-disabled{
+    --glow-background-color: rgb(255, 255, 255);
+    --glow-size: 0;
 }
 
 /* Action button */
@@ -206,7 +213,7 @@
 
 /*Ready up button hover */
 .action-btn:hover{
-    color:  #3a3d7c;
+    color: #3a3d7c;
 }
 
 /* Action button font sizes */

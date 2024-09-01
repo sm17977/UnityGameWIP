@@ -1,0 +1,142 @@
+﻿/* Lobbies container */
+.lobbies-container{
+    display: flex;
+    height: 100%;
+    background-color: white;
+    padding: 20px;
+    color: #3a3d7c
+}
+
+/* Lobbies title container */
+.lobbies-title-container{
+    /*margin-top: 80px;*/
+    /*margin-bottom: 50px;*/
+}
+
+/* Lobbies title */
+.lobbies-title{
+    font-size: 82px;
+}
+
+/* Lobbies table container */
+.lobbies-table-container{
+    display: flex;
+    background-color: white;
+}
+
+/* Lobbies table */
+.lobbies-table{
+    display: flex;
+}
+
+/* Lobbies table body */
+.lobbies-table-body, .lobbies-table-header{
+    display: flex;
+    width: 100%;
+    font-size: 22px;
+    margin: 0;
+}
+
+/* Lobbies header row */
+.lobbies-table-header{
+    background-color: #4fffcd;
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    flex-direction: row;
+    padding: 5px;
+}
+
+/* Lobbies table row */
+.lobbies-table-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    background-color: white;
+    transition: 0.1s background-color;
+}
+
+/* Table row hover */
+.lobbies-table-row:hover, .lobbies-table-row-selected{
+    background-color: #ececec;
+}
+
+/* Lobbies Table Columns */
+.lobbies-col-width{
+    flex: 0 0 25%;
+    padding: 10px;
+    -unity-text-align: middle-left;
+}
+
+/* Hide Lobby ID */
+.lobbies-lobby-id{
+    display: none;
+}
+
+
+/* Join lobby button container */
+.join-btn-container{
+    position: relative;
+    margin-top: auto;
+    width: 30%;
+    align-self: center;
+    font-size: 62px;
+}
+
+/* Join lobby button */
+.join-btn{
+    background-color: #4fffcd;
+    color: white;
+    border-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    -unity-font-style: bold;
+    padding: 4px 50px 4px 50px;
+}
+
+/* Join lobby button hover */
+.join-btn:hover{
+    color: #3a3d7c;
+}
+
+/* Back drop effect */
+.join-btn-shadow{
+    --glow-color: rgba(184, 41, 41, 0);
+    --glow-size: 10;
+    --glow-offset-x: -20;
+    --glow-offset-y: -20;
+    --glow-background-color: #3a3d7c;
+    --glow-border-radius: 10;
+}
+
+/* Back drop effect - disabled */
+.join-btn-shadow-disabled{
+    --glow-background-color: rgb(255, 255, 255);
+    --glow-size: 0;
+}
+
+/* Back button container */
+.back-btn-container{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 20px;
+    display: flex;
+    height: 200px;
+}
+
+/* Back button */
+.back-btn{
+    color: #3a3d7c;
+    font-size: 40px;
+    border-color: #3a3d7c;
+    border-width: 4px;
+    border-radius: 12px;
+    background-color: white;
+    transition: 0.1s background-color, 0.1s color;
+}
+
+/* Back button hover */
+.back-btn:hover{
+    background-color: #3a3d7c;
+    color: white;
+}

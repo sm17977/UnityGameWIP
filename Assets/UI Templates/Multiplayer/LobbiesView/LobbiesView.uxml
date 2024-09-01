@@ -1,0 +1,74 @@
+<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbiesView/LobbiesView_Styles.uss" />
+    
+    <!-- Lobbies Table Container -->
+    <ui:VisualElement name="lobbies" class="lobbies-container">
+        
+        <!-- Multiplayer Heading -->
+        <ui:VisualElement name="title-container" class="lobbies-title-container">
+            <ui:Label text="Lobbies" class="lobbies-title"/>
+        </ui:VisualElement>
+                
+        <!-- Lobbies Table Container -->
+        <ui:VisualElement class="lobbies-table-container">
+            <!-- Lobbies Table-->
+            <ui:VisualElement name="lobbies-table" class="lobbies-table">
+                <!-- Table Header Container-->
+                <ui:VisualElement name="lobbies-table-header" class="lobbies-table-header">
+                    <!-- Header Row-->
+                    <ui:VisualElement name="col-header" class="lobbies-col-width">
+                        <ui:Label text="NAME"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="lobbies-col-width">
+                        <ui:Label text="HOST"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="lobbies-col-width">
+                        <ui:Label text="GAME MODE"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="col-header" class="lobbies-col-width">
+                        <ui:Label text="PLAYERS"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+        
+                <!-- Table Body Container-->
+                <ui:VisualElement name="lobbies-table-body" class="lobbies-table-body">
+                    <!-- Table Body Row Container-->
+                    <ui:VisualElement class="lobbies-table-row">
+                        <ui:Label text="Test Lobby Name" class="lobbies-col-width"/>
+                        <ui:Label text="Sean" class="lobbies-col-width"/>
+                        <ui:Label text="Duel" class="lobbies-col-width"/>
+                        <ui:Label text="2/2" class="lobbies-col-width"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lobbies-table-row">
+                        <ui:Label text="Test Lobby Name" class="lobbies-col-width"/>
+                        <ui:Label text="Sean" class="lobbies-col-width"/>
+                        <ui:Label text="Duel" class="lobbies-col-width"/>
+                        <ui:Label text="2/2" class="lobbies-col-width"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Join lobby button -->
+        <ui:VisualElement class="join-btn-container">
+            <OuterGlow name="join-lobby-btn-container" class="join-btn-shadow">
+                <ui:Button text="JOIN" name="join-lobby-btn" class="join-btn"/>
+            </OuterGlow>
+        </ui:VisualElement>
+        
+        <!-- Back button -->
+        <ui:VisualElement name="back-btn-container" class="back-btn-container">
+            <ui:Button text="Back" name="back-btn" class="back-btn"/>
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+    
+</ui:UXML>

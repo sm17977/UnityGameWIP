@@ -11,6 +11,7 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/CreateLobbyModal/CreateLobbyModal_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/MessageModal/MessageModal_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbiesView/LobbiesView_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" />
 
     <!-- Player ID -->

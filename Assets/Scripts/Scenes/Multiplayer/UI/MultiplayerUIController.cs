@@ -265,7 +265,6 @@ public class MultiplayerUIController : MonoBehaviour {
         UpdatePlayersServerInfo();
         _viewManager.ChangeView(_lobbyPlayerView);
     }
-    
     private async Task LeaveLobby() {
         var success = false;
         if (_clientManager.Client.IsLobbyHost) {

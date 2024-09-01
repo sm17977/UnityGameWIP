@@ -26,6 +26,7 @@ namespace Multiplayer.UI {
         private VisualElement _playersTableB;
         private Label _playerId;
         private Label _gameModeName;
+        private Label _gameModePlayerCount;
         private Button _leaveLobbyBtn;
         private Button _backBtn;    
         
@@ -80,6 +81,7 @@ namespace Multiplayer.UI {
             // Text Labels
             _playerId = Template.Q<Label>("player-id-text");
             _gameModeName = Template.Q<Label>("gamemode-name");
+            _gameModePlayerCount = Template.Q<Label>("gamemode-player-count");
             
             // Buttons 
             _leaveLobbyBtn = Template.Q<Button>("back-btn");
@@ -90,8 +92,12 @@ namespace Multiplayer.UI {
 
         private void SetTextLabels() {
             _playerId.text = GetLobbyPlayerId?.Invoke();
-            _gameModeName.text = GetLobbyGameMode?.Invoke();
-        }
+            var gameModeName = GetLobbyGameMode?.Invoke();
+            var gameMode = GlobalState.GameModeManager.GetGameMode(gameModeName);
+            var playersPerTeam = gameMode.MinimumRequiredPlayers/2;
+            _gameModeName.text = gameModeName;
+            _gameModePlayerCount.text = playersPerTeam + "v" + playersPerTeam;
+        }   
 
         public override async void Show() {
             base.Show();

@@ -17,17 +17,33 @@ namespace Multiplayer.UI {
         public event OnIsPlayerInLobby IsPlayerInLobby;
         
         private VisualElement _table;
-        private Button _backBtn;    
+        private VisualElement _selectedRow = null;
+        private Button _backBtn;
+        private Button _joinBtn;
+        private VisualElement _joinBtnContainer;
+        private List<Lobby> _lobbies;
         
         public LobbiesView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            InitializeElements();
+            BindUIElements();
         }
-        private void InitializeElements() {
+        private void BindUIElements() {
             _table = Template.Q<VisualElement>("lobbies-table-body");
+            
             _backBtn = Template.Q<Button>("back-btn");
-            _backBtn.RegisterCallback<ClickEvent>(evt => OnReturnToMultiplayerMenu());
+            _backBtn.RegisterCallback<ClickEvent>(evt => {
+                Reset();
+                OnReturnToMultiplayerMenu();
+            });
+
+            _joinBtn = Template.Q<Button>("join-lobby-btn");
+            _joinBtnContainer = Template.Q<VisualElement>("join-lobby-btn-container");
+            
+            _joinBtn.RegisterCallback<ClickEvent>(evt => OnJoinLobbyButtonClick(evt));
+            
+            _joinBtn.SetEnabled(false);
+            _joinBtnContainer.AddToClassList("join-btn-shadow-disabled");
         }
         public override async void Show() {
             base.Show();
@@ -37,68 +53,103 @@ namespace Multiplayer.UI {
         
         public override void Hide() {
             base.Hide();
-            _table.style.height = 0;
+            //_table.style.height = 0;
         }
         
         private async Task GenerateLobbiesTable(bool sendNewRequest) {
             
-            var lobbies = await GetLobbyTableData?.Invoke(sendNewRequest);
-            if (lobbies == null) return;
+            _lobbies = await GetLobbyTableData?.Invoke(sendNewRequest);
+            if (_lobbies == null) return;
             
             var lobbyCount = 0;
-            var lobbyRowHeight = 24;
+            // var lobbyRowHeight = 24;
 
-            foreach(var lobby in lobbies){
+            foreach(var lobby in _lobbies){
 
                 lobbyCount++;
                 VisualElement row = new VisualElement();
-                row.AddToClassList("row-container");
+                row.AddToClassList("lobbies-table-row");
                 
-                VisualElement lobbyID = new VisualElement();
-                Label lobbyIDLabel = new Label();
-                lobbyIDLabel.text = lobby.Id;
-                lobbyID.Add(lobbyIDLabel);
-                lobbyID.AddToClassList("col-lobby-id");
-
+                // This column is hidden, it's just used for joining a lobby
+                VisualElement lobbyId = new VisualElement();
+                Label lobbyIdLabel = new Label();
+                lobbyIdLabel.name = "lobby-id";
+                lobbyIdLabel.text = lobby.Id;
+                lobbyId.Add(lobbyIdLabel);
+                lobbyId.AddToClassList("lobbies-lobby-id");
+                
                 VisualElement lobbyName = new VisualElement();
                 Label lobbyNameLabel = new Label();
                 lobbyNameLabel.text = lobby.Name;
                 lobbyName.Add(lobbyNameLabel);
-                lobbyName.AddToClassList("col-lobby-name");
+                lobbyName.AddToClassList("lobbies-col-width");
+                
+                VisualElement host = new VisualElement();
+                Label hostLabel = new Label();
+                hostLabel.text = lobby.HostId;
+                host.Add(hostLabel);
+                host.AddToClassList("lobbies-col-width");
+                
+                VisualElement gameMode = new VisualElement();
+                Label gameModeLabel = new Label();
+                gameModeLabel.text = lobby.Data["GameMode"].Value;
+                gameMode.Add(gameModeLabel);
+                gameMode.AddToClassList("lobbies-col-width");
 
                 VisualElement players = new VisualElement();
                 Label playersLabel = new Label();
                 playersLabel.text = lobby.Players.Count.ToString();
                 players.Add(playersLabel);
-                players.AddToClassList("col-players");
-
-                VisualElement host = new VisualElement();
-                Label hostLabel = new Label();
-                hostLabel.text = lobby.HostId;
-                host.Add(hostLabel);
-                host.AddToClassList("col-host");
-
-                VisualElement joinLobby = new VisualElement();
-                Button joinLobbyBtn = new Button();
-                Label joinLobbyBtnLabel = new Label();
-                joinLobbyBtnLabel.text = "Join Lobby";
-                joinLobbyBtn.AddToClassList("col-join-lobby-btn");
-                joinLobbyBtn.Add(joinLobbyBtnLabel);
-                joinLobby.Add(joinLobbyBtn);
-                joinLobby.AddToClassList("col-join-lobby");
-                joinLobby.RegisterCallback<ClickEvent>( async (evt) => await JoinLobby?.Invoke(lobby));
-                joinLobby.SetEnabled(!await IsPlayerInLobby?.Invoke(lobby));
-
-                row.Add(lobbyID);
+                players.AddToClassList("lobbies-col-width");
+                
+                row.Add(lobbyId);
                 row.Add(lobbyName);
-                row.Add(players);
                 row.Add(host);
-                row.Add(joinLobby);
-
+                row.Add(gameMode);
+                row.Add(players);
+                
+                row.RegisterCallback<ClickEvent>((evt) => OnLobbyRowClick(evt));
+                
                 _table.Add(row);
             }    
-            _table.style.height = lobbyCount * lobbyRowHeight;
+            // _table.style.height = lobbyCount * lobbyRowHeight;
         }
+
+        private async void OnJoinLobbyButtonClick(ClickEvent evt) {
+            if (_selectedRow != null) {
+                var lobbyId = _selectedRow.Q<Label>("lobby-id").text;
+                var lobbyToJoin = _lobbies.Find((lobby) => lobby.Id == lobbyId);
+                await JoinLobby?.Invoke(lobbyToJoin);
+                Reset();
+            }
+        }
+
+        private void OnLobbyRowClick(ClickEvent evt) {
+            // Select row
+            var row = evt.currentTarget as VisualElement;
+            if (row == null) return;
+            
+            _joinBtn.SetEnabled(true);
+            _joinBtnContainer.RemoveFromClassList("join-btn-shadow-disabled");
+            
+            if (row != _selectedRow) {
+                if (_selectedRow != null) {
+                    _selectedRow.RemoveFromClassList("lobbies-table-row-selected");
+                }
+                _selectedRow = row;
+                row.ToggleInClassList("lobbies-table-row-selected");
+            }
+        }
+
+        private void Reset() {
+            if (_selectedRow != null) {
+                _selectedRow.RemoveFromClassList("lobbies-table-row-selected");
+                _selectedRow = null;
+            }
+            _joinBtn.SetEnabled(false);
+            _joinBtnContainer.AddToClassList("join-btn-shadow-disabled");
+        }
+        
         public override async void Update() {
             _table.Clear();
             await GenerateLobbiesTable(true);

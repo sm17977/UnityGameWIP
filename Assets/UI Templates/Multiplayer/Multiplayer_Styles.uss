@@ -35,65 +35,9 @@
     padding-top: 100px;
 }
 
-/* List Lobbies */
-.lobbies-container{
-    display: flex;
-    height: 100%;
-    background-color: white;
-}
-
-.table{
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    margin-top: 20px;
-    margin-bottom: 0;
-    width: 80%;
-}
-
-
-
-/* Lobbies Table Columns */
-.col-lobby-id{
-    flex: 0 0 25%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-lobby-name{
-    flex: 0 0 20%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-players{
-    flex: 0 0 10%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-host{
-    flex: 0 0 25%;
-    padding: 10px;
-    -unity-text-align: middle-left;
-}
-
-.col-join-lobby{
-    -unity-text-align: middle-center;
-    flex: 0 0 20%;
-    padding: 10px;
-}
-
-.col-join-lobby-btn{
-    justify-content: center;
-}
 
 Label{
     white-space: normal;
-}
-
-.server-info-table-body{
-    
 }
 
 .back-btn-container{
@@ -139,10 +83,6 @@ Label{
 
 .list-item-btn:hover{
     -unity-font-style: bold;
-}
-
-.current-lobby-menu-btn-container{
-    display: none;
 }
 
 .exit-modal-container{

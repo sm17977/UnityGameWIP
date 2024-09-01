@@ -26,7 +26,7 @@
                 <ui:Label text=" - " class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text="5v5" class="gamemode-info-text"/>
+                <ui:Label text="" name="gamemode-player-count" class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
                 <ui:Label text=" - " class="gamemode-info-text"/>
