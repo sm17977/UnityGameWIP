@@ -147,7 +147,7 @@ namespace Multiplayer {
                    return new ClientConnectionInfo { IP = "", Port = 0 };
                }
                
-               var maxRetries = 60;
+               var maxRetries = 120;
                var retryCount = 0;
                
                // Once a machine is found, poll for its status until it's online

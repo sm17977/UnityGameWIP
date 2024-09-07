@@ -84,11 +84,16 @@ public class LuxPlayerController : LuxController {
     public Ability LuxEAbilitySO;
     public Ability LuxQAbility;
     public Ability LuxEAbility;
+    
+    // Health
+    private Health _health;
+    public GameObject healthBarAnchor;
 
     private void Awake() {
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-        
+
+        healthBarAnchor = GameObject.Find("HealthBarAnchor");
         hitboxGameObj = GameObject.Find("Hitbox");
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         _hitboxPos = hitboxGameObj.transform.position;
@@ -132,7 +137,8 @@ public class LuxPlayerController : LuxController {
         BuffManager.Init(this);
         
         playerType = PlayerType.Player;
-
+        _health = GetComponent<Health>();
+        
         InitStates();
         InitAbilities();
         _stateManager.ChangeState(_idleState);

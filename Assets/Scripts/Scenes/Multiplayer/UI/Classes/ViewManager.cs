@@ -118,7 +118,6 @@ namespace Multiplayer.UI {
             }
         }
         
-        
         /// <summary>
         /// Close a modal
         /// </summary>
@@ -154,6 +153,13 @@ namespace Multiplayer.UI {
         public void ChangeOpenModalTemplate(VisualTreeAsset vta) {
             if (vta != null && CurrentModal != null) {
                 CurrentModal.ChangeTemplateOfOpenModal(vta);
+            }
+        }
+
+        
+        public void UpdateGameView() {
+            if (CurrentView is GameView gameView) {
+                gameView.Update();
             }
         }
     }

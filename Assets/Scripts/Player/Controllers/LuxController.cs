@@ -3,9 +3,10 @@ using Unity.Netcode;
 using UnityEngine;
 
 public enum PlayerType {Player, Bot};
-public class LuxController : NetworkBehaviour
-{
 
+
+public class LuxController : NetworkBehaviour {
+    
     public PlayerType playerType;
     public Champion lux;
     public BuffManager BuffManager;
@@ -24,4 +25,7 @@ public class LuxController : NetworkBehaviour
         globalState.LoadScene("Death Screen");
     }
 
+    public override void OnNetworkSpawn() {
+        Debug.Log("OnNetworkSpawn");
+    }
 }

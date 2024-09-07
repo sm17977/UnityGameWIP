@@ -427,6 +427,20 @@ public class GameLobbyManager : MonoBehaviour {
         return false;
     }
 
+    public bool IsConnected(string playerId) {
+        foreach(var player in _lobby.Players) {
+            if (player.Id == playerId) {
+                var connected = bool.Parse(player.Data["IsConnected"].Value);
+                if (connected) {
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+    
+
     /// <summary>
     /// Check if all lobby players have disconnected from the multiplay server
     /// </summary>

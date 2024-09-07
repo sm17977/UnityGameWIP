@@ -120,5 +120,22 @@
     color: white;
 }
 
+.health-bar-container{
+    width: 150px;
+    height: 25px;
+    border-color: black;
+    border-radius: 10px;
+    border-width: 4px;
+}
+
+.health-bar{
+    width: 100px;
+    height: 25px;
+    background-color: rgb(255, 0, 0);
+    border-color: rgb(255, 0, 0);
+    border-radius: 8px 0 0 8px;
+    border-width: 5px;
+    transition: width 0.2s;
+}
 
 

@@ -8,18 +8,24 @@
     
     <Style src="project://database/Assets/UI%20Templates/HUD/HUD_Styles.uss?fileID=7433441132597879392&amp;guid=c1b4d08261a306b429eb20d32dc944de&amp;type=3#HUD_Styles" />
     <engine:VisualElement name="main-container" class="main-container">
+        
+        <!-- Debug Panel -->
         <engine:VisualElement name="debug" class="debug-container">
             <engine:Label text="Debug Info" class="header" />
             <engine:Label text="Current State: " name="debug-current-state" />
             <engine:Label text="Round: " name="debug-current-round" />
             <engine:Label text="Next round starts in " name="debug-current-round-timer" />
         </engine:VisualElement>
+        
+        <!-- Pause Menu -->
         <engine:VisualElement name="pause-menu" class="pause-menu-container">
             <engine:Label text="Paused" class="header pause-menu-header" />
         </engine:VisualElement>
         <engine:VisualElement name="time-count-container" class="time-count-container">
             <engine:Label name="time-count" class="time-count" />
         </engine:VisualElement>
+        
+        <!-- Player center -->
         <engine:VisualElement name="player-center" class="player-center-container">
             <engine:VisualElement class="skills-container">
                 <engine:VisualElement name="q-box" class="skill">
@@ -40,6 +46,13 @@
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
-    </engine:VisualElement>
+        
+        <!-- Health bar -->
+        <engine:VisualElement name="health-bar-container" class="health-bar-container">
+            <engine:VisualElement name="health-bar" class="health-bar"/>
+            </engine:VisualElement>
+        </engine:VisualElement>
+        
+    
     <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
 </UXML>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Global.Game_Modes;
 using Multiplayer;
 using Multiplayer.UI;
+using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -16,6 +17,9 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // UI Document
     [SerializeField] public UIDocument uiDocument;
+    
+    // Player
+    private GameObject _player;
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
@@ -60,8 +64,6 @@ public class MultiplayerUIController : MonoBehaviour {
    public VisualTreeAsset messageModalLobbyFailedTmpl;
    public VisualTreeAsset messageModalServerConnectingTmpl;
    
-
-    
     //Gamemode
     private GameMode _currentGameMode;
     
@@ -154,15 +156,20 @@ public class MultiplayerUIController : MonoBehaviour {
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
         _exitGameModal.DisconnectClient += (async () => await DisconnectClient());
 
-
+        // Message modal events
         _gameLobbyManager.OnShowMessage += ShowLobbyErrorMessage;
+        
     }
 
     void OnDisable(){
         _controls.UI.ESC.performed -= OnEscape;
         _controls.UI.Disable();
     }
-    
+
+    private void Update() {
+        _viewManager.UpdateGameView();
+    }
+
     /// <summary>
     /// Initialize all Views and store them in the Views list
     /// </summary>
@@ -401,6 +408,8 @@ public class MultiplayerUIController : MonoBehaviour {
    }
    
     public void OnLobbyChanged(ILobbyChanges changes) {
+
+        
         if (changes.PlayerLeft.Changed) {
             Debug.Log("Lobby Change - Player left!");
         }
@@ -415,6 +424,11 @@ public class MultiplayerUIController : MonoBehaviour {
 
         if (changes.PlayerData.Changed) {
             Debug.Log("Lobby Change - Player Data Changed");
+            foreach (var data in changes.PlayerData.Value) {
+                if(data.Value.ChangedData.Value.TryGetValue("IsConnected", out var isConnected)) {
+                    Debug.Log("Lobby Changed IsConnected: " + isConnected.Value.Value);
+                }
+            }
         }
 
         if (changes.LobbyDeleted) {
@@ -438,6 +452,27 @@ public class MultiplayerUIController : MonoBehaviour {
         }
         
         _gameLobbyManager.ApplyLobbyChanges(changes);
+
+        if (_gameLobbyManager.IsConnected(_clientManager.Client.ID)) {
+            var playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+            
+            if (playerNetworkObject == null) {
+                Debug.Log("networkObject is null");
+                return;
+            }
+            
+            if (playerNetworkObject.gameObject == null) {
+                Debug.Log("gameObject is null");
+                return;
+            }
+            
+            _player = playerNetworkObject.gameObject;
+            Debug.Log("Setting health bar");
+            _gameView.SetPlayer(_player);
+        }
+        else {
+            Debug.Log("NOT CONNECTED ID: " + _clientManager.Client.ID);
+        }
         
         if (!_clientManager.Client.IsLobbyHost) {
             UpdatePlayersServerInfo();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using CustomElements;
 using Global.Game_Modes;
+using QFSW.QC;
 
 public delegate void StartArenaCountdown();
 
@@ -22,18 +23,21 @@ public class ArenaUIController : MonoBehaviour
     private Label _timeCounter;
     private VisualElement _pauseMenu;
     private CountdownTimerElement _countdownTimerElement;
-    private GlobalState _globalState;
-    private Arena arena;
-
+    private VisualElement _healthBarContainer;
+    
     // Input System
     private Controls _controls;
+    
+    // Health bar positioning offset
+    private float _healthBarYOffset = -50f;
 
     // Player Reference
     public LuxPlayerController player;
+
     
     void Awake(){
-        _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         _countdownTimerElement = uiDocument.rootVisualElement.Q<CountdownTimerElement>("countdown-timer");
+        _healthBarContainer = uiDocument.rootVisualElement.Q<VisualElement>("health-bar-container");
     }
 
     void Start() {
@@ -41,7 +45,27 @@ public class ArenaUIController : MonoBehaviour
         GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
         GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
         OnStartGameModeCountdown?.Invoke();
+        SetHealthBarPosition();
+        Debug.Log(_healthBarContainer.transform);
     }
+    
+    void OnDrawGizmos(){
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(_healthBarContainer.transform.position, 0.3f);
+    }
+
+    void SetHealthBarPosition() {
+       
+        Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
+            _healthBarContainer.panel, player.healthBarAnchor.transform.position, player.mainCamera);
+
+        newPosition.x += -(Screen.width / 2);
+        newPosition.y += -(Screen.height) + _healthBarYOffset;
+        
+        _healthBarContainer.transform.position = newPosition;
+    }
+    
+    public Vector2 WithNewX(Vector2 vector, float newX) => new Vector2(newX, vector.y);
 
     void OnEnable(){
         _controls = new Controls();
@@ -87,7 +111,11 @@ public class ArenaUIController : MonoBehaviour
     void FixedUpdate(){
         UpdateTimeCounter();
     }
-    
+
+    private void LateUpdate() {
+        SetHealthBarPosition();
+    }
+
     void InitTimeCounter(){
         _timeCounter = uiDocument.rootVisualElement.Q<Label>("time-count");
         _timeCounterContainer = uiDocument.rootVisualElement.Q<VisualElement>("time-count-container");
