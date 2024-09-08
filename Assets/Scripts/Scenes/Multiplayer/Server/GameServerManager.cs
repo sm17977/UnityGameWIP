@@ -6,6 +6,8 @@ namespace Multiplayer {
         private static GameServerManager _instance;
         private ServerManager _serverManager;
         private void Awake() {
+            // This is important, if we don't set the target frame rate it will introduce sync issues which
+            // are very noticeable when players cast projectiles
             #if DEDICATED_SERVER
                 QualitySettings.vSyncCount = 0;
                 Application.targetFrameRate = 60;

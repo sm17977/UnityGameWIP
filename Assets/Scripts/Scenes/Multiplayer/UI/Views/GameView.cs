@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using CustomElements;
 using Global.Game_Modes;
 using UnityEngine;
@@ -10,24 +11,24 @@ namespace Multiplayer.UI {
     public class GameView : View {
 
         private CountdownTimerElement _countdownTimerElement;
-        private VisualElement _healthBarContainer;
-        private LuxPlayerController _player;
         private float _healthBarYOffset = -50f;
+        private Dictionary<LuxPlayerController, VisualElement> _playerHealthBars;
+        private List<GameObject> _playerGameObjects;
         public static event StartDuelCountdown OnStartGameModeCountdown; 
         
         public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             BindUIElements();
-
+            _playerHealthBars = new Dictionary<LuxPlayerController, VisualElement>();
         }
         
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
-            _healthBarContainer = Template.Q<VisualElement>("health-bar-container");
         }   
 
         public override async void Show() {
+            GenerateHealthBars(); // This function updates the template which means it must run before base.Show
             base.Show();
             BindUIElements();
             GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
@@ -35,12 +36,10 @@ namespace Multiplayer.UI {
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
             SetHealthBarPosition();
-            Show(_healthBarContainer);
         }
 
         public override void Hide() {
             base.Hide();
-            Hide(_healthBarContainer);
         }
         
         public override void Update() {
@@ -51,21 +50,67 @@ namespace Multiplayer.UI {
 
         }
 
-        public void SetPlayer(GameObject playerGameObject) {
-            _player = playerGameObject.GetComponent<LuxPlayerController>();
+        /// <summary>
+        /// Set the player game objects list
+        /// </summary>
+        /// <param name="players"></param>
+        public void SetPlayers(List<GameObject> players) {
+            _playerGameObjects = players;
         }
 
+        /// <summary>
+        /// Generate new health bars if new players join (will this work if a player leaves?)
+        /// </summary>
+        /// <param name="players"></param>
+        public void UpdatePlayers(List<GameObject> players) {
+            _playerGameObjects = players;
+            GenerateHealthBars();
+            base.Show();
+        }
+
+        /// <summary>
+        /// Generate the health bar visual elements for each connected client
+        /// Store mapping of player and their health bar visual element
+        /// </summary>
+        private void GenerateHealthBars() {
+            foreach (var player in _playerGameObjects) {
+                
+                var healthBarContainer = new VisualElement();
+                var healthBar = new VisualElement();
+                
+                healthBarContainer.AddToClassList("health-bar-container");
+                healthBar.AddToClassList("health-bar");
+                
+                healthBarContainer.Add(healthBar);
+                var playerScript = player.GetComponent<LuxPlayerController>();
+                
+                if (_playerHealthBars.ContainsKey(playerScript)) {
+                    continue; // Avoid creating duplicate health bars
+                }
+                
+                Template.Add(healthBarContainer);
+                _playerHealthBars[playerScript] = healthBarContainer;
+            }
+        }
+        
+        /// <summary>
+        /// Set the position of the health bar above the player model for each client
+        /// </summary>
         private void SetHealthBarPosition() {
             
-            if(_player == null) return;
-            
-            Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
-                _healthBarContainer.panel, _player.healthBarAnchor.transform.position, _player.mainCamera);
+            foreach (var (player, healthBar) in _playerHealthBars) {
+                if (player == null) {
+                    continue;
+                }
+                
+                Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
+                    healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
 
-            newPosition.x += -(Screen.width / 2);
-            newPosition.y += -(Screen.height) + _healthBarYOffset;
+                newPosition.x += -(Screen.width / 2);
+                newPosition.y += -(Screen.height / 2) + _healthBarYOffset;
         
-            _healthBarContainer.transform.position = newPosition;
+                healthBar.transform.position = newPosition;
+            }
         }
     }
 }

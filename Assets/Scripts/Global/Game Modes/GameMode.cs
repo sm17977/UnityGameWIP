@@ -58,7 +58,6 @@ namespace Global.Game_Modes {
         /// <param name="time">Duration of the gamemode countdown in seconds</param>
         public void SetCountdownTimer(int time) {
             CountdownTimer = time;
-            Debug.Log("Send Event: " + time);
             UpdateCountdownText?.Invoke(time);
         }
         

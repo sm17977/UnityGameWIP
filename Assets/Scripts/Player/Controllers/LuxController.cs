@@ -3,9 +3,10 @@ using Unity.Netcode;
 using UnityEngine;
 
 public enum PlayerType {Player, Bot};
-
+public delegate void OnNetworkSpawn();
 
 public class LuxController : NetworkBehaviour {
+    public static event OnNetworkSpawn NetworkSpawn;
     
     public PlayerType playerType;
     public Champion lux;
@@ -26,6 +27,9 @@ public class LuxController : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
-        Debug.Log("OnNetworkSpawn");
+        if (!IsServer) {
+            Debug.Log("OnNetworkSpawn");
+            NetworkSpawn?.Invoke();
+        }
     }
 }

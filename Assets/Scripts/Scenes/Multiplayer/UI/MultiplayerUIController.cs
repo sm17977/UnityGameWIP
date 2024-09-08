@@ -66,6 +66,7 @@ public class MultiplayerUIController : MonoBehaviour {
    
     //Gamemode
     private GameMode _currentGameMode;
+    private int _playersConnected = 0;
     
     private void Awake(){
         #if DEDICATED_SERVER
@@ -159,6 +160,13 @@ public class MultiplayerUIController : MonoBehaviour {
         // Message modal events
         _gameLobbyManager.OnShowMessage += ShowLobbyErrorMessage;
         
+        // Player network spawn event
+        LuxController.NetworkSpawn += (() => {
+            // Give the game view the current player game objects and switch to the view
+            var players = GetPlayers();
+            _gameView.SetPlayers(players);
+            _viewManager.ChangeView(_gameView);
+        });
     }
 
     void OnDisable(){
@@ -303,15 +311,33 @@ public class MultiplayerUIController : MonoBehaviour {
     private async Task StartGame() {
         await _gameLobbyManager.UpdateLobbyWithGameStart(true);
         _gameLobbyManager.gameStarted = true;
-         _clientManager.StartClient();
-         GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
-        _viewManager.ChangeView(_gameView);
+        JoinGame();
     }
     
+    /// <summary>
+    /// Start the client to join the game
+    /// Update the global state game mode
+    /// Switch the game view
+    /// </summary>
     private void JoinGame() {
         _clientManager.StartClient();
         GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
-        _viewManager.ChangeView(_gameView);
+        //var players = _gameLobbyManager.GetConnectedPlayers();
+    }
+
+    /// <summary>
+    /// Get the current connected players from the players game object
+    /// </summary>
+    /// <returns></returns>
+    private List<GameObject> GetPlayers() {
+        var playersParent = GameObject.Find("Players");
+        var players = new List<GameObject>();
+        foreach (Transform player in playersParent.transform) {
+            if (player != null) {
+                players.Add(player.gameObject);
+            }
+        }
+        return players;
     }
 
     private async Task<List<Player>> GetLobbyPlayerTableData(bool sendNewRequest) {
@@ -408,7 +434,6 @@ public class MultiplayerUIController : MonoBehaviour {
    }
    
     public void OnLobbyChanged(ILobbyChanges changes) {
-
         
         if (changes.PlayerLeft.Changed) {
             Debug.Log("Lobby Change - Player left!");
@@ -427,6 +452,8 @@ public class MultiplayerUIController : MonoBehaviour {
             foreach (var data in changes.PlayerData.Value) {
                 if(data.Value.ChangedData.Value.TryGetValue("IsConnected", out var isConnected)) {
                     Debug.Log("Lobby Changed IsConnected: " + isConnected.Value.Value);
+                    var players = GetPlayers();
+                    _gameView.UpdatePlayers(players);
                 }
             }
         }
@@ -452,27 +479,6 @@ public class MultiplayerUIController : MonoBehaviour {
         }
         
         _gameLobbyManager.ApplyLobbyChanges(changes);
-
-        if (_gameLobbyManager.IsConnected(_clientManager.Client.ID)) {
-            var playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-            
-            if (playerNetworkObject == null) {
-                Debug.Log("networkObject is null");
-                return;
-            }
-            
-            if (playerNetworkObject.gameObject == null) {
-                Debug.Log("gameObject is null");
-                return;
-            }
-            
-            _player = playerNetworkObject.gameObject;
-            Debug.Log("Setting health bar");
-            _gameView.SetPlayer(_player);
-        }
-        else {
-            Debug.Log("NOT CONNECTED ID: " + _clientManager.Client.ID);
-        }
         
         if (!_clientManager.Client.IsLobbyHost) {
             UpdatePlayersServerInfo();
@@ -517,9 +523,7 @@ public class MultiplayerUIController : MonoBehaviour {
         var serverIsProvisioned = _gameLobbyManager.currentServerProvisionState == ServerProvisionState.Provisioned;
         var allPlayersReady = _gameLobbyManager.PlayersReady();
         var lobbyHasRequiredPlayers = _gameLobbyManager.GetLobbyPlayerCount() >= selectedGameMode.MinimumRequiredPlayers;
-
-        Debug.Log("Server Provisioned: " + serverIsProvisioned);
-
+        
         // Set the lobby status for the host
         if(!serverIsProvisioned){
             _lobbyHostView.SetStatus(LobbyHostView.HostLobbyStatus.WaitForServer);

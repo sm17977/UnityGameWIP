@@ -6,6 +6,7 @@ using Multiplayer;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -427,7 +428,12 @@ public class GameLobbyManager : MonoBehaviour {
         return false;
     }
 
-    public bool IsConnected(string playerId) {
+    /// <summary>
+    /// Check if a specific player is connected to the multiplay server
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <returns>boolean</returns>
+    private bool IsConnected(string playerId) {
         foreach(var player in _lobby.Players) {
             if (player.Id == playerId) {
                 var connected = bool.Parse(player.Data["IsConnected"].Value);
@@ -438,6 +444,20 @@ public class GameLobbyManager : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// Get a list of lobby player IDs of all players connected to the multiplay server
+    /// </summary>
+    /// <returns></returns>
+    public List<string> GetConnectedPlayers() {
+        List<string> connectedPlayers = new List<string>();
+        foreach (var player in _lobby.Players) {
+            if (IsConnected(player.Id)) {
+                connectedPlayers.Add(player.Id);
+            }
+        }
+        return connectedPlayers;
     }
     
 
