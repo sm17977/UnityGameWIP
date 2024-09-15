@@ -185,7 +185,7 @@ public class MultiplayerUIController : MonoBehaviour {
         var root = uiDocument.rootVisualElement;
         var viewContainer = root.Q<VisualElement>("view-container");
 
-        _gameView = new GameView(root, gameViewTmpl);
+        _gameView = new GameView(viewContainer, gameViewTmpl);
         _lobbiesView = new LobbiesView(viewContainer, lobbiesViewTmpl);
         _lobbyHostView = new LobbyHostView(viewContainer, lobbyHostViewTmpl);
         _lobbyPlayerView = new LobbyPlayerView(viewContainer, lobbyPlayerViewTmpl);
@@ -281,7 +281,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _viewManager.ChangeView(_lobbyPlayerView);
     }
     private async Task LeaveLobby() {
-        var success = false;
+        bool success;
         if (_clientManager.Client.IsLobbyHost) {
             success = await _gameLobbyManager.DeleteLobby();
             if (!success) return;
@@ -295,7 +295,10 @@ public class MultiplayerUIController : MonoBehaviour {
             success = await _gameLobbyManager.LeaveLobby();
         }
 
+        Debug.Log("Leave Lobby Success: " + success);
+
         if (!success) return;
+        Debug.Log("Go to multiplayer menu");
         _viewManager.ChangeView(_multiplayerMenuView);
         
         if(_clientManager.Client.IsLobbyHost) _lobbyHostView.Reset();
@@ -391,18 +394,15 @@ public class MultiplayerUIController : MonoBehaviour {
    /// Kick player from the lobby and return them to the multiplayer menu
    /// </summary>
    private async Task DisconnectClient() {
-       
-       if (_viewManager.CurrentModal == _exitGameModal) {
-           if (_clientManager.Client.IsLobbyHost) {
-               await DisconnectHost();
-               await _gameLobbyManager.UpdateLobbyWithGameStart(false);
-           }
-           else {
-               await _clientManager.Disconnect();
-               _viewManager.CloseModal(_exitGameModal);
-               await LeaveLobby();
-               _viewManager.ChangeView(_multiplayerMenuView);
-           }
+       Debug.Log("Disconnect Client");
+       if (_clientManager.Client.IsLobbyHost) {
+           await DisconnectHost();
+           await _gameLobbyManager.UpdateLobbyWithGameStart(false);
+       }
+       else {
+           await _clientManager.Disconnect();
+           _viewManager.CloseModal(_exitGameModal);
+           await LeaveLobby();
        }
    }
 
@@ -435,12 +435,14 @@ public class MultiplayerUIController : MonoBehaviour {
    
     public void OnLobbyChanged(ILobbyChanges changes) {
         
-        if (changes.PlayerLeft.Changed) {
-            Debug.Log("Lobby Change - Player left!");
-        }
-
         if (changes.PlayerJoined.Changed) {
             Debug.Log("Lobby Change - Player Joined!");
+        }
+        
+        if (changes.PlayerLeft.Changed) {
+            Debug.Log("Lobby Change - Player left!");
+            var players = GetPlayers();
+            _gameView.UpdatePlayerHealthBars(players);
         }
 
         if (changes.Data.Added) {
@@ -450,10 +452,12 @@ public class MultiplayerUIController : MonoBehaviour {
         if (changes.PlayerData.Changed) {
             Debug.Log("Lobby Change - Player Data Changed");
             foreach (var data in changes.PlayerData.Value) {
-                if(data.Value.ChangedData.Value.TryGetValue("IsConnected", out var isConnected)) {
+                var playerDataDict = data.Value.ChangedData.Value;
+                if(playerDataDict.TryGetValue("IsConnected", out var isConnected)) {
                     Debug.Log("Lobby Changed IsConnected: " + isConnected.Value.Value);
+                    if (!bool.Parse(isConnected.Value.Value)) continue;
                     var players = GetPlayers();
-                    _gameView.UpdatePlayers(players);
+                    _gameView.UpdatePlayerHealthBars(players);
                 }
             }
         }

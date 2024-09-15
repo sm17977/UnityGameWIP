@@ -16,6 +16,7 @@ public class RPCController : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
+        Debug.Log("RPC OnNetWorkSpawn");
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
         if (IsServer) {
             _players = GameObject.Find("Players");

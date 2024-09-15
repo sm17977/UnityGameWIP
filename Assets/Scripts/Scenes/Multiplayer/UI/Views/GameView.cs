@@ -12,7 +12,7 @@ namespace Multiplayer.UI {
 
         private CountdownTimerElement _countdownTimerElement;
         private float _healthBarYOffset = -50f;
-        private Dictionary<LuxPlayerController, VisualElement> _playerHealthBars;
+        private Dictionary<LuxPlayerController, VisualElement> _playerHealthBarMappings;
         private List<GameObject> _playerGameObjects;
         public static event StartDuelCountdown OnStartGameModeCountdown; 
         
@@ -20,7 +20,7 @@ namespace Multiplayer.UI {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             BindUIElements();
-            _playerHealthBars = new Dictionary<LuxPlayerController, VisualElement>();
+            _playerHealthBarMappings = new Dictionary<LuxPlayerController, VisualElement>();
         }
         
         private void BindUIElements() {
@@ -36,10 +36,23 @@ namespace Multiplayer.UI {
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
             SetHealthBarPosition();
+            foreach (var (playerScript, healthBar) in _playerHealthBarMappings) {
+                Show(healthBar);
+            }
         }
 
         public override void Hide() {
+            
+            // Hide and remove health bars
+            foreach (var (playerScript, healthBar) in _playerHealthBarMappings.ToList()) {
+                _playerHealthBarMappings[playerScript].RemoveFromHierarchy();
+            }
+            
+            // Hide needs to be called before the health bars are removed from the hierarchy
             base.Hide();
+            
+            // Empty the player game objects list
+            _playerGameObjects.Clear();
         }
         
         public override void Update() {
@@ -51,7 +64,7 @@ namespace Multiplayer.UI {
         }
 
         /// <summary>
-        /// Set the player game objects list
+        /// Set the initial player game objects list
         /// </summary>
         /// <param name="players"></param>
         public void SetPlayers(List<GameObject> players) {
@@ -59,21 +72,46 @@ namespace Multiplayer.UI {
         }
 
         /// <summary>
-        /// Generate new health bars if new players join (will this work if a player leaves?)
+        /// This is called from the lobby events in the UI controller when a lobby player either joins + connects, or
+        /// the player leaves the lobby (in which case they will disconnect soon after)
         /// </summary>
         /// <param name="players"></param>
-        public void UpdatePlayers(List<GameObject> players) {
-            _playerGameObjects = players;
+        public void UpdatePlayerHealthBars(List<GameObject> players) {
+            // Get player scripts of players that have left from their (now destroyed) game object
+            var playerScriptsToRemove = _playerHealthBarMappings.Keys
+                .Where(playerScript => playerScript == null || playerScript.gameObject == null)
+                .ToList();
+            
+            foreach (var playerScript in playerScriptsToRemove) {
+                // Remove health bar from the UI and dictionary
+                if (_playerHealthBarMappings.ContainsKey(playerScript)) {
+                    _playerHealthBarMappings[playerScript].RemoveFromHierarchy();
+                    _playerHealthBarMappings.Remove(playerScript);
+                }
+            }
+
+            // Update the player game objects list, removing any players that have left
+            _playerGameObjects = players.Where(playerObject => playerObject != null).ToList();
+            
+            // Generate health bars for new players
             GenerateHealthBars();
+
+            // Call show to update the template as we've changed the health bar markup
             base.Show();
         }
 
+        
         /// <summary>
         /// Generate the health bar visual elements for each connected client
         /// Store mapping of player and their health bar visual element
         /// </summary>
         private void GenerateHealthBars() {
             foreach (var player in _playerGameObjects) {
+                
+                var playerScript = player.GetComponent<LuxPlayerController>();
+                if (_playerHealthBarMappings.ContainsKey(playerScript)) {
+                    continue; // Avoid creating duplicate health bars
+                }
                 
                 var healthBarContainer = new VisualElement();
                 var healthBar = new VisualElement();
@@ -82,14 +120,9 @@ namespace Multiplayer.UI {
                 healthBar.AddToClassList("health-bar");
                 
                 healthBarContainer.Add(healthBar);
-                var playerScript = player.GetComponent<LuxPlayerController>();
-                
-                if (_playerHealthBars.ContainsKey(playerScript)) {
-                    continue; // Avoid creating duplicate health bars
-                }
                 
                 Template.Add(healthBarContainer);
-                _playerHealthBars[playerScript] = healthBarContainer;
+                _playerHealthBarMappings[playerScript] = healthBarContainer;
             }
         }
         
@@ -98,17 +131,17 @@ namespace Multiplayer.UI {
         /// </summary>
         private void SetHealthBarPosition() {
             
-            foreach (var (player, healthBar) in _playerHealthBars) {
-                if (player == null) {
+            foreach (var (player, healthBar) in _playerHealthBarMappings) {
+                if (player == null || healthBar == null) {
                     continue;
                 }
                 
                 Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
                     healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
-
+            
                 newPosition.x += -(Screen.width / 2);
                 newPosition.y += -(Screen.height / 2) + _healthBarYOffset;
-        
+            
                 healthBar.transform.position = newPosition;
             }
         }

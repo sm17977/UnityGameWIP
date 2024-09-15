@@ -52,6 +52,10 @@ namespace Multiplayer.UI {
         public void ChangeView(View view) {
             if (_viewsList.Contains(view)) {
                 _currentView?.Hide();
+                if (_currentView != null) {
+                    Debug.Log("Current View: " + _currentView.ToString());
+                }
+               
                 var index = _viewsList.IndexOf(view);
                 _currentView = _viewsList[index];
                 _currentView?.Show();

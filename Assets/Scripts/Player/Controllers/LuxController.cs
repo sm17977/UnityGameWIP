@@ -27,8 +27,8 @@ public class LuxController : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
-        if (!IsServer) {
-            Debug.Log("OnNetworkSpawn");
+        if (IsOwner) {
+            Debug.Log("Lux Controller OnNetworkSpawn");
             NetworkSpawn?.Invoke();
         }
     }

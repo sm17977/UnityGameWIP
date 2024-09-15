@@ -156,8 +156,8 @@ public class LuxPlayerController : LuxController {
     private void Update() {
         if (globalState.currentScene == "Multiplayer" && !IsOwner) return;
 
-        _hitboxPos = hitboxGameObj.transform.position;
-
+        if(hitboxGameObj != null) _hitboxPos = hitboxGameObj.transform.position;
+        
         HandleInput();
 
         _stateManager.Update();
@@ -286,6 +286,11 @@ public class LuxPlayerController : LuxController {
     // Store the position of the click in lastClickPosition
     // Return the input command type
     private InputCommandType GetClickInput() {
+        
+        if (hitboxCollider == null || hitboxGameObj == null) {
+            return InputCommandType.None;
+        }
+        
         var worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, _hitboxPos.y, 0));
         var ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -436,4 +441,18 @@ public class LuxPlayerController : LuxController {
         LuxQAbility.currentCooldown = 0;
         LuxEAbility.currentCooldown = 0;
     }
+    
+    private void OnDestroy() {
+        if (_controls != null) {
+            _controls.Player.RightClick.performed -= OnRightClick;
+            _controls.Player.Q.performed -= OnQ;
+            _controls.Player.E.performed -= OnE;
+            _controls.Player.A.performed -= OnA;
+            _controls.Player.Disable();
+        }
+
+        globalState.OnMultiplayerGameMode -= InitAbilities;
+        globalState.OnSinglePlayerGameMode -= InitAbilities;
+    }
+
 }
