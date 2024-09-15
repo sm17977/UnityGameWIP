@@ -26,7 +26,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     private Transform _localProjectilePool;
     
     // Collision
-    private LuxController _target;
+    private LuxPlayerController _target;
 
     private void Start() {
         // Store projectile start position in order to calculate remaining distance
@@ -81,7 +81,8 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 Debug.Log("Hit enemy!");
                 hasHit = true;
                 try {
-                    _target = collision.gameObject.GetComponent<LuxController>();
+                    _target = collision.gameObject.GetComponent<LuxPlayerController>();
+                    _target.Health.TakeDamage(15f);
                 }
                 catch (Exception e) {
                     Debug.Log("Error trying to get LuxController: " + e.Message);

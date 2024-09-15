@@ -43,10 +43,10 @@
     border-color: black;
     border-radius: 10px;
     border-width: 4px;
+    overflow: hidden;
 }
 
 .health-bar{
-    width: 100px;
     height: 25px;
     background-color: rgb(255, 0, 0);
     border-color: rgb(255, 0, 0);

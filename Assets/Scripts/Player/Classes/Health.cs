@@ -1,49 +1,40 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
-public class Health : MonoBehaviour {
+public class Health : NetworkBehaviour {
+ 
+    public NetworkVariable<float> currentHealth = new NetworkVariable<float>();
     public float maxHealth = 100f;
-    private float _currentHealth;
+    private LuxPlayerController _playerScript;
 
-    public delegate void HealthChanged(float currentHealth, float maxHealth);
-    public event HealthChanged OnHealthChanged;
-
-    public delegate void Death();
-    public event Death OnDeath;
+    public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth);
+    public static event HealthChanged OnHealthChanged;
 
     private void Start() {
-        _currentHealth = maxHealth;
-        OnHealthChanged?.Invoke(_currentHealth, maxHealth);
+        _playerScript = GetComponent<LuxPlayerController>();
+        if (IsServer) {
+            currentHealth.Value = maxHealth;  
+        }
     }
-
-    public void TakeDamage(float damageAmount) {
-        _currentHealth -= damageAmount;
-
-        // Clamp health to prevent it from going negative
-        _currentHealth = Mathf.Clamp(_currentHealth, 0, maxHealth);
-
-        OnHealthChanged?.Invoke(_currentHealth, maxHealth);
-
-        if (_currentHealth <= 0) {
-            Die();
+    
+    public void TakeDamage(float amount) {
+        if (IsServer) {
+            currentHealth.Value -= amount;
+            if (currentHealth.Value < 0) currentHealth.Value = 0;
+        }
+    }
+    
+    public void Heal(float amount) {
+        if (IsServer) {
+            currentHealth.Value += amount;
+            if (currentHealth.Value > maxHealth) currentHealth.Value = maxHealth;
         }
     }
 
-    public void Heal(float healAmount) {
-        _currentHealth += healAmount;
-        _currentHealth = Mathf.Clamp(_currentHealth, 0, maxHealth);
-
-        OnHealthChanged?.Invoke(_currentHealth, maxHealth);
-    }
-
-    private void Die() {
-        OnDeath?.Invoke();
-    }
-
-    public float GetCurrentHealth() {
-        return _currentHealth;
-    }
-
-    public float GetMaxHealth() {
-        return maxHealth;
+    public override void OnNetworkSpawn() {
+        // Sync health across clients when it changes
+        currentHealth.OnValueChanged += (oldHealth, newHealth) => {
+            OnHealthChanged?.Invoke(_playerScript, newHealth, maxHealth);
+        };
     }
 }

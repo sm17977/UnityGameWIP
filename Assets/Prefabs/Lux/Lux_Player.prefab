@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 5979128125877560516}
   - component: {fileID: -7789685537750824561}
   - component: {fileID: 3799837274022872123}
+  - component: {fileID: -3961866617289726453}
   m_Layer: 3
   m_Name: Lux_Player
   m_TagString: Player
@@ -223,7 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2974585148
+  GlobalObjectIdHash: 4260087488
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 0
@@ -280,6 +281,8 @@ MonoBehaviour:
   LuxEAbilitySO: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
   LuxQAbility: {fileID: 0}
   LuxEAbility: {fileID: 0}
+  Health: {fileID: 0}
+  healthBarAnchor: {fileID: 0}
 --- !u!114 &5979128125877560516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,6 +396,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6861d9d593be4676bb8a9a39e3c7f687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3961866617289726453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6328062aecf24613b67adc8765bb7ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentHealth:
+    m_InternalValue: 0
+  maxHealth: 100
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

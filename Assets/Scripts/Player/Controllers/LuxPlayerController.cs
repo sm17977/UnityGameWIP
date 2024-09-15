@@ -86,7 +86,7 @@ public class LuxPlayerController : LuxController {
     public Ability LuxEAbility;
     
     // Health
-    private Health _health;
+    public Health Health;
     public GameObject healthBarAnchor;
 
     private void Awake() {
@@ -137,7 +137,7 @@ public class LuxPlayerController : LuxController {
         BuffManager.Init(this);
         
         playerType = PlayerType.Player;
-        _health = GetComponent<Health>();
+        Health = GetComponent<Health>();
         
         InitStates();
         InitAbilities();
