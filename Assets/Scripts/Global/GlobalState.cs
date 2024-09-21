@@ -58,7 +58,7 @@ public class GlobalState : MonoBehaviour {
 
         switch (currentScene) {
             case "Arena":
-                GameModeManager.ChangeGameMode("Arena");
+                //GameModeManager.ChangeGameMode("Arena");
                 IsMultiplayer = false;
                 OnSinglePlayerGameMode?.Invoke();
                 

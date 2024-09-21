@@ -7,7 +7,7 @@ public class HealthBarManager {
 
     private VisualElement _template;
     private Dictionary<LuxPlayerController, VisualElement> _playerHealthBarMappings;
-    private const float HealthBarYOffset = -50f;
+    private const float HealthBarDefaultYOffset = -50f;
     private const float HealthBarDefaultWidth = 150f;
 
     public HealthBarManager(VisualElement template) {
@@ -20,12 +20,15 @@ public class HealthBarManager {
         Health.OnHealthChanged -= UpdateHealthBar;
     }
 
-    // Generate health bars for all players
+    /// <summary>
+    /// Generate health bars for all players
+    /// </summary>
+    /// <param name="playerGameObjects"></param>
     public void GenerateHealthBars(List<GameObject> playerGameObjects) {
         foreach (var player in playerGameObjects) {
             var playerScript = player.GetComponent<LuxPlayerController>();
             if (_playerHealthBarMappings.ContainsKey(playerScript)) {
-                continue; // Avoid creating duplicate health bars
+                continue; // Don't create duplicate health bars
             }
 
             var healthBarContainer = new VisualElement();
@@ -44,8 +47,13 @@ public class HealthBarManager {
         }
     }
 
-    // Update the health bar for a specific player
-    public void UpdateHealthBar(LuxPlayerController playerScript, float currentHealth, float maxHealth) {
+    /// <summary>
+    ///  Update the health bar for a specific player
+    /// </summary>
+    /// <param name="playerScript"></param>
+    /// <param name="currentHealth"></param>
+    /// <param name="maxHealth"></param>
+    private void UpdateHealthBar(LuxPlayerController playerScript, float currentHealth, float maxHealth) {
         if (_playerHealthBarMappings.ContainsKey(playerScript)) {
             var healthBarContainer = _playerHealthBarMappings[playerScript];
             var healthBar = healthBarContainer.Q<VisualElement>("health-bar");
@@ -57,6 +65,7 @@ public class HealthBarManager {
 
                 if (currentHealth == 0) {
                     healthBar.RemoveFromClassList("health-bar-borders");
+                    
                 }
                 
                 healthBar.style.width = new Length(newWidth, LengthUnit.Pixel);
@@ -64,7 +73,10 @@ public class HealthBarManager {
         }
     }
     
-    // Remove health bar when a player leaves
+    /// <summary>
+    /// Remove health bar when a player leaves
+    /// </summary>
+    /// <param name="playerScript"></param>
     public void RemoveHealthBar(LuxPlayerController playerScript) {
         if (_playerHealthBarMappings.ContainsKey(playerScript)) {
             _playerHealthBarMappings[playerScript].RemoveFromHierarchy();
@@ -72,7 +84,9 @@ public class HealthBarManager {
         }
     }
 
-    // Update the position of the health bars above the player models
+    /// <summary>
+    /// Update the position of the health bars above the player models
+    /// </summary>
     public void SetHealthBarPosition() {
         foreach (var (player, healthBar) in _playerHealthBarMappings) {
             if (player == null || healthBar == null) continue;
@@ -81,19 +95,24 @@ public class HealthBarManager {
                 healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
             
             newPosition.x += -(Screen.width / 2);
-            newPosition.y += -(Screen.height / 2) + HealthBarYOffset;
+            newPosition.y += -(Screen.height / 2) + HealthBarDefaultYOffset;
 
             healthBar.transform.position = newPosition;
         }
     }
     
+    /// <summary>
+    /// Returns list of player scripts to remove when a player leaves the game
+    /// </summary>
+    /// <param name="currentPlayers"></param>
+    /// <returns>List of player scripts to remove</returns>
     public List<LuxPlayerController> GetPlayerScriptsToRemove(List<GameObject> currentPlayers) {
         // List to hold player scripts whose health bars need to be removed
         var playerScriptsToRemove = new List<LuxPlayerController>();
 
         // Check for any players whose game object has been destroyed or are no longer in the current player list
         foreach (var playerScript in _playerHealthBarMappings.Keys) {
-            // If the player's GameObject is null (destroyed) or not in the current list, mark for removal
+            // If the player's GameObject is null (destroyed) or not in the current list, add them to list to be removed
             if (playerScript == null || playerScript.gameObject == null || 
                 !currentPlayers.Any(player => player.GetComponent<LuxPlayerController>() == playerScript)) {
                 playerScriptsToRemove.Add(playerScript);

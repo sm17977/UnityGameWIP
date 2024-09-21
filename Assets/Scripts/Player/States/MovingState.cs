@@ -22,7 +22,7 @@ public class MovingState : State
 
     public override void Enter() {
         playerController.incompleteMovement = true;
-        playerController.animator.SetBool("isRunning", true);
+        playerController.animator.SetTrigger("isRunning");
     }
 
     public override void Execute() {
@@ -62,6 +62,6 @@ public class MovingState : State
     }
 
     public override void Exit() {
-        playerController.animator.SetBool("isRunning", false);
+        playerController.animator.SetTrigger("isIdle");
     }
 }
