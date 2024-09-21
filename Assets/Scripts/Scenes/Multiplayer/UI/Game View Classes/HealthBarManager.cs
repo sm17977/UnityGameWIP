@@ -7,7 +7,8 @@ public class HealthBarManager {
 
     private VisualElement _template;
     private Dictionary<LuxPlayerController, VisualElement> _playerHealthBarMappings;
-    private float _healthBarYOffset = -50f;
+    private const float HealthBarYOffset = -50f;
+    private const float HealthBarDefaultWidth = 150f;
 
     public HealthBarManager(VisualElement template) {
         _template = template;
@@ -32,6 +33,7 @@ public class HealthBarManager {
             
             healthBarContainer.AddToClassList("health-bar-container");
             healthBar.AddToClassList("health-bar");
+            healthBar.AddToClassList("health-bar-borders");
             healthBar.name = "health-bar";
             healthBar.style.width = new Length(150, LengthUnit.Pixel);
             
@@ -50,8 +52,12 @@ public class HealthBarManager {
 
             if (healthBar != null) {
                 float healthPercentage = currentHealth / maxHealth;
-                float containerWidth = 150f;
+                float containerWidth = HealthBarDefaultWidth;
                 float newWidth = healthPercentage * containerWidth;
+
+                if (currentHealth == 0) {
+                    healthBar.RemoveFromClassList("health-bar-borders");
+                }
                 
                 healthBar.style.width = new Length(newWidth, LengthUnit.Pixel);
             }
@@ -75,7 +81,7 @@ public class HealthBarManager {
                 healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
             
             newPosition.x += -(Screen.width / 2);
-            newPosition.y += -(Screen.height / 2) + _healthBarYOffset;
+            newPosition.y += -(Screen.height / 2) + HealthBarYOffset;
 
             healthBar.transform.position = newPosition;
         }

@@ -27,7 +27,6 @@ namespace Multiplayer.UI {
         }   
 
         public override void Show() {
-            Debug.Log("Show GameView");
             _healthBarManager.GenerateHealthBars(_playerGameObjects); 
             base.Show();
             BindUIElements();
