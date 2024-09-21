@@ -8,7 +8,9 @@ public class Health : NetworkBehaviour {
     private LuxPlayerController _playerScript;
 
     public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth);
+    public delegate void PlayerDied();
     public static event HealthChanged OnHealthChanged;
+    public static event PlayerDied OnPlayerDeath;
 
     private void Start() {
         _playerScript = GetComponent<LuxPlayerController>();
@@ -35,6 +37,7 @@ public class Health : NetworkBehaviour {
         // Sync health across clients when it changes
         currentHealth.OnValueChanged += (oldHealth, newHealth) => {
             OnHealthChanged?.Invoke(_playerScript, newHealth, maxHealth);
+            if(newHealth == 0) OnPlayerDeath?.Invoke();
         };
     }
 }

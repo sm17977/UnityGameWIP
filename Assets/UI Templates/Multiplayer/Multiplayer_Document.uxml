@@ -13,6 +13,8 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/LobbiesView/LobbiesView_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/DeathScreenView/DeathScreenView_Styles.uss" />
+
 
     <!-- Player ID -->
     <ui:VisualElement name="player-id-container" class="player-id-container">

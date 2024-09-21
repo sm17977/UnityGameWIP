@@ -24,8 +24,6 @@ MonoBehaviour:
     m_path: Assets/Scenes/Arena.unity
   - m_enabled: 1
     m_path: Assets/Scenes/Death Screen.unity
-  - m_enabled: 1
-    m_path: Assets/Scenes/Multiplayer.unity
   m_ScriptingDefines:
   - DEDICATED_SERVER_NO
   m_PlayerSettingsYaml:

@@ -1,0 +1,87 @@
+﻿<UXML
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:engine="UnityEngine.UIElements" 
+    xmlns:custom="CustomElements"
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <!-- Death Screen View -->
+    <engine:VisualElement name="deathscreen-container" class="deathscreen-container">
+        
+        <engine:VisualElement class="deathscreen-title-container">
+            <engine:Label text="VICTORY" class="deathscreen-title"/>
+        </engine:VisualElement>
+        
+        <engine:VisualElement class="deathscreen-game-result">
+            <engine:Label text="You've slain PlayerB!"/>
+        </engine:VisualElement>
+        
+        <engine:VisualElement class="deathscreen-stats-container">
+            <engine:VisualElement class="stats-header">
+                <engine:Label text="Statistics"/>
+            </engine:VisualElement>
+            <engine:VisualElement class="stats-body">
+                
+                <engine:VisualElement class="stat">
+                    <engine:VisualElement class="stats-key">
+                        <engine:Label text="Rank"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="stats-value">
+                        <engine:Label name="stat-rank" text="+100"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <engine:VisualElement class="stat">
+                    <engine:VisualElement class="stats-key">
+                        <engine:Label text="Abilities Landed"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="stats-value">
+                        <engine:Label name="stat-landed" text="2"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <engine:VisualElement class="stat">
+                    <engine:VisualElement class="stats-key">
+                        <engine:Label text="Abilities Dodged"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="stats-value">
+                        <engine:Label name="stat-dodged" text="5"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <engine:VisualElement class="stat">
+                    <engine:VisualElement class="stats-key">
+                        <engine:Label text="APM"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="stats-value">
+                        <engine:Label name="stat-apm" text="210"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+                <engine:VisualElement class="stat">
+                    <engine:VisualElement class="stats-key">
+                        <engine:Label text="Duration"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="stats-value">
+                        <engine:Label name="stat-duration" text="42s"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                
+            </engine:VisualElement>
+        </engine:VisualElement>
+        
+        <engine:VisualElement class="rematch-btn-container">
+            <OuterGlow class="action-btn-shadow rematch-shadow">
+                <engine:Button text="REMATCH" name="rematch-btn" class="action-btn rematch-btn"/>
+            </OuterGlow>
+        </engine:VisualElement>
+        
+        <!-- Back button -->
+        <engine:VisualElement name="back-btn-container" class="back-btn-container">
+            <engine:Button text="Back" name="back-btn" class="back-btn"/>
+        </engine:VisualElement>
+        
+    </engine:VisualElement>
+    
+</UXML>

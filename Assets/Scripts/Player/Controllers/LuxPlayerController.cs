@@ -60,6 +60,7 @@ public class LuxPlayerController : LuxController {
     private AttackingState _attackingState;
     private IdleState _idleState;
     private CastingState _castingState;
+    private DeathState _deathState;
     public string currentState;
 
     // AI
@@ -138,6 +139,10 @@ public class LuxPlayerController : LuxController {
         
         playerType = PlayerType.Player;
         Health = GetComponent<Health>();
+        Health.OnPlayerDeath += () => {
+            _stateManager.ChangeState(new DeathState(this));
+            ProcessPlayerDeath();
+        };
         
         InitStates();
         InitAbilities();
@@ -262,6 +267,7 @@ public class LuxPlayerController : LuxController {
 
                         if (_currentInput.key == "Q") inputAbility = LuxQAbility;
                         if (_currentInput.key == "E") inputAbility = LuxEAbility;
+                     
 
                         if (!inputAbility.OnCooldown()) {
                             GetCastingTargetPosition();

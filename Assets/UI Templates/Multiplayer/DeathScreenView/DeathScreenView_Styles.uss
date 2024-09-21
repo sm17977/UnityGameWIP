@@ -1,0 +1,81 @@
+﻿/* Death Screen container */
+.deathscreen-container{
+    display: flex;
+    height: 100%;
+    background-color: white;
+    padding: 20px;
+    color: #3a3d7c
+}
+
+/* Death Screen title container */
+.deathscreen-title-container{
+
+}
+
+/* Death Screen title */
+.deathscreen-title{
+    font-size: 112px;
+}
+
+/* Death Screen game result text */
+.deathscreen-game-result{
+    font-size: 42px;
+    -unity-text-align: middle-center;
+}
+
+/* Stats container */
+.deathscreen-stats-container{
+    margin-top: 50px;
+    display: flex;
+    align-self: center;
+    width: 40%;
+}
+
+/* Stats header */
+.stats-header{
+    -unity-text-align: middle-center;
+    -unity-font-style: bold;
+    font-size: 42px;
+}
+
+/* Stats body */
+.stats-body{
+    display: flex;
+    font-size: 32px;
+}
+
+/* Individual stats container */
+.stat{
+    display: flex;
+    flex-direction: row;
+}
+
+/* Stat metric */
+.stats-key{
+    width: 80%;
+    align-self: flex-start;
+}
+
+/* Stat value */
+.stats-value{
+    width: 20%;
+    align-self: flex-end;
+    -unity-text-align: middle-right;
+}
+
+/* Rematch button container */
+.rematch-btn-container{
+    display: flex;
+    margin-top: auto;
+}
+
+/* Rematch button backdrop style container */
+.rematch-shadow{
+    margin: auto;
+    align-self: center;
+}
+
+/* Rematch button */
+.rematch-btn{
+    font-size: 102px;
+}

@@ -38,6 +38,10 @@ namespace Global.Game_Modes {
             CurrentGameMode.Start();
         }
 
+        public void EndGame() {
+            CurrentGameMode?.End();
+        }
+
         public void Update() {
             CurrentGameMode.Update();
         }

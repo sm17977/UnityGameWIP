@@ -39,6 +39,7 @@ public class MultiplayerUIController : MonoBehaviour {
     private LobbyPlayerView _lobbyPlayerView;
     private LobbyHostView _lobbyHostView;
     private static MultiplayerMenuView _multiplayerMenuView;
+    private DeathScreenView _deathScreenView;
     
     // Modals
     private List<Modal> _modals;
@@ -53,6 +54,7 @@ public class MultiplayerUIController : MonoBehaviour {
     public VisualTreeAsset lobbyHostViewTmpl;
     public VisualTreeAsset lobbyPlayerViewTmpl;
     public VisualTreeAsset gameViewTmpl;
+    public VisualTreeAsset deathScreenViewTmpl;
     
     // Modals
     public VisualTreeAsset createLobbyModalTmpl;
@@ -152,6 +154,16 @@ public class MultiplayerUIController : MonoBehaviour {
         // Create Lobby Modal Events
         _createLobbyModal.CreateLobby += (async (lobbyName, maxPlayers, gameMode) => await CreateLobby(lobbyName, maxPlayers, gameMode));
         _createLobbyModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
+
+        _deathScreenView.Rematch += () => {
+            if (_clientManager.Client.IsLobbyHost) {
+                _viewManager.ChangeView(_lobbyHostView);
+                return;
+            }
+
+            _viewManager.ChangeView(_lobbyPlayerView);
+        };
+        
         
         // Exit Game Modal Events
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
@@ -167,6 +179,8 @@ public class MultiplayerUIController : MonoBehaviour {
             _gameView.SetPlayers(players);
             _viewManager.ChangeView(_gameView);
         });
+
+        Health.OnPlayerDeath += ProcessDeadPlayer;
     }
 
     void OnDisable(){
@@ -190,13 +204,15 @@ public class MultiplayerUIController : MonoBehaviour {
         _lobbyHostView = new LobbyHostView(viewContainer, lobbyHostViewTmpl);
         _lobbyPlayerView = new LobbyPlayerView(viewContainer, lobbyPlayerViewTmpl);
         _multiplayerMenuView = new MultiplayerMenuView(viewContainer, multiplayerMenuViewTmpl);
+        _deathScreenView = new DeathScreenView(viewContainer, deathScreenViewTmpl);
 
         _views = new List<View>() {
             _multiplayerMenuView,
             _gameView,
             _lobbiesView,
             _lobbyPlayerView,
-            _lobbyHostView
+            _lobbyHostView,
+            _deathScreenView
         };
     }
 
@@ -557,5 +573,14 @@ public class MultiplayerUIController : MonoBehaviour {
     private async Task ReadyUp() {
         await _gameLobbyManager.UpdatePlayerIsReadyData();
         _viewManager.CurrentView.RePaint();
+    }
+
+    /// <summary>
+    /// Handle player death
+    /// </summary>
+    private void ProcessDeadPlayer() {
+        if (!GlobalState.GameModeManager.CurrentGameMode.RespawnEnabled) {
+            
+        }
     }
 }

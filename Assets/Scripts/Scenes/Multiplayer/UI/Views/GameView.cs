@@ -13,7 +13,7 @@ namespace Multiplayer.UI {
        private CountdownTimerElement _countdownTimerElement;
         private List<GameObject> _playerGameObjects;
         public static event StartDuelCountdown OnStartGameModeCountdown; 
-        private HealthBarManager _healthBarManager;
+        private readonly HealthBarManager _healthBarManager;
 
         public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();

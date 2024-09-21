@@ -1,11 +1,12 @@
 ﻿public class DeathState : State {
 
+    private readonly LuxPlayerController _playerController;
     public DeathState(LuxPlayerController controller) {
-        
+        _playerController = controller;
     }
     
     public override void Enter() {
-        throw new System.NotImplementedException();
+        _playerController.animator.SetTrigger("isDead");
     }
 
     public override void Execute() {
