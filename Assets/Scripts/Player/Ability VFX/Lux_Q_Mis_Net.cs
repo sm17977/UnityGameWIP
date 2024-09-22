@@ -82,7 +82,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 hasHit = true;
                 try {
                     _target = collision.gameObject.GetComponent<LuxPlayerController>();
-                    _target.health.TakeDamage(30f);
+                    _target.health.TakeDamage(100f);
                 }
                 catch (Exception e) {
                     Debug.Log("Error trying to get LuxController: " + e.Message);

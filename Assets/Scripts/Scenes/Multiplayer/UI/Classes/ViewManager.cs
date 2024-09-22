@@ -127,7 +127,7 @@ namespace Multiplayer.UI {
         /// </summary>
         /// <param name="modal">The modal to close</param>
         public void CloseModal(Modal modal) {
-            if (_modalsList.Contains(modal)) {
+            if (_modalsList.Contains(modal) && _currentModal != null) {
                 var index = _modalsList.IndexOf(modal);
                 _currentModal = _modalsList[index];
                 _currentModal?.HideModal();
