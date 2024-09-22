@@ -22,7 +22,7 @@ public class LuxController : NetworkBehaviour {
         }
 
         if (playerType == PlayerType.Player && GlobalState.IsMultiplayer) {
-            
+            canMove = false;
         }
     }
 

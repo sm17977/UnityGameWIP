@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Health : NetworkBehaviour {
@@ -8,7 +9,7 @@ public class Health : NetworkBehaviour {
     private LuxPlayerController _playerScript;
 
     public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth);
-    public delegate void PlayerDied();
+    public delegate Task PlayerDied(LuxPlayerController player);
     public static event HealthChanged OnHealthChanged;
     public static event PlayerDied OnPlayerDeath;
 
@@ -37,7 +38,7 @@ public class Health : NetworkBehaviour {
         // Sync health across clients when it changes
         currentHealth.OnValueChanged += (oldHealth, newHealth) => {
             OnHealthChanged?.Invoke(_playerScript, newHealth, maxHealth);
-            if(newHealth == 0) OnPlayerDeath?.Invoke();
+            if(newHealth == 0) OnPlayerDeath?.Invoke(_playerScript);
         };
     }
 }

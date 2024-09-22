@@ -510,7 +510,6 @@ public class GameLobbyManager : MonoBehaviour {
         LobbyPlayerData playerData = new LobbyPlayerData();
         UpdatePlayerOptions options = new UpdatePlayerOptions();
         
-        
         foreach(Player player in _lobby.Players) {
             if (player.Id == _playerId) {
                 var clientId = player.Data["ClientId"].Value;
@@ -528,4 +527,28 @@ public class GameLobbyManager : MonoBehaviour {
         }
         else OnShowMessage?.Invoke();
     }
+    
+    public async Task UpdatePlayerIsAliveData() {
+        LobbyPlayerData playerData = new LobbyPlayerData();
+        UpdatePlayerOptions options = new UpdatePlayerOptions();
+        
+        foreach(Player player in _lobby.Players) {
+            if (player.Id == _playerId) {
+                var clientId = player.Data["ClientId"].Value;
+                var playerName = player.Data["Name"].Value;
+                var connected = bool.Parse(player.Data["IsConnected"].Value);
+                var ready = !bool.Parse(player.Data["IsReady"].Value);
+                playerData.Initialize(_playerId, playerName, clientId, connected, ready, false);
+                break;
+            }
+        }
+        options.Data = playerData.SerializeUpdate();
+        var lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+        if (lobby != null) {
+            _lobby = lobby;
+        }
+        else OnShowMessage?.Invoke();
+    }
+    
+    
 }

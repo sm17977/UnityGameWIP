@@ -14,31 +14,31 @@
         
         <!-- Multiplayer Heading -->
         <ui:VisualElement name="title-container" class="lobby-title-container">
-            <ui:Label text="Sean's Lobby" class="lobby-title"/>
+            <LabelAutoFit text="Sean's Lobby" class="lobby-title"/>
         </ui:VisualElement>
         
         <!-- Game Mode Info -->
         <ui:VisualElement name="gamemode-info-container" class="gamemode-info-container">
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label name="gamemode-name" text="" class="gamemode-info-text"/>
+                <LabelAutoFit name="gamemode-name" text="" class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text=" - " class="gamemode-info-text"/>
+                <LabelAutoFit text=" - " class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text="" name="gamemode-player-count" class="gamemode-info-text"/>
+                <LabelAutoFit text="" name="gamemode-player-count" class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text=" - " class="gamemode-info-text"/>
+                <LabelAutoFit text=" - " class="gamemode-info-text"/>
             </ui:VisualElement>
             <ui:VisualElement name="gamemode-info-name" class="gamemode-info-item">
-                <ui:Label text="Grassy Meadows" class="gamemode-info-text"/>
+                <LabelAutoFit text="Grassy Meadows" class="gamemode-info-text"/>
             </ui:VisualElement>
         </ui:VisualElement>
         
         <!-- Lobby Status Label -->
         <ui:VisualElement name="lobby-status-container" class="lobby-status-container">
-            <ui:Label name="lobby-status" text="" class="lobby-status"/>
+            <LabelAutoFit name="lobby-status" text="" class="lobby-status"/>
         </ui:VisualElement>
         
         <!-- Lobby Tables Container -->
@@ -56,7 +56,7 @@
                             
                             <!-- Header Row-->
                             <ui:VisualElement name="col-header" class="header-col">
-                                <ui:Label text="TEAM A"/>
+                                <LabelAutoFit text="TEAM A"/>
                             </ui:VisualElement>
                             
                         </ui:VisualElement>
@@ -66,21 +66,21 @@
                             
                             <!-- Table Body Row Container-->
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="fireball22fireball22fireball22fireball22sfsfsfsfsf"/>
-                                <ui:Label text="H" class="player-host-indicator"/>
+                                <LabelAutoFit text="fireball22fireball22fireball22fireball22sfsfsfsfsf"/>
+                                <LabelAutoFit text="H" class="player-host-indicator"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="l1ttl3d3mon"/>
+                                <LabelAutoFit text="l1ttl3d3mon"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="Conneltius" class="player-name-highlight"/>
-                                <ui:Label text="Ready" class="player-ready-indicator"/>
+                                <LabelAutoFit text="Conneltius" class="player-name-highlight"/>
+                                <LabelAutoFit text="Ready" class="player-ready-indicator"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="LunarEchoes"/>
+                                <LabelAutoFit text="LunarEchoes"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="BlazePhantom"/>
+                                <LabelAutoFit text="BlazePhantom"/>
                             </ui:VisualElement>
                             
                         </ui:VisualElement>
@@ -102,7 +102,7 @@
                             
                             <!-- Header Row-->
                             <ui:VisualElement name="col-header" class="header-col">
-                                <ui:Label text="TEAM B"/>
+                                <LabelAutoFit text="TEAM B"/>
                             </ui:VisualElement>
                             
                         </ui:VisualElement>
@@ -112,19 +112,19 @@
                             
                             <!-- Table Body Row Container-->
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="chill_vibes24"/>
+                                <LabelAutoFit text="chill_vibes24"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="CyberTitan07"/>
+                                <LabelAutoFit text="CyberTitan07"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="VortexSeraph"/>
+                                <LabelAutoFit text="VortexSeraph"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="ghost_hunter13"/>
+                                <LabelAutoFit text="ghost_hunter13"/>
                             </ui:VisualElement>
                             <ui:VisualElement name="" class="table-row">
-                                <ui:Label text="xXshadowWolfXx"/>
+                                <LabelAutoFit text="xXshadowWolfXx"/>
                             </ui:VisualElement>
                             
                         </ui:VisualElement>
@@ -138,7 +138,7 @@
         <!-- Character Select -->
         <ui:VisualElement name="char-select-container" class="char-select-container">
             <ui:VisualElement name="char-select-title" class="char-select-title">
-                <ui:Label text="Select your character"/>
+                <LabelAutoFit text="Select your character"/>
             </ui:VisualElement>
             <ui:VisualElement name="char-select-grid" class="char-select-grid">
                 <ui:VisualElement name="char-select-portrait" class="char-select-portrait char-a">
@@ -170,8 +170,8 @@
         
         <!-- Connection status container -->
         <ui:VisualElement name="connection-status-container" class="connection-status-container">
-            <ui:Label text="Status: CONNECTED" class="connection-status-text"/>
-            <ui:Label name="player-id-text" text="" class="player-id-text"/>
+            <LabelAutoFit text="Status: CONNECTED" class="connection-status-text"/>
+            <LabelAutoFit name="player-id-text" text="" class="player-id-text"/>
         </ui:VisualElement>
         
     </ui:VisualElement>

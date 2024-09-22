@@ -133,8 +133,7 @@ public class Lux_Q_Hit : ProjectileAbility
 
     IEnumerator DelayRingAndRaysVFX(float delayInSeconds){
         yield return new WaitForSeconds(delayInSeconds);
-
-        Debug.Log("Lux_Q_Hit: Play Rings");
+        
         _topRingVfx.Play(); 
         _bottomRingVfx.Play(); 
 

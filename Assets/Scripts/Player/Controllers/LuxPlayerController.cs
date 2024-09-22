@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Multiplayer;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.VFX;
 
 
@@ -87,7 +88,7 @@ public class LuxPlayerController : LuxController {
     public Ability LuxEAbility;
     
     // Health
-    public Health Health;
+    public Health health;
     public GameObject healthBarAnchor;
 
     private void Awake() {
@@ -138,11 +139,13 @@ public class LuxPlayerController : LuxController {
         BuffManager.Init(this);
         
         playerType = PlayerType.Player;
-        Health = GetComponent<Health>();
-        Health.OnPlayerDeath += () => {
+        health = GetComponent<Health>();
+        Health.OnPlayerDeath += (async (player) => {
+            if (this != player) return;
+            Debug.Log("OnPlayerDeath");
             _stateManager.ChangeState(new DeathState(this));
             ProcessPlayerDeath();
-        };
+        });
         
         InitStates();
         InitAbilities();

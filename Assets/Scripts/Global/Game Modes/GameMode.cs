@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Global.Game_Modes {
@@ -19,9 +20,15 @@ namespace Global.Game_Modes {
         public int MinimumRequiredPlayers;
         public bool RespawnEnabled;
         
+        private List<GameObject> _players;
+        
         public enum Type {
             SinglePlayer,
             Multiplayer
+        }
+
+        public void AddPlayer(GameObject gameObject) {
+            _players.Add(gameObject);
         }
 
         /// <summary>

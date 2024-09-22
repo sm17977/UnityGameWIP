@@ -26,7 +26,6 @@ public class RPCController : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId) {
-        Debug.Log("Server Spawning Lux Q Missile");
         
         var newNetworkProjectile = ServerProjectilePool.Instance.GetPooledProjectile();
         if (newNetworkProjectile == null) {
@@ -60,7 +59,6 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId) {
         if (!IsOwner && !IsServer) {
-            Debug.Log("CLIENT Spawning Lux Q Missile");
         
             var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
             if (newProjectile == null) {

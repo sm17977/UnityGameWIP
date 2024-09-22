@@ -54,6 +54,7 @@ public class HealthBarManager {
     /// <param name="currentHealth"></param>
     /// <param name="maxHealth"></param>
     private void UpdateHealthBar(LuxPlayerController playerScript, float currentHealth, float maxHealth) {
+        if(playerScript == null) return;
         if (_playerHealthBarMappings.ContainsKey(playerScript)) {
             var healthBarContainer = _playerHealthBarMappings[playerScript];
             var healthBar = healthBarContainer.Q<VisualElement>("health-bar");

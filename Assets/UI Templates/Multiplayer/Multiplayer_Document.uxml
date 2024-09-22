@@ -25,6 +25,5 @@
     <ui:VisualElement name="view-container" class="view-container">
     </ui:VisualElement>
     
-   
     
 </ui:UXML>

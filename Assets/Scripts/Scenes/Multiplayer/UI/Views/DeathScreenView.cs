@@ -4,8 +4,7 @@ using CustomElements;
 using Multiplayer.UI;
 using UnityEngine.UIElements;
 
-public delegate void OnRematch();
-
+public delegate Task OnRematch();
 public delegate Task OnLeaveLobby();
 public class DeathScreenView : View {
 
@@ -38,7 +37,7 @@ public class DeathScreenView : View {
         _duration = Template.Q<Label>("stat-duration");
         
         _rematchBtn = Template.Q<Button>("rematch-btn");
-        _rematchBtn.RegisterCallback<ClickEvent>((evt) => Rematch());
+        _rematchBtn.RegisterCallback<ClickEvent>((evt) => Rematch?.Invoke());
         _leaveLobbyBtn = Template.Q<Button>("back-btn");
         _leaveLobbyBtn.RegisterCallback<ClickEvent>( (evt) => { 
             var _= LeaveLobby?.Invoke();
@@ -46,10 +45,10 @@ public class DeathScreenView : View {
     }   
     
     public override void Update() {
-        throw new System.NotImplementedException();
+       
     }
 
     public override void RePaint() {
-        throw new System.NotImplementedException();
+        
     }
 }

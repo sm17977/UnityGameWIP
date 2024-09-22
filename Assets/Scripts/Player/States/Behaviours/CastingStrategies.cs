@@ -32,8 +32,6 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
     
     public void Cast(Ability ability, Vector3 direction, Vector3 abilitySpawnPos) {
         
-        Debug.Log("OWNER Spawning Lux Q Missile");
-        
         var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
         if (newProjectile == null) {
             Debug.Log("No available projectiles in the pool");

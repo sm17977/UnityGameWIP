@@ -1,4 +1,5 @@
-﻿using Multiplayer.UI;
+﻿using System.Collections.Generic;
+using Multiplayer.UI;
 using UnityEngine;
 
 namespace Global.Game_Modes {
@@ -16,7 +17,6 @@ namespace Global.Game_Modes {
             MinimumRequiredPlayers = _requiredPlayerCount;
             Name = "Duel";
         }
-        
         public override void Start() {
             GlobalState.Pause(true);
             GameView.OnStartGameModeCountdown += () => StartCountdown(this);
@@ -31,6 +31,7 @@ namespace Global.Game_Modes {
         }
         
         public override void End() {
+            
             GameView.OnStartGameModeCountdown -= () => StartCountdown(this);
         }
 

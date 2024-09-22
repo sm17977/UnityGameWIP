@@ -9,6 +9,7 @@ namespace Multiplayer {
         private string _clientId;
         private bool _isConnected;
         private bool _isReady;
+        private bool _isAlive;
         public string Id => _id;
         public string Name => _name;
         public string ClientId {
@@ -21,12 +22,13 @@ namespace Multiplayer {
             set => _isConnected = value;
         }
         
-        public void Initialize(string id, string name, string clientId, bool isConnected = false, bool isReady = false) {
+        public void Initialize(string id, string name, string clientId, bool isConnected = false, bool isReady = false, bool isAlive = true) {
             _id = id;
             _name = name;
             _clientId = clientId;
             _isConnected = isConnected;
             _isReady = isReady;
+            _isAlive = isAlive;
         }
 
         public void Initialize(Dictionary<string, PlayerDataObject> playerData) {
@@ -53,6 +55,10 @@ namespace Multiplayer {
             if (playerData.ContainsKey("IsReady")) {
                 _isReady = bool.Parse(playerData["IsReady"].Value);
             }
+            
+            if (playerData.ContainsKey("IsAlive")) {
+                _isAlive = bool.Parse(playerData["IsAlive"].Value);
+            }
         }
 
         public Dictionary<string, string> Serialize() {
@@ -61,7 +67,8 @@ namespace Multiplayer {
                 { "Name", _name },
                 { "ClientId", _name },
                 { "IsConnected", _isConnected.ToString()},
-                { "IsReady", _isReady.ToString()}
+                { "IsReady", _isReady.ToString()},
+                { "IsAlive", _isAlive.ToString()},
             };
         }
 
@@ -91,6 +98,11 @@ namespace Multiplayer {
                     "IsReady", new PlayerDataObject(
                         visibility: PlayerDataObject.VisibilityOptions.Member,
                         value: _isReady.ToString())
+                },
+                {
+                    "IsAlive", new PlayerDataObject(
+                        visibility: PlayerDataObject.VisibilityOptions.Member,
+                        value: _isAlive.ToString())
                 }
             };
         }

@@ -155,14 +155,18 @@ public class MultiplayerUIController : MonoBehaviour {
         _createLobbyModal.CreateLobby += (async (lobbyName, maxPlayers, gameMode) => await CreateLobby(lobbyName, maxPlayers, gameMode));
         _createLobbyModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
 
-        _deathScreenView.Rematch += () => {
-            if (_clientManager.Client.IsLobbyHost) {
-                _viewManager.ChangeView(_lobbyHostView);
+        _deathScreenView.Rematch += (async() => {
+            if (!_clientManager.Client.IsLobbyHost) {
+                await _clientManager.Disconnect();
+                _viewManager.ChangeView(_lobbyPlayerView);
                 return;
             }
 
-            _viewManager.ChangeView(_lobbyPlayerView);
-        };
+            Debug.Log("Host Rematch");
+            await _gameLobbyManager.UpdateLobbyWithGameStart(false);
+            await DisconnectHost();
+        });
+        _deathScreenView.LeaveLobby += (async () => await LeaveLobby());
         
         
         // Exit Game Modal Events
@@ -180,7 +184,7 @@ public class MultiplayerUIController : MonoBehaviour {
             _viewManager.ChangeView(_gameView);
         });
 
-        Health.OnPlayerDeath += ProcessDeadPlayer;
+        Health.OnPlayerDeath += (async (player) =>  await ProcessDeadPlayer());
     }
 
     void OnDisable(){
@@ -339,6 +343,7 @@ public class MultiplayerUIController : MonoBehaviour {
     /// Switch the game view
     /// </summary>
     private void JoinGame() {
+        
         _clientManager.StartClient();
         GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
         //var players = _gameLobbyManager.GetConnectedPlayers();
@@ -578,9 +583,10 @@ public class MultiplayerUIController : MonoBehaviour {
     /// <summary>
     /// Handle player death
     /// </summary>
-    private void ProcessDeadPlayer() {
+    private async Task ProcessDeadPlayer() {
         if (!GlobalState.GameModeManager.CurrentGameMode.RespawnEnabled) {
-            
+            await Task.Delay(3000);
+            _viewManager.ChangeView(_deathScreenView);
         }
     }
 }
