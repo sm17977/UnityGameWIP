@@ -186,8 +186,8 @@ public class MultiplayerUIController : MonoBehaviour {
     }
 
     void OnDisable(){
-        _controls.UI.ESC.performed -= OnEscape;
-        _controls.UI.Disable();
+        // _controls.UI.ESC.performed -= OnEscape;
+        // _controls.UI.Disable();
     }
 
     private void Update() {

@@ -7,17 +7,20 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
 using Unity.Services.Multiplay;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Multiplayer {
     public sealed class ServerManager {
 
         #if DEDICATED_SERVER
-        private IServerQueryHandler _serverQueryHandler;
+            private IServerQueryHandler _serverQueryHandler;
         #endif
 
         private static ServerManager _instance = null;
         private static readonly object Padlock = new object();
         private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
+        private GameObject _spawnPointsParent; // Array to hold your predefined spawn points
+        private List<Transform> _spawnPoints;
         
         public static ServerManager Instance {
             get {
@@ -25,6 +28,14 @@ namespace Multiplayer {
                     _instance ??= new ServerManager();
                     return _instance;
                 }
+            }
+        }
+        
+        public void Initialize(GameObject spawnPointsParent) {
+            _spawnPoints = new List<Transform>();
+            _spawnPointsParent = spawnPointsParent;
+            foreach (Transform child in _spawnPointsParent.transform) {
+                _spawnPoints.Add(child);
             }
         }
 
@@ -118,13 +129,20 @@ namespace Multiplayer {
         /// </summary>
         private async void StartServer() {
             #if DEDICATED_SERVER
-                NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
-                NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-                NetworkManager.Singleton.StartServer();
-                await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
+                    NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
+                    
+                    NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+                    NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+                    
+                    NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+                    NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+                    
+                    NetworkManager.Singleton.StartServer();
+                    await MultiplayService.Instance.ReadyServerForPlayersAsync();
             #endif
         }
+
 
         /// <summary>
         /// Disconnect the server
@@ -134,7 +152,8 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Approve clients attempting to connect, store the client's player data
+        /// Approve clients attempting to connect, set the spawn position
+        /// and store the client's player data
         /// </summary>
         /// <param name="request">Client connection request</param>
         /// <param name="response">Client connection response</param>
@@ -145,6 +164,7 @@ namespace Multiplayer {
 
             response.Approved = true;
             response.CreatePlayerObject = true;
+            response.Position = GetSpawnPoint();
 
             PlayerData playerData;
             using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
@@ -158,6 +178,7 @@ namespace Multiplayer {
             }
 
             _playerDataDictionary[request.ClientNetworkId] = playerData;
+            response.Pending = false;
         }
 
         /// <summary>
@@ -166,6 +187,7 @@ namespace Multiplayer {
         /// <param name="clientId">Client ID</param>
         private void OnClientConnected(ulong clientId) {
             Debug.Log($"New client connected: {clientId}");
+            //SpawnPlayer(clientId);
             PlayerData playerData = _playerDataDictionary[clientId];
             NotifyClientsOfPlayerStatus(playerData, true);
         }
@@ -221,6 +243,17 @@ namespace Multiplayer {
                     NetworkManager.Singleton.SendHostLeavingMessageToClient(client.ClientId, new HostLeavingMessage());
                 }
             #endif
+        }
+        
+        private Vector3 GetSpawnPoint() {
+
+            if (_spawnPoints.Count == 0) {
+                Initialize(_spawnPointsParent);
+            }
+            
+            var spawnPoint = _spawnPoints[0];
+            _spawnPoints.RemoveAt(0);
+            return spawnPoint.position;
         }
     }
 }

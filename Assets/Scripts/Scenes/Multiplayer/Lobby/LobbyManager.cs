@@ -102,7 +102,6 @@ public sealed class LobbyManager {
             }
         }
     }
-
     
     /// <summary>
     /// Check if this request can be sent according to Unity's usage limits for Lobby
