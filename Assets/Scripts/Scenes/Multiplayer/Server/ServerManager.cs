@@ -19,8 +19,8 @@ namespace Multiplayer {
         private static ServerManager _instance = null;
         private static readonly object Padlock = new object();
         private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
-        private GameObject _spawnPointsParent; // Array to hold your predefined spawn points
-        private List<Transform> _spawnPoints;
+        private GameObject _spawnPointsParent; 
+        private List<Transform> _spawnPointsList;
         
         public static ServerManager Instance {
             get {
@@ -32,10 +32,10 @@ namespace Multiplayer {
         }
         
         public void Initialize(GameObject spawnPointsParent) {
-            _spawnPoints = new List<Transform>();
+            _spawnPointsList = new List<Transform>();
             _spawnPointsParent = spawnPointsParent;
             foreach (Transform child in _spawnPointsParent.transform) {
-                _spawnPoints.Add(child);
+                _spawnPointsList.Add(child);
             }
         }
 
@@ -159,26 +159,30 @@ namespace Multiplayer {
         /// <param name="response">Client connection response</param>
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request,
             NetworkManager.ConnectionApprovalResponse response) {
+            #if DEDICATED_SERVER
 
-            Debug.Log("Approving new client connection...ClientNetworkId: " + request.ClientNetworkId);
+                Debug.Log("Approving new client connection... ClientNetworkId: " + request.ClientNetworkId);
+                
+                response.CreatePlayerObject = true;
+                response.Position = GetSpawnPoint();
+                response.Approved = true;
 
-            response.Approved = true;
-            response.CreatePlayerObject = true;
-            response.Position = GetSpawnPoint();
+                Debug.Log("response.Position: " + response.Position);
 
-            PlayerData playerData;
-            using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
-                try {
-                    reader.ReadNetworkSerializable(out playerData);
+                PlayerData playerData;
+                using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
+                    try {
+                        reader.ReadNetworkSerializable(out playerData);
+                    }
+                    catch (Exception ex) {
+                        Debug.LogError($"Error reading player data: {ex.Message}");
+                        return;
+                    }
                 }
-                catch (Exception ex) {
-                    Debug.LogError($"Error reading player data: {ex.Message}");
-                    return;
-                }
-            }
 
-            _playerDataDictionary[request.ClientNetworkId] = playerData;
-            response.Pending = false;
+                _playerDataDictionary[request.ClientNetworkId] = playerData;
+                response.Pending = false;
+            #endif
         }
 
         /// <summary>
@@ -247,12 +251,13 @@ namespace Multiplayer {
         
         private Vector3 GetSpawnPoint() {
 
-            if (_spawnPoints.Count == 0) {
+            if (_spawnPointsList.Count == 0) {
                 Initialize(_spawnPointsParent);
             }
             
-            var spawnPoint = _spawnPoints[0];
-            _spawnPoints.RemoveAt(0);
+            var spawnPoint = _spawnPointsList[0];
+            _spawnPointsList.RemoveAt(0);
+            Debug.Log("Spawn Pos: " + spawnPoint.position);
             return spawnPoint.position;
         }
     }

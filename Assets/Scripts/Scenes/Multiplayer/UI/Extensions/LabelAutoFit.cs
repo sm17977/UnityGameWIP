@@ -1,75 +1,120 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
 
-[UxmlElement]
+[UxmlElement]  // Necessary for UXML registration
 public partial class LabelAutoFit : Label
 {
-    public float MinFontSizeInPx { get; set; } = 10f;
-    public float MaxFontSizeInPx { get; set; } = 50f;
+    public float MinFontSizeInPx { get; set; } = 10f; // Minimum font size to ensure readability
+    private float MaxFontSizeInPx; // Maximum font size from USS (initial font size)
     public int MaxFontSizeIterations { get; set; } = 20;
+    public float SizeTolerance { get; set; } = 0.5f; // Tolerance to prevent jittering
 
-    // Parameterless constructor needed for UXML
-    public LabelAutoFit() : this(10f, 50f)
-    {
-    }
+    private float originalWidth; // Store original width
+    private float originalHeight; // Store original height
+    private bool isOriginalSizeStored = false;
 
-    public LabelAutoFit(float minFontSizeInPx, float maxFontSizeInPx)
+    private bool isUpdatingFontSize = false;
+    private bool isLayoutStable = false;
+
+    public LabelAutoFit()
     {
-        this.MinFontSizeInPx = minFontSizeInPx;
-        this.MaxFontSizeInPx = maxFontSizeInPx;
         RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        this.RegisterValueChangedCallback(evt => UpdateFontSize());
     }
 
     private void OnGeometryChanged(GeometryChangedEvent evt)
     {
-        // Unregister callback to prevent recursive layout updates
-        UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        UpdateFontSize();
-        // Re-register the callback after updating the font size
-        RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        if (!isOriginalSizeStored)
+        {
+            // Store the original container size and font size when the UI first loads
+            originalWidth = contentRect.width;
+            originalHeight = contentRect.height;
+            MaxFontSizeInPx = resolvedStyle.fontSize; // Use USS-defined font size as max
+            isOriginalSizeStored = true;
+        }
+
+        // Only trigger update if the layout is not currently being stabilized
+        if (!isUpdatingFontSize && !isLayoutStable)
+        {
+            isUpdatingFontSize = true;
+
+            // Schedule the font size update to avoid recursion
+            schedule.Execute(() =>
+            {
+                UpdateFontSize();
+                isUpdatingFontSize = false;
+            });
+        }
     }
 
     private void UpdateFontSize()
     {
         if (float.IsNaN(contentRect.width) || float.IsNaN(contentRect.height))
         {
-            // Cannot calculate font size yet.
             return;
         }
 
+        float currentFontSize = resolvedStyle.fontSize;
         float nextFontSizeInPx;
-        int direction;
+        int direction = 0;
         int lastDirection = 0;
         float step = 1;
         int loop = 0;
 
         while (loop < MaxFontSizeIterations)
         {
+            // Measure the current size of the text content
             Vector2 preferredSize = MeasureTextSize(text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);
 
+            // If text is too large for the container, shrink the font size
             if (preferredSize.x > contentRect.width || preferredSize.y > contentRect.height)
             {
-                // Text is too big, reduce font size
-                direction = -1;
+                direction = -1; // Shrink font size
+            }
+            else if (currentFontSize < MaxFontSizeInPx && preferredSize.x < originalWidth && preferredSize.y < originalHeight)
+            {
+                direction = 1; // Grow font size back to the original size (but respect the USS-defined max)
             }
             else
             {
-                // Text is too small, increase font size
-                direction = 1;
+                break; // Exit if the size is optimal
             }
 
             if (lastDirection != 0 && direction != lastDirection)
             {
-                // Found best match.
-                return;
+                break; // Font size balance found
             }
             lastDirection = direction;
 
-            nextFontSizeInPx = resolvedStyle.fontSize + (step * direction);
+            nextFontSizeInPx = currentFontSize + (step * direction);
             nextFontSizeInPx = Mathf.Clamp(nextFontSizeInPx, MinFontSizeInPx, MaxFontSizeInPx);
+
+            // Avoid jittering when the size change is minimal
+            if (Mathf.Abs(nextFontSizeInPx - currentFontSize) < SizeTolerance)
+            {
+                break; // Font size is optimized within tolerance
+            }
+
+            // Apply the new font size
             style.fontSize = nextFontSizeInPx;
+            currentFontSize = nextFontSizeInPx;
+
             loop++;
         }
+
+        // Allow the parent container to grow back to its original size
+        if (contentRect.width >= originalWidth || contentRect.height >= originalHeight)
+        {
+            style.width = new StyleLength(StyleKeyword.Auto); // Allow the container to resize automatically
+            style.height = new StyleLength(StyleKeyword.Auto);
+        }
+
+        // Force re-layout
+        schedule.Execute(StabilizeLayout);
+    }
+
+    private void StabilizeLayout()
+    {
+        isLayoutStable = true;
+        schedule.Execute(() => isLayoutStable = false);
     }
 }

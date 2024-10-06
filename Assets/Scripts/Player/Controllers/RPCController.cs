@@ -17,12 +17,12 @@ public class RPCController : NetworkBehaviour {
 
     public override void OnNetworkSpawn() {
         Debug.Log("RPC OnNetWorkSpawn");
-        Debug.Log($"Player Position on Network Spawn (before parenting): {transform.position}");
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
         if (IsServer) {
             _players = GameObject.Find("Players");
             transform.SetParent(_players.transform, true);
-            Debug.Log($"Player Position on Network Spawn (after parenting): {transform.position}");
+            // var networkObject = GetComponent<NetworkObject>();
+            // networkObject.TrySetParent(_players.transform);
         }
     }
 

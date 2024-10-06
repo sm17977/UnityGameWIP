@@ -23,7 +23,13 @@ namespace Multiplayer {
                 
                 _serverManager = ServerManager.Instance;
                 _spawnPoints = GameObject.Find("Spawn Points");
-                _serverManager.Initialize(_spawnPoints); 
+                if (_spawnPoints == null) {
+                    Debug.Log("_spawnPoints is null!");
+                }
+                else {
+                    _serverManager.Initialize(_spawnPoints); 
+                }
+             
             #else
                 gameObject.SetActive(false);
                 return;

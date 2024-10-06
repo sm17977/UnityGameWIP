@@ -338,10 +338,8 @@ public class MultiplayerUIController : MonoBehaviour {
     /// Switch the game view
     /// </summary>
     private void JoinGame() {
-        
         _clientManager.StartClient();
         GlobalState.GameModeManager.ChangeGameMode(_gameLobbyManager.GetLobbyGameMode());
-        //var players = _gameLobbyManager.GetConnectedPlayers();
     }
 
     /// <summary>

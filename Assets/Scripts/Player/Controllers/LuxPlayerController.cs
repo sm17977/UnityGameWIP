@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Multiplayer;
+using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
+using Unity.Netcode.Components;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -38,6 +40,7 @@ public class LuxPlayerController : LuxController {
 
     // Animation
     public Animator animator;
+    public ClientNetworkAnimator networkAnimator;
     
     // Camera
     public Camera mainCamera;
@@ -94,6 +97,7 @@ public class LuxPlayerController : LuxController {
     private void Awake() {
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
+        networkAnimator = GetComponent<ClientNetworkAnimator>();
 
         healthBarAnchor = transform.Find("HealthBarAnchor").gameObject;
         hitboxGameObj = GameObject.Find("Hitbox");

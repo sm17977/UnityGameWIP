@@ -1,3 +1,5 @@
+using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
+using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.VFX;
 public class AttackingState : State
@@ -23,6 +25,7 @@ public class AttackingState : State
     public override void Enter() {
         playerController.canAA = false;
         playerController.animator.SetTrigger("isAttacking");
+        playerController.networkAnimator.SetTrigger("isAttacking");
     }
 
     public override void Execute() {
