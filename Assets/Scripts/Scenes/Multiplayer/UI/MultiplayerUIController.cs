@@ -190,7 +190,7 @@ public class MultiplayerUIController : MonoBehaviour {
         // _controls.UI.Disable();
     }
 
-    private void Update() {
+    private void LateUpdate() {
         _viewManager.UpdateGameView();
     }
 

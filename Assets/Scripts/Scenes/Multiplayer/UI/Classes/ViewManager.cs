@@ -159,7 +159,6 @@ namespace Multiplayer.UI {
                 CurrentModal.ChangeTemplateOfOpenModal(vta);
             }
         }
-
         
         public void UpdateGameView() {
             if (CurrentView is GameView gameView) {

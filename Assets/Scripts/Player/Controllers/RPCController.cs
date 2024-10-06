@@ -21,8 +21,6 @@ public class RPCController : NetworkBehaviour {
         if (IsServer) {
             _players = GameObject.Find("Players");
             transform.SetParent(_players.transform, true);
-            // var networkObject = GetComponent<NetworkObject>();
-            // networkObject.TrySetParent(_players.transform);
         }
     }
 

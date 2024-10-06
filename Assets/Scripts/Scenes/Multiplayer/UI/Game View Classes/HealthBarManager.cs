@@ -66,9 +66,7 @@ public class HealthBarManager {
 
                 if (currentHealth == 0) {
                     healthBar.RemoveFromClassList("health-bar-borders");
-                    
                 }
-                
                 healthBar.style.width = new Length(newWidth, LengthUnit.Pixel);
             }
         }
@@ -119,8 +117,6 @@ public class HealthBarManager {
                 playerScriptsToRemove.Add(playerScript);
             }
         }
-
         return playerScriptsToRemove;
     }
-
 }
