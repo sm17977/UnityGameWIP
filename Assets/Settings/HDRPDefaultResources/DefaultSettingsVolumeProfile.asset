@@ -822,6 +822,21 @@ MonoBehaviour:
   tint:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &-3871835690559634798
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6525fe9bcdf4bf6bdaeeae273d6859e, type: 3}
+  m_Name: CustomBlurPass
+  m_EditorClassIdentifier: 
+  active: 1
+  blurMaterial: {fileID: 0}
+  blurSize: 1
 --- !u!114 &-3500554067044804194
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1211,6 +1226,7 @@ MonoBehaviour:
   - {fileID: -9178262335207288582}
   - {fileID: 2313623144487461079}
   - {fileID: 9054116531618227227}
+  - {fileID: -3871835690559634798}
 --- !u!114 &394700926408080980
 MonoBehaviour:
   m_ObjectHideFlags: 3

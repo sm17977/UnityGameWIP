@@ -1,4 +1,5 @@
-﻿.gameview-container{
+﻿/* Game view container */
+.gameview-container{
     display: flex;
     position: absolute;
     left: 0;
@@ -9,6 +10,7 @@
     justify-content: center;
 }
 
+/* Countdown container */
 .countdown-container{
     position: absolute;
     left: 0;
@@ -21,11 +23,13 @@
     display: flex;
 }
 
+/* Countdown label */
 .countdown-label{
     margin: auto;
     font-size: 112px;
 }
 
+/* Countdown label container */
 .countdown-label-container{
     position: absolute;
     width: 300px;
@@ -36,7 +40,9 @@
     visibility: visible;
 }
 
+/* Health bar container */ 
 .health-bar-container{
+    position: absolute;
     display: flex;
     width: 150px;
     height: 25px;
@@ -46,6 +52,7 @@
     overflow: hidden;
 }
 
+/* Health bar */ 
 .health-bar{
     height: 25px;
     background-color: rgb(255, 0, 0);
@@ -54,6 +61,58 @@
     transition: width 0.2s;
 }
 
+/* Health bar border */
 .health-bar-borders{
     border-width: 5px;
+}
+
+/* Player center container */ 
+.player-center-container{
+    background-color: rgba(255, 255, 255, 0.2);
+    height: 100px;
+    width: 400px;
+    margin-top: auto;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 10px;
+}
+
+/* Skills/abilities container */
+.skills-container{
+    height: 100%;
+    width: auto;
+    flex-direction: row;
+    background-color: white;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Skill box */
+.skill{
+    height: 60px;
+    width: 60px;
+    background-color: red;
+}
+
+/* Skill label Q/W/E/R */
+.skill-label{
+    margin: auto;
+    font-size: 38px;
+    color: white;
+}
+
+/* Cooldown bar */
+.cd-bar{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: blue;
+    visibility: hidden;
+}
+
+/* Cooldown bar transition */
+.cd-bar-transition{
+    height: 0;
 }

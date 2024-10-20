@@ -20,6 +20,7 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // Player
     private GameObject _player;
+    private LuxPlayerController _playerScript;
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
@@ -120,7 +121,12 @@ public class MultiplayerUIController : MonoBehaviour {
         // Input Events
         _controls = new Controls();
         _controls.UI.Enable();
+        
         _controls.UI.ESC.performed += OnEscape;
+        // _controls.UI.Q.performed += _ => _gameView.ActivateAbilityAnimation("Q");
+        // _controls.UI.W.performed += _ => _gameView.ActivateAbilityAnimation("W");
+        // _controls.UI.E.performed += _ => _gameView.ActivateAbilityAnimation("E");
+        // _controls.UI.R.performed += _ => _gameView.ActivateAbilityAnimation("R");
         
         // Multiplayer Main Menu View Events
         _multiplayerMenuView.OpenCreateLobbyModal += (() => _viewManager.OpenModal(_createLobbyModal));
@@ -175,7 +181,28 @@ public class MultiplayerUIController : MonoBehaviour {
         _gameLobbyManager.OnShowMessage += ShowLobbyErrorMessage;
         
         // Player network spawn event
-        LuxController.NetworkSpawn += (() => {
+        RPCController.NetworkSpawn += ((player) => {
+            // var playersParent = GameObject.Find("Players");
+            // if (playersParent == null) {
+            //     Debug.Log("Players is null");
+            // }
+            // else {
+            //     Debug.Log("Players not null");
+            //     Debug.Log("idk: " + playersParent.transform.childCount);
+            // }
+            // _player = playersParent.transform.Find("Local Player").gameObject;
+            _player = player;
+            if (_player != null) {
+                Debug.Log("HERE");
+                _playerScript = _player.GetComponent<LuxPlayerController>();
+                _playerScript.NotifyUICooldown += (key) => {
+                    _gameView.ActivateAbilityAnimation(key);
+                };
+            }
+            else {
+                Debug.Log(("Player is null! D:"));
+            }
+            
             // Give the game view the current player game objects and switch to the view
             var players = GetPlayers();
             _gameView.SetPlayers(players);

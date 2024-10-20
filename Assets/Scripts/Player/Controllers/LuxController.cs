@@ -7,7 +7,6 @@ public enum PlayerType {Player, Bot};
 public delegate void OnNetworkSpawn();
 
 public class LuxController : NetworkBehaviour {
-    public static event OnNetworkSpawn NetworkSpawn;
     
     public PlayerType playerType;
     public Champion lux;
@@ -29,12 +28,5 @@ public class LuxController : NetworkBehaviour {
     IEnumerator DelayLoadScene() {
         yield return new WaitForSeconds(0.5f);
         globalState.LoadScene("Death Screen");
-    }
-
-    public override void OnNetworkSpawn() {
-        if (IsOwner) {
-            Debug.Log("Lux Controller OnNetworkSpawn");
-            NetworkSpawn?.Invoke();
-        }
     }
 }

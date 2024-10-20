@@ -1,9 +1,9 @@
+using System;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Ability", menuName = "Scriptable Objects/Ability")]
-public class Ability : ScriptableObject
-{
+public class Ability : ScriptableObject {
 
     [Header("Ability Info")]
     public string abilityName;
@@ -14,6 +14,7 @@ public class Ability : ScriptableObject
     [Header("Ability Stats")]
     public float currentCooldown = 0;
     public float maxCooldown;
+    public bool serverOnCooldown;
     public float range;
     public float speed;
     public float lingeringLifetime;
@@ -58,7 +59,37 @@ public class Ability : ScriptableObject
         CooldownManager.Instance.StartCooldown(this);
     }
 
+    /// <summary>
+    /// Networked version
+    /// </summary>
+    /// <param name="player"></param>
+    public void PutOnCooldown_Net(GameObject player) {
+        var rpcController = player.GetComponent<RPCController>();
+        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        
+        NetworkAbilityData abilityData = new NetworkAbilityData(this);
+        rpcController.AddCooldownRpc(clientId, abilityData);
+    }
+
     public bool OnCooldown(){
         return currentCooldown > 0;
+    }
+    
+    /// <summary>
+    /// Networked version
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="onCooldownReceived"></param>
+    /// <returns></returns>
+    public void OnCooldown_Net(GameObject player, Action<bool> onCooldownReceived){
+        Debug.Log("OnCooldown_Net");
+        var rpcController = player.GetComponent<RPCController>();
+        ulong networkObjectId = player.GetComponent<NetworkObject>().NetworkObjectId;
+        var clientId = NetworkManager.Singleton.LocalClientId;
+        
+        NetworkAbilityData abilityData = new NetworkAbilityData(this);
+        rpcController.IsAbilityOnCooldownRpc(networkObjectId, clientId, abilityData);
+        
+        rpcController.OnCooldownReceived += onCooldownReceived;
     }
 }

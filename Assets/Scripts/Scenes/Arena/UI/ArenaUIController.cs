@@ -33,7 +33,6 @@ public class ArenaUIController : MonoBehaviour
 
     // Player Reference
     public LuxPlayerController player;
-
     
     void Awake(){
         _countdownTimerElement = uiDocument.rootVisualElement.Q<CountdownTimerElement>("countdown-timer");

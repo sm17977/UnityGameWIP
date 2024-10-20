@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using Multiplayer;
+using Newtonsoft.Json;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
 
 public class RPCController : NetworkBehaviour {
+
+    public event Action<bool> OnCooldownReceived;
+    public static event Action<GameObject> NetworkSpawn;
     
     private LuxPlayerController _playerController;
     private GameObject _player;
@@ -18,9 +23,14 @@ public class RPCController : NetworkBehaviour {
     public override void OnNetworkSpawn() {
         Debug.Log("RPC OnNetWorkSpawn");
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
+        
         if (IsServer) {
             _players = GameObject.Find("Players");
             transform.SetParent(_players.transform, true);
+        }
+
+        if (IsOwner) {
+            NetworkSpawn?.Invoke(gameObject);
         }
     }
 
@@ -96,5 +106,54 @@ public class RPCController : NetworkBehaviour {
         var networkProjectile = GameObject.Find(networkInstanceId.ToString());
         var networkProjectileScript = networkProjectile.GetComponent<Lux_Q_Mis_Net>();
         networkProjectileScript.Mappings[localProjectileId] = clientId;
+    }
+
+    [Rpc(SendTo.Server)]
+    public void AddCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
+        GameObject playerObject = null;
+        try {
+            playerObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
+        }
+        catch (Exception e) {
+            Debug.Log("Couldn't get player object");
+        }
+
+        NetworkCooldownManager.Instance.StartCooldown(playerObject, abilityData);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void IsAbilityOnCooldownRpc(ulong networkObjectId, ulong clientId,  NetworkAbilityData abilityData) {
+        Debug.Log("IsAbilityOnCooldownRPC");
+        var playerObject = NetworkManager.SpawnManager.SpawnedObjects[networkObjectId].gameObject;
+        var test1 = playerObject == null;
+        var playerObject2 = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
+        var test2 = playerObject2 == null;
+        var test3 = NetworkCooldownManager.Instance == null;
+        var test4 = abilityData == null;
+        
+        Debug.Log("Get Player Object 1, is null?:" + test1);
+        Debug.Log("Get Player Object 2, is null?:" + test2);
+
+        Debug.Log("Network Object ID: " + networkObjectId);
+        Debug.Log("Client ID: " + clientId);
+        Debug.Log("NetworkCooldownManager: " + test3);
+        Debug.Log("Ability Data: " + test4);
+      
+        
+        var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(playerObject, abilityData);
+        Debug.Log("Ability cooldown from server is: " + cd);
+        UpdateCooldownRpc(networkObjectId, abilityData, cd);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void UpdateCooldownRpc(ulong networkObjectId, NetworkAbilityData abilityData, bool serverCooldown) {
+        if (IsLocalPlayer && IsOwner) {
+            Debug.Log("Ability cooldown on client is: " + serverCooldown);
+            if (!serverCooldown) abilityData.currentCooldown = 0;
+            abilityData.onCooldown = serverCooldown;
+            
+            OnCooldownReceived?.Invoke(serverCooldown);
+            OnCooldownReceived = null;
+        }
     }
 }

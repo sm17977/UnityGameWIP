@@ -10,8 +10,27 @@
     <engine:VisualElement name="gameview-container" class="gameview-container">
         <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
         
-        <!-- Health bars live here -->
+        <!-- Player center -->
+        <engine:VisualElement name="player-center" class="player-center-container">
+            <engine:VisualElement class="skills-container">
+                <engine:VisualElement name="q-box" class="skill">
+                    <engine:VisualElement name="q-overlay" class="cd-bar" />
+                    <engine:Label text="Q" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="w-box" class="skill">
+                    <engine:VisualElement name="w-overlay" class="cd-bar" />
+                    <engine:Label text="W" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="e-box" class="skill">
+                    <engine:VisualElement name="e-overlay" class="cd-bar" />
+                    <engine:Label text="E" class="skill-label" />
+                </engine:VisualElement>
+                <engine:VisualElement name="r-box" class="skill">
+                    <engine:VisualElement name="r-overlay" class="cd-bar" />
+                    <engine:Label text="R" class="skill-label" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:VisualElement>
         
     </engine:VisualElement>
-    
 </UXML>

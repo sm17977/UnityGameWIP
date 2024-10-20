@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using Multiplayer;
@@ -8,8 +9,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
 
-
 public class LuxPlayerController : LuxController {
+
+    // Events
+    public event Action<string>? NotifyUICooldown;
     
     // Flags
     public bool isAttackClick = false;
@@ -274,14 +277,25 @@ public class LuxPlayerController : LuxController {
 
                         if (_currentInput.key == "Q") inputAbility = LuxQAbility;
                         if (_currentInput.key == "E") inputAbility = LuxEAbility;
-                     
-
-                        if (!inputAbility.OnCooldown()) {
+                        
+                        bool abilityOnCooldown = inputAbility.OnCooldown();
+                        
+                        if (GlobalState.IsMultiplayer) {
+                            inputAbility.OnCooldown_Net(gameObject, (bool networkCooldown) => {
+                                if (!abilityOnCooldown && !networkCooldown) {
+                                    // Invoke UI HUD ability animation
+                                    NotifyUICooldown?.Invoke(_currentInput.key);
+                                    GetCastingTargetPosition();
+                                    _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
+                                }
+                            });
+                        }
+                        else if (!abilityOnCooldown) {
                             GetCastingTargetPosition();
                             _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
                         }
-
-                        _inputQueue.Dequeue();
+                        
+                        _inputQueue.Dequeue(); 
                         break;
 
                     case InputCommandType.None:

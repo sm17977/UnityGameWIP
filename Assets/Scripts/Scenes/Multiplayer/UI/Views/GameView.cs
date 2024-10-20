@@ -9,39 +9,39 @@ public delegate void StartDuelCountdown();
 
 namespace Multiplayer.UI {
     public class GameView : View {
-
-       private CountdownTimerElement _countdownTimerElement;
+        private CountdownTimerElement _countdownTimerElement;
         private List<GameObject> _playerGameObjects;
-        public static event StartDuelCountdown OnStartGameModeCountdown; 
         private readonly HealthBarManager _healthBarManager;
+        public static event StartDuelCountdown OnStartGameModeCountdown;
 
         public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             BindUIElements();
-            _healthBarManager = new HealthBarManager(Template); 
+            _healthBarManager = new HealthBarManager(Template);
         }
-        
+
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
-        }   
+        }
 
         public override void Show() {
-            _healthBarManager.GenerateHealthBars(_playerGameObjects); 
+            _healthBarManager.GenerateHealthBars(_playerGameObjects);
             base.Show();
             BindUIElements();
             GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
             GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
-            _healthBarManager.SetHealthBarPosition(); 
+            _healthBarManager.SetHealthBarPosition();
         }
 
         public override void Update() {
             _healthBarManager.SetHealthBarPosition();
         }
-        
-        public override void RePaint() { }
+
+        public override void RePaint() {
+        }
 
         public void SetPlayers(List<GameObject> players) {
             _playerGameObjects = players;
@@ -57,9 +57,50 @@ namespace Multiplayer.UI {
 
             // Update the player list
             _playerGameObjects = players;
-            
+
             // Delegate generation of new health bars
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
+        }
+
+        /// <summary>
+        /// Handle the USS transitions whenever an ability is cast
+        /// </summary>
+        /// <param name="key"></param>
+        public void ActivateAbilityAnimation(string key) {
+            string overlayElementName = key.ToLower() + "-overlay";
+            var abilityBox = Template.Q<VisualElement>(overlayElementName);
+
+            if (abilityBox != null) {
+                // Reset height and transition
+                ResetAbilityBox(abilityBox);
+
+                abilityBox.schedule.Execute(() => {
+                    StartTransition(abilityBox, 3f); 
+                }).StartingIn(50); 
+            }
+        }
+        
+        private void ResetAbilityBox(VisualElement abilityBox) {
+            abilityBox.style.transitionDuration = new List<TimeValue>(0); 
+            abilityBox.style.height = new StyleLength(new Length(0, LengthUnit.Percent));
+            abilityBox.style.visibility = Visibility.Visible;
+        }
+        
+        private void StartTransition(VisualElement abilityBox, float durationInSeconds) {
+            abilityBox.style.transitionDuration = new List<TimeValue>
+                { new TimeValue(durationInSeconds, TimeUnit.Second) };
+            abilityBox.style.height = new StyleLength(new Length(100, LengthUnit.Percent)); 
+            abilityBox.RegisterCallback<TransitionEndEvent>(OnTransitionEnd);
+        }
+        
+        private void OnTransitionEnd(TransitionEndEvent evt) {
+            var abilityBox = evt.target as VisualElement;
+
+            if (abilityBox != null) {
+                ResetAbilityBox(abilityBox); 
+                abilityBox.style.visibility = Visibility.Hidden;
+                abilityBox.UnregisterCallback<TransitionEndEvent>(OnTransitionEnd);
+            }
         }
     }
 }

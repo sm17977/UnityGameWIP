@@ -11,6 +11,7 @@ namespace Multiplayer.UI {
         
         protected Button CloseButton;
         protected VisualElement Loader;
+        private EventCallback<TransitionEndEvent> _loaderTransitionEndCallback;
         
         public virtual void ShowModal() {
             ParentContainer.Add(Template);
@@ -27,30 +28,38 @@ namespace Multiplayer.UI {
 
         protected void ShowLoader() {
             if (Loader != null) {
-                
-                // Handles the looping of the loader rotation transition
-                Loader.RegisterCallback<TransitionEndEvent>(evt => {
-                    Loader.ToggleInClassList("loader-transition");
+                if (_loaderTransitionEndCallback == null) {
+                    _loaderTransitionEndCallback = (evt => {
+                        Loader.ToggleInClassList("loader-transition");
 
-                    Loader.style.rotate =
-                        new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(0, AngleUnit.Degree)));
-                    
-                    Loader.schedule.Execute(() => Loader.ToggleInClassList("loader-transition")).StartingIn(1);
-                    
-                    Loader.schedule.Execute(() => {
                         Loader.style.rotate =
-                            new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(360, AngleUnit.Degree)));
-                    }).StartingIn(20);
-                });
+                            new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(0, AngleUnit.Degree)));
+
+                        Loader.schedule.Execute(() => Loader.ToggleInClassList("loader-transition")).StartingIn(1);
+
+                        Loader.schedule.Execute(() => {
+                            Loader.style.rotate =
+                                new StyleRotate(new UnityEngine.UIElements.Rotate(new Angle(360, AngleUnit.Degree)));
+                        }).StartingIn(30);
+                    });
+
+                    Show(Loader);
+                    Loader.ToggleInClassList("loader-transition");
+                    Loader.ToggleInClassList("loader-rotation");
+                }
                 
-                Show(Loader);
-                Loader.ToggleInClassList("loader-transition");
-                Loader.ToggleInClassList("loader-rotation");
+                Loader.RegisterCallback(_loaderTransitionEndCallback);
             }
         }
         
         protected void HideLoader() {
-            if(Loader != null) Hide(Loader);
+            if (Loader != null) {
+                if (_loaderTransitionEndCallback != null) {
+                    Loader.UnregisterCallback(_loaderTransitionEndCallback);
+                    _loaderTransitionEndCallback = null; 
+                }
+                Hide(Loader);
+            }
         }
         
         public void ChangeTemplate(VisualTreeAsset vta) {

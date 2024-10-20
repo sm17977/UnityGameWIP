@@ -38,7 +38,7 @@ public class HealthBarManager {
             healthBar.AddToClassList("health-bar");
             healthBar.AddToClassList("health-bar-borders");
             healthBar.name = "health-bar";
-            healthBar.style.width = new Length(150, LengthUnit.Pixel);
+            healthBar.style.width = new Length(HealthBarDefaultWidth, LengthUnit.Pixel);
             
             healthBarContainer.Add(healthBar);
             _template.Add(healthBarContainer);

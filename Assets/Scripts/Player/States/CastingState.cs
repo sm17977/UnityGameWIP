@@ -19,7 +19,11 @@ public class CastingState : State
         ability.PutOnCooldown();
         playerController.canCast = true;
         playerController.animator.SetTrigger(ability.animationTrigger);
-        playerController.networkAnimator.SetTrigger(ability.animationTrigger);
+        
+        if (GlobalState.IsMultiplayer) {
+            ability.PutOnCooldown_Net(player);
+            playerController.networkAnimator.SetTrigger(ability.animationTrigger);
+        }
     }
 
     public override void Execute() {
