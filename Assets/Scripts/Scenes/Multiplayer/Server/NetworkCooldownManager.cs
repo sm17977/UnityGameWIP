@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,12 +9,9 @@ public class NetworkCooldownManager : NetworkBehaviour {
     public static NetworkCooldownManager Instance;
 
     // Dictionary to map each player's GameObject to their list of abilities on cooldown
-    private Dictionary<GameObject, List<NetworkAbilityData>> _cooldowns = new();
-    
+    private Dictionary<ulong, List<NetworkAbilityData>> _cooldowns = new();
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
-        Debug.Log("NetworkCooldownManager - OnNetWorkSpawn");
-        Debug.Log("IsServer: " + IsServer);
         if (IsServer) {
             if (Instance == null) {
                 Instance = this;
@@ -49,6 +47,7 @@ public class NetworkCooldownManager : NetworkBehaviour {
                 }
             }
 
+            // Remove player from mapping if they have no ability cooldowns in their list
             if (!abilities.Any()) {
                 _cooldowns.Remove(player);
             }
@@ -60,7 +59,7 @@ public class NetworkCooldownManager : NetworkBehaviour {
     /// </summary>
     /// <param name="player">The player GameObject</param>
     /// <param name="ability">The ability to put on cooldown</param>
-    public void StartCooldown(GameObject player, NetworkAbilityData ability) {
+    public void StartCooldown(ulong player, NetworkAbilityData ability) {
         if (!_cooldowns.ContainsKey(player)) {
             _cooldowns[player] = new List<NetworkAbilityData>();
         }
@@ -77,27 +76,19 @@ public class NetworkCooldownManager : NetworkBehaviour {
     /// <param name="player">The player GameObject</param>
     /// <param name="ability">The ability to check</param>
     /// <returns>True if the ability is on cooldown, otherwise false</returns>
-    public bool IsAbilityOnCooldown(GameObject player, NetworkAbilityData ability) {
-        Debug.Log("IsAbilityOnCooldown");
-        var playerIsNull = player == null;
-        var abilityIsNull = ability == null;
-        var cooldownsIsNull = _cooldowns == null;
-
-        Debug.Log("Player is null? " + playerIsNull);
-        Debug.Log("Ability is null? " + abilityIsNull);
-        Debug.Log("Cooldowns is null? " +  cooldownsIsNull);
+    public bool IsAbilityOnCooldown(ulong player, NetworkAbilityData ability) {
+        string jsonCooldowns = JsonConvert.SerializeObject(_cooldowns);
+        Debug.Log("==Network Cooldowns==");
+        Debug.Log(jsonCooldowns);
         
         try {
-            if (_cooldowns.ContainsKey(player) && _cooldowns[player].Contains(ability)) {
+            if (_cooldowns.ContainsKey(player)) {
                 return _cooldowns[player].Find(ele => ele.key == ability?.key).currentCooldown > 0;
             }
         }
         catch (Exception e) {
             Debug.Log("Error in IsAbilityOnCooldown: " + e);
-            return false;
         }
-
-        Debug.Log("couldn't find cooldown/player! ):");
         return false;
     }
 }

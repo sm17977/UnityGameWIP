@@ -182,21 +182,11 @@ public class MultiplayerUIController : MonoBehaviour {
         
         // Player network spawn event
         RPCController.NetworkSpawn += ((player) => {
-            // var playersParent = GameObject.Find("Players");
-            // if (playersParent == null) {
-            //     Debug.Log("Players is null");
-            // }
-            // else {
-            //     Debug.Log("Players not null");
-            //     Debug.Log("idk: " + playersParent.transform.childCount);
-            // }
-            // _player = playersParent.transform.Find("Local Player").gameObject;
             _player = player;
             if (_player != null) {
-                Debug.Log("HERE");
                 _playerScript = _player.GetComponent<LuxPlayerController>();
-                _playerScript.NotifyUICooldown += (key) => {
-                    _gameView.ActivateAbilityAnimation(key);
+                _playerScript.NotifyUICooldown += (key, duration) => {
+                    _gameView.ActivateAbilityAnimation(key, duration);
                 };
             }
             else {

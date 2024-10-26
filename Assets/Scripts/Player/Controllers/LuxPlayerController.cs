@@ -12,7 +12,7 @@ using UnityEngine.VFX;
 public class LuxPlayerController : LuxController {
 
     // Events
-    public event Action<string>? NotifyUICooldown;
+    public event Action<string, float>? NotifyUICooldown;
     
     // Flags
     public bool isAttackClick = false;
@@ -284,7 +284,8 @@ public class LuxPlayerController : LuxController {
                             inputAbility.OnCooldown_Net(gameObject, (bool networkCooldown) => {
                                 if (!abilityOnCooldown && !networkCooldown) {
                                     // Invoke UI HUD ability animation
-                                    NotifyUICooldown?.Invoke(_currentInput.key);
+                                    Debug.Log("CD Max Cooldown: " + inputAbility.maxCooldown);
+                                    NotifyUICooldown?.Invoke(_currentInput.key, inputAbility.maxCooldown);
                                     GetCastingTargetPosition();
                                     _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
                                 }

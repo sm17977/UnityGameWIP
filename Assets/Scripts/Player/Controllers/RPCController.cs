@@ -110,48 +110,18 @@ public class RPCController : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void AddCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
-        GameObject playerObject = null;
-        try {
-            playerObject = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
-        }
-        catch (Exception e) {
-            Debug.Log("Couldn't get player object");
-        }
-
-        NetworkCooldownManager.Instance.StartCooldown(playerObject, abilityData);
+        NetworkCooldownManager.Instance.StartCooldown(clientId, abilityData);
     }
 
     [Rpc(SendTo.Server)]
-    public void IsAbilityOnCooldownRpc(ulong networkObjectId, ulong clientId,  NetworkAbilityData abilityData) {
-        Debug.Log("IsAbilityOnCooldownRPC");
-        var playerObject = NetworkManager.SpawnManager.SpawnedObjects[networkObjectId].gameObject;
-        var test1 = playerObject == null;
-        var playerObject2 = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
-        var test2 = playerObject2 == null;
-        var test3 = NetworkCooldownManager.Instance == null;
-        var test4 = abilityData == null;
-        
-        Debug.Log("Get Player Object 1, is null?:" + test1);
-        Debug.Log("Get Player Object 2, is null?:" + test2);
-
-        Debug.Log("Network Object ID: " + networkObjectId);
-        Debug.Log("Client ID: " + clientId);
-        Debug.Log("NetworkCooldownManager: " + test3);
-        Debug.Log("Ability Data: " + test4);
-      
-        
-        var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(playerObject, abilityData);
-        Debug.Log("Ability cooldown from server is: " + cd);
-        UpdateCooldownRpc(networkObjectId, abilityData, cd);
+    public void IsAbilityOnCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
+        var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(clientId, abilityData);
+        UpdateCooldownRpc(cd);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void UpdateCooldownRpc(ulong networkObjectId, NetworkAbilityData abilityData, bool serverCooldown) {
+    private void UpdateCooldownRpc(bool serverCooldown) {
         if (IsLocalPlayer && IsOwner) {
-            Debug.Log("Ability cooldown on client is: " + serverCooldown);
-            if (!serverCooldown) abilityData.currentCooldown = 0;
-            abilityData.onCooldown = serverCooldown;
-            
             OnCooldownReceived?.Invoke(serverCooldown);
             OnCooldownReceived = null;
         }

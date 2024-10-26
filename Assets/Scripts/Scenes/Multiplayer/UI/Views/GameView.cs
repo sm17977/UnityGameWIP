@@ -66,7 +66,8 @@ namespace Multiplayer.UI {
         /// Handle the USS transitions whenever an ability is cast
         /// </summary>
         /// <param name="key"></param>
-        public void ActivateAbilityAnimation(string key) {
+        /// <param name="duration"></param>
+        public void ActivateAbilityAnimation(string key, float duration) {
             string overlayElementName = key.ToLower() + "-overlay";
             var abilityBox = Template.Q<VisualElement>(overlayElementName);
 
@@ -75,7 +76,7 @@ namespace Multiplayer.UI {
                 ResetAbilityBox(abilityBox);
 
                 abilityBox.schedule.Execute(() => {
-                    StartTransition(abilityBox, 3f); 
+                    StartTransition(abilityBox, duration); 
                 }).StartingIn(50); 
             }
         }

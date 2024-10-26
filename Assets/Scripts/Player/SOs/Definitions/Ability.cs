@@ -14,7 +14,6 @@ public class Ability : ScriptableObject {
     [Header("Ability Stats")]
     public float currentCooldown = 0;
     public float maxCooldown;
-    public bool serverOnCooldown;
     public float range;
     public float speed;
     public float lingeringLifetime;
@@ -65,7 +64,7 @@ public class Ability : ScriptableObject {
     /// <param name="player"></param>
     public void PutOnCooldown_Net(GameObject player) {
         var rpcController = player.GetComponent<RPCController>();
-        ulong clientId = NetworkManager.Singleton.LocalClientId;
+        var clientId = NetworkManager.Singleton.LocalClientId;
         
         NetworkAbilityData abilityData = new NetworkAbilityData(this);
         rpcController.AddCooldownRpc(clientId, abilityData);
@@ -82,14 +81,11 @@ public class Ability : ScriptableObject {
     /// <param name="onCooldownReceived"></param>
     /// <returns></returns>
     public void OnCooldown_Net(GameObject player, Action<bool> onCooldownReceived){
-        Debug.Log("OnCooldown_Net");
         var rpcController = player.GetComponent<RPCController>();
-        ulong networkObjectId = player.GetComponent<NetworkObject>().NetworkObjectId;
         var clientId = NetworkManager.Singleton.LocalClientId;
-        
         NetworkAbilityData abilityData = new NetworkAbilityData(this);
-        rpcController.IsAbilityOnCooldownRpc(networkObjectId, clientId, abilityData);
         
+        rpcController.IsAbilityOnCooldownRpc(clientId, abilityData);
         rpcController.OnCooldownReceived += onCooldownReceived;
     }
 }
