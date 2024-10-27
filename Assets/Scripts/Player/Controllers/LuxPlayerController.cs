@@ -88,10 +88,7 @@ public class LuxPlayerController : LuxController {
     public Client Client;
 
     // Abilities
-    public Ability LuxQAbilitySO;
-    public Ability LuxEAbilitySO;
-    public Ability LuxQAbility;
-    public Ability LuxEAbility;
+    public Dictionary<string, Ability> Abilities;
     
     // Health
     public Health health;
@@ -107,9 +104,7 @@ public class LuxPlayerController : LuxController {
         hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
         _hitboxPos = hitboxGameObj.transform.position;
         
-        LuxQAbility = Instantiate(LuxQAbilitySO);
-        LuxEAbility = Instantiate(LuxEAbilitySO);
-        _previousInput = new InputCommand { type = InputCommandType.Init };
+        _previousInput = new InputCommand { Type = InputCommandType.Init };
     }
 
     private void OnEnable() {
@@ -133,8 +128,7 @@ public class LuxPlayerController : LuxController {
         globalState.OnMultiplayerGameMode -= InitAbilities;
         globalState.OnSinglePlayerGameMode -= InitAbilities;
     }
-
-
+    
     // Start is called before the first frame update
     private void Start() {
         if (GlobalState.IsMultiplayer && IsOwner) {
@@ -156,7 +150,7 @@ public class LuxPlayerController : LuxController {
         
         InitStates();
         InitAbilities();
-        _stateManager.ChangeState(_idleState);
+        TransitionToIdle();
         
         aiHitboxCollider = aiHitboxGameObj.GetComponent<SphereCollider>();
         _aiHitboxPos = aiHitboxGameObj.transform.position;
@@ -189,17 +183,31 @@ public class LuxPlayerController : LuxController {
         HandleVFX();
     }
     
+    /// <summary>
+    /// Store the players abilities in a list
+    /// Set the casting strategy for the ability depending on singleplayer/multiplayer
+    /// </summary>
     private void InitAbilities() {
 
+        // Ability SOs store a cooldown timer and therefore need to be instantiated to prevent multiple players
+        // referencing the same single ability with the same cooldown timer
+        Abilities = new Dictionary<string, Ability> {
+            { "Q", Instantiate(lux.abilityQ) },
+            { "W", Instantiate(lux.abilityW) },
+            { "E", Instantiate(lux.abilityE) },
+            { "R", Instantiate(lux.abilityR) }
+        };
+        
         ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
 
         if (GlobalState.IsMultiplayer) {
             rpcController = GetComponent<RPCController>();
             castingStrategy = new MultiplayerCastingStrategy(gameObject, rpcController);
         }
-        
-        LuxEAbility.SetCastingStrategy(castingStrategy);
-        LuxQAbility.SetCastingStrategy(castingStrategy);
+
+        foreach (var ability in Abilities.Values) {
+            ability.SetCastingStrategy(castingStrategy);
+        }
     }
     
     public void OnRightClick(InputAction.CallbackContext context) {
@@ -209,17 +217,21 @@ public class LuxPlayerController : LuxController {
         var inputType = GetClickInput();
 
         if (globalState.currentScene == "Multiplayer" && IsOwner)
-            AddInputToQueue(new InputCommand { type = inputType, time = context.time });
+            AddInputToQueue(new InputCommand { Type = inputType } );
         else
-            AddInputToQueue(new InputCommand { type = inputType, time = context.time });
+            AddInputToQueue(new InputCommand { Type = inputType } );
     }
 
     public void OnQ(InputAction.CallbackContext context) {
-        AddInputToQueue(new InputCommand { type = InputCommandType.CastSpell, time = context.time, key = "Q" });
+        if (Abilities.TryGetValue("Q", out Ability ability)) {
+            AddInputToQueue(new InputCommand { Type = InputCommandType.CastSpell, Key = "Q", Ability = ability });
+        }
     }
 
     public void OnE(InputAction.CallbackContext context) {
-        AddInputToQueue(new InputCommand { type = InputCommandType.CastSpell, time = context.time, key = "E" });
+        if (Abilities.TryGetValue("E", out Ability ability)) {
+            AddInputToQueue(new InputCommand { Type = InputCommandType.CastSpell, Key = "E", Ability = ability });
+        }
     }
 
     public void OnA(InputAction.CallbackContext context) {
@@ -233,77 +245,76 @@ public class LuxPlayerController : LuxController {
 
     // Read the input queue to handle movement and casting input commands
     private void HandleInput() {
-        if (_inputQueue != null)
-            // Check the queue for any unconsumed input commands
-            if (_inputQueue.Count > 0) {
-                // Get the next input command
-                _currentInput = _inputQueue.Peek();
+        // Check the queue for any unconsumed input commands
+        if (_inputQueue.Count > 0) {
+            // Get the next input command
+            _currentInput = _inputQueue.Peek();
 
-                // Set previous input to null on first function call
-                if (_previousInput.type == InputCommandType.Init) _previousInput = _currentInput;
+            // Set previous input to null on first function call
+            if (_previousInput.Type == InputCommandType.Init) _previousInput = _currentInput;
 
-                switch (_currentInput.type) {
-                    // Process the movement command
-                    case InputCommandType.Movement:
+            switch (_currentInput.Type) {
+                // Process the movement command
+                case InputCommandType.Movement:
 
-                        ShowMovementIndicator(_lastClickPosition);
-                        if (canMove) {
-                            _movingState = new MovingState(this, _lastClickPosition, GetStoppingDistance(), gameObject,
-                                false);
-                            _stateManager.ChangeState(_movingState);
-                        }
+                    ShowMovementIndicator(_lastClickPosition);
+                    if (canMove) {
+                        _movingState = new MovingState(this, _lastClickPosition, GetStoppingDistance(), gameObject,
+                            false);
+                        _stateManager.ChangeState(_movingState);
+                    }
 
+                    _inputQueue.Dequeue();
+                    break;
+
+                //Process the attack command
+                case InputCommandType.Attack:
+                    direction = (_lastClickPosition - transform.position).normalized;
+                    // If the player is not within attack range, move until they are
+                    if (!IsInAttackRange(_lastClickPosition, GetStoppingDistance()))
+                        _stateManager.ChangeState(new MovingState(this, _lastClickPosition, GetStoppingDistance(),
+                            gameObject, true));
+                    // If they are in attack range, transition to attack state
+                    // Attacking state persists until we input a new command
+                    else
+                        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+                    _inputQueue.Dequeue();
+                    break;
+
+                // Process the cast spell command
+                case InputCommandType.CastSpell:
+
+                    var inputAbility = _currentInput.Ability;
+                    var abilityOnCooldown = inputAbility.OnCooldown();
+                    if (abilityOnCooldown) {
                         _inputQueue.Dequeue();
                         break;
+                    }
+                    
+                    if (GlobalState.IsMultiplayer) {
+                        inputAbility.OnCooldown_Net(gameObject, (bool networkCooldown) => {
+                            if (!networkCooldown) {
+                                // Invoke UI HUD ability animation
+                                Debug.Log("CD Max Cooldown: " + inputAbility.maxCooldown);
+                                NotifyUICooldown?.Invoke(_currentInput.Key, inputAbility.maxCooldown);
+                                GetCastingTargetPosition();
+                                _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
+                            }
+                        });
+                    }
+                    else {
+                        GetCastingTargetPosition();
+                        _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
+                    }
+                    
+                    _inputQueue.Dequeue(); 
+                    break;
 
-                    //Process the attack command
-                    case InputCommandType.Attack:
-                        direction = (_lastClickPosition - transform.position).normalized;
-                        // If the player is not within attack range, move until they are
-                        if (!IsInAttackRange(_lastClickPosition, GetStoppingDistance()))
-                            _stateManager.ChangeState(new MovingState(this, _lastClickPosition, GetStoppingDistance(),
-                                gameObject, true));
-                        // If they are in attack range, transition to attack state
-                        // Attacking state persists until we input a new command
-                        else
-                            _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
-                        _inputQueue.Dequeue();
-                        break;
-
-                    // Process the cast spell command
-                    case InputCommandType.CastSpell:
-
-                        var inputAbility = LuxQAbility;
-
-                        if (_currentInput.key == "Q") inputAbility = LuxQAbility;
-                        if (_currentInput.key == "E") inputAbility = LuxEAbility;
-                        
-                        bool abilityOnCooldown = inputAbility.OnCooldown();
-                        
-                        if (GlobalState.IsMultiplayer) {
-                            inputAbility.OnCooldown_Net(gameObject, (bool networkCooldown) => {
-                                if (!abilityOnCooldown && !networkCooldown) {
-                                    // Invoke UI HUD ability animation
-                                    Debug.Log("CD Max Cooldown: " + inputAbility.maxCooldown);
-                                    NotifyUICooldown?.Invoke(_currentInput.key, inputAbility.maxCooldown);
-                                    GetCastingTargetPosition();
-                                    _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
-                                }
-                            });
-                        }
-                        else if (!abilityOnCooldown) {
-                            GetCastingTargetPosition();
-                            _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));
-                        }
-                        
-                        _inputQueue.Dequeue(); 
-                        break;
-
-                    case InputCommandType.None:
-                        _inputQueue.Dequeue();
-                        break;
-                }
+                case InputCommandType.None:
+                    _inputQueue.Dequeue();
+                    break;
             }
+        }
     }
 
     private void AddInputToQueue(InputCommand input) {
@@ -314,10 +325,7 @@ public class LuxPlayerController : LuxController {
     // Store the position of the click in lastClickPosition
     // Return the input command type
     private InputCommandType GetClickInput() {
-        
-        if (hitboxCollider == null || hitboxGameObj == null) {
-            return InputCommandType.None;
-        }
+        if (hitboxCollider == null || hitboxGameObj == null) return InputCommandType.None;
         
         var worldRadius = hitboxCollider.radius * hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, _hitboxPos.y, 0));
@@ -466,8 +474,9 @@ public class LuxPlayerController : LuxController {
     }
     
     private void ResetCooldowns() {
-        LuxQAbility.currentCooldown = 0;
-        LuxEAbility.currentCooldown = 0;
+        foreach (var ability in Abilities.Values) {
+            ability.currentCooldown = 0;
+        }
     }
     
     private void OnDestroy() {

@@ -11,7 +11,8 @@ public class Ability : ScriptableObject {
     public Champion champion;
     public string key;
 
-    [Header("Ability Stats")]
+    [Header("Ability Stats")] 
+    public float damage;
     public float currentCooldown = 0;
     public float maxCooldown;
     public float range;

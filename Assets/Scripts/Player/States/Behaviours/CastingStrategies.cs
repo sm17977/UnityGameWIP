@@ -48,7 +48,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         // Initialize projectile properties
         var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
         if (projectileScript != null) {
-            projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
+            projectileScript.InitProjectileProperties(direction, ability,
                 _playerController.projectiles, _playerController.playerType);
             projectileScript.ResetVFX();
      
@@ -60,6 +60,6 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
         
-        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, localClientId, newProjectile.transform.GetInstanceID());
+        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
     }
 }

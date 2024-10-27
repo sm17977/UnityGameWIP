@@ -1,5 +1,4 @@
 using System.Collections;
-using Global.Game_Modes;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,8 +12,7 @@ public class LuxController : NetworkBehaviour {
     public BuffManager BuffManager;
     public GlobalState globalState;
     public bool canMove = true;
-
-
+    
     public void ProcessPlayerDeath(){
         if(playerType == PlayerType.Player && !GlobalState.IsMultiplayer){
             StartCoroutine(DelayLoadScene());

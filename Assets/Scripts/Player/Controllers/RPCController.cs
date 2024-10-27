@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Multiplayer;
-using Newtonsoft.Json;
-using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -35,7 +31,7 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId) {
+    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId, string abilityKey) {
         
         var newNetworkProjectile = ServerProjectilePool.Instance.GetPooledProjectile();
         if (newNetworkProjectile == null) {
@@ -60,14 +56,14 @@ public class RPCController : NetworkBehaviour {
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
         if (projectileScript != null) {
-            projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility, _playerController.playerType, clientId);
+            projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
         }
-        SpawnProjectileClientRpc(direction, position, networkInstanceId);
+        SpawnProjectileClientRpc(direction, position, networkInstanceId, abilityKey);
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId) {
+    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
         
             var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
@@ -85,7 +81,7 @@ public class RPCController : NetworkBehaviour {
             // Initialize projectile properties on the server
             var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
             if (projectileScript != null) {
-                projectileScript.InitProjectileProperties(direction, _playerController.LuxQAbility,
+                projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey],
                     _playerController.projectiles, _playerController.playerType);
                 projectileScript.ResetVFX();
             }

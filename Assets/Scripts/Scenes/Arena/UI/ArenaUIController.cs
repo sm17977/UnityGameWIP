@@ -69,18 +69,18 @@ public class ArenaUIController : MonoBehaviour
     void OnEnable(){
         _controls = new Controls();
         _controls.UI.Enable();
-        _controls.UI.Q.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
-        _controls.UI.W.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
-        _controls.UI.E.performed += _ => ActivateAbilityAnimation(player.LuxEAbility);
-        _controls.UI.R.performed += _ => ActivateAbilityAnimation(player.LuxQAbility);
+        _controls.UI.Q.performed += _ => ActivateAbilityAnimation(player.Abilities["Q"]);
+        _controls.UI.W.performed += _ => ActivateAbilityAnimation(player.Abilities["W"]);
+        _controls.UI.E.performed += _ => ActivateAbilityAnimation(player.Abilities["E"]);
+        _controls.UI.R.performed += _ => ActivateAbilityAnimation(player.Abilities["R"]);
         _controls.UI.ESC.performed += _ => ShowPauseMenu();
     }
 
     void OnDisable(){
-        _controls.UI.Q.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
-        _controls.UI.W.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
-        _controls.UI.E.performed -= _ => ActivateAbilityAnimation(player.LuxEAbility);
-        _controls.UI.R.performed -= _ => ActivateAbilityAnimation(player.LuxQAbility);
+        _controls.UI.Q.performed -= _ => ActivateAbilityAnimation(player.Abilities["Q"]);
+        _controls.UI.W.performed -= _ => ActivateAbilityAnimation(player.Abilities["W"]);
+        _controls.UI.E.performed -= _ => ActivateAbilityAnimation(player.Abilities["E"]);
+        _controls.UI.R.performed -= _ => ActivateAbilityAnimation(player.Abilities["R"]);
         _controls.UI.ESC.performed -= _ => ShowPauseMenu();
         _controls.UI.Disable();
         GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText -= _countdownTimerElement.UpdateCountdown;

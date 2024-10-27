@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: Q
+  damage: 80
   currentCooldown: 0
   maxCooldown: 4
   range: 10

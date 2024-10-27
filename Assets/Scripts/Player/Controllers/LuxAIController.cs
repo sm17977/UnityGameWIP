@@ -77,7 +77,7 @@ public class LuxAIController : LuxController
     void Awake(){
         LuxQAbility = Object.Instantiate(LuxQAbilitySO);
         LuxEAbility = Object.Instantiate(LuxEAbilitySO);
-        previousInput = new InputCommand{type = InputCommandType.Init};
+        previousInput = new InputCommand{Type = InputCommandType.Init};
     }
 
     // Start is called before the first frame update
@@ -117,11 +117,11 @@ public class LuxAIController : LuxController
 
 
     public void SimulateQ(){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, key = "Q"});
+        AddInputToQueue(new InputCommand{Type = InputCommandType.CastSpell, Key = "Q"});
     }
 
     public void SimulateE(){
-        AddInputToQueue(new InputCommand{type = InputCommandType.CastSpell, key = "E"});
+        AddInputToQueue(new InputCommand{Type = InputCommandType.CastSpell, Key = "E"});
     }
 
     private void InitStates(){
@@ -141,21 +141,21 @@ public class LuxAIController : LuxController
                 currentInput = inputQueue.Peek();
 
                 // Set previous input to null on first function call
-                if(previousInput.type == InputCommandType.Init){
+                if(previousInput.Type == InputCommandType.Init){
                     previousInput = currentInput;
                 }
 
-                switch(currentInput.type){
+                switch(currentInput.Type){
 
                     // Process the cast spell command
                     case InputCommandType.CastSpell:
 
                          Ability inputAbility = LuxQAbility;
 
-                        if(currentInput.key == "Q"){
+                        if(currentInput.Key == "Q"){
                             inputAbility = LuxQAbility;
                         }
-                        if(currentInput.key == "E"){
+                        if(currentInput.Key == "E"){
                             inputAbility = LuxEAbility;
                         }
 

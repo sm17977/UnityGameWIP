@@ -23,9 +23,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
    /// Set the direction, speed and range of a projectile and other ability data
    /// </summary>
    /// <param name="direction"></param>
-   /// <param name="ability"></param>
-   /// <param name="playerProjectiles"></param>
-   /// <param name="playerType"></param>
+   /// <param name="abilityData"></param>
+   /// <param name="type"></param>
+   /// <param name="clientId"></param>
     public void InitProjectileProperties(Vector3 direction, Ability abilityData, PlayerType type, ulong clientId){
 
         projectileDirection = direction;
