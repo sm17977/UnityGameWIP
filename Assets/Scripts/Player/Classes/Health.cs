@@ -5,9 +5,8 @@ using UnityEngine;
 public class Health : NetworkBehaviour {
  
     public NetworkVariable<float> currentHealth = new NetworkVariable<float>();
-    public float maxHealth = 100f;
     private LuxPlayerController _playerScript;
-
+    public float maxHealth;
     public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth);
     public delegate Task PlayerDied(LuxPlayerController player);
     public static event HealthChanged OnHealthChanged;
@@ -15,6 +14,7 @@ public class Health : NetworkBehaviour {
 
     private void Start() {
         _playerScript = GetComponent<LuxPlayerController>();
+        maxHealth = _playerScript.lux.health;
         if (IsServer) {
             currentHealth.Value = maxHealth;  
         }

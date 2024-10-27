@@ -11,7 +11,7 @@ Lux_Q_Mis.cs
 
 Controls the movement of the Lux Q missile (Networked version)
 Sets VFX properties for Q_Orb and Q_Vortex_Trails
-Component of: Lux_Q_Mis prefab
+Component of: Lux_Q_Mis_Net prefab
 
 */
 
@@ -80,7 +80,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 hasHit = true;
                 try {
                     _target = collision.gameObject.GetComponent<LuxPlayerController>();
-                    _target.health.TakeDamage(100f);
+                    _target.health.TakeDamage(ability.damage);
                 }
                 catch (Exception e) {
                     Debug.Log("Error trying to get LuxController: " + e.Message);
