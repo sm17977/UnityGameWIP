@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum PlayerType {Player, Bot};
 public delegate void OnNetworkSpawn();
@@ -8,7 +9,8 @@ public delegate void OnNetworkSpawn();
 public class LuxController : NetworkBehaviour {
     
     public PlayerType playerType;
-    public Champion lux;
+    public Champion championSO;
+    public Champion champion;
     public BuffManager BuffManager;
     public GlobalState globalState;
     public bool canMove = true;

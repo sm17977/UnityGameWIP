@@ -19,9 +19,9 @@ public class RPCController : NetworkBehaviour {
     public override void OnNetworkSpawn() {
         Debug.Log("RPC OnNetWorkSpawn");
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
+        _players = GameObject.Find("Players");
         
         if (IsServer) {
-            _players = GameObject.Find("Players");
             transform.SetParent(_players.transform, true);
         }
 
@@ -120,6 +120,28 @@ public class RPCController : NetworkBehaviour {
         if (IsLocalPlayer && IsOwner) {
             OnCooldownReceived?.Invoke(serverCooldown);
             OnCooldownReceived = null;
+        }
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    public void UpdateBuffRpc(ulong targetClientId, string buffName, bool apply) {
+        Buff buff = BuffLibrary.Instance.GetBuffByName(buffName);
+        
+        // Find the player the buff should be applied to 
+        foreach (Transform child in _players.transform) {
+            var player = child.gameObject;
+            var networkObject = player.GetComponent<NetworkObject>();
+            var clientId = networkObject.OwnerClientId;
+            if (clientId == targetClientId) {
+                var playerScript = player.GetComponent<LuxController>();
+                if (apply) {
+                    buff.effect.ApplyEffect(playerScript, buff.effectStrength);
+                }
+                else {
+                    buff.effect.RemoveEffect(playerScript, buff.effectStrength);
+                }
+                break;
+            }
         }
     }
 }

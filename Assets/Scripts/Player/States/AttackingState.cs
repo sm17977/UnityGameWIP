@@ -39,7 +39,7 @@ public class AttackingState : State
                 
         // Get the direction the abliity should move towards
         Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
-        playerController.lux.AA_direction = attackDirection;
+        playerController.champion.AA_direction = attackDirection;
 
    
         // Once the windup window has passed, fire the projectile

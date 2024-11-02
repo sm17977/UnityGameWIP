@@ -6,8 +6,8 @@ public sealed class BuffManager {
     
     private static BuffManager _instance = null;
     private static readonly object Padlock = new object();
-    private  List<Buff> _appliedBuffs;
-    private  LuxController _target;
+    private List<Buff> _appliedBuffs;
+    private LuxController _target;
     
     public static BuffManager Instance {
         get {

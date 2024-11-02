@@ -194,6 +194,10 @@ namespace Multiplayer {
             //SpawnPlayer(clientId);
             PlayerData playerData = _playerDataDictionary[clientId];
             NotifyClientsOfPlayerStatus(playerData, true);
+            if (NetworkBuffManager.Instance == null) {
+                Debug.Log("NetworkBuffManager is null!");
+            }
+            NetworkBuffManager.Instance.AddMappings();
         }
         
         /// <summary>
@@ -205,6 +209,7 @@ namespace Multiplayer {
             PlayerData playerData = _playerDataDictionary[clientId];
             NotifyClientsOfPlayerStatus(playerData, false);
             _playerDataDictionary.Remove(clientId);
+            NetworkBuffManager.Instance.RemoveMapping(clientId);
         }
         
         /// <summary>

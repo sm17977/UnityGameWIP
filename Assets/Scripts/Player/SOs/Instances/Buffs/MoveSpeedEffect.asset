@@ -9,11 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a473e59150a1d8649b98e13304be131f, type: 3}
-  m_Name: Stun
+  m_Script: {fileID: 11500000, guid: 704e5636e8be4d6d9c80ca15f0a8bcbf, type: 3}
+  m_Name: MoveSpeedEffect
   m_EditorClassIdentifier: 
-  effect: {fileID: 11400000, guid: 65679b93b72016d4b9cd318925806802, type: 2}
-  name: Stun
-  duration: 2.5
-  effectStrength: 3.8
-  currentTimer: 0

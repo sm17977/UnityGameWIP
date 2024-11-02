@@ -14,7 +14,7 @@ public class Health : NetworkBehaviour {
 
     private void Start() {
         _playerScript = GetComponent<LuxPlayerController>();
-        maxHealth = _playerScript.lux.health;
+        maxHealth = _playerScript.champion.health;
         if (IsServer) {
             currentHealth.Value = maxHealth;  
         }

@@ -1,20 +1,22 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "Buff", menuName = "Scriptable Objects/Buff")]
-public class Buff : ScriptableObject
-{
-
-    [Header("Buff Overview")]
+public class Buff : ScriptableObject {
+    
+    [FormerlySerializedAs("Effect")] [Header("Buff Overview")] 
+    public BuffEffect effect;
     public string name;
     public float duration;
+    public float effectStrength;
     public float currentTimer;
-
+    
     public void Apply(LuxController target){
         target.BuffManager.AddBuff(this);
-        target.canMove = false;
+        effect?.ApplyEffect(target, effectStrength);
     }
 
     public void Clear(LuxController target){
-        target.canMove = true;
+        effect?.RemoveEffect(target, effectStrength);
     }
 }

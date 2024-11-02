@@ -89,12 +89,8 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 // if(!target.BuffManager.HasBuffApplied(ability.buff)){
                 //     SpawnHitVfx(collision.gameObject);
                 //
-                // if(playerType == PlayerType.Bot){
-                //     target.ProcessPlayerDeath();
-                // }
-                // }
-
-                //ability.buff.Apply(target);
+                
+                NetworkBuffManager.Instance.AddBuff(ability.buff, enemyClientId);
                 
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
                 TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);

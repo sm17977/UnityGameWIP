@@ -188,7 +188,7 @@ public class LuxAIController : LuxController
         if (direction != Vector3.zero){
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             Quaternion fromRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, lux.turnSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, champion.turnSpeed * Time.deltaTime);
         }
     }
 
@@ -208,7 +208,7 @@ public class LuxAIController : LuxController
     }
 
     public float GetAttackRange(){
-        return lux.AA_range;
+        return champion.AA_range;
     }
 
     private void ResetCooldowns(){

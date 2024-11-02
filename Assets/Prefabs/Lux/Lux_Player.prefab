@@ -251,7 +251,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   playerType: 0
-  lux: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  championSO: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  champion: {fileID: 0}
   globalState: {fileID: 0}
   canMove: 1
   isAttackClick: 0
@@ -283,10 +284,6 @@ MonoBehaviour:
   attackStartTime: 0
   attackStartTimeLogged: 0
   rpcController: {fileID: 0}
-  LuxQAbilitySO: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
-  LuxEAbilitySO: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
-  LuxQAbility: {fileID: 0}
-  LuxEAbility: {fileID: 0}
   health: {fileID: 0}
   healthBarAnchor: {fileID: 0}
 --- !u!114 &5979128125877560516

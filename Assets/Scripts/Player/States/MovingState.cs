@@ -58,7 +58,7 @@ public class MovingState : State
 
     void MoveAndRotate(Vector3 direction){
         // Move player towards last mouse click 
-        player.transform.Translate(playerController.lux.movementSpeed * Time.deltaTime * direction, Space.World);
+        player.transform.Translate(playerController.champion.movementSpeed * Time.deltaTime * direction, Space.World);
         playerController.RotateTowardsTarget(direction);
     }
 

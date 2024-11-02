@@ -13,7 +13,7 @@ public class RangeIndicator : MonoBehaviour
 
     void Start(){
         playerController = player.GetComponent<LuxPlayerController>();
-        size = playerController.lux.AA_range;
+        size = playerController.champion.AA_range;
     }
 
 

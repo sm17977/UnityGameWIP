@@ -105,6 +105,7 @@ public class LuxPlayerController : LuxController {
         _hitboxPos = hitboxGameObj.transform.position;
         
         _previousInput = new InputCommand { Type = InputCommandType.Init };
+        champion = Instantiate(championSO);
     }
 
     private void OnEnable() {
@@ -192,10 +193,10 @@ public class LuxPlayerController : LuxController {
         // Ability SOs store a cooldown timer and therefore need to be instantiated to prevent multiple players
         // referencing the same single ability with the same cooldown timer
         Abilities = new Dictionary<string, Ability> {
-            { "Q", Instantiate(lux.abilityQ) },
-            { "W", Instantiate(lux.abilityW) },
-            { "E", Instantiate(lux.abilityE) },
-            { "R", Instantiate(lux.abilityR) }
+            { "Q", Instantiate(champion.abilityQ) },
+            { "W", Instantiate(champion.abilityW) },
+            { "E", Instantiate(champion.abilityE) },
+            { "R", Instantiate(champion.abilityR) }
         };
         
         ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
@@ -277,7 +278,7 @@ public class LuxPlayerController : LuxController {
                     // If they are in attack range, transition to attack state
                     // Attacking state persists until we input a new command
                     else
-                        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+                        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, champion.windupTime));
                     _inputQueue.Dequeue();
                     break;
 
@@ -386,11 +387,11 @@ public class LuxPlayerController : LuxController {
 
     // Get the minimum distance the player must move to reach the target location
     private float GetStoppingDistance() {
-        var distance = lux.stoppingDistance;
+        var distance = champion.stoppingDistance;
 
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if (isAttackClick) {
-            var calculatedAttackRange = lux.AA_range * 10 / 2;
+            var calculatedAttackRange = champion.AA_range * 10 / 2;
             distance = calculatedAttackRange + hitboxCollider.radius;
         }
 
@@ -418,7 +419,7 @@ public class LuxPlayerController : LuxController {
     }
 
     public void TransitionToAttack() {
-        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, lux.windupTime));
+        _stateManager.ChangeState(new AttackingState(this, direction, gameObject, champion.windupTime));
     }
 
     public void TransitionToMove() {
@@ -430,7 +431,7 @@ public class LuxPlayerController : LuxController {
         if (direction != Vector3.zero) {
             var toRotation = Quaternion.LookRotation(direction, Vector3.up);
             var fromRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, lux.turnSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(fromRotation, toRotation, champion.turnSpeed * Time.deltaTime);
         }
     }
 

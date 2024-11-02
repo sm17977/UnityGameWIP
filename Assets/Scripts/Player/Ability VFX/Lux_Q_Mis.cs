@@ -92,7 +92,6 @@ public class Lux_Q_Mis : ProjectileAbility {
 
                 if (playerType == PlayerType.Bot) _target.ProcessPlayerDeath();
             }
-
             ability.buff.Apply(_target);
         }
     }
