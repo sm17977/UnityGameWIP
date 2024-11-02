@@ -493,7 +493,7 @@ public class MultiplayerUIController : MonoBehaviour {
        return canDisconnect;
    }
    
-    public void OnLobbyChanged(ILobbyChanges changes) {
+    public async void OnLobbyChanged(ILobbyChanges changes) {
         
         if (changes.PlayerJoined.Changed) {
             Debug.Log("Lobby Change - Player Joined!");
@@ -513,6 +513,7 @@ public class MultiplayerUIController : MonoBehaviour {
             Debug.Log("Lobby Change - Player Data Changed");
             foreach (var data in changes.PlayerData.Value) {
                 var playerDataDict = data.Value.ChangedData.Value;
+                if (playerDataDict == null) continue;
                 if(playerDataDict.TryGetValue("IsConnected", out var isConnected)) {
                     Debug.Log("Lobby Changed IsConnected: " + isConnected.Value.Value);
                     if (!bool.Parse(isConnected.Value.Value)) continue;
@@ -535,6 +536,8 @@ public class MultiplayerUIController : MonoBehaviour {
                 var gameStarted = bool.Parse(changes.Data.Value["StartGame"].Value.Value);
                 if (gameStarted && !IsPlayerHost()) {
                     JoinGame();
+                    await _gameLobbyManager.UpdatePlayerIsReadyData();
+                    _viewManager.RePaintView(_lobbyHostView);
                 }
             }
             catch (Exception e) {
