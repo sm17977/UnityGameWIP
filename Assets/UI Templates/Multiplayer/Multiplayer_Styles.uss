@@ -35,11 +35,6 @@ BlurElement{
     font-size: 50px;
 }
 
-.menu-list-container{
-    padding-top: 100px;
-}
-
-
 Label{
     white-space: normal;
 }
