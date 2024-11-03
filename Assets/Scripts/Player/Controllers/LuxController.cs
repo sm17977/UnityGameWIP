@@ -1,10 +1,8 @@
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public enum PlayerType {Player, Bot};
-public delegate void OnNetworkSpawn();
 
 public class LuxController : NetworkBehaviour {
     

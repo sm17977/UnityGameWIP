@@ -83,6 +83,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         _gameLobbyManager = GameLobbyManager.Instance;
         _viewManager = ViewManager.Instance;
+        
     }
 
      private async void Start() {
@@ -217,8 +218,9 @@ public class MultiplayerUIController : MonoBehaviour {
     private void InitViews() {
         var root = uiDocument.rootVisualElement;
         var viewContainer = root.Q<VisualElement>("view-container");
+        var panelSettings = uiDocument.panelSettings;
 
-        _gameView = new GameView(viewContainer, gameViewTmpl);
+        _gameView = new GameView(viewContainer, gameViewTmpl, panelSettings);
         _lobbiesView = new LobbiesView(viewContainer, lobbiesViewTmpl);
         _lobbyHostView = new LobbyHostView(viewContainer, lobbyHostViewTmpl);
         _lobbyPlayerView = new LobbyPlayerView(viewContainer, lobbyPlayerViewTmpl);

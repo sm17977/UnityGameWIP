@@ -12,12 +12,14 @@ namespace Multiplayer.UI {
         private CountdownTimerElement _countdownTimerElement;
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
+        private PanelSettings _panelSettings;
         public static event StartDuelCountdown OnStartGameModeCountdown;
 
-        public GameView(VisualElement parentContainer, VisualTreeAsset vta) {
+        public GameView(VisualElement parentContainer, VisualTreeAsset vta, PanelSettings panelSettings) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
             BindUIElements();
+            _panelSettings = panelSettings;
             _healthBarManager = new HealthBarManager(Template);
         }
 
@@ -26,6 +28,7 @@ namespace Multiplayer.UI {
         }
 
         public override void Show() {
+            _panelSettings.scaleMode = PanelScaleMode.ConstantPhysicalSize;
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
             base.Show();
             BindUIElements();
@@ -34,6 +37,11 @@ namespace Multiplayer.UI {
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
             _healthBarManager.SetHealthBarPosition();
+        }
+
+        public override void Hide() {
+            base.Hide();
+            _panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
         }
 
         public override void Update() {

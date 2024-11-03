@@ -14,7 +14,7 @@ public class LobbyHostView : LobbyView {
     public event OnCanStartGame CanStartGame;
     public event OnCanStartServer CanStartServer;
 
-    private LabelAutoFit _lobbyStatus;
+    private Label _lobbyStatus;
     private Button _startGameBtn;
     private VisualElement _startGameBtnContainer;
 
@@ -41,7 +41,7 @@ public class LobbyHostView : LobbyView {
     /// Registers the button click events
     /// </summary>
     private void BindUIElements() {
-        _lobbyStatus = Template.Q<LabelAutoFit>("lobby-status");
+        _lobbyStatus = Template.Q<Label>("lobby-status");
         
         _startGameBtn = Template.Q<Button>("start-game-btn");
         _startGameBtnContainer = Template.Q<VisualElement>("start-game-btn-container");
