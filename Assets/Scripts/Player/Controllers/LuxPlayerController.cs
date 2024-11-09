@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 using Multiplayer;
 using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
+using Unity.Netcode;
 using Unity.Netcode.Components;
+using Unity.VisualScripting;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -150,7 +153,6 @@ public class LuxPlayerController : LuxController {
         });
         
         InitStates();
-        InitAbilities();
         TransitionToIdle();
         
         aiHitboxCollider = aiHitboxGameObj.GetComponent<SphereCollider>();
@@ -159,6 +161,12 @@ public class LuxPlayerController : LuxController {
         _inputQueue = new Queue<InputCommand>();
         projectiles = new List<GameObject>();
         ResetCooldowns();
+    }
+
+    public override void OnNetworkSpawn() {
+        base.OnNetworkSpawn();
+        Debug.Log("ONNETWORKSPAWN LUX PLAYER CONTROLLER");
+        InitAbilities();
     }
 
     // Update is called once per frame
@@ -190,6 +198,8 @@ public class LuxPlayerController : LuxController {
     /// </summary>
     private void InitAbilities() {
 
+        rpcController = GetComponent<RPCController>();
+        
         // Ability SOs store a cooldown timer and therefore need to be instantiated to prevent multiple players
         // referencing the same single ability with the same cooldown timer
         Abilities = new Dictionary<string, Ability> {
@@ -198,11 +208,21 @@ public class LuxPlayerController : LuxController {
             { "E", Instantiate(champion.abilityE) },
             { "R", Instantiate(champion.abilityR) }
         };
+
+        foreach (var entry in Abilities) {
+            var ability = entry.Value;
+            if (ability.buff != null) {
+                ability.buff = Instantiate(ability.buff);
+            }
+        }
+        
+        if (IsServer) {
+            InitializeBuffIds();  // Separate method to handle server-side ID setup and RPC
+        }
         
         ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
 
         if (GlobalState.IsMultiplayer) {
-            rpcController = GetComponent<RPCController>();
             castingStrategy = new MultiplayerCastingStrategy(gameObject, rpcController);
         }
 
@@ -491,6 +511,42 @@ public class LuxPlayerController : LuxController {
 
         globalState.OnMultiplayerGameMode -= InitAbilities;
         globalState.OnSinglePlayerGameMode -= InitAbilities;
+    }
+    
+    private void InitializeBuffIds() {
+        foreach (var entry in Abilities) {
+            var key = entry.Key;
+            var ability = entry.Value;
+        
+            if (ability.buff != null && string.IsNullOrEmpty(ability.buff.id)) {
+                ability.buff.Init();
+                SetBuffIdClientRpc(key, ability.buff.id);  // Send RPC after buff IDs are set
+            }
+        }
+    }
+    
+    // Client RPC to sync the buff ID
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SetBuffIdClientRpc(string abilityKey, string buffId) {
+
+        if (!IsOwner) return;
+        
+        if (Abilities == null) {
+            Debug.LogError("Abilities dictionary is not initialized in SetBuffIdClientRpc!");
+            return;
+        }
+        
+        // Log to confirm this is being called
+        Debug.Log($"[Client {NetworkManager.LocalClientId}] SetBuffIdClientRpc called for ability: {abilityKey} with buffId: {buffId}");
+
+        // Update the relevant buff ID
+        if (Abilities.TryGetValue(abilityKey, out Ability ability)) {
+            ability.buff.id = buffId;
+            Debug.Log($"[Client {NetworkManager.LocalClientId}] Buff ID set for {abilityKey}: {ability.buff.id}");
+        } 
+        else {
+            Debug.Log($"[Client {NetworkManager.LocalClientId}] Ability {abilityKey} not found in Abilities dictionary.");
+        }
     }
 
 }

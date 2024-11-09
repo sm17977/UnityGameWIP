@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,6 +11,13 @@ public class Buff : ScriptableObject {
     public float duration;
     public float effectStrength;
     public float currentTimer;
+    public string id;
+
+    public void Init() {
+        if (String.IsNullOrEmpty(id)) {
+            id = System.Guid.NewGuid().ToString();
+        }
+    }
     
     public void Apply(LuxController target){
         target.BuffManager.AddBuff(this);

@@ -17,10 +17,12 @@ public class RPCController : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
+      
         Debug.Log("RPC OnNetWorkSpawn");
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
         _players = GameObject.Find("Players");
         
+
         if (IsServer) {
             transform.SetParent(_players.transform, true);
         }
@@ -52,12 +54,16 @@ public class RPCController : NetworkBehaviour {
         if (!networkObject.IsSpawned) {
             networkObject.Spawn(true);
         }
-            
+        
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
         if (projectileScript != null) {
+            Debug.Log("Init Projectile Server Ability - " + _playerController.Abilities[abilityKey].buff.id);
             projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
+        }
+        else {
+            Debug.Log("Projectile Script is null");
         }
         SpawnProjectileClientRpc(direction, position, networkInstanceId, abilityKey);
     }
@@ -124,21 +130,58 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void UpdateBuffRpc(ulong targetClientId, string buffName, bool apply) {
-        Buff buff = BuffLibrary.Instance.GetBuffByName(buffName);
+    public void UpdateBuffRpc(ulong sourceClientId, ulong targetClientId, string buffId, bool apply) {
+
+        Debug.Log("sourceClientId: " + sourceClientId);
+        Debug.Log("targetClientId: " + targetClientId);
+        Debug.Log("buffId: " + buffId);
+        Debug.Log("Players Length: " + _players.transform.childCount);
         
-        // Find the player the buff should be applied to 
+        // Find the attacker player to retrieve the correct Buff
+        Buff buffToApply = null;
+        
+        foreach (Transform child in _players.transform) {
+            var player = child.gameObject;
+            var networkObject = player.GetComponent<NetworkObject>();
+            var clientId = NetworkManager.LocalClientId;
+
+            Debug.Log("Find Buff Loop, ClientId: " + clientId);
+
+            if (clientId == sourceClientId) {
+                Debug.Log("Find Buff Loop, found attacker");
+                var attackerPlayerScript = player.GetComponent<LuxPlayerController>();
+                var abilities = attackerPlayerScript.Abilities;
+        
+                foreach (var ability in abilities.Values) {
+                    Debug.Log("Find Buff Loop, buff ID: " + ability?.buff.id);
+                    if (ability?.buff != null && ability.buff.id == buffId) {
+                        buffToApply = ability.buff;
+                        break;
+                    }
+                }
+                break;  // Exit loop once attacker is found
+            }
+        }
+
+        if (buffToApply == null) {
+            Debug.LogError("Buff not found on attacker’s abilities.");
+            return;
+        }
+
+        // Find the target player and apply the Buff
         foreach (Transform child in _players.transform) {
             var player = child.gameObject;
             var networkObject = player.GetComponent<NetworkObject>();
             var clientId = networkObject.OwnerClientId;
+
             if (clientId == targetClientId) {
-                var playerScript = player.GetComponent<LuxController>();
+                var targetPlayerScript = player.GetComponent<LuxController>();
+
+                // Apply or remove the Buff effect on the target
                 if (apply) {
-                    buff.effect.ApplyEffect(playerScript, buff.effectStrength);
-                }
-                else {
-                    buff.effect.RemoveEffect(playerScript, buff.effectStrength);
+                    buffToApply.effect.ApplyEffect(targetPlayerScript, buffToApply.effectStrength);
+                } else {
+                    buffToApply.effect.RemoveEffect(targetPlayerScript, buffToApply.effectStrength);
                 }
                 break;
             }

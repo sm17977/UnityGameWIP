@@ -26,11 +26,9 @@ public class NetworkCooldownManager : NetworkBehaviour {
     }
 
     private void Awake() {
-        Debug.Log("NetworkCooldownManager - Awake");
     }
 
     private void Start() {
-        Debug.Log("NetworkCooldownManager - Start");
     }
 
     private void Update() {

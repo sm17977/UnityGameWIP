@@ -6,16 +6,13 @@ using UnityEngine;
 public class NetworkBuffManager : NetworkBehaviour {
 
     public static NetworkBuffManager Instance;
-    private Dictionary<ulong, List<Buff>> _buffMappings;
+    private Dictionary<ulong, List<BuffRecord>> _buffMappings;
         
     public override void OnNetworkSpawn(){
         base.OnNetworkSpawn();
-        Debug.Log("NetworkBuffManager Spawn");
         if (IsServer) {
-            Debug.Log("NetworkBuffManager IsServer");
             if (Instance == null) {
                 Instance = this;
-                Debug.Log("NetworkBuffManager Get Instance");
             }
             else if (Instance != this) {
                 Destroy(this);
@@ -28,11 +25,9 @@ public class NetworkBuffManager : NetworkBehaviour {
     }
     
     private void Awake() {
-        Debug.Log("NetworkBuffManager - Awake");
     }
 
     private void Start() {
-        Debug.Log("NetworkBuffManager - Start");
     }
 
     
@@ -41,7 +36,7 @@ public class NetworkBuffManager : NetworkBehaviour {
     /// </summary>
     public void AddMappings() {
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-            _buffMappings[client.ClientId] = new List<Buff>();
+            _buffMappings[client.ClientId] = new List<BuffRecord>();
         }
     }
 
@@ -59,43 +54,57 @@ public class NetworkBuffManager : NetworkBehaviour {
         if (NetworkManager.Singleton.ConnectedClientsList.Count == 0) return;
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-            var clientId = client.ClientId;
+            var targetClientId = client.ClientId;
 
-            if (_buffMappings.TryGetValue(clientId, out var buffs)) {
-                var buffsToRemove = new List<Buff>();
+            if (_buffMappings.TryGetValue(targetClientId, out var buffRecords)) {
+                var buffsToRemove = new List<BuffRecord>();
 
-                foreach (var buff in buffs) {
+                foreach (var buffRecord in buffRecords) {
+                    var buff = buffRecord.Buff;
                     buff.currentTimer -= Time.deltaTime;
+                
                     if (buff.currentTimer <= 0) {
-                        Debug.Log("Clearing buff");
-                        buffsToRemove.Add(buff);
-                        UpdateBuffOnServer(clientId, buff, false);
-                        UpdateBuffOnClients(clientId, buff, false);
+                        buffsToRemove.Add(buffRecord);
+                    
+                        // Notify server and clients to remove the buff with attacker and target IDs
+                        UpdateBuffOnServer(targetClientId, buff, false);
+                        UpdateBuffOnClients(buffRecord.AttackerClientId, targetClientId, buff.id, false);
                     }
                 }
-                
-                foreach (var buff in buffsToRemove) {
-                    buffs.Remove(buff);
+
+                // Remove expired buffs
+                foreach (var buffRecord in buffsToRemove) {
+                    buffRecords.Remove(buffRecord);
                 }
             }
         }
     }
+
 
     /// <summary>
     /// Add a buff to the buff list for a player
     /// </summary>
     /// <param name="buff">The buff to add</param>
-    /// /// <param name="clientId">The client of the player</param>
-    public void AddBuff(Buff buff, ulong clientId) {
-        if (_buffMappings.ContainsKey(clientId)) {
-            if (!_buffMappings[clientId].Contains(buff)) {
-                buff.currentTimer = buff.duration;
-                _buffMappings[clientId].Add(buff);
-                UpdateBuffOnServer(clientId, buff, true);
-                UpdateBuffOnClients(clientId, buff, true);
-            }
+    /// /// <param name="targetClientId">The client of the player receving the buff</param>
+    /// /// <param name="attackerClientId">The client of the player delegating the buff</param>
+    public void AddBuff(Buff buff, ulong attackerClientId, ulong targetClientId) {
+        if (!_buffMappings.ContainsKey(targetClientId)) {
+            _buffMappings[targetClientId] = new List<BuffRecord>();
+        }
+
+        // Check if this buff is already applied to prevent duplicates
+        if (_buffMappings[targetClientId].All(record => record.Buff.id != buff.id)) {
+            buff.currentTimer = buff.duration;
+            var buffRecord = new BuffRecord(buff, attackerClientId);
+            _buffMappings[targetClientId].Add(buffRecord);
+            Debug.Log("BUFF MAPPING ADD - " + buff.id);
+
+            // Update buff on server and clients with attackerClientId
+            UpdateBuffOnServer(targetClientId, buff, true);
+            UpdateBuffOnClients(attackerClientId, targetClientId, buff.id, true);
         }
     }
+
 
     /// <summary>
     /// Apply buff to the player on the server 
@@ -117,26 +126,13 @@ public class NetworkBuffManager : NetworkBehaviour {
     /// <summary>
     /// Apply buff to player on all clients
     /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="buff"></param>
+    /// <param name="targetClientId"></param>
+    /// <param name="sourceClientId"></param>
+    /// <param name="buffId"></param>
     /// <param name="apply">Whether the buff is applied or removed</param>
-    private void UpdateBuffOnClients(ulong clientId, Buff buff, bool apply) {
-        var player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
+    private void UpdateBuffOnClients(ulong sourceClientId, ulong targetClientId, string buffId, bool apply) {
+        var player = NetworkManager.Singleton.ConnectedClients[targetClientId].PlayerObject.gameObject;
         var rpcController = player.GetComponent<RPCController>();
-        rpcController.UpdateBuffRpc(clientId, buff.name, apply);
-    }
-    
-    
-    /// <summary>
-    /// Check if buff has been applied to a player
-    /// </summary>
-    /// <param name="buff">The buff to check</param>
-    /// <param name="clientId">The client of the player</param>
-    /// <returns>boolean</returns>
-    public bool HasBuffApplied(Buff buff, ulong clientId) {
-        if (_buffMappings.ContainsKey(clientId)) {
-            return _buffMappings[clientId].Contains(buff);
-        }
-        return false;
+        rpcController.UpdateBuffRpc(sourceClientId, targetClientId, buffId, apply);
     }
 }

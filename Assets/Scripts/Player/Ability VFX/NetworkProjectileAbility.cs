@@ -34,6 +34,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         projectileLifetime = abilityData.GetProjectileLifetime();
         
         ability = abilityData;
+
+        Debug.Log("NETWORK PROJECTILE ABILITY - " + ability.buff.id );
+        
         playerType = type;
         hasHit = false;
         remainingDistance = Mathf.Infinity;

@@ -77,8 +77,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2889649578
+  GlobalObjectIdHash: 745770261
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -86,6 +88,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &-5902466594842332906
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,19 +102,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ea2585f36b24ba392cb9fdfccf52580, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   projectileDirection: {x: 0, y: 0, z: 0}
   projectileSpeed: 0
   projectileRange: 0
   projectileLifetime: 0
   remainingDistance: 0
   canBeDestroyed: 0
-  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  ability: {fileID: 0}
   projectiles: []
   playerType: 0
   hasHit: 0
   spawnedByClientId: 0
-  qHit: {fileID: 0}
-  hitScript: {fileID: 0}
 --- !u!114 &-4422920343197039816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,6 +126,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AuthorityMode: 0
+  TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
@@ -140,6 +147,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
   Interpolate: 0
   SlerpPosition: 0
 --- !u!1 &4100793993242763836
