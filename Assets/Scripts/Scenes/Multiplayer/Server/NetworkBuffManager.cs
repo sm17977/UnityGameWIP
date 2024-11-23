@@ -46,10 +46,24 @@ public class NetworkBuffManager : NetworkBehaviour {
         }
     }
 
+    public Dictionary<string, string> GetBuffs(ulong clientId) {
+        var buffIds = new Dictionary<string, string>();
+
+        foreach (var buffRecord in _buffMappings[clientId]) {
+            buffIds["Q"] = buffRecord.Buff.ID;
+            break;
+        }
+
+        return buffIds;
+    }
+
     /// <summary>
     /// Update the buff manager to handle buff duration
     /// </summary>
     public void Update() {
+
+        if (!IsSpawned) return;
+        
         // Check if there are any clients connected before updating buffs
         if (NetworkManager.Singleton.ConnectedClientsList.Count == 0) return;
 
@@ -61,14 +75,14 @@ public class NetworkBuffManager : NetworkBehaviour {
 
                 foreach (var buffRecord in buffRecords) {
                     var buff = buffRecord.Buff;
-                    buff.currentTimer -= Time.deltaTime;
+                    buff.CurrentTimer -= Time.deltaTime;
                 
-                    if (buff.currentTimer <= 0) {
+                    if (buff.CurrentTimer <= 0) {
                         buffsToRemove.Add(buffRecord);
                     
                         // Notify server and clients to remove the buff with attacker and target IDs
                         UpdateBuffOnServer(targetClientId, buff, false);
-                        UpdateBuffOnClients(buffRecord.AttackerClientId, targetClientId, buff.id, false);
+                        UpdateBuffOnClients(buffRecord.AttackerClientId, targetClientId, buff.ID, false);
                     }
                 }
 
@@ -93,15 +107,15 @@ public class NetworkBuffManager : NetworkBehaviour {
         }
 
         // Check if this buff is already applied to prevent duplicates
-        if (_buffMappings[targetClientId].All(record => record.Buff.id != buff.id)) {
-            buff.currentTimer = buff.duration;
+        if (_buffMappings[targetClientId].All(record => record.Buff.ID != buff.ID)) {
+            buff.CurrentTimer = buff.Duration;
             var buffRecord = new BuffRecord(buff, attackerClientId);
             _buffMappings[targetClientId].Add(buffRecord);
-            Debug.Log("BUFF MAPPING ADD - " + buff.id);
+            Debug.Log("BUFF MAPPING ADD - " + buff.ID);
 
             // Update buff on server and clients with attackerClientId
             UpdateBuffOnServer(targetClientId, buff, true);
-            UpdateBuffOnClients(attackerClientId, targetClientId, buff.id, true);
+            UpdateBuffOnClients(attackerClientId, targetClientId, buff.ID, true);
         }
     }
 
@@ -116,10 +130,10 @@ public class NetworkBuffManager : NetworkBehaviour {
         var player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
         var playerScript = player.GetComponent<LuxController>();
         if (apply) {
-            buff.effect.ApplyEffect(playerScript, buff.effectStrength);
+            buff.Effect.ApplyEffect(playerScript, buff.EffectStrength);
         }
         else {
-            buff.effect.RemoveEffect(playerScript, buff.effectStrength);
+            buff.Effect.RemoveEffect(playerScript, buff.EffectStrength);
         }
     }
 

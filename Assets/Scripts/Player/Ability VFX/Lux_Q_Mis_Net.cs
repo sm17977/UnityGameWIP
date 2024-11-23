@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.VFX;
 
 /*
 Lux_Q_Mis.cs
@@ -90,7 +89,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 //     SpawnHitVfx(collision.gameObject);
                 //
 
-                Debug.Log("BUFF START - " + ability.buff.id);
+                Debug.Log("BUFF START - " + ability.buff.ID);
                 NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
                 
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
@@ -180,6 +179,11 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     private void SpawnClientHitVFX(Vector3 position, GameObject player) {
         var hit = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
         var hitScript = hit.GetComponent<Lux_Q_Hit>();
+        var playerScript = player.GetComponent<LuxPlayerController>();
+        var hitAbility = playerScript.Abilities["Q"];
+        var test = hitAbility == null;
+        Debug.Log("SpawnClientHitVFX - ability is null?: " + test);
+        hitScript.SetAbility(hitAbility);
         hitScript.target = player;
         hit.transform.position = position;
         hit.SetActive(true);

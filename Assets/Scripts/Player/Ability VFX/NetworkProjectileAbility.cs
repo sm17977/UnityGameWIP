@@ -35,7 +35,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         
         ability = abilityData;
 
-        Debug.Log("NETWORK PROJECTILE ABILITY - " + ability.buff.id );
+        Debug.Log("NETWORK PROJECTILE ABILITY - " + ability.buff.ID );
         
         playerType = type;
         hasHit = false;

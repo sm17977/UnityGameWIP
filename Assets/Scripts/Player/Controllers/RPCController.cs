@@ -58,7 +58,7 @@ public class RPCController : NetworkBehaviour {
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
         if (projectileScript != null) {
-            Debug.Log("Init Projectile Server Ability - " + _playerController.Abilities[abilityKey].buff.id);
+            Debug.Log("Init Projectile Server Ability - " + _playerController.Abilities[abilityKey].buff.ID);
             projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
         }
@@ -132,6 +132,8 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     public void UpdateBuffRpc(ulong sourceClientId, ulong targetClientId, string buffId, bool apply) {
 
+        if (!IsOwner) return;
+
         Debug.Log("sourceClientId: " + sourceClientId);
         Debug.Log("targetClientId: " + targetClientId);
         Debug.Log("buffId: " + buffId);
@@ -143,20 +145,25 @@ public class RPCController : NetworkBehaviour {
         foreach (Transform child in _players.transform) {
             var player = child.gameObject;
             var networkObject = player.GetComponent<NetworkObject>();
-            var clientId = NetworkManager.LocalClientId;
-
-            Debug.Log("Find Buff Loop, ClientId: " + clientId);
+            var clientId = networkObject.OwnerClientId;
+            
+            Debug.Log("Players loop, ClientId: " + clientId);
 
             if (clientId == sourceClientId) {
                 Debug.Log("Find Buff Loop, found attacker");
                 var attackerPlayerScript = player.GetComponent<LuxPlayerController>();
                 var abilities = attackerPlayerScript.Abilities;
+
+                Debug.Log("Abilities count: " + attackerPlayerScript.Abilities.Count);
         
                 foreach (var ability in abilities.Values) {
-                    Debug.Log("Find Buff Loop, buff ID: " + ability?.buff.id);
-                    if (ability?.buff != null && ability.buff.id == buffId) {
+                    Debug.Log("Find Buff Loop, buff ID: " + ability?.buff.ID);
+                    if (ability?.buff != null && ability.buff.ID == buffId) {
                         buffToApply = ability.buff;
                         break;
+                    }
+                    if(ability == null){
+                        Debug.Log("Ability is null!");
                     }
                 }
                 break;  // Exit loop once attacker is found
@@ -179,9 +186,9 @@ public class RPCController : NetworkBehaviour {
 
                 // Apply or remove the Buff effect on the target
                 if (apply) {
-                    buffToApply.effect.ApplyEffect(targetPlayerScript, buffToApply.effectStrength);
+                    buffToApply.Effect.ApplyEffect(targetPlayerScript, buffToApply.EffectStrength);
                 } else {
-                    buffToApply.effect.RemoveEffect(targetPlayerScript, buffToApply.effectStrength);
+                    buffToApply.Effect.RemoveEffect(targetPlayerScript, buffToApply.EffectStrength);
                 }
                 break;
             }

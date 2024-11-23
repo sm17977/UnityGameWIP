@@ -56,13 +56,34 @@ public class Lux_Q_Hit : ProjectileAbility
     private bool _vfxPlaying = true;
 
     private void Start(){
+        Debug.Log("Lux Q Hit Start");
         CalculateVfxDuration();
         _timer = totalDuration;
         InitVfx();
     }
 
+    public void SetAbility(Ability abilityToSet) {
+        ability = abilityToSet;
+    }
+
     private void CalculateVfxDuration(){
-        _stunDuration = ability.buff.duration;
+
+        if (ability == null) {
+            Debug.Log("Ability is null");
+            _stunDuration = 3;
+        }
+
+        if (ability?.buff == null) {
+            Debug.Log("Buff is null");
+            _stunDuration = 3;
+        }
+
+        if (ability?.buff?.Duration == null) {
+            Debug.Log("Duration is null");
+            _stunDuration = 3;
+        }
+        
+        //_stunDuration = ability.buff.Duration;
         // If the stun duration is longer than the minimum stun time, add the difference to totalDuration
         totalDuration = (_fadeDuration * 2f) + _delayTime;
         if (totalDuration < _stunDuration){

@@ -13,7 +13,7 @@ public class CastingState : State
         playerController = controller;
         player = gameObject;
         this.ability = ability;
-        Debug.Log("Casting State Ability - " + this.ability.buff.id);
+        Debug.Log("Casting State Ability - " + this.ability.buff.ID);
     }
 
     public override void Enter() {

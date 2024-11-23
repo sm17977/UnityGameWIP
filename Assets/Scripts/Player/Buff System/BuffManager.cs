@@ -32,10 +32,10 @@ public sealed class BuffManager {
     /// </summary>
     public void Update() {
         foreach (var buff in _appliedBuffs.ToList()) {
-            buff.currentTimer -= Time.deltaTime;
+            buff.CurrentTimer -= Time.deltaTime;
 
-            if (buff.currentTimer <= 0) {
-                buff.currentTimer = 0;
+            if (buff.CurrentTimer <= 0) {
+                buff.CurrentTimer = 0;
                 buff.Clear(_target);
                 _appliedBuffs.Remove(buff);
             }
@@ -48,7 +48,7 @@ public sealed class BuffManager {
     /// <param name="buff">The buff to add</param>
     public void AddBuff(Buff buff) {
         if (!_appliedBuffs.Contains(buff)) {
-            buff.currentTimer = buff.duration;
+            buff.CurrentTimer = buff.Duration;
             _appliedBuffs.Add(buff);
         }
     }

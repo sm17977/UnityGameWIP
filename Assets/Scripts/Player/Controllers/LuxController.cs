@@ -22,7 +22,7 @@ public class LuxController : NetworkBehaviour {
             canMove = false;
         }
     }
-
+    
     IEnumerator DelayLoadScene() {
         yield return new WaitForSeconds(0.5f);
         globalState.LoadScene("Death Screen");

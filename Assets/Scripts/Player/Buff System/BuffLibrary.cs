@@ -23,7 +23,7 @@ public class BuffLibrary : MonoBehaviour {
 
     private void InitializeBuffDictionary() {
         foreach (var buff in buffs) {
-            _buffDictionary[buff.name] = buff;
+            _buffDictionary[buff.Name] = buff;
         }
     }
 
