@@ -95,7 +95,6 @@ public class LuxPlayerController : LuxController {
     public Dictionary<string, Ability> Abilities;
     
     //Buffs
-  
     
     // Health
     public Health health;
@@ -170,9 +169,6 @@ public class LuxPlayerController : LuxController {
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
         InitAbilities();
-        SyncBuffIds();
-
-        
     }
 
     // Update is called once per frame
@@ -230,32 +226,9 @@ public class LuxPlayerController : LuxController {
         foreach (var ability in Abilities.Values) {
             ability.SetCastingStrategy(castingStrategy);
         }
-
-        foreach (var entry in AbilitiesList) {
-            if (IsServer) {
-                SetBuffIdClientRpc(entry.key, Abilities[entry.key].buff.ID);
-            }
-        }
     }
 
-    private void SyncBuffIds() {
-        if (IsServer) {
-            // Send Buff IDs for this player to the new client
-            var clientBuffIds = NetworkBuffManager.Instance.GetBuffs(OwnerClientId);
-            var serializedBuffIds = SerializeDictionary(clientBuffIds);
-            SyncBuffIdsClientRpc(serializedBuffIds, OwnerClientId);
 
-            // Send Buff IDs for other players to the new client
-            foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-                if (client.ClientId != OwnerClientId) {
-                    var otherClientBuffIds = NetworkBuffManager.Instance.GetBuffs(OwnerClientId);
-                    var serializedOtherBuffIds = SerializeDictionary(otherClientBuffIds);
-                    SyncBuffIdsClientRpc(serializedOtherBuffIds, client.ClientId);
-                }
-            }
-        }
-    }
-    
     public void OnRightClick(InputAction.CallbackContext context) {
         if (GlobalState.Paused) return;
 
@@ -539,69 +512,22 @@ public class LuxPlayerController : LuxController {
         globalState.OnSinglePlayerGameMode -= InitAbilities;
     }
     
-    
-    // Client RPC to sync the buff ID
-    [Rpc(SendTo.ClientsAndHost)]
-    public void SetBuffIdClientRpc(string abilityKey, string buffId) {
-
-        if (!IsOwner) return;
-        
-        if (Abilities == null) {
-            Debug.LogError("Abilities dictionary is not initialized in SetBuffIdClientRpc!");
-            return;
-        }
-        
-        // Log to confirm this is being called
-        Debug.Log($"[Client {NetworkManager.LocalClientId}] SetBuffIdClientRpc called for ability: {abilityKey} with buffId: {buffId}");
-
-        // Update the relevant buff ID
-        if (Abilities.TryGetValue(abilityKey, out Ability ability)) {
-            ability.buff.ID = buffId;
-            Debug.Log($"[Client {NetworkManager.LocalClientId}] Buff ID set for {abilityKey}: {ability.buff.ID}");
-        } 
-        else {
-            Debug.Log($"[Client {NetworkManager.LocalClientId}] Ability {abilityKey} not found in Abilities dictionary.");
-        }
-    }
-    
-    [Rpc(SendTo.ClientsAndHost)]
-    private void SyncBuffIdsClientRpc(List<BuffEntry> buffEntries, ulong targetClientId) {
-        // Convert the list to a dictionary
-        var buffIds = new Dictionary<string, string>();
-        foreach (var entry in buffEntries) {
-            buffIds[entry.Key] = entry.Value;
-        }
-
-        // Find the correct player object for the given clientId
-        foreach (var networkObject in NetworkManager.Singleton.SpawnManager.SpawnedObjects.Values) {
-            if (networkObject.OwnerClientId == targetClientId) {
-                var playerController = networkObject.GetComponent<LuxPlayerController>();
-                if (playerController != null) {
-                    // Update the abilities on the found player object
-                    foreach (var kvp in buffIds) {
-                        if (playerController.Abilities.TryGetValue(kvp.Key, out Ability ability)) {
-                            ability.buff.ID = kvp.Value;
-                            Debug.Log($"[Client {NetworkManager.LocalClientId}] Buff ID synced for {kvp.Key}: {kvp.Value}");
-                        }
-                    }
-                }
-                break;
-            }
-        }
+    /// <summary>
+    /// Apply a buff to this player
+    /// </summary>
+    /// <param name="buff"></param>
+    public void ApplyBuff(Buff buff) {
+        BuffManager.AddBuff(buff);
+        buff.Effect.ApplyEffect(this, buff.EffectStrength);
     }
 
-
-    
-    private List<BuffEntry> SerializeDictionary(Dictionary<string, string> dictionary) {
-        var list = new List<BuffEntry>();
-        foreach (var kvp in dictionary) {
-            list.Add(new BuffEntry(kvp.Key, kvp.Value));
-        }
-        return list;
+    /// <summary>
+    /// Remove a buff from this player
+    /// </summary>
+    /// <param name="buff"></param>
+    public void RemoveBuff(Buff buff) {
+        buff.Effect.RemoveEffect(this, buff.EffectStrength);
     }
-
-
-
 
     
     public void PrintAbilities() {

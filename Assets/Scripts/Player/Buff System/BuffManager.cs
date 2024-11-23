@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
 
 public sealed class BuffManager {
@@ -36,12 +37,32 @@ public sealed class BuffManager {
 
             if (buff.CurrentTimer <= 0) {
                 buff.CurrentTimer = 0;
-                buff.Clear(_target);
-                _appliedBuffs.Remove(buff);
+                if (!GlobalState.IsMultiplayer) {
+                    buff.Clear(_target);
+                    _appliedBuffs.Remove(buff);
+                }
+                else {
+                    CheckServerBuff(buff.Key);
+                }
             }
         }
     }
 
+    private void CheckServerBuff(string key) {
+        var rpcController = _target.gameObject.GetComponent<RPCController>();
+        rpcController.CheckServerBuffRemovedRpc(key);
+    }
+
+    public void RemoveBuff(string key) {
+        foreach(var buff in _appliedBuffs) {
+            if (buff.Key == key) {
+                _appliedBuffs.Remove(buff);
+                buff.Clear(_target);
+                break;
+            }
+        }
+    }
+    
     /// <summary>
     /// Add a buff to the buff list
     /// </summary>

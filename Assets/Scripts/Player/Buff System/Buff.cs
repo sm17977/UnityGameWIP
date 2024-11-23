@@ -3,15 +3,15 @@ using System;
 public class Buff {
     
     public BuffEffect Effect;
-    public string Name;
+    public string Key;
     public float Duration;
     public float EffectStrength;
     public float CurrentTimer;
     public string ID;
 
-    public Buff(BuffEffect effect, string name, float duration, float effectStrength) {
+    public Buff(BuffEffect effect, string key, float duration, float effectStrength) {
         Effect = effect;
-        Name = name;
+        Key = key;
         Duration = duration;
         EffectStrength = effectStrength;
         CurrentTimer = 0;

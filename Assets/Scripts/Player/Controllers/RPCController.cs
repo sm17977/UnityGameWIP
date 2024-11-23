@@ -130,68 +130,39 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void UpdateBuffRpc(ulong sourceClientId, ulong targetClientId, string buffId, bool apply) {
+    public void ApplyBuffRpc(ulong targetClientId, string champion, string key) {
+
+        // Only apply buff to the player and client who is having the buff applied
+        if(!IsOwner) return;
+        if(NetworkObject.OwnerClientId != targetClientId) return;
+        
+        Debug.Log("UpdateBuffRoc - targetClientId: " + targetClientId);
+        
+        BuffEffect buffEffect = new MoveSpeedEffect();
+        _playerController.ApplyBuff(new Buff(buffEffect, key, 3, 0));
+        // Get the buff
+        // var abilities = ChampionRegistry.Instance.GetAbilities(champion);
+        // if(abilities.TryGetValue(key, out var ability)) {
+        //     _playerController.ApplyBuff(ability.buff);
+        // }
+    }
+
+    [Rpc(SendTo.Server)]
+    public void CheckServerBuffRemovedRpc(string abilityKey) {
+        var clientId = NetworkObject.OwnerClientId;
+        var foundBuff = NetworkBuffManager.Instance.FindBuff(clientId, abilityKey);
+        ConfirmBuffRemovalRpc(clientId, abilityKey, foundBuff);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    private void ConfirmBuffRemovalRpc(ulong clientId, string abilityKey, bool foundBuff) {
 
         if (!IsOwner) return;
-
-        Debug.Log("sourceClientId: " + sourceClientId);
-        Debug.Log("targetClientId: " + targetClientId);
-        Debug.Log("buffId: " + buffId);
-        Debug.Log("Players Length: " + _players.transform.childCount);
+        if(NetworkObject.OwnerClientId != clientId) return;
         
-        // Find the attacker player to retrieve the correct Buff
-        Buff buffToApply = null;
-        
-        foreach (Transform child in _players.transform) {
-            var player = child.gameObject;
-            var networkObject = player.GetComponent<NetworkObject>();
-            var clientId = networkObject.OwnerClientId;
-            
-            Debug.Log("Players loop, ClientId: " + clientId);
-
-            if (clientId == sourceClientId) {
-                Debug.Log("Find Buff Loop, found attacker");
-                var attackerPlayerScript = player.GetComponent<LuxPlayerController>();
-                var abilities = attackerPlayerScript.Abilities;
-
-                Debug.Log("Abilities count: " + attackerPlayerScript.Abilities.Count);
-        
-                foreach (var ability in abilities.Values) {
-                    Debug.Log("Find Buff Loop, buff ID: " + ability?.buff.ID);
-                    if (ability?.buff != null && ability.buff.ID == buffId) {
-                        buffToApply = ability.buff;
-                        break;
-                    }
-                    if(ability == null){
-                        Debug.Log("Ability is null!");
-                    }
-                }
-                break;  // Exit loop once attacker is found
-            }
-        }
-
-        if (buffToApply == null) {
-            Debug.LogError("Buff not found on attacker’s abilities.");
-            return;
-        }
-
-        // Find the target player and apply the Buff
-        foreach (Transform child in _players.transform) {
-            var player = child.gameObject;
-            var networkObject = player.GetComponent<NetworkObject>();
-            var clientId = networkObject.OwnerClientId;
-
-            if (clientId == targetClientId) {
-                var targetPlayerScript = player.GetComponent<LuxController>();
-
-                // Apply or remove the Buff effect on the target
-                if (apply) {
-                    buffToApply.Effect.ApplyEffect(targetPlayerScript, buffToApply.EffectStrength);
-                } else {
-                    buffToApply.Effect.RemoveEffect(targetPlayerScript, buffToApply.EffectStrength);
-                }
-                break;
-            }
+        // Remove the buff locally if the server has removed it
+        if (!foundBuff) {
+            BuffManager.Instance.RemoveBuff(abilityKey);
         }
     }
 }

@@ -89,11 +89,12 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 //     SpawnHitVfx(collision.gameObject);
                 //
 
-                Debug.Log("BUFF START - " + ability.buff.ID);
-                NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+          
                 
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
                 TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
+                Debug.Log("BUFF START - " + ability.buff.ID);
+                NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
                 DestroyProjectile();
             }
         }
@@ -120,6 +121,8 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         // Get player that was hit
         var player = GetHitPlayer(collisionNetworkObjectId);
         if(player == null) return;
+        
+        
         
         // Spawn the hit VFX
         SpawnClientHitVFX(position, player);

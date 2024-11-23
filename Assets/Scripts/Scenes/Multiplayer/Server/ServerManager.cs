@@ -197,7 +197,7 @@ namespace Multiplayer {
             if (NetworkBuffManager.Instance == null) {
                 Debug.Log("NetworkBuffManager is null!");
             }
-            NetworkBuffManager.Instance.AddMappings();
+            NetworkBuffManager.Instance.AddPlayerToBuffStore(clientId);
         }
         
         /// <summary>
@@ -209,7 +209,7 @@ namespace Multiplayer {
             PlayerData playerData = _playerDataDictionary[clientId];
             NotifyClientsOfPlayerStatus(playerData, false);
             _playerDataDictionary.Remove(clientId);
-            NetworkBuffManager.Instance.RemoveMapping(clientId);
+            NetworkBuffManager.Instance.RemovePlayerFromBuffStore(clientId);
         }
         
         /// <summary>
