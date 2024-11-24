@@ -1,0 +1,37 @@
+﻿@startuml
+
+
+abstract class NetworkProjectile
+abstract class Ability
+class NetworkBehaviour{}
+
+class NetworkProjectile implements NetworkBehaviour{
+    Vector3 direction
+    float speed
+    float range
+    float lifetime
+    Ability abilityInstance
+    move()
+}
+
+class StunProjectile_Net implements NetworkProjectile{
+    OnCollisionEnter()
+    TriggerCollisionClientRpc
+}
+
+object abilityInstance {
+  float damage
+  float currentCooldown
+  float maxCooldown
+  float range
+  float speed
+  string keypress = "A"
+  GameObject missile_prefab
+  GameObject network_missile_prefab
+  
+}
+
+Ability -> abilityInstance
+
+
+@enduml

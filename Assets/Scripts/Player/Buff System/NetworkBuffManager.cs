@@ -80,7 +80,6 @@ public class NetworkBuffManager : NetworkBehaviour {
                         
                         // Notify server and clients to remove the buff with attacker and target IDs
                         UpdateBuffOnServer(targetClientId, buff, false);
-                        ApplyBuffOnClient(targetClientId, buffRecord.SourceClientId, buff.Key);
                     }
                     
                     // Reduce the duration of any buffs applied to a player
@@ -148,10 +147,12 @@ public class NetworkBuffManager : NetworkBehaviour {
     private void ApplyBuffOnClient(ulong targetClientId, ulong sourceClientId, string abilityKey) {
         var targetPlayer = NetworkManager.Singleton.ConnectedClients[targetClientId].PlayerObject.gameObject;
         var sourcePlayer = NetworkManager.Singleton.ConnectedClients[sourceClientId].PlayerObject.gameObject;
+        var test = NetworkManager.Singleton.ConnectedClients[sourceClientId].PlayerObject.gameObject
+            .GetComponent<NetworkObject>();
         var sourcePlayerScript = sourcePlayer.GetComponent<LuxController>();
         var champion = sourcePlayerScript.champion.championName;
         var rpcController = targetPlayer.GetComponent<RPCController>();
-        rpcController.ApplyBuffRpc(targetClientId, champion, abilityKey);
+        rpcController.ApplyBuffRpc(targetClientId, champion, abilityKey, test);
     }
 
     public bool FindBuff(ulong clientId, string abilityKey) {

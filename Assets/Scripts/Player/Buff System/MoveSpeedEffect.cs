@@ -1,4 +1,6 @@
 ﻿public class MoveSpeedEffect : BuffEffect {
+    
+    public override string EffectType => "MoveSpeedEffect";
     public override void ApplyEffect(LuxController target, float strength) {
         target.canMove = false;
     }

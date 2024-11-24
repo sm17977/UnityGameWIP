@@ -89,7 +89,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 //     SpawnHitVfx(collision.gameObject);
                 //
 
-          
                 
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
                 TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);

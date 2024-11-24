@@ -42,6 +42,7 @@ public sealed class BuffManager {
                     _appliedBuffs.Remove(buff);
                 }
                 else {
+                    Debug.Log("CheckServerBuff");
                     CheckServerBuff(buff.Key);
                 }
             }
@@ -50,10 +51,13 @@ public sealed class BuffManager {
 
     private void CheckServerBuff(string key) {
         var rpcController = _target.gameObject.GetComponent<RPCController>();
-        rpcController.CheckServerBuffRemovedRpc(key);
+        var clientId = _target.NetworkObject.OwnerClientId;
+        rpcController.CheckServerBuffRemovedRpc(key, clientId);
     }
 
     public void RemoveBuff(string key) {
+        if (_appliedBuffs.Count == 0) return;
+        Debug.Log("Buffs length before removing: " + _appliedBuffs.Count);
         foreach(var buff in _appliedBuffs) {
             if (buff.Key == key) {
                 _appliedBuffs.Remove(buff);
@@ -61,6 +65,7 @@ public sealed class BuffManager {
                 break;
             }
         }
+        Debug.Log("Buffs length after removing: " + _appliedBuffs.Count);
     }
     
     /// <summary>
@@ -68,10 +73,12 @@ public sealed class BuffManager {
     /// </summary>
     /// <param name="buff">The buff to add</param>
     public void AddBuff(Buff buff) {
+        Debug.Log("Buffs length before adding: " + _appliedBuffs.Count);
         if (!_appliedBuffs.Contains(buff)) {
             buff.CurrentTimer = buff.Duration;
             _appliedBuffs.Add(buff);
         }
+        Debug.Log("Buffs after before adding: " + _appliedBuffs.Count);
     }
 
     /// <summary>

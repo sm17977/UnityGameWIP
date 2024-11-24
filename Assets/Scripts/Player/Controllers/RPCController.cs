@@ -1,4 +1,5 @@
 ﻿using System;
+using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -130,7 +131,7 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void ApplyBuffRpc(ulong targetClientId, string champion, string key) {
+    public void ApplyBuffRpc(ulong targetClientId, string champion, string key, NetworkObjectReference test) {
 
         // Only apply buff to the player and client who is having the buff applied
         if(!IsOwner) return;
@@ -138,8 +139,29 @@ public class RPCController : NetworkBehaviour {
         
         Debug.Log("UpdateBuffRoc - targetClientId: " + targetClientId);
         
-        BuffEffect buffEffect = new MoveSpeedEffect();
-        _playerController.ApplyBuff(new Buff(buffEffect, key, 3, 0));
+        if (test.TryGet(out NetworkObject targetObject)) {
+            var sourcePlayer = targetObject.gameObject;
+            var t1 = sourcePlayer == null;
+            Debug.Log("t1: " + t1);
+            
+            var sourcePlayerScript = sourcePlayer.GetComponent<LuxPlayerController>();
+            var t2 = sourcePlayerScript == null;
+            Debug.Log("t2: " + t2);
+            
+            var ability = sourcePlayerScript.Abilities[key];
+            var t3 = ability == null;
+            Debug.Log("t3: " + t3);
+            
+            var buff = ability.buff;
+            var t4 = buff == null;
+            Debug.Log("t4: " + t4);
+            
+            _playerController.ApplyBuff(buff);
+            
+        }
+        
+        //BuffEffect buffEffect = new MoveSpeedEffect();
+        //_playerController.ApplyBuff(new Buff(buffEffect, key, 3, 0));
         // Get the buff
         // var abilities = ChampionRegistry.Instance.GetAbilities(champion);
         // if(abilities.TryGetValue(key, out var ability)) {
@@ -148,8 +170,7 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    public void CheckServerBuffRemovedRpc(string abilityKey) {
-        var clientId = NetworkObject.OwnerClientId;
+    public void CheckServerBuffRemovedRpc(string abilityKey, ulong clientId) {
         var foundBuff = NetworkBuffManager.Instance.FindBuff(clientId, abilityKey);
         ConfirmBuffRemovalRpc(clientId, abilityKey, foundBuff);
     }
@@ -157,12 +178,15 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void ConfirmBuffRemovalRpc(ulong clientId, string abilityKey, bool foundBuff) {
 
-        if (!IsOwner) return;
+        if(!IsOwner) return;
         if(NetworkObject.OwnerClientId != clientId) return;
         
         // Remove the buff locally if the server has removed it
         if (!foundBuff) {
             BuffManager.Instance.RemoveBuff(abilityKey);
+        }
+        else {
+            Debug.Log("Buff still exists on server");
         }
     }
 }

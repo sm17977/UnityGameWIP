@@ -1,6 +1,7 @@
 using System;
+using Unity.Netcode;
 
-public class Buff {
+public class Buff{
     
     public BuffEffect Effect;
     public string Key;
@@ -8,7 +9,7 @@ public class Buff {
     public float EffectStrength;
     public float CurrentTimer;
     public string ID;
-
+    
     public Buff(BuffEffect effect, string key, float duration, float effectStrength) {
         Effect = effect;
         Key = key;
