@@ -5,25 +5,15 @@ using UnityEngine;
 
 public sealed class BuffManager {
     
-    private static BuffManager _instance = null;
-    private static readonly object Padlock = new object();
     private List<Buff> _appliedBuffs;
     private LuxController _target;
-    
-    public static BuffManager Instance {
-        get {
-            lock (Padlock) {
-                _instance ??= new BuffManager();
-                return _instance;
-            }
-        }
-    }
+    private HashSet<string> _pendingRemovalKeys = new HashSet<string>();
     
     /// <summary>
     /// Initialize Buff Manager
     /// </summary>
     /// <param name="controller">The player controller the buffs will affect</param>
-    public void Init(LuxController controller) {
+    public BuffManager(LuxController controller) {
         _target = controller;
         _appliedBuffs = new List<Buff>();
     }
@@ -33,8 +23,6 @@ public sealed class BuffManager {
     /// </summary>
     public void Update() {
         foreach (var buff in _appliedBuffs.ToList()) {
-            buff.CurrentTimer -= Time.deltaTime;
-
             if (buff.CurrentTimer <= 0) {
                 buff.CurrentTimer = 0;
                 if (!GlobalState.IsMultiplayer) {
@@ -42,14 +30,17 @@ public sealed class BuffManager {
                     _appliedBuffs.Remove(buff);
                 }
                 else {
-                    Debug.Log("CheckServerBuff");
                     CheckServerBuff(buff.Key);
                 }
             }
+            buff.CurrentTimer -= Time.deltaTime;
         }
     }
 
     private void CheckServerBuff(string key) {
+        if (_pendingRemovalKeys.Contains(key)) return;
+        _pendingRemovalKeys.Add(key);
+        
         var rpcController = _target.gameObject.GetComponent<RPCController>();
         var clientId = _target.NetworkObject.OwnerClientId;
         rpcController.CheckServerBuffRemovedRpc(key, clientId);
@@ -57,15 +48,14 @@ public sealed class BuffManager {
 
     public void RemoveBuff(string key) {
         if (_appliedBuffs.Count == 0) return;
-        Debug.Log("Buffs length before removing: " + _appliedBuffs.Count);
         foreach(var buff in _appliedBuffs) {
             if (buff.Key == key) {
                 _appliedBuffs.Remove(buff);
+                _pendingRemovalKeys.Remove(key);
                 buff.Clear(_target);
                 break;
             }
         }
-        Debug.Log("Buffs length after removing: " + _appliedBuffs.Count);
     }
     
     /// <summary>
@@ -73,12 +63,10 @@ public sealed class BuffManager {
     /// </summary>
     /// <param name="buff">The buff to add</param>
     public void AddBuff(Buff buff) {
-        Debug.Log("Buffs length before adding: " + _appliedBuffs.Count);
         if (!_appliedBuffs.Contains(buff)) {
             buff.CurrentTimer = buff.Duration;
             _appliedBuffs.Add(buff);
         }
-        Debug.Log("Buffs after before adding: " + _appliedBuffs.Count);
     }
 
     /// <summary>

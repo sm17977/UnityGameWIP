@@ -137,36 +137,14 @@ public class RPCController : NetworkBehaviour {
         if(!IsOwner) return;
         if(NetworkObject.OwnerClientId != targetClientId) return;
         
-        Debug.Log("UpdateBuffRoc - targetClientId: " + targetClientId);
-        
+        // Get the buff from the source player's ability and apply it to the target player
         if (test.TryGet(out NetworkObject targetObject)) {
             var sourcePlayer = targetObject.gameObject;
-            var t1 = sourcePlayer == null;
-            Debug.Log("t1: " + t1);
-            
             var sourcePlayerScript = sourcePlayer.GetComponent<LuxPlayerController>();
-            var t2 = sourcePlayerScript == null;
-            Debug.Log("t2: " + t2);
-            
             var ability = sourcePlayerScript.Abilities[key];
-            var t3 = ability == null;
-            Debug.Log("t3: " + t3);
-            
             var buff = ability.buff;
-            var t4 = buff == null;
-            Debug.Log("t4: " + t4);
-            
             _playerController.ApplyBuff(buff);
-            
         }
-        
-        //BuffEffect buffEffect = new MoveSpeedEffect();
-        //_playerController.ApplyBuff(new Buff(buffEffect, key, 3, 0));
-        // Get the buff
-        // var abilities = ChampionRegistry.Instance.GetAbilities(champion);
-        // if(abilities.TryGetValue(key, out var ability)) {
-        //     _playerController.ApplyBuff(ability.buff);
-        // }
     }
 
     [Rpc(SendTo.Server)]
@@ -178,12 +156,11 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     private void ConfirmBuffRemovalRpc(ulong clientId, string abilityKey, bool foundBuff) {
 
-        if(!IsOwner) return;
-        if(NetworkObject.OwnerClientId != clientId) return;
+        if (!IsOwner) return;
         
         // Remove the buff locally if the server has removed it
         if (!foundBuff) {
-            BuffManager.Instance.RemoveBuff(abilityKey);
+            _playerController.BuffManager.RemoveBuff(abilityKey);
         }
         else {
             Debug.Log("Buff still exists on server");

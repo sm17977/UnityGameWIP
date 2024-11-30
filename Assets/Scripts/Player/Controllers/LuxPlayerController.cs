@@ -142,10 +142,8 @@ public class LuxPlayerController : LuxController {
             _clientManager = ClientManager.Instance;
             Client = _clientManager.Client;
         }
-        
-        BuffManager = BuffManager.Instance;
-        BuffManager.Init(this);
-        
+
+        BuffManager = new BuffManager(this);
         playerType = PlayerType.Player;
         health = GetComponent<Health>();
         Health.OnPlayerDeath += (async (player) => {

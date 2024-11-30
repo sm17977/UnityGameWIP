@@ -50,7 +50,7 @@ public class Lux_Q_Hit : ProjectileAbility
     private uint _prewarmStep = 50;
     private float _delayTime = 0.3f;
     private float _fadeDuration = 0.3f;
-    private float _stunDuration = 0f;
+    private float _stunDuration;
     public float totalDuration;
     private float _timer;
     private bool _vfxPlaying = true;
@@ -67,23 +67,8 @@ public class Lux_Q_Hit : ProjectileAbility
     }
 
     private void CalculateVfxDuration(){
-
-        if (ability == null) {
-            Debug.Log("Ability is null");
-            _stunDuration = 3;
-        }
-
-        if (ability?.buff == null) {
-            Debug.Log("Buff is null");
-            _stunDuration = 3;
-        }
-
-        if (ability?.buff?.Duration == null) {
-            Debug.Log("Duration is null");
-            _stunDuration = 3;
-        }
+        _stunDuration = ability.buff.Duration;
         
-        //_stunDuration = ability.buff.Duration;
         // If the stun duration is longer than the minimum stun time, add the difference to totalDuration
         totalDuration = (_fadeDuration * 2f) + _delayTime;
         if (totalDuration < _stunDuration){

@@ -77,7 +77,6 @@ public class NetworkBuffManager : NetworkBehaviour {
                     // Store buffs that have ended
                     if (buff.CurrentTimer <= 0) {
                         buffsToRemove.Add(buffRecord);
-                        
                         // Notify server and clients to remove the buff with attacker and target IDs
                         UpdateBuffOnServer(targetClientId, buff, false);
                     }
@@ -93,8 +92,7 @@ public class NetworkBuffManager : NetworkBehaviour {
             }
         }
     }
-
-
+    
     /// <summary>
     /// Add a buff to the buff list for a player
     /// </summary>
@@ -109,9 +107,9 @@ public class NetworkBuffManager : NetworkBehaviour {
         // Check if this buff is already applied to prevent duplicates
         if (_buffStore[targetClientId].All(record => record.Buff.ID != buff.ID)) {
             buff.CurrentTimer = buff.Duration;
-            var buffRecord = new BuffRecord(buff, sourceClientId, targetClientId);
+            var buffRecord = new BuffRecord(buff, sourceClientId);
             _buffStore[targetClientId].Add(buffRecord);
-            Debug.Log("BUFF MAPPING ADD - " + buff.ID);
+            Debug.Log("Adding buff for client ID:" + targetClientId);
 
             // Update buff on server and clients with attackerClientId
             UpdateBuffOnServer(targetClientId, buff, true);

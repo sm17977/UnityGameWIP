@@ -88,11 +88,9 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
                 // if(!target.BuffManager.HasBuffApplied(ability.buff)){
                 //     SpawnHitVfx(collision.gameObject);
                 //
-
                 
                 string jsonMappings = JsonConvert.SerializeObject(Mappings);
                 TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
-                Debug.Log("BUFF START - " + ability.buff.ID);
                 NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
                 DestroyProjectile();
             }
@@ -120,8 +118,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         // Get player that was hit
         var player = GetHitPlayer(collisionNetworkObjectId);
         if(player == null) return;
-        
-        
         
         // Spawn the hit VFX
         SpawnClientHitVFX(position, player);
@@ -179,16 +175,16 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     /// <param name="position">The position to spawn the hit VFX</param>
     /// <param name="player">The player that was hit</param>
     private void SpawnClientHitVFX(Vector3 position, GameObject player) {
-        var hit = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
-        var hitScript = hit.GetComponent<Lux_Q_Hit>();
+        var hitPrefab = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
+        var hitScript = hitPrefab.GetComponent<Lux_Q_Hit>();
         var playerScript = player.GetComponent<LuxPlayerController>();
         var hitAbility = playerScript.Abilities["Q"];
         var test = hitAbility == null;
         Debug.Log("SpawnClientHitVFX - ability is null?: " + test);
         hitScript.SetAbility(hitAbility);
         hitScript.target = player;
-        hit.transform.position = position;
-        hit.SetActive(true);
+        hitPrefab.transform.position = position;
+        hitPrefab.SetActive(true);
         hitScript.ResetVFX();
     }
 }
