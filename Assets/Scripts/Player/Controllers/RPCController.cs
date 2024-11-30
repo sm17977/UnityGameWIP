@@ -131,15 +131,15 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    public void ApplyBuffRpc(ulong targetClientId, string champion, string key, NetworkObjectReference test) {
+    public void ApplyBuffRpc(ulong targetClientId, string champion, string key, NetworkObjectReference sourceNetworkObject) {
 
         // Only apply buff to the player and client who is having the buff applied
         if(!IsOwner) return;
         if(NetworkObject.OwnerClientId != targetClientId) return;
         
         // Get the buff from the source player's ability and apply it to the target player
-        if (test.TryGet(out NetworkObject targetObject)) {
-            var sourcePlayer = targetObject.gameObject;
+        if (sourceNetworkObject.TryGet(out NetworkObject obj)) {
+            var sourcePlayer = obj.gameObject;
             var sourcePlayerScript = sourcePlayer.GetComponent<LuxPlayerController>();
             var ability = sourcePlayerScript.Abilities[key];
             var buff = ability.buff;
@@ -150,13 +150,11 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     public void CheckServerBuffRemovedRpc(string abilityKey, ulong clientId) {
         var foundBuff = NetworkBuffManager.Instance.FindBuff(clientId, abilityKey);
-        ConfirmBuffRemovalRpc(clientId, abilityKey, foundBuff);
+        ConfirmBuffRemovalRpc(abilityKey, foundBuff);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
-    private void ConfirmBuffRemovalRpc(ulong clientId, string abilityKey, bool foundBuff) {
-
-        if (!IsOwner) return;
+    [Rpc(SendTo.Owner)]
+    private void ConfirmBuffRemovalRpc(string abilityKey, bool foundBuff) {
         
         // Remove the buff locally if the server has removed it
         if (!foundBuff) {

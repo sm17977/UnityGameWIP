@@ -179,8 +179,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         var hitScript = hitPrefab.GetComponent<Lux_Q_Hit>();
         var playerScript = player.GetComponent<LuxPlayerController>();
         var hitAbility = playerScript.Abilities["Q"];
-        var test = hitAbility == null;
-        Debug.Log("SpawnClientHitVFX - ability is null?: " + test);
+ 
         hitScript.SetAbility(hitAbility);
         hitScript.target = player;
         hitPrefab.transform.position = position;

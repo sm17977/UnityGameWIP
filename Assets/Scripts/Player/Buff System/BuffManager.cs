@@ -34,6 +34,7 @@ public sealed class BuffManager {
                 }
             }
             buff.CurrentTimer -= Time.deltaTime;
+            Debug.Log("(Update) Buff Timer: " + buff.CurrentTimer);
         }
     }
 
@@ -50,9 +51,9 @@ public sealed class BuffManager {
         if (_appliedBuffs.Count == 0) return;
         foreach(var buff in _appliedBuffs) {
             if (buff.Key == key) {
+                buff.Clear(_target);
                 _appliedBuffs.Remove(buff);
                 _pendingRemovalKeys.Remove(key);
-                buff.Clear(_target);
                 break;
             }
         }
@@ -64,6 +65,7 @@ public sealed class BuffManager {
     /// <param name="buff">The buff to add</param>
     public void AddBuff(Buff buff) {
         if (!_appliedBuffs.Contains(buff)) {
+            Debug.Log("Buff Duration: " + buff.Duration);
             buff.CurrentTimer = buff.Duration;
             _appliedBuffs.Add(buff);
         }

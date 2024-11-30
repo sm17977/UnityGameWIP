@@ -240,7 +240,6 @@ public class LuxPlayerController : LuxController {
     }
 
     public void OnQ(InputAction.CallbackContext context) {
-        PrintAbilities();
         if (Abilities.TryGetValue("Q", out Ability ability)) {
             AddInputToQueue(new InputCommand { Type = InputCommandType.CastSpell, Key = "Q", Ability = ability });
         }
@@ -526,16 +525,4 @@ public class LuxPlayerController : LuxController {
     public void RemoveBuff(Buff buff) {
         buff.Effect.RemoveEffect(this, buff.EffectStrength);
     }
-
-    
-    public void PrintAbilities() {
-        if (!IsOwner) return;
-        Debug.Log("== PRINT ABILITY BUFF IDS ==");
-        foreach (var entry in Abilities) {
-            var key = entry.Key;
-            var ability = entry.Value;
-            Debug.Log("Ability " + key + " - " + ability.buff.ID);
-        }
-    }
-
 }
