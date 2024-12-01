@@ -59,8 +59,6 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
 
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
-
-        Debug.Log("CASTING STRATEGIES ABILITY - " + ability.buff.ID);
         
         _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
     }

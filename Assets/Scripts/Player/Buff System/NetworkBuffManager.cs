@@ -109,7 +109,6 @@ public class NetworkBuffManager : NetworkBehaviour {
             buff.CurrentTimer = buff.Duration;
             var buffRecord = new BuffRecord(buff, sourceClientId);
             _buffStore[targetClientId].Add(buffRecord);
-            Debug.Log("Adding buff for client ID:" + targetClientId);
 
             // Update buff on server and clients with attackerClientId
             UpdateBuffOnServer(targetClientId, buff, true);

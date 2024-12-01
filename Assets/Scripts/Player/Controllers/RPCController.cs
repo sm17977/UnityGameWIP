@@ -69,7 +69,7 @@ public class RPCController : NetworkBehaviour {
         SpawnProjectileClientRpc(direction, position, networkInstanceId, abilityKey);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
+    [Rpc(SendTo.NotOwner)]
     private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
         
@@ -122,7 +122,7 @@ public class RPCController : NetworkBehaviour {
         UpdateCooldownRpc(cd);
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
+    [Rpc(SendTo.Owner)]
     private void UpdateCooldownRpc(bool serverCooldown) {
         if (IsLocalPlayer && IsOwner) {
             OnCooldownReceived?.Invoke(serverCooldown);
@@ -130,7 +130,7 @@ public class RPCController : NetworkBehaviour {
         }
     }
 
-    [Rpc(SendTo.ClientsAndHost)]
+    [Rpc(SendTo.Owner)]
     public void ApplyBuffRpc(ulong targetClientId, string champion, string key, NetworkObjectReference sourceNetworkObject) {
 
         // Only apply buff to the player and client who is having the buff applied

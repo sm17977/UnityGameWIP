@@ -232,11 +232,8 @@ public class LuxPlayerController : LuxController {
 
         _isNewClick = true;
         var inputType = GetClickInput();
-
-        if (globalState.currentScene == "Multiplayer" && IsOwner)
-            AddInputToQueue(new InputCommand { Type = inputType } );
-        else
-            AddInputToQueue(new InputCommand { Type = inputType } );
+        
+        AddInputToQueue(new InputCommand { Type = inputType } );
     }
 
     public void OnQ(InputAction.CallbackContext context) {
@@ -311,8 +308,7 @@ public class LuxPlayerController : LuxController {
                     if (GlobalState.IsMultiplayer) {
                         inputAbility.OnCooldown_Net(gameObject, (bool networkCooldown) => {
                             if (!networkCooldown) {
-                                // Invoke UI HUD ability animation
-                                Debug.Log("CD Max Cooldown: " + inputAbility.maxCooldown);
+                                // Invoke UI HUD ability animation;
                                 NotifyUICooldown?.Invoke(_currentInput.Key, inputAbility.maxCooldown);
                                 GetCastingTargetPosition();
                                 _stateManager.ChangeState(new CastingState(this, gameObject, inputAbility));

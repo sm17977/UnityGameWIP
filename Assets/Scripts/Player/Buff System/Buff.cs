@@ -9,11 +9,12 @@ public class Buff{
     public float EffectStrength;
     public float CurrentTimer;
     public string ID;
+    private const float RPCLatency = 0.15f;
     
     public Buff(BuffEffect effect, string key, float duration, float effectStrength) {
         Effect = effect;
         Key = key;
-        Duration = duration;
+        Duration = duration - RPCLatency;
         EffectStrength = effectStrength;
         CurrentTimer = 0;
         ID = Guid.NewGuid().ToString();

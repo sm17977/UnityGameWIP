@@ -56,7 +56,6 @@ public class Lux_Q_Hit : ProjectileAbility
     private bool _vfxPlaying = true;
 
     private void Start(){
-        Debug.Log("Lux Q Hit Start");
         CalculateVfxDuration();
         _timer = totalDuration;
         InitVfx();
