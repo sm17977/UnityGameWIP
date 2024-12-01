@@ -254,7 +254,7 @@ public class LuxPlayerController : LuxController {
 
     private void InitStates() {
         _stateManager = StateManager.Instance;
-        _idleState = new IdleState();
+        _idleState = new IdleState(this);
     }
 
     // Read the input queue to handle movement and casting input commands

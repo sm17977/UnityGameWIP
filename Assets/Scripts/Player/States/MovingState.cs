@@ -22,8 +22,12 @@ public class MovingState : State
 
     public override void Enter() {
         playerController.incompleteMovement = true;
-        playerController.animator.SetTrigger("isRunning");
-        playerController.networkAnimator.SetTrigger("isRunning");
+
+        AnimatorStateInfo currentAnimatorStateInfo = playerController.animator.GetCurrentAnimatorStateInfo(0);
+        if (!currentAnimatorStateInfo.IsName("isRunning")) {
+            playerController.animator.SetTrigger("isRunning");
+            playerController.networkAnimator.SetTrigger("isRunning");
+        }
     }
 
     public override void Execute() {
@@ -63,7 +67,9 @@ public class MovingState : State
     }
 
     public override void Exit() {
-        playerController.animator.SetTrigger("isIdle");
-        playerController.networkAnimator.SetTrigger("isIdle");
+        playerController.animator.ResetTrigger("isRunning");
+        playerController.networkAnimator.ResetTrigger("isRunning");
+        // playerController.animator.SetTrigger("isIdle");
+        // playerController.networkAnimator.SetTrigger("isIdle");
     }
 }
