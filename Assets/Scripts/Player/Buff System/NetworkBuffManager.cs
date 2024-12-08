@@ -62,27 +62,28 @@ public class NetworkBuffManager : NetworkBehaviour {
     /// </summary>
     public void Update() {
 
-        if (!IsSpawned) return;
-        if (_buffStore.Count == 0) return;
-
+        if (!IsSpawned || _buffStore.Count == 0) return;
+        double serverTimeNow = NetworkManager.ServerTime.Time;
+        
         // Iterate over buff store
         foreach (var entry in _buffStore) {
+            
             var targetClientId = entry.Key;
+            
             if (_buffStore.TryGetValue(targetClientId, out var buffRecords)) {
+                
                 var buffsToRemove = new List<BuffRecord>();
                 
                 foreach (var buffRecord in buffRecords) {
+                    
                     var buff = buffRecord.Buff;
                     
                     // Store buffs that have ended
-                    if (buff.CurrentTimer <= 0) {
+                    if (buff.IsExpired(serverTimeNow)) {
                         buffsToRemove.Add(buffRecord);
                         // Notify server and clients to remove the buff with attacker and target IDs
                         UpdateBuffOnServer(targetClientId, buff, false);
                     }
-                    
-                    // Reduce the duration of any buffs applied to a player
-                    buff.CurrentTimer -= Time.deltaTime;
                 }
 
                 // Remove expired buffs
@@ -106,13 +107,14 @@ public class NetworkBuffManager : NetworkBehaviour {
 
         // Check if this buff is already applied to prevent duplicates
         if (_buffStore[targetClientId].All(record => record.Buff.ID != buff.ID)) {
-            buff.CurrentTimer = buff.Duration;
+            buff.BuffEndTime = NetworkManager.ServerTime.Time + buff.Duration;
+            Debug.Log("Added entry of buff/debuff to " + targetClientId + " which will expire at " + buff.BuffEndTime);
             var buffRecord = new BuffRecord(buff, sourceClientId);
             _buffStore[targetClientId].Add(buffRecord);
 
             // Update buff on server and clients with attackerClientId
             UpdateBuffOnServer(targetClientId, buff, true);
-            ApplyBuffOnClient(targetClientId, sourceClientId, buff.Key);
+            //ApplyBuffOnClient(targetClientId, sourceClientId, buff.Key);
         }
     }
 

@@ -1,5 +1,6 @@
 using System;
 using Unity.Netcode;
+using UnityEngine;
 
 public class Buff{
     
@@ -7,25 +8,31 @@ public class Buff{
     public string Key;
     public float Duration;
     public float EffectStrength;
-    public float CurrentTimer;
     public string ID;
-    private const float RPCLatency = 0.15f;
+   
+    public double BuffEndTime { get;  set; }
     
     public Buff(BuffEffect effect, string key, float duration, float effectStrength) {
         Effect = effect;
         Key = key;
-        Duration = duration - RPCLatency;
+        Duration = duration;
         EffectStrength = effectStrength;
-        CurrentTimer = 0;
         ID = Guid.NewGuid().ToString();
     }
     
     public void Apply(LuxController target){
-        target.BuffManager.AddBuff(this);
+        target.ClientBuffManager.AddBuff(this);
         Effect?.ApplyEffect(target, EffectStrength);
     }
 
     public void Clear(LuxController target){
         Effect?.RemoveEffect(target, EffectStrength);
+    }
+
+    public bool IsExpired(double serverTimeNow) {
+        Debug.Log("ServerTimeNow: " + serverTimeNow);
+        Debug.Log("BuffEndTime: " + BuffEndTime);
+        Debug.Log("Buff isExpired? " + (serverTimeNow >= BuffEndTime));
+        return serverTimeNow >= BuffEndTime;
     }
 }

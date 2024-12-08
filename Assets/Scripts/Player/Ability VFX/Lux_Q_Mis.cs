@@ -87,7 +87,7 @@ public class Lux_Q_Mis : ProjectileAbility {
             hasHit = true;
             _target = collision.gameObject.GetComponent<LuxController>();
 
-            if (!_target.BuffManager.HasBuffApplied(ability.buff)) {
+            if (!_target.ClientBuffManager.HasBuffApplied(ability.buff)) {
                 SpawnHitVfx(collision.gameObject);
 
                 if (playerType == PlayerType.Bot) _target.ProcessPlayerDeath();

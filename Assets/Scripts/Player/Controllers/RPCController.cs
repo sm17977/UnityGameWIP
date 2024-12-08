@@ -136,6 +136,8 @@ public class RPCController : NetworkBehaviour {
         // Only apply buff to the player and client who is having the buff applied
         if(!IsOwner) return;
         if(NetworkObject.OwnerClientId != targetClientId) return;
+
+        Debug.Log("Apply buff RPC");
         
         // Get the buff from the source player's ability and apply it to the target player
         if (sourceNetworkObject.TryGet(out NetworkObject obj)) {
@@ -148,20 +150,8 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    public void CheckServerBuffRemovedRpc(string abilityKey, ulong clientId) {
-        var foundBuff = NetworkBuffManager.Instance.FindBuff(clientId, abilityKey);
-        ConfirmBuffRemovalRpc(abilityKey, foundBuff);
-    }
-
-    [Rpc(SendTo.Owner)]
-    private void ConfirmBuffRemovalRpc(string abilityKey, bool foundBuff) {
-        
-        // Remove the buff locally if the server has removed it
-        if (!foundBuff) {
-            _playerController.BuffManager.RemoveBuff(abilityKey);
-        }
-        else {
-            Debug.Log("Buff still exists on server");
-        }
+    public void RequestMovementRpc(Vector3 targetPosition) {
+        if (!_playerController.canMove) return;
+        _playerController._stateManager.ChangeState(new MovingState(_playerController, targetPosition, _playerController.GetStoppingDistance(), gameObject, false));
     }
 }

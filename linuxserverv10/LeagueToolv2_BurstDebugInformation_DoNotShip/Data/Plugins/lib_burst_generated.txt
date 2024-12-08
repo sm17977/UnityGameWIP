@@ -7,6 +7,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
+--assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
@@ -232,6 +233,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
+--assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
@@ -457,6 +459,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
+--assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
@@ -622,6 +625,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --dump=Function
 --float-precision=Standard
 --target-framework=NetFramework
+--assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;

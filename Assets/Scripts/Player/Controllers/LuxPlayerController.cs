@@ -14,6 +14,7 @@ using UnityEngine.VFX;
 
 public class LuxPlayerController : LuxController {
 
+    
     // Events
     public event Action<string, float>? NotifyUICooldown;
     
@@ -65,7 +66,7 @@ public class LuxPlayerController : LuxController {
     private bool _isAARangeIndicatorOn;
 
     // State Management
-    private StateManager _stateManager;
+    public StateManager _stateManager;
     private MovingState _movingState;
     private AttackingState _attackingState;
     private IdleState _idleState;
@@ -143,7 +144,7 @@ public class LuxPlayerController : LuxController {
             Client = _clientManager.Client;
         }
 
-        BuffManager = new BuffManager(this);
+        ClientBuffManager = new ClientBuffManager(this);
         playerType = PlayerType.Player;
         health = GetComponent<Health>();
         Health.OnPlayerDeath += (async (player) => {
@@ -180,7 +181,7 @@ public class LuxPlayerController : LuxController {
 
         _stateManager.Update();
 
-        BuffManager.Update();
+        ClientBuffManager.Update();
 
         currentState = _stateManager.GetCurrentState();
 
@@ -272,6 +273,7 @@ public class LuxPlayerController : LuxController {
                 case InputCommandType.Movement:
 
                     ShowMovementIndicator(_lastClickPosition);
+                    
                     if (canMove) {
                         _movingState = new MovingState(this, _lastClickPosition, GetStoppingDistance(), gameObject,
                             false);
@@ -398,7 +400,7 @@ public class LuxPlayerController : LuxController {
     }
 
     // Get the minimum distance the player must move to reach the target location
-    private float GetStoppingDistance() {
+    public float GetStoppingDistance() {
         var distance = champion.stoppingDistance;
 
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
@@ -510,7 +512,8 @@ public class LuxPlayerController : LuxController {
     /// </summary>
     /// <param name="buff"></param>
     public void ApplyBuff(Buff buff) {
-        BuffManager.AddBuff(buff);
+        Debug.Log("ApplyBuff in player controller");
+        ClientBuffManager.AddBuff(buff);
         buff.Effect.ApplyEffect(this, buff.EffectStrength);
     }
 

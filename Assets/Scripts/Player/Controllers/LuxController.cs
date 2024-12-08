@@ -9,7 +9,7 @@ public class LuxController : NetworkBehaviour {
     public PlayerType playerType;
     public Champion championSO;
     public Champion champion;
-    public BuffManager BuffManager;
+    public ClientBuffManager ClientBuffManager;
     public GlobalState globalState;
     public bool canMove = true;
     
