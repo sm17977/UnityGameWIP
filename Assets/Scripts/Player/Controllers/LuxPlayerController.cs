@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Kart;
 using Multiplayer;
 using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
 using Unity.Netcode;
@@ -12,7 +13,42 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
 
+public struct MovementInputPayload : INetworkSerializable {
+    public int tick;
+    public Vector3 targetPosition; // Position clicked by the player
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
+        serializer.SerializeValue(ref tick);
+        serializer.SerializeValue(ref targetPosition);
+    }
+}
+
+public struct MovementStatePayload : INetworkSerializable {
+    public int tick;
+    public Vector3 position; // Current position
+    public Vector3 targetPosition; // Target position
+    public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter {
+        serializer.SerializeValue(ref tick);
+        serializer.SerializeValue(ref position);
+        serializer.SerializeValue(ref targetPosition);
+    }
+}
+
+
 public class LuxPlayerController : LuxController {
+    
+    private CircularBuffer<MovementInputPayload> clientInputBuffer;
+    private CircularBuffer<MovementStatePayload> clientStateBuffer;
+    
+    Queue<MovementInputPayload> serverInputQueue;
+    private CircularBuffer<MovementStatePayload> serverStateBuffer;
+    
+    private MovementStatePayload lastServerState;
+    private MovementStatePayload lastProcessedState;
+
+    private const int k_bufferSize = 1024;
+    private const float reconciliationThreshold = 0.5f; // Adjust as needed
+
+    public NetworkTimer _networkTimer;
 
     
     // Events
@@ -102,6 +138,16 @@ public class LuxPlayerController : LuxController {
     public GameObject healthBarAnchor;
 
     private void Awake() {
+
+        _networkTimer = new NetworkTimer(50);
+        clientInputBuffer = new CircularBuffer<MovementInputPayload>(k_bufferSize);
+        clientStateBuffer = new CircularBuffer<MovementStatePayload>(k_bufferSize);
+        
+        serverStateBuffer = new CircularBuffer<MovementStatePayload>(k_bufferSize);
+        serverInputQueue = new Queue<MovementInputPayload>();
+        
+        
+        
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         networkAnimator = GetComponent<ClientNetworkAnimator>();
@@ -139,6 +185,10 @@ public class LuxPlayerController : LuxController {
     
     // Start is called before the first frame update
     private void Start() {
+        
+     
+        
+        
         if (GlobalState.IsMultiplayer && IsOwner) {
             _clientManager = ClientManager.Instance;
             Client = _clientManager.Client;
@@ -173,14 +223,18 @@ public class LuxPlayerController : LuxController {
     // Update is called once per frame
 
     private void Update() {
+        
+        _networkTimer.Update(Time.deltaTime);
+        _stateManager.Update();
+
+        
         if (globalState.currentScene == "Multiplayer" && !IsOwner) return;
 
         if(hitboxGameObj != null) _hitboxPos = hitboxGameObj.transform.position;
         
-        HandleInput();
+        //HandleInput();
 
-        _stateManager.Update();
-
+  
         ClientBuffManager.Update();
 
         currentState = _stateManager.GetCurrentState();
@@ -192,7 +246,60 @@ public class LuxPlayerController : LuxController {
         HandleProjectiles();
         HandleVFX();
     }
-    
+
+    private void FixedUpdate() {
+        while (_networkTimer.ShouldTick()) {
+            HandleClientTick();
+            HandleServerTick();
+        }
+    }
+
+    public void HandleClientTick() {
+        if (!IsClient || !IsOwner) return;
+
+        var currentTick = _networkTimer.CurrentTick;
+        var bufferIndex = currentTick % k_bufferSize;
+            
+        MovementInputPayload inputPayload = new MovementInputPayload() {
+            tick = currentTick,
+            targetPosition = _lastClickPosition
+        };
+            
+        clientInputBuffer.Add(inputPayload, bufferIndex);
+        SendToServerRpc(inputPayload);
+            
+        HandleInput();
+        clientStateBuffer.Add(new MovementStatePayload() {
+            position = transform.position,
+            targetPosition = _lastClickPosition
+        }, bufferIndex);
+    }
+
+    public void HandleServerTick() {
+        if (!IsServer) return;
+             
+        var bufferIndex = -1;
+        MovementInputPayload inputPayload = default;
+        
+        while (serverInputQueue.Count > 0) {
+            inputPayload = serverInputQueue.Dequeue();
+            bufferIndex = inputPayload.tick % k_bufferSize;
+
+            _lastClickPosition = inputPayload.targetPosition;
+            AddInputToQueue(new InputCommand { Type = InputCommandType.Movement });
+            HandleInput();
+            MovementStatePayload statePayload = new MovementStatePayload() {
+                position = transform.position,
+                targetPosition = _lastClickPosition
+            };
+            serverStateBuffer.Add(statePayload, bufferIndex);
+        }
+            
+        if (bufferIndex == -1) return;
+        SendToClientRpc(serverStateBuffer.Get(bufferIndex));
+        
+    }
+
     /// <summary>
     /// Store the players abilities in a list
     /// Set the casting strategy for the ability depending on singleplayer/multiplayer
@@ -523,5 +630,16 @@ public class LuxPlayerController : LuxController {
     /// <param name="buff"></param>
     public void RemoveBuff(Buff buff) {
         buff.Effect.RemoveEffect(this, buff.EffectStrength);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void SendToServerRpc(MovementInputPayload input) {
+        serverInputQueue.Enqueue(input);
+    }
+    
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SendToClientRpc(MovementStatePayload statePayload) {
+        if (!IsOwner) return;
+        lastServerState = statePayload;
     }
 }

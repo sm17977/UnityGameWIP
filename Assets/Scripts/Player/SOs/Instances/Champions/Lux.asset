@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   championName: Lux
   health: 500
-  movementSpeed: 3.8
+  movementSpeed: 0.038
   turnSpeed: 18
   windupTime: 15.625
   stoppingDistance: 0.1
