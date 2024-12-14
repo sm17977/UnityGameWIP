@@ -1,73 +1,73 @@
-using Unity.Netcode;
 using UnityEngine;
 
-public class CastingState : State
-{
+public class CastingState : State {
 
-    public GameObject player;
-    private LuxPlayerController playerController;
-    public Ability ability;
-    public bool castingFinished = false; 
+    private GameObject _playerObj;
+    private LuxPlayerController _player;
+    private InputController _input;
+    
+    private Ability _ability;
+    private bool _castingFinished;
 
-    public CastingState (LuxPlayerController controller,  GameObject gameObject, Ability ability){
-        playerController = controller;
-        player = gameObject;
-        this.ability = ability;
+    public CastingState (GameObject gameObject, Ability ability){
+        _playerObj = gameObject;
+        _player = _playerObj.GetComponent<LuxPlayerController>();
+        _input = _playerObj.GetComponent<InputController>();
+        _ability = ability;
     }
 
     public override void Enter() {
-        ability.PutOnCooldown();
-        playerController.canCast = true;
-        playerController.animator.SetTrigger(ability.animationTrigger);
+        _ability.PutOnCooldown();
+        _input.canCast = true;
+        _player.animator.SetTrigger(_ability.animationTrigger);
         
         if (GlobalState.IsMultiplayer) {
-            ability.PutOnCooldown_Net(player);
-            playerController.networkAnimator.SetTrigger(ability.animationTrigger);
+            _ability.PutOnCooldown_Net(_playerObj);
+            _player.networkAnimator.SetTrigger(_ability.animationTrigger);
         }
     }
 
     public override void Execute() {
 
         // Track when animation ends
-        if(playerController.animator.GetCurrentAnimatorClipInfo(0).Length > 0){
-            castingFinished = playerController.animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == ability.animationClip.name && 
-                playerController.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95; // This is set to 0.95 because the normalized time doesn't always reach 100%
+        if(_player.animator.GetCurrentAnimatorClipInfo(0).Length > 0){
+            _castingFinished = _player.animator.GetCurrentAnimatorClipInfo(0)[0].clip.name == _ability.animationClip.name && 
+                _player.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95; // This is set to 0.95 because the normalized time doesn't always reach 100%
         }
        
         // Get the direction the abliity should move towards
-        Vector3 direction = (playerController.projectileTargetPosition - player.transform.position).normalized;
+        Vector3 direction = (_player.projectileTargetPosition - _playerObj.transform.position).normalized;
   
         // Rotate the player in the direction the spell was cast
-        playerController.RotateTowardsTarget(direction);
+        _player.RotateTowardsTarget(direction);
         
         
-        if (playerController.canCast) {
+        if (_input.canCast) {
             
             // Set the spawn position of the projectile
-            float worldRadius = playerController.hitboxCollider.radius * playerController.hitboxGameObj.transform.lossyScale.x;
-            Vector3 abilitySpawnPos = new Vector3(player.transform.position.x, ability.spawnHeight, player.transform.position.z) + direction * worldRadius;
+            float worldRadius = _player.hitboxCollider.radius * _player.hitboxGameObj.transform.lossyScale.x;
+            Vector3 abilitySpawnPos = new Vector3(_playerObj.transform.position.x, _ability.spawnHeight, _playerObj.transform.position.z) + direction * worldRadius;
             
-            ability.Cast(direction, abilitySpawnPos);
+            _ability.Cast(direction, abilitySpawnPos);
           
-            playerController.canCast = false;
+            _input.canCast = false;
         }
         
-        if(castingFinished){
+        if(_castingFinished){
             // Finish any incomplete movement commands
-            if(playerController.incompleteMovement){
-                playerController.TransitionToMove();
+            if(_input.incompleteMovement){
+                _player.TransitionToMove();
             }
             // Return to attacking
-            else if(playerController.isAttackClick){
-                playerController.TransitionToAttack();
+            else if(_input.isAttackClick){
+                _player.TransitionToAttack();
             }
-            // Deafult to idle
+            // Default to idle
             else{
-                playerController.TransitionToIdle();
+                _player.TransitionToIdle();
             }
         }
     }
-    
     
     public override void Exit() {
     }

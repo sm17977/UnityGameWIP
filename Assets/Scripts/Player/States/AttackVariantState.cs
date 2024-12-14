@@ -1,42 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class AnimTest : StateMachineBehaviour
-{
-    private LuxPlayerController playerController;
+public class AnimTest : StateMachineBehaviour {
+    private LuxPlayerController _player;
+    private InputController _input;
 
-    //OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
-    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-
-        if (playerController == null){
-            playerController = animator.GetComponent<LuxPlayerController>();
-        }
-        playerController.canAA = true;
-
+    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        if (_input == null) _input = animator.GetComponent<InputController>();
+        if (_player == null) _player = animator.GetComponent<LuxPlayerController>();
+        _input.canAA = true;
     }
-
-
+    
     //OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
-        playerController.RotateTowardsTarget(playerController.direction);
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
+        _player.RotateTowardsTarget(_player.direction);
     }
-
-    // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
-
-    // OnStateMove is called right after Animator.OnAnimatorMove()
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that processes and affects root motion
-    //}
-
-    // OnStateIK is called right after Animator.OnAnimatorIK()
-    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that sets up animation IK (inverse kinematics)
-    //}
 }

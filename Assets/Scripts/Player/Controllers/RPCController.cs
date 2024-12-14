@@ -9,30 +9,55 @@ public class RPCController : NetworkBehaviour {
     public static event Action<GameObject> NetworkSpawn;
     
     private LuxPlayerController _playerController;
+    private InputController _input;
     private GameObject _player;
     private GameObject _players;
     
     private void Start() {
         _playerController = GetComponent<LuxPlayerController>();
+        _input = GetComponent<InputController>();
         _player = gameObject;
     }
 
     public override void OnNetworkSpawn() {
-      
-        Debug.Log("RPC OnNetWorkSpawn");
+        // Set local player game object name to 'Local Player'
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
-        _players = GameObject.Find("Players");
         
-
-        if (IsServer) {
-            transform.SetParent(_players.transform, true);
-        }
-
-        if (IsOwner) {
-            NetworkSpawn?.Invoke(gameObject);
-        }
+        // Make the player a child object of the 'Players' game object
+        _players = GameObject.Find("Players");
+        if(IsServer)transform.SetParent(_players.transform, true);
+        
+        // Trigger event to let the UI script know the player has spawned on the network
+        if(IsOwner)NetworkSpawn?.Invoke(gameObject);
+    }
+    
+    /// <summary>
+    /// Add an input command to the server's input queue
+    /// </summary>
+    /// <param name="input"></param>
+    [Rpc(SendTo.Server)]
+    public void SendInputRpc(InputPayload input) {
+        _input.serverInputQueue.Enqueue(input);
+    }
+    
+    /// <summary>
+    /// Update the client with the last server state
+    /// </summary>
+    /// <param name="statePayload"></param>
+    [Rpc(SendTo.ClientsAndHost)]
+    public void SendStateRpc(StatePayload statePayload) {
+        if (!IsOwner) return;
+        _input.lastServerState = statePayload;
     }
 
+    /// <summary>
+    /// Spawn a projectile on the server
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="position"></param>
+    /// <param name="clientId"></param>
+    /// <param name="instanceId"></param>
+    /// <param name="abilityKey"></param>
     [Rpc(SendTo.Server)]
     public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId, string abilityKey) {
         
@@ -69,6 +94,13 @@ public class RPCController : NetworkBehaviour {
         SpawnProjectileClientRpc(direction, position, networkInstanceId, abilityKey);
     }
 
+    /// <summary>
+    /// Spawn the projectile for all clients excluding the source
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="position"></param>
+    /// <param name="networkInstanceId"></param>
+    /// <param name="abilityKey"></param>
     [Rpc(SendTo.NotOwner)]
     private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
@@ -104,6 +136,12 @@ public class RPCController : NetworkBehaviour {
         }
     }
 
+    /// <summary>
+    /// Update projectile mappings on the server
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="localProjectileId"></param>
+    /// <param name="networkInstanceId"></param>
     [Rpc(SendTo.Server)]
     private void UpdateMappingsServerRpc(ulong clientId, int localProjectileId, int networkInstanceId) {
         var networkProjectile = GameObject.Find(networkInstanceId.ToString());
@@ -111,17 +149,31 @@ public class RPCController : NetworkBehaviour {
         networkProjectileScript.Mappings[localProjectileId] = clientId;
     }
 
+    /// <summary>
+    /// Add ability cooldown on the server
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="abilityData"></param>
     [Rpc(SendTo.Server)]
     public void AddCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
         NetworkCooldownManager.Instance.StartCooldown(clientId, abilityData);
     }
-
+    
+    /// <summary>
+    /// Check ability cooldown on the server
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <param name="abilityData"></param>
     [Rpc(SendTo.Server)]
     public void IsAbilityOnCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
         var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(clientId, abilityData);
         UpdateCooldownRpc(cd);
     }
-
+    
+    /// <summary>
+    /// Update cooldown on the client
+    /// </summary>
+    /// <param name="serverCooldown"></param>
     [Rpc(SendTo.Owner)]
     private void UpdateCooldownRpc(bool serverCooldown) {
         if (IsLocalPlayer && IsOwner) {
@@ -130,6 +182,13 @@ public class RPCController : NetworkBehaviour {
         }
     }
 
+    /// <summary>
+    /// Apply buff to client
+    /// </summary>
+    /// <param name="targetClientId"></param>
+    /// <param name="champion"></param>
+    /// <param name="key"></param>
+    /// <param name="sourceNetworkObject"></param>
     [Rpc(SendTo.Owner)]
     public void ApplyBuffRpc(ulong targetClientId, string champion, string key, NetworkObjectReference sourceNetworkObject) {
 
@@ -147,11 +206,5 @@ public class RPCController : NetworkBehaviour {
             var buff = ability.buff;
             _playerController.ApplyBuff(buff);
         }
-    }
-
-    [Rpc(SendTo.Server)]
-    public void RequestMovementRpc(Vector3 targetPosition) {
-        if (!_playerController.canMove) return;
-        _playerController._stateManager.ChangeState(new MovingState(_playerController, targetPosition, _playerController.GetStoppingDistance(), gameObject, false));
     }
 }

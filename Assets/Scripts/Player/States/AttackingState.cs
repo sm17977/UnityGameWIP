@@ -1,64 +1,65 @@
-using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
-using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.VFX;
-public class AttackingState : State
-{
-    public LuxPlayerController playerController;
-    public VFXController vfxController;
-    public GameObject player;
-    private Vector3 direction;
-    private float currentTime;
-    private float lastAttackCount = 0f;
-    private float windupTime;
-    private float currentAttackCount;
-    private VisualEffect newProjectile;
-   
+public class AttackingState : State {
 
-    public AttackingState(LuxPlayerController controller, Vector3 dir, GameObject gameObject, float time){
-        playerController = controller;
-        direction = dir;
-        player = gameObject;
-        windupTime = time;
+    private GameObject _playerObj;
+    private LuxPlayerController _player;
+    private InputController _input;
+    private VFXController _vfxController;
+
+    private Vector3 _direction;
+    private float _currentTime;
+    private float _lastAttackCount = 0f;
+    private float _windupTime;
+    private float _currentAttackCount;
+    private VisualEffect _newProjectile;
+    
+    public AttackingState(GameObject gameObject) {
+        _playerObj = gameObject;
+        _player = _playerObj.GetComponent<LuxPlayerController>();
+        _input = _playerObj.GetComponent<InputController>();
+        _direction = _player.direction;
+        _playerObj = gameObject;
+        _windupTime = _player.champion.windupTime;
     }
 
     public override void Enter() {
-        playerController.canAA = false;
-        playerController.animator.SetTrigger("isAttacking");
-        playerController.networkAnimator.SetTrigger("isAttacking");
+        _input.canAA = false;
+        _player.animator.SetTrigger("isAttacking");
+        _player.networkAnimator.SetTrigger("isAttacking");
     }
 
     public override void Execute() {
       
-        if(playerController.timeSinceLastAttack > 0){
-            playerController.timeSinceLastAttack -= Time.deltaTime;
+        if(_player.timeSinceLastAttack > 0){
+            _player.timeSinceLastAttack -= Time.deltaTime;
         }
     
         // Get animation timings
         GetCurrentAnimationTime();
                 
         // Get the direction the abliity should move towards
-        Vector3 attackDirection = (playerController.projectileAATargetPosition - player.transform.position).normalized;
-        playerController.champion.AA_direction = attackDirection;
+        Vector3 attackDirection = (_player.projectileAATargetPosition - _playerObj.transform.position).normalized;
+        _player.champion.AA_direction = attackDirection;
 
    
         // Once the windup window has passed, fire the projectile
-        if (IsWindupCompleted() && playerController.canAA) {
+        if (IsWindupCompleted() && _input.canAA) {
         
             // Create Visual Effect instance
-            newProjectile = LuxPlayerController.Instantiate(playerController.projectileAA, new Vector3(player.transform.position.x, 1f, player.transform.position.z), Quaternion.LookRotation(direction, Vector3.up));
+            _newProjectile = LuxPlayerController.Instantiate(_player.projectileAA, new Vector3(_playerObj.transform.position.x, 1f, _playerObj.transform.position.z), Quaternion.LookRotation(_direction, Vector3.up));
 
-            vfxController = newProjectile.GetComponent<VFXController>();
+            _vfxController = _newProjectile.GetComponent<VFXController>();
 
             // Set the player and controller references in the VFX Controller 
-            vfxController.player = player;
-            vfxController.playerController = playerController;
+            _vfxController.player = _playerObj;
+            _vfxController.playerController = _player;
 
             // Add the VFX projectile to a list so they can be destroyed after VFX is complete
-            playerController.vfxProjectileList.Add(newProjectile.gameObject);
+            _player.vfxProjectileList.Add(_newProjectile.gameObject);
 
             // Prevent player spamming AAs
-            playerController.canAA = false;
+            _input.canAA = false;
         }
     }
 
@@ -68,17 +69,17 @@ public class AttackingState : State
 
     // Track the windup window
     private bool IsWindupCompleted() {
-        return currentTime >= windupTime / 100f;
+        return _currentTime >= _windupTime / 100f;
     }
 
     // Get the current animation time as a perecentage (start to finish)
     // Track when a new animation loop as started
     private void GetCurrentAnimationTime(){
-        AnimatorStateInfo animState = playerController.animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo animState = _player.animator.GetCurrentAnimatorStateInfo(0);
 
         if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
-            currentTime = animState.normalizedTime % 1;
-            currentAttackCount = (int)animState.normalizedTime;
+            _currentTime = animState.normalizedTime % 1;
+            _currentAttackCount = (int)animState.normalizedTime;
         }
     }
 

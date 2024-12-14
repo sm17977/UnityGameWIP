@@ -1,75 +1,75 @@
-using QFSW.QC;
-using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class MovingState : State
-{
-    private LuxPlayerController playerController;
-    private Vector3 targetLocation;
-    private float stoppingDistance;
-    private GameObject player;
-    private bool movingToAttack;
- 
-
-    public MovingState(LuxPlayerController controller, Vector3 location, float distance, GameObject gameObject, bool attack){
-        playerController = controller;
-        targetLocation = location;
-        stoppingDistance = distance;
-        player = gameObject;
-        movingToAttack = attack;
+public class MovingState : State {
+    
+    private GameObject _playerObj;
+    private LuxPlayerController _player;
+    private InputController _input;
+    
+    private Vector3 _targetLocation;
+    private float _stoppingDistance;
+    private bool _movingToAttack;
+    
+    public MovingState(GameObject gameObject, bool attack) {
+        _playerObj = gameObject;
+        _player = _playerObj.GetComponent<LuxPlayerController>();
+        _input = _playerObj.GetComponent<InputController>();
+        
+        _targetLocation = _input.lastClickPosition;
+        _stoppingDistance = _input.GetStoppingDistance();
+        _movingToAttack = attack;
     }
 
     public override void Enter() {
-        playerController.incompleteMovement = true;
+        _input.incompleteMovement = true;
 
-        AnimatorStateInfo currentAnimatorStateInfo = playerController.animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo currentAnimatorStateInfo = _player.animator.GetCurrentAnimatorStateInfo(0);
         if (!currentAnimatorStateInfo.IsName("isRunning")) {
-            playerController.animator.SetTrigger("isRunning");
-            playerController.networkAnimator.SetTrigger("isRunning");
+            _player.animator.SetTrigger("isRunning");
+            _player.networkAnimator.SetTrigger("isRunning");
         }
     }
 
     public override void Execute() {
         
-        if(!playerController.canMove){
-            playerController.TransitionToIdle();
+        if(!_player.canMove){
+            _player.TransitionToIdle();
         }
 
         // Calculate the direction the player wants to move in
-        Vector3 direction = (targetLocation - player.transform.position).normalized;
+        Vector3 direction = (_targetLocation - _playerObj.transform.position).normalized;
         direction.y = 0f;
         
         MoveAndRotate(direction);
         
-        float dist = Vector3.Distance(player.transform.position, targetLocation);
+        float dist = Vector3.Distance(_playerObj.transform.position, _targetLocation);
         //Debug.Log("Distance from click: " + dist);
         
         // State exits when player has reached target location
-        if (Vector3.Distance(player.transform.position, targetLocation) <= stoppingDistance){
-            playerController.incompleteMovement = false;
+        if (Vector3.Distance(_playerObj.transform.position, _targetLocation) <= _stoppingDistance){
+            _input.incompleteMovement = false;
 
             // If we are walking in range to attack, transition to attack state
-            if(movingToAttack){
-                playerController.TransitionToAttack();
+            if(_movingToAttack){
+                _player.TransitionToAttack();
             }
             // Otherwise transition to idle 
             else{
-                playerController.TransitionToIdle();
+                _player.TransitionToIdle();
             }
         }   
     }
 
     void MoveAndRotate(Vector3 direction) {
-        float lerpFraction = playerController._networkTimer.MinTimeBetweenTicks /  Time.deltaTime;
+        float lerpFraction = _input.NetworkTimer.MinTimeBetweenTicks /  Time.deltaTime;
         // Move player towards last mouse click 
-        player.transform.Translate(playerController.champion.movementSpeed * lerpFraction * direction, Space.World);
-        playerController.RotateTowardsTarget(direction);
+        _playerObj.transform.Translate(_player.champion.movementSpeed * lerpFraction * direction, Space.World);
+        _player.RotateTowardsTarget(direction);
     }
 
     public override void Exit() {
-        playerController.animator.ResetTrigger("isRunning");
-        playerController.networkAnimator.ResetTrigger("isRunning");
+        _player.animator.ResetTrigger("isRunning");
+        _player.networkAnimator.ResetTrigger("isRunning");
         // playerController.animator.SetTrigger("isIdle");
         // playerController.networkAnimator.SetTrigger("isIdle");
     }
