@@ -9,7 +9,7 @@ using UnityEngine.VFX;
 public class LuxPlayerController : LuxController {
     
     // PLayer Scripts
-    public RPCController rpc;
+    private RPCController _rpc;
     private InputController _input;
     
     // Skill-shot Projectile
@@ -24,7 +24,7 @@ public class LuxPlayerController : LuxController {
 
     // Hitbox
     public GameObject hitboxGameObj;
-    public SphereCollider hitboxCollider;
+    public float hitboxColliderRadius;
     public Vector3 direction;
     public Vector3 hitboxPos;
     
@@ -47,12 +47,8 @@ public class LuxPlayerController : LuxController {
     public SphereCollider aiHitboxCollider;
     private Vector3 _aiHitboxPos;
     
-    // Client
-    private ClientManager _clientManager;
-    public Client Client;
-
     // Abilities
-    public List<AbilityEntry> AbilitiesList;
+    public List<AbilityEntry> abilitiesList;
     public Dictionary<string, Ability> Abilities;
     
     // Health
@@ -61,18 +57,19 @@ public class LuxPlayerController : LuxController {
     
     // Camera
     public Camera mainCamera;
-    private Plane _cameraPlane;
-
+    
     private void Awake() {
+        playerType = PlayerType.Player;
+        
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
+        hitboxGameObj = GameObject.Find("Hitbox");
+        healthBarAnchor = transform.Find("HealthBarAnchor").gameObject;
+        
         networkAnimator = GetComponent<ClientNetworkAnimator>();
         _input = GetComponent<InputController>();
-
-        healthBarAnchor = transform.Find("HealthBarAnchor").gameObject;
-        hitboxGameObj = GameObject.Find("Hitbox");
-        hitboxCollider = hitboxGameObj.GetComponent<SphereCollider>();
-        hitboxPos = hitboxGameObj.transform.position;
+        _rpc = GetComponent<RPCController>();
+        health = GetComponent<Health>();
         
         champion = Instantiate(championSO);
     }
@@ -83,15 +80,8 @@ public class LuxPlayerController : LuxController {
     }
     
     private void Start() {
-        
-        if (GlobalState.IsMultiplayer && IsOwner) {
-            _clientManager = ClientManager.Instance;
-            //Client = _clientManager.Client;
-        }
-
         ClientBuffManager = new ClientBuffManager(this);
-        playerType = PlayerType.Player;
-        health = GetComponent<Health>();
+        
         Health.OnPlayerDeath += (async (player) => {
             if (this != player) return;
             Debug.Log("OnPlayerDeath");
@@ -99,14 +89,14 @@ public class LuxPlayerController : LuxController {
             ProcessPlayerDeath();
         });
         
-        InitStates();
-        TransitionToIdle();
+        InitStateManager();
         
         aiHitboxCollider = aiHitboxGameObj.GetComponent<SphereCollider>();
         _aiHitboxPos = aiHitboxGameObj.transform.position;
-
-       
+        hitboxColliderRadius = hitboxGameObj.GetComponent<SphereCollider>().radius;
+        hitboxPos = hitboxGameObj.transform.position;
         projectiles = new List<GameObject>();
+        
         ResetCooldowns();
     }
 
@@ -115,26 +105,20 @@ public class LuxPlayerController : LuxController {
         InitAbilities();
     }
 
-    // Update is called once per frame
-
+    
     private void Update() {
-        
-      
         StateManager.Update();
-
         
         if (globalState.currentScene == "Multiplayer" && !IsOwner) return;
-
         if(hitboxGameObj != null) hitboxPos = hitboxGameObj.transform.position;
         
         ClientBuffManager.Update();
-
+        
         currentState = StateManager.GetCurrentState();
 
         if (StateManager.GetCurrentState() != "AttackingState")
             if (timeSinceLastAttack > 0)
                 timeSinceLastAttack -= Time.deltaTime;
-
     }
     
 
@@ -143,19 +127,17 @@ public class LuxPlayerController : LuxController {
     /// Set the casting strategy for the ability depending on singleplayer/multiplayer
     /// </summary>
     private void InitAbilities() {
-
-        rpc = GetComponent<RPCController>();
         
-        if (AbilitiesList.Count == 0) {
-            AbilitiesList.Add(new AbilityEntry { key = "Q", ability = Instantiate(champion.abilityQ) });
-            AbilitiesList.Add(new AbilityEntry { key = "W", ability = Instantiate(champion.abilityW) });
-            AbilitiesList.Add(new AbilityEntry { key = "E", ability = Instantiate(champion.abilityE) });
-            AbilitiesList.Add(new AbilityEntry { key = "R", ability = Instantiate(champion.abilityR) });
+        if (abilitiesList.Count == 0) {
+            abilitiesList.Add(new AbilityEntry { key = "Q", ability = Instantiate(champion.abilityQ) });
+            abilitiesList.Add(new AbilityEntry { key = "W", ability = Instantiate(champion.abilityW) });
+            abilitiesList.Add(new AbilityEntry { key = "E", ability = Instantiate(champion.abilityE) });
+            abilitiesList.Add(new AbilityEntry { key = "R", ability = Instantiate(champion.abilityR) });
         }
         
         // Initialize the Abilities dictionary using the list
         Abilities = new Dictionary<string, Ability>();
-        foreach (var entry in AbilitiesList) {
+        foreach (var entry in abilitiesList) {
             Abilities[entry.key] = entry.ability;
             BuffEffect buffEffect = new MoveSpeedEffect();
             Abilities[entry.key].buff = new Buff(buffEffect, entry.key, 3, 0);
@@ -164,7 +146,7 @@ public class LuxPlayerController : LuxController {
         ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
 
         if (GlobalState.IsMultiplayer) {
-            castingStrategy = new MultiplayerCastingStrategy(gameObject, rpc);
+            castingStrategy = new MultiplayerCastingStrategy(gameObject, _rpc);
         }
 
         foreach (var ability in Abilities.Values) {
@@ -172,9 +154,13 @@ public class LuxPlayerController : LuxController {
         }
     }
     
-    private void InitStates() {
+    /// <summary>
+    /// Initialise the state manager
+    /// </summary>
+    private void InitStateManager() {
         StateManager = StateManager.Instance;
         _idleState = new IdleState(this);
+        TransitionToIdle();
     }
 
     public void TransitionToIdle() {

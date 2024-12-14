@@ -37,7 +37,6 @@ public class InputController : NetworkBehaviour {
     private StatePayload lastProcessedState;
     private const int k_bufferSize = 1024;
     private const float reconciliationThreshold = 0.5f; // Adjust as needed
-
     
     // Input Data
     private Controls _controls;
@@ -46,12 +45,11 @@ public class InputController : NetworkBehaviour {
     private InputCommand _previousInput;
     private InputCommand _currentInput;
     
-    
     // Flags
-    public bool isAttackClick = false;
-    public bool canCast = false;
-    public bool canAA = false;
-    public bool incompleteMovement = false;
+    public bool isAttackClick;
+    public bool canCast;
+    public bool canAA;
+    public bool incompleteMovement;
     private bool _isNewClick;
     
     // AA Range Indicator
@@ -148,17 +146,17 @@ public class InputController : NetworkBehaviour {
     // Store the position of the click in lastClickPosition
     // Return the input command type
     private InputCommandType GetClickInput() {
-        if (_player.hitboxCollider == null || _player.hitboxGameObj == null) return InputCommandType.None;
+        if (_player.hitboxColliderRadius == 0 || _player.hitboxGameObj == null) return InputCommandType.None;
         
-        var worldRadius = _player.hitboxCollider.radius * _player.hitboxGameObj.transform.lossyScale.x;
+        var worldRadius = _player.hitboxColliderRadius * _player.hitboxGameObj.transform.lossyScale.x;
         Plane plane = new(Vector3.up, new Vector3(0, _player.hitboxPos.y, 0));
         var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         // Detect attack click
         if (Physics.Raycast(ray, out var hit))
             if (hit.collider.name == "Lux_AI") {
-                var Lux_AI = hit.rigidbody.gameObject;
-                ToggleOutlineShader(Lux_AI, "Default");
+                var luxAI = hit.rigidbody.gameObject;
+                ToggleOutlineShader(luxAI, "Default");
                 isAttackClick = true;
                 lastClickPosition = hit.transform.position;
                 projectileAATargetPosition = hit.transform.position;
@@ -285,7 +283,7 @@ public class InputController : NetworkBehaviour {
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if (isAttackClick) {
             var calculatedAttackRange = _player.champion.AA_range * 10 / 2;
-            distance = calculatedAttackRange + _player.hitboxCollider.radius;
+            distance = calculatedAttackRange + _player.hitboxColliderRadius;
         }
 
         return distance;
