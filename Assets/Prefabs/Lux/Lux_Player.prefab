@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: -3961866617289726453}
   - component: {fileID: 954505965918688881}
   - component: {fileID: -7789685537750824561}
+  - component: {fileID: 8212162599132086904}
   m_Layer: 3
   m_Name: Lux_Player
   m_TagString: Player
@@ -255,10 +256,6 @@ MonoBehaviour:
   champion: {fileID: 0}
   globalState: {fileID: 0}
   canMove: 1
-  isAttackClick: 0
-  canCast: 0
-  canAA: 0
-  incompleteMovement: 0
   projectiles: []
   vfxProjectileList: []
   projectileTargetPosition: {x: 0, y: 0, z: 0}
@@ -267,26 +264,20 @@ MonoBehaviour:
   projectileAATargetPosition: {x: 0, y: 0, z: 0}
   timeSinceLastAttack: 0
   hitboxGameObj: {fileID: 1108951634745852663}
-  hitboxCollider: {fileID: 0}
+  hitboxColliderRadius: 0
   direction: {x: 0, y: 0, z: 0}
-  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
-    type: 3}
+  hitboxPos: {x: 0, y: 0, z: 0}
   animator: {fileID: 6881271443565087466}
-  networkAnimator: {fileID: 0}
-  mainCamera: {fileID: 0}
-  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
-    type: 3}
+  networkAnimator: {fileID: -7789685537750824561}
   currentState: 
   luxAI: {fileID: 8614434341074625969, guid: 6bfab754a437a5e448e4f16490c68384, type: 3}
   aiHitboxGameObj: {fileID: 8204268111775070055, guid: 496dcb1505bdf6b43b6101be23f66792,
     type: 3}
   aiHitboxCollider: {fileID: 0}
-  attackStartTime: 0
-  attackStartTimeLogged: 0
-  rpcController: {fileID: 0}
-  AbilitiesList: []
+  abilitiesList: []
   health: {fileID: 0}
   healthBarAnchor: {fileID: 0}
+  mainCamera: {fileID: 0}
 --- !u!114 &3799837274022872123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,34 +360,6 @@ MonoBehaviour:
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 2081823275
-    DestinationState: 1748754976
-    TransitionDuration: 0.1
-    TriggerNameHash: 1239866031
-    TransitionIndex: 0
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -47317214
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1680125592
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 551563386
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 2081823275
     DestinationState: 491268883
     TransitionDuration: 0.25
     TriggerNameHash: 1657161401
@@ -429,34 +392,6 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: 1276664872
     TransitionIndex: 6
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: -47317214
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1680125592
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 551563386
-    DestinationState: 1748754976
-    TransitionDuration: 0.3
-    TriggerNameHash: 1239866031
-    TransitionIndex: 2
-  - IsCrossFadeExit: 0
-    Layer: 0
-    OriginatingState: 1748754976
-    DestinationState: 2081823275
-    TransitionDuration: 0.1
-    TriggerNameHash: 2098831385
-    TransitionIndex: 1
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1748754976
@@ -493,6 +428,32 @@ MonoBehaviour:
     TriggerNameHash: 1276664872
     TransitionIndex: 6
   m_Animator: {fileID: 6881271443565087466}
+--- !u!114 &8212162599132086904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b50f6901d804f11b47876b72865d1f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  projectileAA: {fileID: 0}
+  projectileAATargetPosition: {x: 0, y: 0, z: 0}
+  timeSinceLastAttack: 0
+  projectileTargetPosition: {x: 0, y: 0, z: 0}
+  lastClickPosition: {x: 0, y: 0, z: 0}
+  isAttackClick: 0
+  canCast: 0
+  canAA: 0
+  incompleteMovement: 0
+  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
+    type: 3}
+  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
+    type: 3}
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

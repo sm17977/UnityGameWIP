@@ -7,8 +7,7 @@ public class IdleState : State {
     }
     
     public override void Enter() {
-        playerController.animator.SetTrigger("isIdle");
-        playerController.networkAnimator.SetTrigger("isIdle");
+    
     }
 
     public override void Execute() {
@@ -16,7 +15,6 @@ public class IdleState : State {
     }
 
     public override void Exit() {
-        playerController.animator.ResetTrigger("isIdle");
-        playerController.networkAnimator.ResetTrigger("isIdle");
+ 
     }
 }

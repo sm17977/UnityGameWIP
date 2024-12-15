@@ -76,6 +76,9 @@ public class InputController : NetworkBehaviour {
         serverInputQueue = new Queue<InputPayload>();
     }
     
+    /// <summary>
+    /// Register input events
+    /// </summary>
     private void OnEnable() {
         _controls = new Controls();
         _controls.Player.Enable();
@@ -99,8 +102,7 @@ public class InputController : NetworkBehaviour {
             HandleServerTick();
         }
     }
-
-
+    
     /// <summary>
     /// Movement/AA input
     /// </summary>
@@ -181,10 +183,64 @@ public class InputController : NetworkBehaviour {
         // Default to None type
         return InputCommandType.None;
     }
+    
+    /// <summary>
+    /// Send player input to server, process input immediately client side
+    /// </summary>
+    private void HandleClientTick() {
+        if (!IsClient || !IsOwner) return;
+
+        var currentTick = NetworkTimer.CurrentTick;
+        var bufferIndex = currentTick % k_bufferSize;
+            
+        InputPayload inputPayload = new InputPayload() {
+            Tick = currentTick,
+            TargetPosition = lastClickPosition,
+            AbilityKey = "Q"
+        };
+            
+        clientInputBuffer.Add(inputPayload, bufferIndex);
+        _rpc.SendInputRpc(inputPayload);
+            
+        ProcessInput();
+        
+        clientStateBuffer.Add(new StatePayload() {
+            Position = transform.position,
+            TargetPosition = lastClickPosition
+        }, bufferIndex);
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    private void HandleServerTick() {
+        if (!IsServer) return;
+             
+        var bufferIndex = -1;
+        
+        while (serverInputQueue.Count > 0) {
+            var inputPayload = serverInputQueue.Dequeue();
+            bufferIndex = inputPayload.Tick % k_bufferSize;
+            lastClickPosition = inputPayload.TargetPosition;
+            
+            AddInputToQueue(new InputCommand { Type = InputCommandType.Movement });
+            ProcessInput();
+            
+            StatePayload statePayload = new StatePayload() {
+                Position = transform.position,
+                TargetPosition = lastClickPosition
+            };
+            serverStateBuffer.Add(statePayload, bufferIndex);
+        }
+            
+        if (bufferIndex == -1) return;
+        _rpc.SendStateRpc(serverStateBuffer.Get(bufferIndex));
+        
+    }
 
     
     // Read the input queue to handle movement and casting input commands
-    private void HandleInput() {
+    private void ProcessInput() {
         // Check the queue for any unconsumed input commands
         if (_inputQueue.Count > 0) {
             // Get the next input command
@@ -287,52 +343,6 @@ public class InputController : NetworkBehaviour {
         }
 
         return distance;
-    }
-    
-    public void HandleClientTick() {
-        if (!IsClient || !IsOwner) return;
-
-        var currentTick = NetworkTimer.CurrentTick;
-        var bufferIndex = currentTick % k_bufferSize;
-            
-        InputPayload inputPayload = new InputPayload() {
-            Tick = currentTick,
-            TargetPosition = lastClickPosition
-        };
-            
-        clientInputBuffer.Add(inputPayload, bufferIndex);
-        _rpc.SendInputRpc(inputPayload);
-            
-        HandleInput();
-        clientStateBuffer.Add(new StatePayload() {
-            Position = transform.position,
-            TargetPosition = lastClickPosition
-        }, bufferIndex);
-    }
-    
-    public void HandleServerTick() {
-        if (!IsServer) return;
-             
-        var bufferIndex = -1;
-        InputPayload inputPayload = default;
-        
-        while (serverInputQueue.Count > 0) {
-            inputPayload = serverInputQueue.Dequeue();
-            bufferIndex = inputPayload.Tick % k_bufferSize;
-
-            lastClickPosition = inputPayload.TargetPosition;
-            AddInputToQueue(new InputCommand { Type = InputCommandType.Movement });
-            HandleInput();
-            StatePayload statePayload = new StatePayload() {
-                Position = transform.position,
-                TargetPosition = lastClickPosition
-            };
-            serverStateBuffer.Add(statePayload, bufferIndex);
-        }
-            
-        if (bufferIndex == -1) return;
-        _rpc.SendStateRpc(serverStateBuffer.Get(bufferIndex));
-        
     }
     
     private void ToggleAARange() {

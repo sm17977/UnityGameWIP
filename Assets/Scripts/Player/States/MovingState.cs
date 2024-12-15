@@ -19,15 +19,11 @@ public class MovingState : State {
         _stoppingDistance = _input.GetStoppingDistance();
         _movingToAttack = attack;
     }
-
+//
     public override void Enter() {
         _input.incompleteMovement = true;
-
-        AnimatorStateInfo currentAnimatorStateInfo = _player.animator.GetCurrentAnimatorStateInfo(0);
-        if (!currentAnimatorStateInfo.IsName("isRunning")) {
-            _player.animator.SetTrigger("isRunning");
-            _player.networkAnimator.SetTrigger("isRunning");
-        }
+        _player.animator.SetBool("isRunning", true);
+        Debug.Log("isRunning - true");
     }
 
     public override void Execute() {
@@ -68,9 +64,7 @@ public class MovingState : State {
     }
 
     public override void Exit() {
-        _player.animator.ResetTrigger("isRunning");
-        _player.networkAnimator.ResetTrigger("isRunning");
-        // playerController.animator.SetTrigger("isIdle");
-        // playerController.networkAnimator.SetTrigger("isIdle");
+        _player.animator.SetBool("isRunning", false);
+        Debug.Log("isRunning - false");
     }
 }
