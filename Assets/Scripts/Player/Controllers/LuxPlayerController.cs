@@ -15,8 +15,7 @@ public class LuxPlayerController : LuxController {
     // Skill-shot Projectile
     public List<GameObject> projectiles;
     public List<GameObject> vfxProjectileList;
-    public Vector3 projectileTargetPosition;
-
+    
     // AA Projectile
     public VisualEffect projectileAA;
     public Vector3 projectileAATargetPosition;

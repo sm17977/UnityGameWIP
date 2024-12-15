@@ -39,7 +39,7 @@ public class AttackingState : State {
         GetCurrentAnimationTime();
                 
         // Get the direction the abliity should move towards
-        Vector3 attackDirection = (_player.projectileAATargetPosition - _playerObj.transform.position).normalized;
+        Vector3 attackDirection = (_input.projectileAATargetPosition - _playerObj.transform.position).normalized;
         _player.champion.AA_direction = attackDirection;
 
    

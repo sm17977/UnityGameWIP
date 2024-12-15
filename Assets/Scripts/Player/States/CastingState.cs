@@ -35,8 +35,8 @@ public class CastingState : State {
                 _player.animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.95; // This is set to 0.95 because the normalized time doesn't always reach 100%
         }
        
-        // Get the direction the abliity should move towards
-        Vector3 direction = (_player.projectileTargetPosition - _playerObj.transform.position).normalized;
+        // Get the direction the ability should move towards
+        Vector3 direction = (_input.projectileTargetPosition - _playerObj.transform.position).normalized;
   
         // Rotate the player in the direction the spell was cast
         _player.RotateTowardsTarget(direction);
