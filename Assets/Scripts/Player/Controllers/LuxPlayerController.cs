@@ -102,6 +102,7 @@ public class LuxPlayerController : LuxController {
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
         InitAbilities();
+        if (IsServer) canMove.Value = true;
     }
 
     

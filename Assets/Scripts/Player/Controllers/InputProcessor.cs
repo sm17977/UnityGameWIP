@@ -62,7 +62,6 @@ public class InputProcessor : NetworkBehaviour {
             var command = _inputQueue.Dequeue();
             switch (command.Type) {
                 case InputCommandType.RightClick:
-                    Debug.Log("Move");
                     HandleRightClick();
                     break;
                 case InputCommandType.Movement:
@@ -140,17 +139,17 @@ public class InputProcessor : NetworkBehaviour {
                 return InputCommandType.Movement;
             }
         }
-
-        // Default to None type
+        
         return InputCommandType.None;
     }
 
     private void HandleMovementCommand() {
         ShowMovementIndicator(lastClickPosition);
-        if (_player.canMove) {
+        if (_player.canMove.Value) {
             _player.StateManager.ChangeState(new MovingState(gameObject, false));
+            _networkStateManager.SendMoveCommand(lastClickPosition);
         }
-        _networkStateManager.SendMoveCommand(lastClickPosition);
+        
     }
 
     private void HandleAttackCommand() {

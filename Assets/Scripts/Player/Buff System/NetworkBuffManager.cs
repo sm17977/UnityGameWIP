@@ -126,6 +126,7 @@ public class NetworkBuffManager : NetworkBehaviour {
     /// <param name="buff"></param>
     /// <param name="apply">Whether the buff is applied or removed</param>
     private void UpdateBuffOnServer(ulong targetClientId, Buff buff, bool apply) {
+        if(!IsServer) return;
         var player = NetworkManager.Singleton.ConnectedClients[targetClientId].PlayerObject.gameObject;
         var playerScript = player.GetComponent<LuxPlayerController>();
         if (apply) {

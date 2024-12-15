@@ -11,7 +11,7 @@ public class LuxController : NetworkBehaviour {
     public Champion champion;
     public ClientBuffManager ClientBuffManager;
     public GlobalState globalState;
-    public bool canMove = true;
+    public NetworkVariable<bool> canMove = new NetworkVariable<bool>();
     
     public void ProcessPlayerDeath(){
         if(playerType == PlayerType.Player && !GlobalState.IsMultiplayer){
@@ -19,7 +19,7 @@ public class LuxController : NetworkBehaviour {
         }
 
         if (playerType == PlayerType.Player && GlobalState.IsMultiplayer) {
-            canMove = false;
+            //canMove.Value = false;
         }
     }
     

@@ -30,7 +30,7 @@ public class MovingState : State {
 
     public override void Execute() {
         
-        if(!_player.canMove){
+        if(!_player.canMove.Value){
             _player.TransitionToIdle();
         }
 
