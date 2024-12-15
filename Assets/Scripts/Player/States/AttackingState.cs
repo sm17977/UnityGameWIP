@@ -4,7 +4,7 @@ public class AttackingState : State {
 
     private GameObject _playerObj;
     private LuxPlayerController _player;
-    private InputController _input;
+    private InputProcessor _input;
     private VFXController _vfxController;
 
     private Vector3 _direction;
@@ -17,7 +17,7 @@ public class AttackingState : State {
     public AttackingState(GameObject gameObject) {
         _playerObj = gameObject;
         _player = _playerObj.GetComponent<LuxPlayerController>();
-        _input = _playerObj.GetComponent<InputController>();
+        _input = _playerObj.GetComponent<InputProcessor>();
         _direction = _player.direction;
         _playerObj = gameObject;
         _windupTime = _player.champion.windupTime;

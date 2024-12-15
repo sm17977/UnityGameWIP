@@ -1,6 +1,6 @@
 
 using Unity.Netcode;
-public enum InputCommandType { Movement, CastSpell, Attack, None, Init};
+public enum InputCommandType { Movement, CastSpell, Attack, None, Init, ToggleAARange, RightClick};
 public struct InputCommand{
     public InputCommandType Type;
     public string Key;

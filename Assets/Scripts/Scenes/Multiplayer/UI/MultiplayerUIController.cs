@@ -21,7 +21,7 @@ public class MultiplayerUIController : MonoBehaviour {
     // Player
     private GameObject _player;
     private LuxPlayerController _playerScript;
-    private InputController _input;
+    private InputProcessor _input;
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
@@ -187,7 +187,7 @@ public class MultiplayerUIController : MonoBehaviour {
             _player = player;
             if (_player != null) {
                 _playerScript = _player.GetComponent<LuxPlayerController>();
-                _input = _player.GetComponent<InputController>();
+                _input = _player.GetComponent<InputProcessor>();
                 _input.NotifyUICooldown += (key, duration) => {
                     _gameView.ActivateAbilityAnimation(key, duration);
                 };

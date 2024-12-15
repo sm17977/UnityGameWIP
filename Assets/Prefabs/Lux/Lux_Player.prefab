@@ -112,9 +112,11 @@ GameObject:
   - component: {fileID: 1732250947714356030}
   - component: {fileID: 3799837274022872123}
   - component: {fileID: -3961866617289726453}
+  - component: {fileID: 5362854548189572190}
+  - component: {fileID: 833371891401816774}
+  - component: {fileID: 257863783551457560}
   - component: {fileID: 954505965918688881}
   - component: {fileID: -7789685537750824561}
-  - component: {fileID: 8212162599132086904}
   m_Layer: 3
   m_Name: Lux_Player
   m_TagString: Player
@@ -202,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4260087488
+  GlobalObjectIdHash: 2974585148
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -258,7 +260,6 @@ MonoBehaviour:
   canMove: 1
   projectiles: []
   vfxProjectileList: []
-  projectileTargetPosition: {x: 0, y: 0, z: 0}
   projectileAA: {fileID: -2805702098513475222, guid: 29fa2eb67abbac245acc53af4efdabf7,
     type: 3}
   projectileAATargetPosition: {x: 0, y: 0, z: 0}
@@ -307,6 +308,56 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   maxHealth: 100
+--- !u!114 &5362854548189572190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7502f69b6d264bb0864be5ed387cd85c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &833371891401816774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe67813956ac46be9cf3ce957740c370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _player: {fileID: 1732250947714356030}
+  _networkStateManager: {fileID: 257863783551457560}
+  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
+    type: 3}
+  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
+    type: 3}
+  projectileTargetPosition: {x: 0, y: 0, z: 0}
+  lastClickPosition: {x: 0, y: 0, z: 0}
+  projectileAATargetPosition: {x: 0, y: 0, z: 0}
+  isAttackClick: 0
+  canCast: 0
+  incompleteMovement: 0
+  canAA: 0
+--- !u!114 &257863783551457560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e886f3a34d846ea9e59db6ecfa17cef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &954505965918688881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,32 +479,6 @@ MonoBehaviour:
     TriggerNameHash: 1276664872
     TransitionIndex: 6
   m_Animator: {fileID: 6881271443565087466}
---- !u!114 &8212162599132086904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b50f6901d804f11b47876b72865d1f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  projectileAA: {fileID: 0}
-  projectileAATargetPosition: {x: 0, y: 0, z: 0}
-  timeSinceLastAttack: 0
-  projectileTargetPosition: {x: 0, y: 0, z: 0}
-  lastClickPosition: {x: 0, y: 0, z: 0}
-  isAttackClick: 0
-  canCast: 0
-  canAA: 0
-  incompleteMovement: 0
-  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
-    type: 3}
-  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
-    type: 3}
 --- !u!1 &293955644499432079
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,13 +9,13 @@ public class RPCController : NetworkBehaviour {
     public static event Action<GameObject> NetworkSpawn;
     
     private LuxPlayerController _playerController;
-    private InputController _input;
+    private NetworkStateManager _networkState;
     private GameObject _player;
     private GameObject _players;
     
     private void Start() {
         _playerController = GetComponent<LuxPlayerController>();
-        _input = GetComponent<InputController>();
+        _networkState = GetComponent<NetworkStateManager>();
         _player = gameObject;
     }
 
@@ -37,7 +37,7 @@ public class RPCController : NetworkBehaviour {
     /// <param name="input"></param>
     [Rpc(SendTo.Server)]
     public void SendInputRpc(InputPayload input) {
-        _input.serverInputQueue.Enqueue(input);
+        _networkState.serverInputQueue.Enqueue(input);
     }
     
     /// <summary>
@@ -47,7 +47,7 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.ClientsAndHost)]
     public void SendStateRpc(StatePayload statePayload) {
         if (!IsOwner) return;
-        _input.lastServerState = statePayload;
+        _networkState.lastServerState = statePayload;
     }
 
     /// <summary>

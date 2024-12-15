@@ -4,7 +4,7 @@ public class CastingState : State {
 
     private GameObject _playerObj;
     private LuxPlayerController _player;
-    private InputController _input;
+    private InputProcessor _input;
     
     private Ability _ability;
     private bool _castingFinished;
@@ -12,7 +12,7 @@ public class CastingState : State {
     public CastingState (GameObject gameObject, Ability ability){
         _playerObj = gameObject;
         _player = _playerObj.GetComponent<LuxPlayerController>();
-        _input = _playerObj.GetComponent<InputController>();
+        _input = _playerObj.GetComponent<InputProcessor>();
         _ability = ability;
     }
 

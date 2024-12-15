@@ -4,7 +4,8 @@ public class MovingState : State {
     
     private GameObject _playerObj;
     private LuxPlayerController _player;
-    private InputController _input;
+    private InputProcessor _input;
+    private NetworkStateManager _networkState;
     
     private Vector3 _targetLocation;
     private float _stoppingDistance;
@@ -13,7 +14,8 @@ public class MovingState : State {
     public MovingState(GameObject gameObject, bool attack) {
         _playerObj = gameObject;
         _player = _playerObj.GetComponent<LuxPlayerController>();
-        _input = _playerObj.GetComponent<InputController>();
+        _input = _playerObj.GetComponent<InputProcessor>();
+        _networkState = _playerObj.GetComponent<NetworkStateManager>();
         
         _targetLocation = _input.lastClickPosition;
         _stoppingDistance = _input.GetStoppingDistance();
@@ -57,7 +59,7 @@ public class MovingState : State {
     }
 
     void MoveAndRotate(Vector3 direction) {
-        float lerpFraction = _input.NetworkTimer.MinTimeBetweenTicks /  Time.deltaTime;
+        float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks /  Time.deltaTime;
         // Move player towards last mouse click 
         _playerObj.transform.Translate(_player.champion.movementSpeed * lerpFraction * direction, Space.World);
         _player.RotateTowardsTarget(direction);

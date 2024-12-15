@@ -10,7 +10,7 @@ public class LuxPlayerController : LuxController {
     
     // PLayer Scripts
     private RPCController _rpc;
-    private InputController _input;
+    private InputProcessor _input;
     
     // Skill-shot Projectile
     public List<GameObject> projectiles;
@@ -66,7 +66,7 @@ public class LuxPlayerController : LuxController {
         healthBarAnchor = transform.Find("HealthBarAnchor").gameObject;
         
         networkAnimator = GetComponent<ClientNetworkAnimator>();
-        _input = GetComponent<InputController>();
+        _input = GetComponent<InputProcessor>();
         _rpc = GetComponent<RPCController>();
         health = GetComponent<Health>();
         
