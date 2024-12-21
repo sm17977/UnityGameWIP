@@ -40,6 +40,7 @@
         public const string Shutdown = "SHUTDOWN";
         public const string AwaitingSetup = "AWAITING_SETUP";
         public const string Booting = "BOOTING";
+        public const string ShuttingDown = "SHUTTING_DOWN";
     }
 }
 

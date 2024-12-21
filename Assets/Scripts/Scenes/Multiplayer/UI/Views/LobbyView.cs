@@ -40,6 +40,12 @@ namespace Multiplayer.UI {
                         {"text", "Shutdown"}
                     }
                 },
+                { MachineStatus.ShuttingDown,
+                    new Dictionary<string, string>() {
+                        {"className", "server-status-default"},
+                        {"text", "Shutting Down"}
+                    }
+                },
                 { MachineStatus.Booting,
                     new Dictionary<string, string>() {
                         {"className", "server-status-booting"},
