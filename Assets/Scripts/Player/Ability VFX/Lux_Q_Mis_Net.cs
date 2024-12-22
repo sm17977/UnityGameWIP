@@ -20,7 +20,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
 
     // Projectile hitbox
     private GameObject _hitbox;
-    private Transform _localProjectilePool;
+    private Transform _clientProjectilePool;
     
     // Collision
     private LuxPlayerController _target;
@@ -54,54 +54,34 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
 
     // Detect projectile hitbox collision with enemy 
     private void OnCollisionEnter(Collision collision) {
-        ProcessMultiplayerCollision(collision);
-    }
-    
-    private void ProcessMultiplayerCollision(Collision collision) {
         if (!IsServer) return;
+        if (!collision.gameObject.CompareTag("Player")) return;
+
+        Debug.Log("Collision with Player: " + collision.gameObject.name);
+
+        var collisionPos = collision.gameObject.transform.position;
+        var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
+        var enemyClientId = playerNetworkObject.OwnerClientId;
+        var isDifferentPlayer = enemyClientId != spawnedByClientId;
         
-        try {
-            if (!collision.gameObject.CompareTag("Player")) return;
-
-            Debug.Log("Collision with Player: " + collision.gameObject.name);
-
-            var collisionPos = collision.gameObject.transform.position;
-            var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
-            var enemyClientId = playerNetworkObject.OwnerClientId;
-            var isDifferentPlayer = enemyClientId != spawnedByClientId;
+        Debug.Log("Source ID: " + spawnedByClientId + ", Enemy ID: " + enemyClientId + ", Different Player?: " +
+                  isDifferentPlayer + ", hasHit: " + hasHit);
+        
+        if (playerType == PlayerType.Player && isDifferentPlayer && !hasHit) {
+            Debug.Log("Hit enemy!");
+            hasHit = true;
+            _target = collision.gameObject.GetComponent<LuxPlayerController>();
+            _target.health.TakeDamage(ability.damage);
             
-            Debug.Log("Source ID: " + spawnedByClientId + ", Enemy ID: " + enemyClientId + ", Different Player?: " +
-                      isDifferentPlayer + ", hasHit: " + hasHit);
-
-
-            if (playerType == PlayerType.Player && isDifferentPlayer && !hasHit) {
-                Debug.Log("Hit enemy!");
-                hasHit = true;
-                try {
-                    _target = collision.gameObject.GetComponent<LuxPlayerController>();
-                    _target.health.TakeDamage(ability.damage);
-                }
-                catch (Exception e) {
-                    Debug.Log("Error trying to get LuxController: " + e.Message);
-                }
-                
-                // if(!target.BuffManager.HasBuffApplied(ability.buff)){
-                //     SpawnHitVfx(collision.gameObject);
-                //
-                
-                string jsonMappings = JsonConvert.SerializeObject(Mappings);
-                TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
-                NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
-                DestroyProjectile();
-            }
-        }
-        catch(Exception e) {
-            Debug.LogError(e);
+            string jsonMappings = JsonConvert.SerializeObject(Mappings);
+            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
+            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+            DestroyProjectile();
         }
     }
     
     private void DestroyProjectile() {
-        ServerProjectilePool.Instance.ReturnProjectileToPool(gameObject);
+        ServerProjectilePool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
         canBeDestroyed = false;
     }
 
@@ -111,13 +91,16 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         // Get the projectile that collided
         var clientProjectile = GetClientCollidedProjectile(jsonMappings);
         if (clientProjectile == null) return;
-        
-        // Deactivate the projectile
-        ClientProjectilePool.Instance.ReturnObjectToPool(clientProjectile);
 
         // Get player that was hit
         var player = GetHitPlayer(collisionNetworkObjectId);
         if(player == null) return;
+        
+        var playerScript = player.GetComponent<LuxPlayerController>();
+        var projectileAbility = playerScript.Abilities["Q"];
+        
+        // Deactivate the projectile
+        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, clientProjectile);
         
         // Spawn the hit VFX
         SpawnClientHitVFX(position, player);
@@ -133,7 +116,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         GameObject localProjectile = null;
         
         // First find the parent game object that holds all the projectiles
-        _localProjectilePool = GameObject.Find("Client Projectile Pool").transform;
+        _clientProjectilePool = GameObject.Find("Client Object Pool").transform;
         
         // Deserialize the json mappings into a dictionary
         Dictionary<int, ulong> mappings = JsonConvert.DeserializeObject<Dictionary<int, ulong>>(jsonMappings);
@@ -141,7 +124,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         // Iterate over mappings to find the correct projectile for this client
         foreach (var key in mappings.Keys) {
             if (NetworkManager.LocalClientId == mappings[key]) {
-                localProjectile = _localProjectilePool?.Find(key.ToString())?.gameObject;
+                localProjectile = _clientProjectilePool?.Find(key.ToString())?.gameObject;
                 break;
             }
         }
@@ -175,11 +158,13 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     /// <param name="position">The position to spawn the hit VFX</param>
     /// <param name="player">The player that was hit</param>
     private void SpawnClientHitVFX(Vector3 position, GameObject player) {
-        var hitPrefab = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Hit);
-        var hitScript = hitPrefab.GetComponent<Lux_Q_Hit>();
         var playerScript = player.GetComponent<LuxPlayerController>();
         var hitAbility = playerScript.Abilities["Q"];
- 
+        var hitPrefab = ClientObjectPool.Instance.GetPooledObject(hitAbility, AbilityPrefabType.Hit);
+        var hitScript = hitPrefab.GetComponent<Lux_Q_Hit>();
+        
+        // We have to do this because we don't call InitProjectileProperties on the hit script
+        // TODO: Add function specifically to init hit VFX scripts?
         hitScript.SetAbility(hitAbility);
         hitScript.target = player;
         hitPrefab.transform.position = position;

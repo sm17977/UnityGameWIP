@@ -106,7 +106,7 @@ public class Lux_Q_Mis : ProjectileAbility {
     }
     
     private void DestroyProjectile() {
-        ClientProjectilePool.Instance.ReturnObjectToPool(gameObject);
+        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
         canBeDestroyed = false;
     }
 

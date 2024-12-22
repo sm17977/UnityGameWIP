@@ -15,14 +15,15 @@ public class ProjectileAbility : MonoBehaviour {
     public List<GameObject> projectiles;
     public PlayerType playerType;
     public bool hasHit;
+    public bool isHit;
     
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
    /// </summary>
    /// <param name="direction"></param>
-   /// <param name="ability"></param>
-   /// <param name="playerProjectiles"></param>
-   /// <param name="playerType"></param>
+   /// <param name="abilityData"></param>
+   /// <param name="projectileList"></param>
+   /// <param name="type"></param>
     public void InitProjectileProperties(Vector3 direction, Ability abilityData, List<GameObject> projectileList, PlayerType type){
 
         projectileDirection = direction;
@@ -36,7 +37,6 @@ public class ProjectileAbility : MonoBehaviour {
         hasHit = false;
         remainingDistance = Mathf.Infinity;
         canBeDestroyed = false;
-        
     }
 
     public virtual void ResetVFX() {}

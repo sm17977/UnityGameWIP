@@ -61,7 +61,7 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId, string abilityKey) {
         
-        var newNetworkProjectile = ServerProjectilePool.Instance.GetPooledProjectile();
+        var newNetworkProjectile = ServerProjectilePool.Instance.GetPooledObject(_playerController.Abilities[abilityKey], AbilityPrefabType.Projectile);
         if (newNetworkProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;
@@ -104,8 +104,10 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.NotOwner)]
     private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
+
+            var ability = _playerController.Abilities[abilityKey];
         
-            var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
+            var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
             if (newProjectile == null) {
                 Debug.Log("No available projectiles in the pool");
             }
@@ -120,7 +122,7 @@ public class RPCController : NetworkBehaviour {
             // Initialize projectile properties on the server
             var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
             if (projectileScript != null) {
-                projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey],
+                projectileScript.InitProjectileProperties(direction, ability,
                     _playerController.projectiles, _playerController.playerType);
                 projectileScript.ResetVFX();
             }

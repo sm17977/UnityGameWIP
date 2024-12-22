@@ -5,8 +5,7 @@ using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Lux_Q_Hit : ProjectileAbility
-{
+public class Lux_Q_Hit : ProjectileAbility {
     // Target hit
     public GameObject target;
  
@@ -212,7 +211,7 @@ public class Lux_Q_Hit : ProjectileAbility
                 _startFadeOut = false;
                 canBeDestroyed = true;
                 if (GlobalState.IsMultiplayer) {
-                    ClientProjectilePool.Instance.ReturnObjectToPool(gameObject);
+                    ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Hit, gameObject);
                 }
             }
         }

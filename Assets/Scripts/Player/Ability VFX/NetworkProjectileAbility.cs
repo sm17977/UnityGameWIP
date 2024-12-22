@@ -34,8 +34,6 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         projectileLifetime = abilityData.GetProjectileLifetime();
         
         ability = abilityData;
-
-        Debug.Log("NETWORK PROJECTILE ABILITY - " + ability.buff.ID );
         
         playerType = type;
         hasHit = false;
@@ -49,20 +47,20 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     /// <summary>
     /// Moves a projectile transform towards target position
     /// </summary>
-    /// <param name="transform"></param>
+    /// <param name="missileTransform"></param>
     /// <param name="initialPosition"></param>
-    protected void MoveProjectile(Transform transform, Vector3 initialPosition){
+    protected void MoveProjectile(Transform missileTransform, Vector3 initialPosition){
         
         // The distance the projectile moves per frame
         float distance = Time.deltaTime * projectileSpeed;
 
         // The current remaining distance the projectile must travel to reach projectile range
-        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(missileTransform.position, initialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
         float travelDistance = Mathf.Min(distance, remainingDistance);
 
         // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        missileTransform.Translate(projectileDirection * travelDistance, Space.World);
     }
 }

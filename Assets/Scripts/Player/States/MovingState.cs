@@ -21,11 +21,10 @@ public class MovingState : State {
         _stoppingDistance = _input.GetStoppingDistance();
         _movingToAttack = attack;
     }
-//
+
     public override void Enter() {
         _input.incompleteMovement = true;
         _player.animator.SetBool("isRunning", true);
-        Debug.Log("isRunning - true");
     }
 
     public override void Execute() {
@@ -67,6 +66,5 @@ public class MovingState : State {
 
     public override void Exit() {
         _player.animator.SetBool("isRunning", false);
-        Debug.Log("isRunning - false");
     }
 }

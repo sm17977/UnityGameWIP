@@ -3,101 +3,106 @@ using UnityEngine.VFX;
 
 public class Lux_E_Mis : ProjectileAbility
 {
-    private Vector3 initialPosition;
+    private Vector3 _initialPosition;
 
     // GameObjects
-    private GameObject particles;
-    private GameObject orb;
-    private GameObject ring;
-    private GameObject particlesIn;
-    private GameObject distortionQuad;
-    private GameObject explosion;
-    private GameObject shockwaveQuad;
+    private GameObject _particles;
+    private GameObject _orb;
+    private GameObject _ring;
+    private GameObject _particlesIn;
+    private GameObject _distortionQuad;
+    private GameObject _explosion;
+    private GameObject _shockwaveQuad;
 
     // VFX
-    private VisualEffect particlesVfx;
-    private VisualEffect orbVfx;
-    private VisualEffect ringVfx;
-    private VisualEffect particlesInVfx;
-    private VisualEffect explosionVfx;
+    private VisualEffect _particlesVfx;
+    private VisualEffect _orbVfx;
+    private VisualEffect _ringVfx;
+    private VisualEffect _particlesInVfx;
+    private VisualEffect _explosionVfx;
 
-    private bool canPlayRingVfx = true;
-    private bool canPlayExplosionVfx = true;
-    private bool canTestQuads = true;
-    private float currentLingeringLifetime;
-    private float totalLifetime;
+    private bool _canPlayRingVfx = true;
+    private bool _canPlayExplosionVfx = true;
+    private bool _canTestQuads = true;
+    private float _currentLingeringLifetime;
+    private float _totalLifetime;
    
     void Start(){
 
-        totalLifetime = projectileLifetime + ability.lingeringLifetime;
-        currentLingeringLifetime = ability.lingeringLifetime;
+        _totalLifetime = projectileLifetime + ability.lingeringLifetime;
+        _currentLingeringLifetime = ability.lingeringLifetime;
 
         // Store projectile start position in order to calculate remaining distance
-        initialPosition = transform.position;
+        _initialPosition = transform.position;
 
-        particles = transform.GetChild(1).gameObject;
-        particlesVfx = particles.GetComponent<VisualEffect>();
-        particlesVfx.SetFloat("lifetime", totalLifetime);
-        particlesVfx.Play();
+        _particles = transform.GetChild(1).gameObject;
+        _particlesVfx = _particles.GetComponent<VisualEffect>();
+        _particlesVfx.SetFloat("lifetime", _totalLifetime);
+        _particlesVfx.Play();
 
-        orb = transform.GetChild(2).gameObject;
-        orbVfx = orb.GetComponent<VisualEffect>();
-        orbVfx.SetFloat("lifetime", totalLifetime);
-        orbVfx.Play();
+        _orb = transform.GetChild(2).gameObject;
+        _orbVfx = _orb.GetComponent<VisualEffect>();
+        _orbVfx.SetFloat("lifetime", _totalLifetime);
+        _orbVfx.Play();
 
-        distortionQuad = transform.GetChild(0).gameObject;
-        shockwaveQuad = transform.GetChild(6).gameObject;
+        _distortionQuad = transform.GetChild(0).gameObject;
+        _shockwaveQuad = transform.GetChild(6).gameObject;
 
-        ring = transform.GetChild(3).gameObject;
-        ringVfx = ring.GetComponent<VisualEffect>();
-        ringVfx.SetFloat("lifetime", ability.lingeringLifetime);
+        _ring = transform.GetChild(3).gameObject;
+        _ringVfx = _ring.GetComponent<VisualEffect>();
+        _ringVfx.SetFloat("lifetime", ability.lingeringLifetime);
 
-        particlesIn = transform.GetChild(4).gameObject;
-        particlesInVfx = particlesIn.GetComponent<VisualEffect>();
-        particlesInVfx.SetFloat("lifetime", ability.lingeringLifetime);
+        _particlesIn = transform.GetChild(4).gameObject;
+        _particlesInVfx = _particlesIn.GetComponent<VisualEffect>();
+        _particlesInVfx.SetFloat("lifetime", ability.lingeringLifetime);
          
-        explosion = transform.GetChild(5).gameObject;
-        explosionVfx = explosion.GetComponent<VisualEffect>();
+        _explosion = transform.GetChild(5).gameObject;
+        _explosionVfx = _explosion.GetComponent<VisualEffect>();
 
     }
 
     void Update(){
 
         // Move object
-        MoveProjectile(transform, initialPosition);
+        MoveProjectile(transform, _initialPosition);
 
         // Play ring and particles when the projectile reaches target and stops moving
         if(remainingDistance <= 0){
 
-            if(canPlayRingVfx){
+            if(_canPlayRingVfx){
 
                 // Play the E Ring and Particles VFX now the projectile has landed
-                ringVfx.Play();
-                particlesInVfx.Play();
-                canPlayRingVfx = false;
+                _ringVfx.Play();
+                _particlesInVfx.Play();
+                _canPlayRingVfx = false;
             }
             else{
-                currentLingeringLifetime -= Time.deltaTime;
+                _currentLingeringLifetime -= Time.deltaTime;
             }
 
-            if(currentLingeringLifetime <= 0 && canPlayExplosionVfx){
+            if(_currentLingeringLifetime <= 0 && _canPlayExplosionVfx){
                 // Turn off pinch distortion
-                distortionQuad.SetActive(false);
+                _distortionQuad.SetActive(false);
 
                 // Turn on shockwave distortion
-                shockwaveQuad.SetActive(true);
+                _shockwaveQuad.SetActive(true);
 
-                explosionVfx.Play();
+                _explosionVfx.Play();
 
-                canTestQuads = false;
-                canPlayExplosionVfx = false;
+                _canTestQuads = false;
+                _canPlayExplosionVfx = false;
             }
 
-            if(currentLingeringLifetime <= -0.5){
+            if(_currentLingeringLifetime <= -0.5){
                 // Turn off shockwave distortion
-                shockwaveQuad.SetActive(false);
+                _shockwaveQuad.SetActive(false);
                 canBeDestroyed = true;
+                ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
             }
         }
+    }
+    
+    public override void ResetVFX() {
+      
     }
 }

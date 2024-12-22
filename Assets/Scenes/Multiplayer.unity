@@ -613,7 +613,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolSize: 10
-  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  abilityPool:
+  - {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  - {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
 --- !u!4 &546521814
 Transform:
   m_ObjectHideFlags: 0
@@ -1145,7 +1147,7 @@ GameObject:
   - component: {fileID: 1599386340}
   - component: {fileID: 1599386339}
   m_Layer: 0
-  m_Name: Client Projectile Pool
+  m_Name: Client Object Pool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1164,7 +1166,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolSize: 5
-  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  abilityPool:
+  - {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
+  - {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
+  _pool:
+    _serializedList: []
 --- !u!4 &1599386340
 Transform:
   m_ObjectHideFlags: 0

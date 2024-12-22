@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eeea76e6b8ef5240a03dc2e4f72283b, type: 3}
   m_Name: Lux_Q
   m_EditorClassIdentifier: 
-  abilityName: 
+  abilityName: LuxQ
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: Q
+  abilityType: 0
   damage: 80
   currentCooldown: 0
   maxCooldown: 4
   range: 10
   speed: 5
   lingeringLifetime: 0
-  buff: {fileID: 11400000, guid: e047f18e11ea22b44a0d1c4f8cc525c8, type: 2}
   missilePrefab: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94,
     type: 3}
   networkMissilePrefab: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,

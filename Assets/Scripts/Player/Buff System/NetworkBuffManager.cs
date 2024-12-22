@@ -24,13 +24,6 @@ public class NetworkBuffManager : NetworkBehaviour {
         _buffStore = new();
     }
     
-    private void Awake() {
-    }
-
-    private void Start() {
-    }
-
-    
     /// <summary>
     /// Add a player to the buff store
     /// </summary>
@@ -46,17 +39,7 @@ public class NetworkBuffManager : NetworkBehaviour {
         if (_buffStore.ContainsKey(clientId)) _buffStore.Remove(clientId);
     }
 
-    public Dictionary<string, string> GetBuffs(ulong clientId) {
-        var buffIds = new Dictionary<string, string>();
-
-        foreach (var buffRecord in _buffStore[clientId]) {
-            buffIds["Q"] = buffRecord.Buff.ID;
-            break;
-        }
-
-        return buffIds;
-    }
-
+    
     /// <summary>
     /// Update the buff manager to handle buff duration
     /// </summary>
@@ -81,7 +64,6 @@ public class NetworkBuffManager : NetworkBehaviour {
                     // Store buffs that have ended
                     if (buff.IsExpired(serverTimeNow)) {
                         buffsToRemove.Add(buffRecord);
-                        // Notify server and clients to remove the buff with attacker and target IDs
                         UpdateBuffOnServer(targetClientId, buff, false);
                     }
                 }
@@ -111,13 +93,9 @@ public class NetworkBuffManager : NetworkBehaviour {
             Debug.Log("Added entry of buff/debuff to " + targetClientId + " which will expire at " + buff.BuffEndTime);
             var buffRecord = new BuffRecord(buff, sourceClientId);
             _buffStore[targetClientId].Add(buffRecord);
-
-            // Update buff on server and clients with attackerClientId
             UpdateBuffOnServer(targetClientId, buff, true);
-            //ApplyBuffOnClient(targetClientId, sourceClientId, buff.Key);
         }
     }
-
 
     /// <summary>
     /// Apply buff to the player on the server 
@@ -135,30 +113,5 @@ public class NetworkBuffManager : NetworkBehaviour {
         else {
             playerScript.RemoveBuff(buff);
         }
-    }
-
-    /// <summary>
-    /// Apply buff to the client receiving the buff
-    /// </summary>
-    /// <param name="targetClientId"></param>
-    /// <param name="sourceClientId"></param>
-    /// <param name="buffId"></param>
-    /// <param name="apply">Whether the buff is applied or removed</param>
-    private void ApplyBuffOnClient(ulong targetClientId, ulong sourceClientId, string abilityKey) {
-        var targetPlayer = NetworkManager.Singleton.ConnectedClients[targetClientId].PlayerObject.gameObject;
-        var sourcePlayer = NetworkManager.Singleton.ConnectedClients[sourceClientId].PlayerObject.gameObject;
-        var test = NetworkManager.Singleton.ConnectedClients[sourceClientId].PlayerObject.gameObject
-            .GetComponent<NetworkObject>();
-        var sourcePlayerScript = sourcePlayer.GetComponent<LuxController>();
-        var champion = sourcePlayerScript.champion.championName;
-        var rpcController = targetPlayer.GetComponent<RPCController>();
-        rpcController.ApplyBuffRpc(targetClientId, champion, abilityKey, test);
-    }
-
-    public bool FindBuff(ulong clientId, string abilityKey) {
-        if(_buffStore.TryGetValue(clientId, out var buffRecords)) {
-            return buffRecords.Any(buffRecord => buffRecord.Buff.Key == abilityKey);
-        }
-        return false;
     }
 }

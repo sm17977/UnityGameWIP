@@ -31,8 +31,9 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
     }
     
     public void Cast(Ability ability, Vector3 direction, Vector3 abilitySpawnPos) {
-        
-        var newProjectile = ClientProjectilePool.Instance.GetPooledObject(ProjectileType.Projectile);
+
+        Debug.Log("Cast");
+        var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
         if (newProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;
