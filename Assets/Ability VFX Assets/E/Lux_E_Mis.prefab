@@ -554,7 +554,7 @@ GameObject:
   - component: {fileID: -3310267217153774861}
   m_Layer: 0
   m_Name: Lux_E_Mis
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -599,7 +599,11 @@ MonoBehaviour:
   projectileLifetime: 0
   remainingDistance: Infinity
   canBeDestroyed: 0
-  abilityData: {fileID: 0}
+  ability: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
+  projectiles: []
+  playerType: 0
+  hasHit: 0
+  isHit: 0
 --- !u!1 &7969168761625470230
 GameObject:
   m_ObjectHideFlags: 0

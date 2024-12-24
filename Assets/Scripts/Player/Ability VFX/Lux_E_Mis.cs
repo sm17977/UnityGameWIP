@@ -28,7 +28,7 @@ public class Lux_E_Mis : ProjectileAbility
     private float _totalLifetime;
    
     void Start(){
-
+        
         _totalLifetime = projectileLifetime + ability.lingeringLifetime;
         _currentLingeringLifetime = ability.lingeringLifetime;
 
@@ -103,6 +103,24 @@ public class Lux_E_Mis : ProjectileAbility
     }
     
     public override void ResetVFX() {
-      
+        
+        Start();
+        
+        _particlesVfx.Stop();
+        _orbVfx.Stop();
+        _ringVfx.Stop();
+        _particlesInVfx.Stop();
+        _explosionVfx.Stop();
+        
+        _canPlayRingVfx = true;
+        _canPlayExplosionVfx = true;
+        _canTestQuads = true;
+        canBeDestroyed = false;  
+        
+        _distortionQuad.SetActive(true);
+        _shockwaveQuad.SetActive(false);
+
+        _particlesVfx.Play();
+        _orbVfx.Play();
     }
 }

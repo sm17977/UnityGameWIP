@@ -19,7 +19,7 @@ MonoBehaviour:
   damage: 80
   currentCooldown: 0
   maxCooldown: 2
-  range: 12
+  range: 6
   speed: 5.8
   lingeringLifetime: 4
   missilePrefab: {fileID: 7768291782423510599, guid: ba05f37d1d1d21549b0e29a5bd159bbb,

@@ -74,7 +74,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
             _target.health.TakeDamage(ability.damage);
             
             string jsonMappings = JsonConvert.SerializeObject(Mappings);
-            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId);
+            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
             NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
             DestroyProjectile();
         }
@@ -86,7 +86,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId) {
+    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
 
         // Get the projectile that collided
         var clientProjectile = GetClientCollidedProjectile(jsonMappings);
@@ -97,7 +97,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         if(player == null) return;
         
         var playerScript = player.GetComponent<LuxPlayerController>();
-        var projectileAbility = playerScript.Abilities["Q"];
+        var projectileAbility = playerScript.Abilities[abilityKey];
         
         // Deactivate the projectile
         ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, clientProjectile);
