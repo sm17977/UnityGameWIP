@@ -61,7 +61,7 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId, string abilityKey) {
         
-        var newNetworkProjectile = ServerProjectilePool.Instance.GetPooledObject(_playerController.Abilities[abilityKey], AbilityPrefabType.Projectile);
+        var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(_playerController.Abilities[abilityKey], AbilityPrefabType.Projectile);
         if (newNetworkProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;
@@ -147,7 +147,7 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     private void UpdateMappingsServerRpc(ulong clientId, int localProjectileId, int networkInstanceId) {
         var networkProjectile = GameObject.Find(networkInstanceId.ToString());
-        var networkProjectileScript = networkProjectile.GetComponent<Lux_Q_Mis_Net>();
+        var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
         networkProjectileScript.Mappings[localProjectileId] = clientId;
     }
 

@@ -30,9 +30,6 @@ public class Buff{
     }
 
     public bool IsExpired(double serverTimeNow) {
-        Debug.Log("ServerTimeNow: " + serverTimeNow);
-        Debug.Log("BuffEndTime: " + BuffEndTime);
-        Debug.Log("Buff isExpired? " + (serverTimeNow >= BuffEndTime));
         return serverTimeNow >= BuffEndTime;
     }
 }

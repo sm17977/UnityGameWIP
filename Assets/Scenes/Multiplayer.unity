@@ -594,7 +594,7 @@ GameObject:
   - component: {fileID: 546521814}
   - component: {fileID: 546521813}
   m_Layer: 0
-  m_Name: Server Projectile Pool
+  m_Name: Server Object Pool
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -613,6 +613,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   poolSize: 10
+  _pool:
+    _serializedList: []
   abilityPool:
   - {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   - {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}

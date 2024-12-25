@@ -4,8 +4,8 @@ using AYellowpaper.SerializedCollections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ServerProjectilePool : MonoBehaviour {
-    public static ServerProjectilePool Instance { get; private set; }
+public class ServerObjectPool : MonoBehaviour {
+    public static ServerObjectPool Instance { get; private set; }
 
     public int poolSize;
     public SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>> _pool;
