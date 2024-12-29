@@ -36,8 +36,7 @@ public class ServerObjectPool : MonoBehaviour {
             
             _pool[ability] = new SerializedDictionary<AbilityPrefabType, Queue<GameObject>>();
             _pool[ability][AbilityPrefabType.Projectile] = new Queue<GameObject>();
-           
-
+            
             // Pool size determines how many prefabs of each type we'll store
             for (var i = 0; i < poolSize; i++) {
 

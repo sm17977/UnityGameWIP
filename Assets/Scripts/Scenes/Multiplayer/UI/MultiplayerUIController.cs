@@ -326,7 +326,7 @@ public class MultiplayerUIController : MonoBehaviour {
             if (!success) return;
             if (_gameLobbyManager.currentServerProvisionState != ServerProvisionState.Idle &&
                 _gameLobbyManager.currentServerProvisionState != ServerProvisionState.Failed) {
-                //_clientManager.StopServer();
+                _clientManager.StopServer();
                 _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Idle;
             }
         }

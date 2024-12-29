@@ -67,7 +67,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
             _target = collision.gameObject.GetComponent<LuxPlayerController>();
             _target.health.TakeDamage(ability.damage);
             
-            string jsonMappings = JsonConvert.SerializeObject(Mappings);
+            string jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
+            Debug.Log("JSON Projectile Mappings");
+            Debug.Log(jsonMappings);
             TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
             NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
             DestroyProjectile();
@@ -144,6 +146,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     }
     
     protected void DestroyProjectile() {
+        Debug.Log("Destroying projectile on the server");
         ServerObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
         canBeDestroyed = false;
     }

@@ -224,7 +224,7 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Ntoify all other clients when a plyer connects or disconnects from the multiplay server
+        /// Notify all other clients when a player connects or disconnects from the multiplay server
         /// </summary>
         /// <param name="playerData">The player's data</param>
         /// <param name="isConnected">If the player connected or disconnected</param>

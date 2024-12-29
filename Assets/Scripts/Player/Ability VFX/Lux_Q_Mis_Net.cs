@@ -31,6 +31,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         _hitbox = gameObject.transform.Find("Hitbox").gameObject;
         _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
         _hitbox.transform.localScale = new Vector3(_hitbox.transform.localScale.x, 0.1f, _hitbox.transform.localScale.z);
+        
     }
 
     private void Update() {

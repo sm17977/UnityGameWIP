@@ -9,6 +9,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --target-framework=NetFramework
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=AYellowpaper.SerializedCollections;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
 --assembly-defines=Mono.Security;
@@ -235,6 +236,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --target-framework=NetFramework
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=AYellowpaper.SerializedCollections;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
 --assembly-defines=Mono.Security;
@@ -461,6 +463,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --target-framework=NetFramework
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=AYellowpaper.SerializedCollections;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
 --assembly-defines=Mono.Security;
@@ -627,6 +630,7 @@ Library: C:\Users\Sean\UnityTool\LeagueToolv2\Temp\BurstOutput\Data\Plugins\lib_
 --target-framework=NetFramework
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=AYellowpaper.SerializedCollections;
 --assembly-defines=Bootstrap;
 --assembly-defines=mcs;
 --assembly-defines=Mono.Security;
