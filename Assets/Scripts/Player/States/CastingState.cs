@@ -8,15 +8,25 @@ public class CastingState : State {
     
     private Ability _ability;
     private bool _castingFinished;
+    private bool _isRecast;
 
-    public CastingState (GameObject gameObject, Ability ability){
+    public CastingState (GameObject gameObject, Ability ability, bool isRecast = false){
         _playerObj = gameObject;
         _player = _playerObj.GetComponent<LuxPlayerController>();
         _input = _playerObj.GetComponent<InputProcessor>();
         _ability = ability;
+        _isRecast = isRecast;
     }
 
     public override void Enter() {
+
+        if (_isRecast) {
+            Debug.Log("Re-casting State!");
+            var projectile = _player.ActiveAbilityPrefabs[_ability];
+            if(projectile != null)_ability.Recast(projectile);
+            _player.TransitionToIdle();
+        }
+        
         _ability.PutOnCooldown();
         _input.canCast = true;
         _player.animator.SetTrigger(_ability.animationTrigger);

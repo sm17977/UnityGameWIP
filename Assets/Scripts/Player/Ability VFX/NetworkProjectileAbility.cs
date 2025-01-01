@@ -5,10 +5,12 @@ using Multiplayer;
 using Newtonsoft.Json;
 using Unity.Netcode;
 
+public delegate void OnNetworkRecast();
 public delegate void OnNetworkCollision(Vector3 position, GameObject player);
 
 public class NetworkProjectileAbility : NetworkBehaviour {
     
+    public event OnNetworkRecast NetworkRecast;
     public event OnNetworkCollision NetworkCollision;
     
     public Vector3 projectileDirection;
@@ -21,6 +23,8 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     public List<GameObject> projectiles;
     public PlayerType playerType;
     public bool hasHit;
+    public bool isColliding;
+    public Collision ActiveCollision;
     
     public Dictionary<int, ulong> Mappings;
     public ulong spawnedByClientId;
@@ -68,16 +72,32 @@ public class NetworkProjectileAbility : NetworkBehaviour {
             _target.health.TakeDamage(ability.damage);
             
             string jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
-            Debug.Log("JSON Projectile Mappings");
-            Debug.Log(jsonMappings);
             TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
             NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
             DestroyProjectile();
         }
     }
     
+    protected void OnCollisionStay(Collision collision) {
+        if (!IsServer) return;
+        if (!collision.gameObject.CompareTag("Player")) {
+            isColliding = false;
+            return;
+        }
+        
+        var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
+        var enemyClientId = playerNetworkObject.OwnerClientId;
+        var isDifferentPlayer = enemyClientId != spawnedByClientId;
+
+        if (playerType == PlayerType.Player && isDifferentPlayer) {
+            isColliding = true;
+            ActiveCollision = collision;
+        }
+        else isColliding = false;
+    }
+    
     [Rpc(SendTo.ClientsAndHost)]
-    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
+    public void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
 
         Debug.Log("Detected a collision!");
         
@@ -104,7 +124,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     /// </summary>
     /// <param name="jsonMappings">The JSON string mappings of projectile game objects to client IDs</param>
     /// <returns>The client projectile game object</returns>
-    private GameObject GetClientCollidedProjectile(string jsonMappings) {
+    public GameObject GetClientCollidedProjectile(string jsonMappings) {
 
         GameObject localProjectile = null;
         
@@ -129,7 +149,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     /// </summary>
     /// <param name="networkObjectId">The network object ID of the player</param>
     /// <returns>The player game object</returns>
-    private GameObject GetHitPlayer(ulong networkObjectId) {
+    public GameObject GetHitPlayer(ulong networkObjectId) {
 
         GameObject player;
         
@@ -170,5 +190,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
 
         // Move the projectile
         missileTransform.Translate(projectileDirection * travelDistance, Space.World);
+    }
+    
+    public void InvokeRecast() {
+        NetworkRecast.Invoke();
     }
 }

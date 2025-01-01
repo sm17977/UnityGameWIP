@@ -29,6 +29,9 @@ public class ServerObjectPool : MonoBehaviour {
     }
 
     private void InitializePool() {
+
+        Debug.Log("Initializing Server Object Pool");
+        
         _pool = new SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>>();
 
         // Iterate over each unique ability
@@ -39,6 +42,8 @@ public class ServerObjectPool : MonoBehaviour {
             
             // Pool size determines how many prefabs of each type we'll store
             for (var i = 0; i < poolSize; i++) {
+
+                Debug.Log("Instantiating ability " + ability.key);
 
                 var projectile = Instantiate(ability.networkMissilePrefab, transform);
                 projectile.SetActive(false);

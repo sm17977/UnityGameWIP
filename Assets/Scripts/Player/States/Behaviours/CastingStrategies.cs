@@ -14,7 +14,11 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
         GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
         _playerController.projectiles.Add(newProjectile);
         ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-        projectileScript?.InitProjectileProperties(direction, ability, _playerController.projectiles, _playerController.playerType);
+        projectileScript?.InitProjectileProperties(direction, ability, _playerController.projectiles, _playerController.playerType, _playerController);
+    }
+
+    public void ReCast(GameObject projectile, string abilityKey) {
+        throw new System.NotImplementedException();
     }
 }
 
@@ -37,6 +41,9 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
             Debug.Log("No available projectiles in the pool");
             return;
         }
+        
+        // Store prefab in dictionary in case we need to access it later
+        _playerController.ActiveAbilityPrefabs[ability] = newProjectile;
 
         // Set the position and rotation of the projectile
         newProjectile.transform.position = abilitySpawnPos;
@@ -49,7 +56,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
         if (projectileScript != null) {
             projectileScript.InitProjectileProperties(direction, ability,
-                _playerController.projectiles, _playerController.playerType);
+                _playerController.projectiles, _playerController.playerType, _playerController);
             projectileScript.ResetVFX();
      
         }
@@ -61,5 +68,15 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
         
         _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
+    }
+
+    public void ReCast(GameObject projectile, string abilityKey) {
+        var projectileScript = projectile.GetComponent<ProjectileAbility>();
+        projectileScript.InvokeRecast();
+        
+        var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
+        var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
+        _rpcController.ReCastAbilityServerRpc(localClientId, abilityKey);
+        
     }
 }

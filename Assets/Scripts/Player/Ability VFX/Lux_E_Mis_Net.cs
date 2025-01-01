@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using Newtonsoft.Json;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -20,6 +23,7 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
     void Start(){
         
         NetworkCollision += OnNetworkCollision;
+        NetworkRecast += OnNetworkRecast;
         
         _initialPosition = transform.position;
         _currentLingeringLifetime = 4;
@@ -39,9 +43,9 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
     }
     
     private void OnNetworkCollision(Vector3 position, GameObject player) {
-        
+            
     }
-
+    
     void Update(){
         if(!IsServer) return;
 
@@ -58,6 +62,24 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
                 canBeDestroyed = true;
                 StartCoroutine(DelayBeforeDestroy(1f));
             }
+        }
+    }
+
+    private void OnNetworkRecast() {
+        if (isColliding && ActiveCollision != null) {
+            
+            var collisionPos = ActiveCollision.gameObject.transform.position;
+            var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
+            var enemyClientId = playerNetworkObject.OwnerClientId;
+            
+            var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
+            target.health.TakeDamage(ability.damage);
+            
+            string jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
+            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
+
+            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+            DestroyProjectile();
         }
     }
 }

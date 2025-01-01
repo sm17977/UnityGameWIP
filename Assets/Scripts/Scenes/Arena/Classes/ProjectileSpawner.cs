@@ -116,7 +116,7 @@ public class ProjectileSpawner : MonoBehaviour
 
         // Get script on prefab to initialize propreties
         ProjectileAbility projectileScript = projectile.GetComponent<ProjectileAbility>();
-        projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, PlayerType.Bot);
+        //projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, PlayerType.Bot);
        
     }
 

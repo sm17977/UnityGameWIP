@@ -22,6 +22,7 @@ MonoBehaviour:
   range: 6
   speed: 5.8
   lingeringLifetime: 4
+  canRecast: 1
   missilePrefab: {fileID: 7768291782423510599, guid: ba05f37d1d1d21549b0e29a5bd159bbb,
     type: 3}
   networkMissilePrefab: {fileID: 7768291782423510599, guid: 28775094b70f6cf45baf0152e5e8791b,

@@ -172,6 +172,9 @@ public class InputProcessor : NetworkBehaviour {
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability));
                     _networkStateManager.SendSpellCommand(key, ability);
                 }
+                else if (ability.canRecast) {
+                    _player.StateManager.ChangeState(new CastingState(gameObject, ability));
+                }
             });
         }
     }

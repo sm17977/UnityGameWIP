@@ -27,7 +27,9 @@ public class Lux_E_Mis : ProjectileAbility
     private float _currentLingeringLifetime;
     private float _totalLifetime;
    
-    void Start(){
+    void Start() {
+
+        Recast += ProcessRecast;
         
         _totalLifetime = projectileLifetime + ability.lingeringLifetime;
         _currentLingeringLifetime = ability.lingeringLifetime;
@@ -81,25 +83,32 @@ public class Lux_E_Mis : ProjectileAbility
             }
 
             if(_currentLingeringLifetime <= 0 && _canPlayExplosionVfx){
-                // Turn off pinch distortion
-                _distortionQuad.SetActive(false);
-
-                // Turn on shockwave distortion
-                _shockwaveQuad.SetActive(true);
-
-                _explosionVfx.Play();
-
-                _canTestQuads = false;
-                _canPlayExplosionVfx = false;
+                Detonate();
             }
 
             if(_currentLingeringLifetime <= -0.5){
                 // Turn off shockwave distortion
                 _shockwaveQuad.SetActive(false);
                 canBeDestroyed = true;
+                player.ActiveAbilityPrefabs.Remove(ability);
                 ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
             }
         }
+    }
+
+    private void ProcessRecast() {
+        remainingDistance = 0;
+        _currentLingeringLifetime = 0;
+    }
+
+    private void Detonate() {
+        // Turn off pinch distortion
+        _distortionQuad.SetActive(false);
+        // Turn on shockwave distortion
+        _shockwaveQuad.SetActive(true);
+        _explosionVfx.Play();
+        _canTestQuads = false;
+        _canPlayExplosionVfx = false;
     }
     
     public override void ResetVFX() {

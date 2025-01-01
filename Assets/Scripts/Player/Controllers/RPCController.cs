@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QFSW.QC;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,12 +9,16 @@ public class RPCController : NetworkBehaviour {
     public event Action<bool> OnCooldownReceived;
     public static event Action<GameObject> NetworkSpawn;
     
+    public Dictionary<Ability, GameObject> NetworkActiveAbilityPrefabs;
+    
     private LuxPlayerController _playerController;
     private NetworkStateManager _networkState;
     private GameObject _player;
     private GameObject _players;
     
+    
     private void Start() {
+        NetworkActiveAbilityPrefabs = new Dictionary<Ability, GameObject>();
         _playerController = GetComponent<LuxPlayerController>();
         _networkState = GetComponent<NetworkStateManager>();
         _player = gameObject;
@@ -67,6 +72,7 @@ public class RPCController : NetworkBehaviour {
             return;
         }
 
+        NetworkActiveAbilityPrefabs[_playerController.Abilities[abilityKey]] = newNetworkProjectile;
         var networkInstanceId = newNetworkProjectile.transform.GetInstanceID();
         
         // Set the position and rotation of the projectile
@@ -84,7 +90,7 @@ public class RPCController : NetworkBehaviour {
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
         if (projectileScript != null) {
-            Debug.Log("Init Projectile Server Ability - " + _playerController.Abilities[abilityKey].buff.ID);
+            Debug.Log("Init Projectile Server Ability - " + abilityKey);
             projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
         }
@@ -123,7 +129,7 @@ public class RPCController : NetworkBehaviour {
             var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
             if (projectileScript != null) {
                 projectileScript.InitProjectileProperties(direction, ability,
-                    _playerController.projectiles, _playerController.playerType);
+                    _playerController.projectiles, _playerController.playerType, _playerController);
                 projectileScript.ResetVFX();
             }
             else {
@@ -149,6 +155,13 @@ public class RPCController : NetworkBehaviour {
         var networkProjectile = GameObject.Find(networkInstanceId.ToString());
         var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
         networkProjectileScript.Mappings[localProjectileId] = clientId;
+    }
+
+    [Rpc(SendTo.Server)]
+    public void ReCastAbilityServerRpc(ulong clientId, string abilityKey) {
+        var networkProjectile = NetworkActiveAbilityPrefabs[_playerController.Abilities[abilityKey]];
+        var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
+        networkProjectileScript.InvokeRecast();
     }
 
     /// <summary>

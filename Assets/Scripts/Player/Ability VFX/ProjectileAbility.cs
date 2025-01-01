@@ -4,7 +4,12 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 
+public delegate void OnRecast();
+
 public class ProjectileAbility : MonoBehaviour {
+    
+    public event OnRecast Recast;
+    
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
@@ -16,6 +21,7 @@ public class ProjectileAbility : MonoBehaviour {
     public PlayerType playerType;
     public bool hasHit;
     public bool isHit;
+    public LuxPlayerController player;
     
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
@@ -24,8 +30,9 @@ public class ProjectileAbility : MonoBehaviour {
    /// <param name="abilityData"></param>
    /// <param name="projectileList"></param>
    /// <param name="type"></param>
-    public void InitProjectileProperties(Vector3 direction, Ability abilityData, List<GameObject> projectileList, PlayerType type){
+    public void InitProjectileProperties(Vector3 direction, Ability abilityData, List<GameObject> projectileList, PlayerType type, LuxPlayerController playerScript) {
 
+        player = playerScript;
         projectileDirection = direction;
         projectileSpeed = abilityData.speed;
         projectileRange = abilityData.range;
@@ -60,5 +67,9 @@ public class ProjectileAbility : MonoBehaviour {
 
         // Move the projectile
         transform.Translate(projectileDirection * travelDistance, Space.World);
+    }
+
+    public void InvokeRecast() {
+        Recast.Invoke();
     }
 }

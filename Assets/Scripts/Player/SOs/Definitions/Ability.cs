@@ -1,5 +1,6 @@
 using System;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Ability", menuName = "Scriptable Objects/Ability")]
@@ -11,13 +12,14 @@ public class Ability : ScriptableObject {
     public Champion champion;
     public string key;
 
-    [Header("Ability Stats")] 
+    [Header("Ability Properties")] 
     public float damage;
     public float currentCooldown = 0;
     public float maxCooldown;
     public float range;
     public float speed;
     public float lingeringLifetime;
+    public bool canRecast;
 
     [Header("Buffs/Debuffs")]
     public Buff buff;
@@ -45,6 +47,10 @@ public class Ability : ScriptableObject {
 
     public void Cast(Vector3 direction, Vector3 abilitySpawnPos) {
         _castingStrategy.Cast(this, direction, abilitySpawnPos);
+    }
+
+    public void Recast(GameObject projectile) {
+        _castingStrategy.ReCast(projectile, key);
     }
  
     public float GetProjectileLifetime(){
