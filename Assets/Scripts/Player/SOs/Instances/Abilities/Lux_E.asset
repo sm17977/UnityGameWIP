@@ -18,7 +18,7 @@ MonoBehaviour:
   key: E
   damage: 80
   currentCooldown: 0
-  maxCooldown: 2
+  maxCooldown: 4
   range: 6
   speed: 5.8
   lingeringLifetime: 4

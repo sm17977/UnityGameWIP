@@ -49,7 +49,7 @@ public class LuxPlayerController : LuxController {
     // Abilities
     public List<AbilityEntry> abilitiesList;
     public Dictionary<string, Ability> Abilities;
-    public Dictionary<Ability, GameObject> ActiveAbilityPrefabs;
+    public Dictionary<string, GameObject> ActiveAbilityPrefabs;
     
     // Health
     public Health health;
@@ -96,7 +96,7 @@ public class LuxPlayerController : LuxController {
         hitboxColliderRadius = hitboxGameObj.GetComponent<SphereCollider>().radius;
         hitboxPos = hitboxGameObj.transform.position;
         projectiles = new List<GameObject>();
-        ActiveAbilityPrefabs = new Dictionary<Ability, GameObject>();
+        ActiveAbilityPrefabs = new Dictionary<string, GameObject>();
         
         ResetCooldowns();
     }

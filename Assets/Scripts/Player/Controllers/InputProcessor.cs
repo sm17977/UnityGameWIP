@@ -166,14 +166,16 @@ public class InputProcessor : NetworkBehaviour {
     private void HandleSpellCommand(string key) {
         if (_player.Abilities.TryGetValue(key, out Ability ability)) {
             ability.OnCooldown_Net(gameObject, (bool networkCooldown) => {
+                // Check cooldown before casting
                 if (!networkCooldown) {
                     NotifyUICooldown?.Invoke(key, ability.maxCooldown);
                     GetCastingTargetPosition();
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability));
                     _networkStateManager.SendSpellCommand(key, ability);
                 }
+                // If ability is on CD and it's re-castable
                 else if (ability.canRecast) {
-                    _player.StateManager.ChangeState(new CastingState(gameObject, ability));
+                    _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
                 }
             });
         }

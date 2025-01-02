@@ -22,9 +22,11 @@ public class CastingState : State {
 
         if (_isRecast) {
             Debug.Log("Re-casting State!");
-            var projectile = _player.ActiveAbilityPrefabs[_ability];
-            if(projectile != null)_ability.Recast(projectile);
+            if (_player.ActiveAbilityPrefabs.TryGetValue(_ability.key, out var projectile)) {
+                _ability.Recast(projectile);
+            }
             _player.TransitionToIdle();
+            return;
         }
         
         _ability.PutOnCooldown();

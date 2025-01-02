@@ -43,7 +43,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         }
         
         // Store prefab in dictionary in case we need to access it later
-        _playerController.ActiveAbilityPrefabs[ability] = newProjectile;
+        _playerController.ActiveAbilityPrefabs[ability.key] = newProjectile;
 
         // Set the position and rotation of the projectile
         newProjectile.transform.position = abilitySpawnPos;
@@ -71,9 +71,12 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
     }
 
     public void ReCast(GameObject projectile, string abilityKey) {
-        var projectileScript = projectile.GetComponent<ProjectileAbility>();
-        projectileScript.InvokeRecast();
         
+        // Client side 
+        var projectileScript = projectile.GetComponent<ProjectileAbility>();
+        projectileScript.ReCast();
+        
+        // Server
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
         _rpcController.ReCastAbilityServerRpc(localClientId, abilityKey);

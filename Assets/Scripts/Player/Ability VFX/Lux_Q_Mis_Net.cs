@@ -22,7 +22,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     private GameObject _hitbox;
     
     private void Start() {
-        NetworkCollision += OnNetworkCollision;
         
         // Store projectile start position in order to calculate remaining distance
         _initialPosition = transform.position;
@@ -51,10 +50,6 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         if(canBeDestroyed) DestroyProjectile();
     }
     
-    private void OnNetworkCollision(Vector3 position, GameObject player) {
-        SpawnClientHitVFX(position, player);
-    }
-    
     /// <summary>
     /// Spawn the hit VFX on the client when a projectile collides with a player
     /// </summary>
@@ -74,4 +69,29 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         hitPrefab.SetActive(true);
         hitScript.ResetVFX();
     }
+
+    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject projectile) {
+        // Deactivate the projectile
+        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, projectile);
+        SpawnClientHitVFX(position, player);
+    }
+    
+    protected override void HandleServerCollision(Collision collision) {
+        
+        var collisionPos = collision.gameObject.transform.position;
+        var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
+        var enemyClientId = playerNetworkObject.OwnerClientId;
+        var target = collision.gameObject.GetComponent<LuxPlayerController>();
+        
+        hasHit = true;
+        target.health.TakeDamage(ability.damage);
+        
+        var jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
+        TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
+        
+        NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+        
+        DestroyProjectile();
+    }
+    
 }

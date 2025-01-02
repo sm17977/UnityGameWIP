@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 
-public delegate void OnRecast();
-
-public class ProjectileAbility : MonoBehaviour {
-    
-    public event OnRecast Recast;
+public abstract class ProjectileAbility : MonoBehaviour {
     
     public Vector3 projectileDirection;
     public float projectileSpeed;
@@ -69,7 +65,5 @@ public class ProjectileAbility : MonoBehaviour {
         transform.Translate(projectileDirection * travelDistance, Space.World);
     }
 
-    public void InvokeRecast() {
-        Recast.Invoke();
-    }
+    public virtual void ReCast() {}
 }

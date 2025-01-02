@@ -5,20 +5,14 @@ using Multiplayer;
 using Newtonsoft.Json;
 using Unity.Netcode;
 
-public delegate void OnNetworkRecast();
-public delegate void OnNetworkCollision(Vector3 position, GameObject player);
-
-public class NetworkProjectileAbility : NetworkBehaviour {
-    
-    public event OnNetworkRecast NetworkRecast;
-    public event OnNetworkCollision NetworkCollision;
+public abstract class NetworkProjectileAbility : NetworkBehaviour {
     
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
     public float projectileLifetime;
     public float remainingDistance;
-    public bool canBeDestroyed = false;  
+    public bool canBeDestroyed;  
     public Ability ability;
     public List<GameObject> projectiles;
     public PlayerType playerType;
@@ -31,6 +25,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     
     private Transform _clientProjectilePool;
     private LuxPlayerController _target;
+    
+    protected abstract void HandleServerCollision(Collision collision);
+    protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject projectile);
     
    /// <summary>
    /// Set the direction, speed and range of a projectile and other ability data
@@ -61,21 +58,13 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         if (!IsServer) return;
         if (!collision.gameObject.CompareTag("Player")) return;
         
-        var collisionPos = collision.gameObject.transform.position;
         var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
         var enemyClientId = playerNetworkObject.OwnerClientId;
         var isDifferentPlayer = enemyClientId != spawnedByClientId;
-
-        if (playerType == PlayerType.Player && isDifferentPlayer && !hasHit) {
-            hasHit = true;
-            _target = collision.gameObject.GetComponent<LuxPlayerController>();
-            _target.health.TakeDamage(ability.damage);
-            
-            string jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
-            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
-            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
-            DestroyProjectile();
-        }
+        
+        if(!(playerType == PlayerType.Player && isDifferentPlayer && !hasHit)) return;
+        
+        HandleServerCollision(collision);
     }
     
     protected void OnCollisionStay(Collision collision) {
@@ -96,8 +85,9 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         else isColliding = false;
     }
     
+    
     [Rpc(SendTo.ClientsAndHost)]
-    public void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
+    protected void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
 
         Debug.Log("Detected a collision!");
         
@@ -112,11 +102,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         var playerScript = player.GetComponent<LuxPlayerController>();
         var projectileAbility = playerScript.Abilities[abilityKey];
         
-        // Deactivate the projectile
-        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, clientProjectile);
-        
-        NetworkCollision.Invoke(position, player);
-  
+        HandleClientCollision(position, player, projectileAbility, clientProjectile);
     }
     
     /// <summary>
@@ -124,7 +110,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     /// </summary>
     /// <param name="jsonMappings">The JSON string mappings of projectile game objects to client IDs</param>
     /// <returns>The client projectile game object</returns>
-    public GameObject GetClientCollidedProjectile(string jsonMappings) {
+    private GameObject GetClientCollidedProjectile(string jsonMappings) {
 
         GameObject localProjectile = null;
         
@@ -149,7 +135,7 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     /// </summary>
     /// <param name="networkObjectId">The network object ID of the player</param>
     /// <returns>The player game object</returns>
-    public GameObject GetHitPlayer(ulong networkObjectId) {
+    private GameObject GetHitPlayer(ulong networkObjectId) {
 
         GameObject player;
         
@@ -171,7 +157,6 @@ public class NetworkProjectileAbility : NetworkBehaviour {
         canBeDestroyed = false;
     }
     
-
     /// <summary>
     /// Moves a projectile transform towards target position
     /// </summary>
@@ -180,19 +165,18 @@ public class NetworkProjectileAbility : NetworkBehaviour {
     protected void MoveProjectile(Transform missileTransform, Vector3 initialPosition){
         
         // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
+        var distance = Time.deltaTime * projectileSpeed;
 
         // The current remaining distance the projectile must travel to reach projectile range
         remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(missileTransform.position, initialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
+        var travelDistance = Mathf.Min(distance, remainingDistance);
 
         // Move the projectile
         missileTransform.Translate(projectileDirection * travelDistance, Space.World);
     }
     
-    public void InvokeRecast() {
-        NetworkRecast.Invoke();
-    }
+    public virtual void ReCast() {}
+    
 }

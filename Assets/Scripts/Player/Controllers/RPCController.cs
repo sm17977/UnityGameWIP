@@ -9,7 +9,7 @@ public class RPCController : NetworkBehaviour {
     public event Action<bool> OnCooldownReceived;
     public static event Action<GameObject> NetworkSpawn;
     
-    public Dictionary<Ability, GameObject> NetworkActiveAbilityPrefabs;
+    public Dictionary<string, GameObject> NetworkActiveAbilityPrefabs;
     
     private LuxPlayerController _playerController;
     private NetworkStateManager _networkState;
@@ -18,7 +18,7 @@ public class RPCController : NetworkBehaviour {
     
     
     private void Start() {
-        NetworkActiveAbilityPrefabs = new Dictionary<Ability, GameObject>();
+        NetworkActiveAbilityPrefabs = new Dictionary<string, GameObject>();
         _playerController = GetComponent<LuxPlayerController>();
         _networkState = GetComponent<NetworkStateManager>();
         _player = gameObject;
@@ -72,7 +72,7 @@ public class RPCController : NetworkBehaviour {
             return;
         }
 
-        NetworkActiveAbilityPrefabs[_playerController.Abilities[abilityKey]] = newNetworkProjectile;
+        NetworkActiveAbilityPrefabs[abilityKey] = newNetworkProjectile;
         var networkInstanceId = newNetworkProjectile.transform.GetInstanceID();
         
         // Set the position and rotation of the projectile
@@ -159,9 +159,9 @@ public class RPCController : NetworkBehaviour {
 
     [Rpc(SendTo.Server)]
     public void ReCastAbilityServerRpc(ulong clientId, string abilityKey) {
-        var networkProjectile = NetworkActiveAbilityPrefabs[_playerController.Abilities[abilityKey]];
+        var networkProjectile = NetworkActiveAbilityPrefabs[abilityKey];
         var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
-        networkProjectileScript.InvokeRecast();
+        networkProjectileScript.ReCast();
     }
 
     /// <summary>

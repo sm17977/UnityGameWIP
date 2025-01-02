@@ -219,6 +219,7 @@ MonoBehaviour:
   projectiles: []
   playerType: 0
   hasHit: 0
+  isColliding: 0
   spawnedByClientId: 0
 --- !u!114 &452697803033174642
 MonoBehaviour:

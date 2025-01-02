@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Lux_E_Mis : ProjectileAbility
-{
+public class Lux_E_Mis : ProjectileAbility {
+    
     private Vector3 _initialPosition;
 
     // GameObjects
@@ -28,8 +29,6 @@ public class Lux_E_Mis : ProjectileAbility
     private float _totalLifetime;
    
     void Start() {
-
-        Recast += ProcessRecast;
         
         _totalLifetime = projectileLifetime + ability.lingeringLifetime;
         _currentLingeringLifetime = ability.lingeringLifetime;
@@ -90,18 +89,13 @@ public class Lux_E_Mis : ProjectileAbility
                 // Turn off shockwave distortion
                 _shockwaveQuad.SetActive(false);
                 canBeDestroyed = true;
-                player.ActiveAbilityPrefabs.Remove(ability);
+                player.ActiveAbilityPrefabs.Remove(ability.key);
                 ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
             }
         }
     }
-
-    private void ProcessRecast() {
-        remainingDistance = 0;
-        _currentLingeringLifetime = 0;
-    }
-
-    private void Detonate() {
+    
+    public void Detonate() {
         // Turn off pinch distortion
         _distortionQuad.SetActive(false);
         // Turn on shockwave distortion
@@ -131,5 +125,10 @@ public class Lux_E_Mis : ProjectileAbility
 
         _particlesVfx.Play();
         _orbVfx.Play();
+    }
+
+    public override void ReCast() {
+        remainingDistance = 0;
+        _currentLingeringLifetime = 0;
     }
 }
