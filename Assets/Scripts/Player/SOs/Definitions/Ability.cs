@@ -19,7 +19,9 @@ public class Ability : ScriptableObject {
     public float range;
     public float speed;
     public float lingeringLifetime;
+    public bool hasRecast;
     public bool canRecast;
+
 
     [Header("Buffs/Debuffs")]
     public Buff buff;

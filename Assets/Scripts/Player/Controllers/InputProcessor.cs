@@ -172,10 +172,12 @@ public class InputProcessor : NetworkBehaviour {
                     GetCastingTargetPosition();
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability));
                     _networkStateManager.SendSpellCommand(key, ability);
+                    ability.canRecast = ability.hasRecast;
                 }
                 // If ability is on CD and it's re-castable
-                else if (ability.canRecast) {
+                else if (ability.hasRecast && ability.canRecast) {
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
+                    ability.canRecast = false;
                 }
             });
         }

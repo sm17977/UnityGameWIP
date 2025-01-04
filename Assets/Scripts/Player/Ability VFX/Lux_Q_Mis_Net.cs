@@ -16,16 +16,12 @@ Component of: Lux_Q_Mis_Net prefab
 
 public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     
-    private Vector3 _initialPosition; 
-
     // Projectile hitbox
     private GameObject _hitbox;
     
     private void Start() {
         
-        // Store projectile start position in order to calculate remaining distance
-        _initialPosition = transform.position;
-
+        
         // Set the projectile hitbox transform to move along the ground
         _hitbox = gameObject.transform.Find("Hitbox").gameObject;
         _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
@@ -42,7 +38,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         }
         else {
             // Move object
-            MoveProjectile(transform, _initialPosition);
+            MoveProjectile(transform, initialPosition);
         }
     }
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {

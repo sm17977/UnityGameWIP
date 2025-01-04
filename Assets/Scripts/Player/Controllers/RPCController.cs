@@ -161,7 +161,7 @@ public class RPCController : NetworkBehaviour {
     public void ReCastAbilityServerRpc(ulong clientId, string abilityKey) {
         var networkProjectile = NetworkActiveAbilityPrefabs[abilityKey];
         var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
-        networkProjectileScript.ReCast();
+        networkProjectileScript.isRecast = true;
     }
 
     /// <summary>

@@ -63,12 +63,15 @@ public class Lux_E_Mis : ProjectileAbility {
     }
 
     void Update(){
-
-        // Move object
-        MoveProjectile(transform, _initialPosition);
-
+        
         // Play ring and particles when the projectile reaches target and stops moving
         if(remainingDistance <= 0){
+            
+            if (isRecast) {
+                ReCast();
+                isRecast = false;
+                return;
+            }
 
             if(_canPlayRingVfx){
 
@@ -92,6 +95,10 @@ public class Lux_E_Mis : ProjectileAbility {
                 player.ActiveAbilityPrefabs.Remove(ability.key);
                 ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
             }
+        }
+        else {
+            // Move object
+            MoveProjectile(transform, _initialPosition);
         }
     }
     
@@ -128,7 +135,6 @@ public class Lux_E_Mis : ProjectileAbility {
     }
 
     public override void ReCast() {
-        remainingDistance = 0;
         _currentLingeringLifetime = 0;
     }
 }

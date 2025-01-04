@@ -17,6 +17,7 @@ public abstract class ProjectileAbility : MonoBehaviour {
     public PlayerType playerType;
     public bool hasHit;
     public bool isHit;
+    public bool isRecast;
     public LuxPlayerController player;
     
    /// <summary>
@@ -40,6 +41,7 @@ public abstract class ProjectileAbility : MonoBehaviour {
         hasHit = false;
         remainingDistance = Mathf.Infinity;
         canBeDestroyed = false;
+        isRecast = false;
     }
 
     public virtual void ResetVFX() {}

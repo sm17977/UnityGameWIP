@@ -74,7 +74,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         
         // Client side 
         var projectileScript = projectile.GetComponent<ProjectileAbility>();
-        projectileScript.ReCast();
+        projectileScript.isRecast = true;
         
         // Server
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();

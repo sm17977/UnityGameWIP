@@ -1,23 +1,26 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Multiplayer;
 using Newtonsoft.Json;
 using Unity.Netcode;
+using UnityEngine.Serialization;
 
 public abstract class NetworkProjectileAbility : NetworkBehaviour {
     
+    public Vector3 initialPosition;
     public Vector3 projectileDirection;
     public float projectileSpeed;
     public float projectileRange;
     public float projectileLifetime;
     public float remainingDistance;
-    public bool canBeDestroyed;  
+    public bool canBeDestroyed;
+    public bool destructionScheduled;
     public Ability ability;
     public List<GameObject> projectiles;
     public PlayerType playerType;
     public bool hasHit;
     public bool isColliding;
+    public bool isRecast;
     public Collision ActiveCollision;
     
     public Dictionary<int, ulong> Mappings;
@@ -36,8 +39,9 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
    /// <param name="abilityData"></param>
    /// <param name="type"></param>
    /// <param name="clientId"></param>
-    public void InitProjectileProperties(Vector3 direction, Ability abilityData, PlayerType type, ulong clientId){
+    public void InitProjectileProperties(Vector3 direction, Ability abilityData, PlayerType type, ulong clientId) {
 
+        initialPosition = transform.position;
         projectileDirection = direction;
         projectileSpeed = abilityData.speed;
         projectileRange = abilityData.range;
@@ -49,6 +53,8 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         hasHit = false;
         remainingDistance = Mathf.Infinity;
         canBeDestroyed = false;
+        destructionScheduled = false;
+        isRecast = false;
         
         Mappings = new Dictionary<int, ulong>();
         spawnedByClientId = clientId;
@@ -68,7 +74,9 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     }
     
     protected void OnCollisionStay(Collision collision) {
+        
         if (!IsServer) return;
+        
         if (!collision.gameObject.CompareTag("Player")) {
             isColliding = false;
             return;
@@ -110,7 +118,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     /// </summary>
     /// <param name="jsonMappings">The JSON string mappings of projectile game objects to client IDs</param>
     /// <returns>The client projectile game object</returns>
-    private GameObject GetClientCollidedProjectile(string jsonMappings) {
+    protected GameObject GetClientCollidedProjectile(string jsonMappings) {
 
         GameObject localProjectile = null;
         
@@ -155,6 +163,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         Debug.Log("Destroying projectile on the server");
         ServerObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
         canBeDestroyed = false;
+        destructionScheduled = false; 
     }
     
     /// <summary>
@@ -165,13 +174,13 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     protected void MoveProjectile(Transform missileTransform, Vector3 initialPosition){
         
         // The distance the projectile moves per frame
-        var distance = Time.deltaTime * projectileSpeed;
+        float distance = Time.deltaTime * projectileSpeed;
 
         // The current remaining distance the projectile must travel to reach projectile range
         remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(missileTransform.position, initialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        var travelDistance = Mathf.Min(distance, remainingDistance);
+        float travelDistance = Mathf.Min(distance, remainingDistance);
 
         // Move the projectile
         missileTransform.Translate(projectileDirection * travelDistance, Space.World);
