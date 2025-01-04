@@ -35,6 +35,7 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
             _currentLingeringLifetime -= Time.deltaTime;
             
             if(_currentLingeringLifetime <= -0.5){
+                Detonate();
                 Debug.Log("Update Destroy");
                 canBeDestroyed = true;
                 ScheduleDestroy(1);
@@ -57,6 +58,22 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
         if (destructionScheduled) return;
         destructionScheduled = true;
         StartCoroutine(DelayBeforeDestroy(delay));
+    }
+
+    public void Detonate() {
+        
+        Debug.Log("ReCast Lux E Net");
+        Debug.Log("isColliding: " + isColliding);
+        
+        if (ActiveCollision != null && isColliding) {
+            Debug.Log("ReCast valid collision");
+            var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
+            var enemyClientId = playerNetworkObject.OwnerClientId;
+            var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
+            
+            target.health.TakeDamage(ability.damage);
+            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+        }
     }
 
     public override void ReCast() {
