@@ -60,11 +60,12 @@ public class RPCController : NetworkBehaviour {
     /// </summary>
     /// <param name="direction"></param>
     /// <param name="position"></param>
+    /// <param name="targetPosition"></param>
     /// <param name="clientId"></param>
     /// <param name="instanceId"></param>
     /// <param name="abilityKey"></param>
     [Rpc(SendTo.Server)]
-    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, ulong clientId, int instanceId, string abilityKey) {
+    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, Vector3 targetPosition, ulong clientId, int instanceId, string abilityKey) {
         
         var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(_playerController.Abilities[abilityKey], AbilityPrefabType.Projectile);
         if (newNetworkProjectile == null) {
@@ -91,24 +92,25 @@ public class RPCController : NetworkBehaviour {
         var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
         if (projectileScript != null) {
             Debug.Log("Init Projectile Server Ability - " + abilityKey);
-            projectileScript.InitProjectileProperties(direction, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
+            projectileScript.InitProjectileProperties(direction, targetPosition, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
             projectileScript.Mappings[instanceId] = clientId;
         }
         else {
             Debug.Log("Projectile Script is null");
         }
-        SpawnProjectileClientRpc(direction, position, networkInstanceId, abilityKey);
+        SpawnProjectileClientRpc(direction, targetPosition, position, networkInstanceId, abilityKey);
     }
 
     /// <summary>
     /// Spawn the projectile for all clients excluding the source
     /// </summary>
     /// <param name="direction"></param>
+    /// <param name="targetPos"></param>
     /// <param name="position"></param>
     /// <param name="networkInstanceId"></param>
     /// <param name="abilityKey"></param>
     [Rpc(SendTo.NotOwner)]
-    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 position, int networkInstanceId, string abilityKey) {
+    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 targetPos, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
 
             var ability = _playerController.Abilities[abilityKey];
@@ -128,7 +130,7 @@ public class RPCController : NetworkBehaviour {
             // Initialize projectile properties on the server
             var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
             if (projectileScript != null) {
-                projectileScript.InitProjectileProperties(direction, ability,
+                projectileScript.InitProjectileProperties(direction, targetPos, ability,
                     _playerController.projectiles, _playerController.playerType, _playerController);
                 projectileScript.ResetVFX();
             }

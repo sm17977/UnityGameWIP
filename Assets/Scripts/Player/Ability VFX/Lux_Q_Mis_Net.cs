@@ -38,7 +38,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         }
         else {
             // Move object
-            MoveProjectile(transform, initialPosition);
+            MoveProjectile();
         }
     }
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
@@ -88,6 +88,21 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
         
         DestroyProjectile();
+    }
+
+    protected override void MoveProjectile() {
+        
+        // The distance the projectile moves per frame
+        float distance = Time.deltaTime * projectileSpeed;
+
+        // The current remaining distance the projectile must travel to reach projectile range
+        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+
+        // Ensures the projectile stops moving once remaining distance is zero 
+        float travelDistance = Mathf.Min(distance, remainingDistance);
+
+        // Move the projectile
+        transform.Translate(projectileDirection * travelDistance, Space.World);
     }
     
 }

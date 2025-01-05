@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -13,8 +14,6 @@ Component of: Lux_Q_Mis prefab
 
 public class Lux_Q_Mis : ProjectileAbility {
     
-    private Vector3 _initialPosition; 
-
     // Projectile hitbox
     private GameObject _hitbox;
 
@@ -32,9 +31,7 @@ public class Lux_Q_Mis : ProjectileAbility {
     private LuxController _target;
 
     private void Start() {
-        // Store projectile start position in order to calculate remaining distance
-        _initialPosition = transform.position;
-
+        
         // Set the projectile hitbox transform to move along the ground
         _hitbox = gameObject.transform.Find("Hitbox").gameObject;
         _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
@@ -61,7 +58,7 @@ public class Lux_Q_Mis : ProjectileAbility {
         }
         else {
             // Move object
-            MoveProjectile(transform, _initialPosition);
+            MoveProjectile();
         }
     }
 
@@ -107,5 +104,20 @@ public class Lux_Q_Mis : ProjectileAbility {
 
     public override void ResetVFX() {
         Start();
+    }
+
+    protected override void MoveProjectile() {
+        // The distance the projectile moves per frame
+        float distance = Time.deltaTime * projectileSpeed;
+
+        // The current remaining distance the projectile must travel to reach projectile range
+        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+
+        // Ensures the projectile stops moving once remaining distance is zero 
+        float travelDistance = Mathf.Min(distance, remainingDistance);
+
+        // Move the projectile
+        transform.Translate(projectileDirection * travelDistance, Space.World);
+        
     }
 }

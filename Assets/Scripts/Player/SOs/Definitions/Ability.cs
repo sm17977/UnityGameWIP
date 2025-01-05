@@ -47,8 +47,8 @@ public class Ability : ScriptableObject {
         _castingStrategy = strategy;
     }
 
-    public void Cast(Vector3 direction, Vector3 abilitySpawnPos) {
-        _castingStrategy.Cast(this, direction, abilitySpawnPos);
+    public void Cast(Vector3 direction, Vector3 targetPos, Vector3 abilitySpawnPos) {
+        _castingStrategy.Cast(this, direction, targetPos, abilitySpawnPos);
     }
 
     public void Recast(GameObject projectile) {

@@ -22,6 +22,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     public bool isColliding;
     public bool isRecast;
     public Collision ActiveCollision;
+    public Vector3 projectileTargetPosition;
     
     public Dictionary<int, ulong> Mappings;
     public ulong spawnedByClientId;
@@ -31,17 +32,19 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     
     protected abstract void HandleServerCollision(Collision collision);
     protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject projectile);
-    
-   /// <summary>
-   /// Set the direction, speed and range of a projectile and other ability data
-   /// </summary>
-   /// <param name="direction"></param>
-   /// <param name="abilityData"></param>
-   /// <param name="type"></param>
-   /// <param name="clientId"></param>
-    public void InitProjectileProperties(Vector3 direction, Ability abilityData, PlayerType type, ulong clientId) {
+
+    /// <summary>
+    /// Set the direction, speed and range of a projectile and other ability data
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <param name="targetPos"></param>
+    /// <param name="abilityData"></param>
+    /// <param name="type"></param>
+    /// <param name="clientId"></param>
+    public void InitProjectileProperties(Vector3 direction, Vector3 targetPos, Ability abilityData, PlayerType type, ulong clientId) {
 
         initialPosition = transform.position;
+        projectileTargetPosition = targetPos;
         projectileDirection = direction;
         projectileSpeed = abilityData.speed;
         projectileRange = abilityData.range;
@@ -166,25 +169,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         destructionScheduled = false; 
     }
     
-    /// <summary>
-    /// Moves a projectile transform towards target position
-    /// </summary>
-    /// <param name="missileTransform"></param>
-    /// <param name="initialPosition"></param>
-    protected void MoveProjectile(Transform missileTransform, Vector3 initialPosition){
-        
-        // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
-
-        // The current remaining distance the projectile must travel to reach projectile range
-        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(missileTransform.position, initialPosition), 2);
-
-        // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
-
-        // Move the projectile
-        missileTransform.Translate(projectileDirection * travelDistance, Space.World);
-    }
+    protected virtual void MoveProjectile(){}
     
     public virtual void ReCast() {}
     

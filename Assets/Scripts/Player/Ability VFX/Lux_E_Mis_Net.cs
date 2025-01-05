@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Newtonsoft.Json;
 using Unity.Netcode;
@@ -44,7 +45,7 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
         }
         else {
             // Move object
-            MoveProjectile(transform, initialPosition);
+            MoveProjectile();
         }
     }
     
@@ -125,5 +126,22 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
 
         var clientProjectileScript = clientProjectile.GetComponent<Lux_E_Mis>();
         clientProjectileScript.isRecast = true;
+    }
+    
+    protected override void MoveProjectile() {
+        
+        // The distance the projectile moves per frame
+        float distance = Time.deltaTime * projectileSpeed;
+
+        float inputRange = Vector3.Distance(projectileTargetPosition, initialPosition);
+
+        // The current remaining distance the projectile must travel to reach the mouse position (at time of cast)
+        remainingDistance = (float)Math.Round(Math.Min(inputRange, projectileRange) - Vector3.Distance(transform.position, initialPosition), 2);
+
+        // Ensures the projectile stops moving once remaining distance is zero 
+        float travelDistance = Mathf.Min(distance, remainingDistance);
+
+        // Move the projectile
+        transform.Translate(projectileDirection * travelDistance, Space.World);
     }
 }
