@@ -28,7 +28,7 @@ namespace Multiplayer.UI {
         }
 
         public override void Show() {
-            _panelSettings.scaleMode = PanelScaleMode.ConstantPhysicalSize;
+            _panelSettings.scaleMode = PanelScaleMode.ConstantPixelSize;
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
             base.Show();
             BindUIElements();
@@ -41,7 +41,7 @@ namespace Multiplayer.UI {
 
         public override void Hide() {
             base.Hide();
-            _panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            _panelSettings.scaleMode = PanelScaleMode.ConstantPhysicalSize;
         }
 
         public override void Update() {

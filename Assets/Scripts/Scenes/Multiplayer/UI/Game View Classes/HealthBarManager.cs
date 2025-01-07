@@ -7,7 +7,7 @@ public class HealthBarManager {
 
     private VisualElement _template;
     private Dictionary<LuxPlayerController, VisualElement> _playerHealthBarMappings;
-    private const float HealthBarDefaultYOffset = -50f;
+    private const float HealthBarDefaultYOffset = -60f;
     private const float HealthBarDefaultWidth = 150f;
 
     public HealthBarManager(VisualElement template) {
