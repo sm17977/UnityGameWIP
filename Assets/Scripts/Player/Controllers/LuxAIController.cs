@@ -197,11 +197,11 @@ public class LuxAIController : LuxController
             for(int i = 0; i < projectiles.Count; i++){
                 GameObject projectile = projectiles[i];
                 if(projectile != null && projectile.activeSelf){
-                    ProjectileAbility missile = projectile.GetComponent<ProjectileAbility>();
-                    if(missile.canBeDestroyed){
-                        projectiles.RemoveAt(i);
-                        Destroy(projectile);
-                    }
+                    ClientAbilityBehaviour missile = projectile.GetComponent<ClientAbilityBehaviour>();
+                    // if(missile.CanBeDestroyed){
+                    //     projectiles.RemoveAt(i);
+                    //     Destroy(projectile);
+                    // }
                 }
             }
         }

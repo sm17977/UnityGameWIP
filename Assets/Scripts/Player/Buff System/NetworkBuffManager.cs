@@ -90,7 +90,6 @@ public class NetworkBuffManager : NetworkBehaviour {
         // Check if this buff is already applied to prevent duplicates
         if (_buffStore[targetClientId].All(record => record.Buff.ID != buff.ID)) {
             buff.BuffEndTime = NetworkManager.ServerTime.Time + buff.Duration;
-            Debug.Log("Added entry of buff/debuff to " + targetClientId + " which will expire at " + buff.BuffEndTime);
             var buffRecord = new BuffRecord(buff, sourceClientId);
             _buffStore[targetClientId].Add(buffRecord);
             UpdateBuffOnServer(targetClientId, buff, true);

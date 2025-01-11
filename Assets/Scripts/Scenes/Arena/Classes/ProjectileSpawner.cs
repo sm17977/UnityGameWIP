@@ -115,7 +115,7 @@ public class ProjectileSpawner : MonoBehaviour
         playerController.projectiles.Add(projectile);
 
         // Get script on prefab to initialize propreties
-        ProjectileAbility projectileScript = projectile.GetComponent<ProjectileAbility>();
+        ClientAbilityBehaviour projectileScript = projectile.GetComponent<ClientAbilityBehaviour>();
         //projectileScript?.InitProjectileProperties(direction, ability, playerController.projectiles, PlayerType.Bot);
        
     }

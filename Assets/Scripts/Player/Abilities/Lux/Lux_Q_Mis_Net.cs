@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine;
 
 /*
-Lux_Q_Mis.cs
+Lux_Q_Mis_Net.cs
 
 Controls the movement of the Lux Q missile (Networked version)
 Sets VFX properties for Q_Orb and Q_Vortex_Trails
@@ -14,13 +13,12 @@ Component of: Lux_Q_Mis_Net prefab
 
 */
 
-public class Lux_Q_Mis_Net : NetworkProjectileAbility {
+public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
     
     // Projectile hitbox
     private GameObject _hitbox;
     
     private void Start() {
-        
         
         // Set the projectile hitbox transform to move along the ground
         _hitbox = gameObject.transform.Find("Hitbox").gameObject;
@@ -32,18 +30,18 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
     private void Update() {
         if(!IsServer) return;
         // Handle end of life
-        if (remainingDistance <= 0) {
-            canBeDestroyed = true;
+        if (RemainingDistance <= 0) {
+            CanBeDestroyed = true;
             StartCoroutine(DelayBeforeDestroy(1f));
         }
         else {
             // Move object
-            MoveProjectile();
+            Move();
         }
     }
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(canBeDestroyed) DestroyProjectile();
+        if(CanBeDestroyed) DestroyProjectile();
     }
     
     /// <summary>
@@ -57,11 +55,7 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         var hitPrefab = ClientObjectPool.Instance.GetPooledObject(hitAbility, AbilityPrefabType.Hit);
         var hitScript = hitPrefab.GetComponent<Lux_Q_Hit>();
         
-        // We have to do this because we don't call InitProjectileProperties on the hit script
-        // TODO: Add function specifically to init hit VFX scripts?
-        hitScript.SetAbility(hitAbility);
-        hitScript.target = player;
-        hitPrefab.transform.position = position;
+        hitScript.InitialiseProperties(hitAbility, playerScript, player, position);
         hitPrefab.SetActive(true);
         hitScript.ResetVFX();
     }
@@ -79,30 +73,29 @@ public class Lux_Q_Mis_Net : NetworkProjectileAbility {
         var enemyClientId = playerNetworkObject.OwnerClientId;
         var target = collision.gameObject.GetComponent<LuxPlayerController>();
         
-        hasHit = true;
-        target.health.TakeDamage(ability.damage);
+        HasHit = true;
+        target.health.TakeDamage(Ability.damage);
         
-        var jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
-        TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
+        var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
+        TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
         
-        NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+        NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
         
         DestroyProjectile();
     }
 
-    protected override void MoveProjectile() {
+    protected override void Move() {
         
         // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
+        float distance = Time.deltaTime * Ability.speed;
 
         // The current remaining distance the projectile must travel to reach projectile range
-        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+        RemainingDistance = (float)Math.Round(Ability.range - Vector3.Distance(transform.position, InitialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
+        float travelDistance = Mathf.Min(distance, RemainingDistance);
 
         // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        transform.Translate(TargetDirection * travelDistance, Space.World);
     }
-    
 }

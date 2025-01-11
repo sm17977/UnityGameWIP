@@ -1,34 +1,32 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.Netcode;
-using UnityEngine.Serialization;
 
-public abstract class NetworkProjectileAbility : NetworkBehaviour {
+public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     
-    public Vector3 initialPosition;
-    public Vector3 projectileDirection;
-    public float projectileSpeed;
-    public float projectileRange;
-    public float projectileLifetime;
-    public float remainingDistance;
-    public bool canBeDestroyed;
-    public bool destructionScheduled;
-    public Ability ability;
-    public List<GameObject> projectiles;
-    public PlayerType playerType;
-    public bool hasHit;
-    public bool isColliding;
-    public bool isRecast;
-    public Collision ActiveCollision;
-    public Vector3 projectileTargetPosition;
-    
-    public Dictionary<int, ulong> Mappings;
+    public Dictionary<int, ulong> ServerAbilityMappings; // Maps prefab IDs to client IDs
     public ulong spawnedByClientId;
+    public bool isRecast;
+    
+    protected Ability Ability;
+    protected Collision ActiveCollision;
+    
+    protected Vector3 InitialPosition;
+    protected Vector3 TargetDirection;
+    protected Vector3 TargetPosition;
+
+    protected float LifeTime;
+    protected float RemainingDistance;
+    
+    protected bool CanBeDestroyed;
+    protected bool DestructionScheduled;
+    protected bool HasHit;
+    protected bool IsColliding;
     
     private Transform _clientProjectilePool;
     private LuxPlayerController _target;
+    private PlayerType _playerType;
     
     protected abstract void HandleServerCollision(Collision collision);
     protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject projectile);
@@ -36,30 +34,28 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     /// <summary>
     /// Set the direction, speed and range of a projectile and other ability data
     /// </summary>
-    /// <param name="direction"></param>
-    /// <param name="targetPos"></param>
-    /// <param name="abilityData"></param>
+    /// <param name="targetDirection"></param>
+    /// <param name="targetPosition"></param>
+    /// <param name="ability"></param>
     /// <param name="type"></param>
     /// <param name="clientId"></param>
-    public void InitProjectileProperties(Vector3 direction, Vector3 targetPos, Ability abilityData, PlayerType type, ulong clientId) {
+    public void InitialiseProperties(Ability ability, Vector3 targetDirection, Vector3 targetPosition, PlayerType type, ulong clientId) {
 
-        initialPosition = transform.position;
-        projectileTargetPosition = targetPos;
-        projectileDirection = direction;
-        projectileSpeed = abilityData.speed;
-        projectileRange = abilityData.range;
-        projectileLifetime = abilityData.GetProjectileLifetime();
+        Ability = ability;
+        InitialPosition = transform.position;
+        TargetPosition = targetPosition;
+        TargetDirection = targetDirection;
         
-        ability = abilityData;
-        
-        playerType = type;
-        hasHit = false;
-        remainingDistance = Mathf.Infinity;
-        canBeDestroyed = false;
-        destructionScheduled = false;
+        LifeTime = ability.GetLifetime();
+        RemainingDistance = Mathf.Infinity;
+        _playerType = type;
+      
+        HasHit = false;
+        CanBeDestroyed = false;
         isRecast = false;
+        DestructionScheduled = false;
         
-        Mappings = new Dictionary<int, ulong>();
+        ServerAbilityMappings = new Dictionary<int, ulong>();
         spawnedByClientId = clientId;
     }
 
@@ -71,7 +67,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         var enemyClientId = playerNetworkObject.OwnerClientId;
         var isDifferentPlayer = enemyClientId != spawnedByClientId;
         
-        if(!(playerType == PlayerType.Player && isDifferentPlayer && !hasHit)) return;
+        if(!(_playerType == PlayerType.Player && isDifferentPlayer && !HasHit)) return;
         
         HandleServerCollision(collision);
     }
@@ -81,7 +77,7 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         if (!IsServer) return;
         
         if (!collision.gameObject.CompareTag("Player")) {
-            isColliding = false;
+            IsColliding = false;
             return;
         }
         
@@ -89,11 +85,11 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
         var enemyClientId = playerNetworkObject.OwnerClientId;
         var isDifferentPlayer = enemyClientId != spawnedByClientId;
 
-        if (playerType == PlayerType.Player && isDifferentPlayer) {
-            isColliding = true;
+        if (_playerType == PlayerType.Player && isDifferentPlayer) {
+            IsColliding = true;
             ActiveCollision = collision;
         }
-        else isColliding = false;
+        else IsColliding = false;
     }
     
     
@@ -163,14 +159,11 @@ public abstract class NetworkProjectileAbility : NetworkBehaviour {
     }
     
     protected void DestroyProjectile() {
-        Debug.Log("Destroying projectile on the server");
-        ServerObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
-        canBeDestroyed = false;
-        destructionScheduled = false; 
+        ServerObjectPool.Instance.ReturnObjectToPool(Ability, AbilityPrefabType.Projectile, gameObject);
+        CanBeDestroyed = false;
+        DestructionScheduled = false; 
     }
     
-    protected virtual void MoveProjectile(){}
-    
-    public virtual void ReCast() {}
-    
+    protected virtual void Move(){}
+    public virtual void Recast(){}
 }

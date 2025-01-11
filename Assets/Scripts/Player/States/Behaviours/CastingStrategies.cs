@@ -10,11 +10,11 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
         _playerController = playerController;
     }
     
-    public void Cast(Ability ability, Vector3 direction, Vector3 targetPos, Vector3 abilitySpawnPos) {
-        GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(direction, Vector3.up));
+    public void Cast(Ability ability, Vector3 targetDir, Vector3 targetPos, Vector3 abilitySpawnPos) {
+        GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(targetDir, Vector3.up));
         _playerController.projectiles.Add(newProjectile);
-        ProjectileAbility projectileScript = newProjectile.GetComponent<ProjectileAbility>();
-        projectileScript?.InitProjectileProperties(direction, targetPos, ability, _playerController.projectiles, _playerController.playerType, _playerController);
+        ClientAbilityBehaviour projectileScript = newProjectile.GetComponent<ClientAbilityBehaviour>();
+        projectileScript?.InitialiseProperties(ability, _playerController,targetPos, targetDir);
     }
 
     public void ReCast(GameObject projectile, string abilityKey) {
@@ -34,7 +34,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         _rpcController = rpcController;
     }
     
-    public void Cast(Ability ability, Vector3 direction, Vector3 targetPos, Vector3 abilitySpawnPos) {
+    public void Cast(Ability ability, Vector3 targetDir, Vector3 targetPos, Vector3 abilitySpawnPos) {
         
         var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
         if (newProjectile == null) {
@@ -47,16 +47,15 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
 
         // Set the position and rotation of the projectile
         newProjectile.transform.position = abilitySpawnPos;
-        newProjectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+        newProjectile.transform.rotation = Quaternion.LookRotation(targetDir, Vector3.up);
 
         // Activate the projectile
         newProjectile.SetActive(true);
             
         // Initialize projectile properties
-        var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+        var projectileScript = newProjectile.GetComponent<ClientAbilityBehaviour>();
         if (projectileScript != null) {
-            projectileScript.InitProjectileProperties(direction, targetPos, ability,
-                _playerController.projectiles, _playerController.playerType, _playerController);
+            projectileScript.InitialiseProperties(ability, _playerController,targetPos, targetDir);
             projectileScript.ResetVFX();
      
         }
@@ -67,13 +66,13 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
         
-        _rpcController.SpawnProjectileServerRpc(direction, abilitySpawnPos, targetPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
+        _rpcController.SpawnProjectileServerRpc(targetDir, abilitySpawnPos, targetPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
     }
 
     public void ReCast(GameObject projectile, string abilityKey) {
         
         // Client side 
-        var projectileScript = projectile.GetComponent<ProjectileAbility>();
+        var projectileScript = projectile.GetComponent<ClientAbilityBehaviour>();
         projectileScript.isRecast = true;
         
         // Server

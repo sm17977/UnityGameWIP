@@ -58,16 +58,17 @@ public class RPCController : NetworkBehaviour {
     /// <summary>
     /// Spawn a projectile on the server
     /// </summary>
-    /// <param name="direction"></param>
+    /// <param name="targetDirection"></param>
     /// <param name="position"></param>
     /// <param name="targetPosition"></param>
     /// <param name="clientId"></param>
     /// <param name="instanceId"></param>
     /// <param name="abilityKey"></param>
     [Rpc(SendTo.Server)]
-    public void SpawnProjectileServerRpc(Vector3 direction, Vector3 position, Vector3 targetPosition, ulong clientId, int instanceId, string abilityKey) {
-        
-        var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(_playerController.Abilities[abilityKey], AbilityPrefabType.Projectile);
+    public void SpawnProjectileServerRpc(Vector3 targetDirection, Vector3 position, Vector3 targetPosition, ulong clientId, int instanceId, string abilityKey) {
+
+        var ability = _playerController.Abilities[abilityKey];
+        var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
         if (newNetworkProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;
@@ -78,7 +79,7 @@ public class RPCController : NetworkBehaviour {
         
         // Set the position and rotation of the projectile
         newNetworkProjectile.transform.position = position;
-        newNetworkProjectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+        newNetworkProjectile.transform.rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
 
         // Activate the projectile
         newNetworkProjectile.SetActive(true);
@@ -89,28 +90,28 @@ public class RPCController : NetworkBehaviour {
         }
         
         // Initialize projectile properties on the server
-        var projectileScript = newNetworkProjectile.GetComponent<NetworkProjectileAbility>();
+        var projectileScript = newNetworkProjectile.GetComponent<NetworkAbilityBehaviour>();
         if (projectileScript != null) {
             Debug.Log("Init Projectile Server Ability - " + abilityKey);
-            projectileScript.InitProjectileProperties(direction, targetPosition, _playerController.Abilities[abilityKey], _playerController.playerType, clientId);
-            projectileScript.Mappings[instanceId] = clientId;
+            projectileScript.InitialiseProperties(ability, targetDirection, targetPosition, _playerController.playerType, clientId);
+            projectileScript.ServerAbilityMappings[instanceId] = clientId;
         }
         else {
             Debug.Log("Projectile Script is null");
         }
-        SpawnProjectileClientRpc(direction, targetPosition, position, networkInstanceId, abilityKey);
+        SpawnProjectileClientRpc(targetDirection, targetPosition, position, networkInstanceId, abilityKey);
     }
 
     /// <summary>
     /// Spawn the projectile for all clients excluding the source
     /// </summary>
-    /// <param name="direction"></param>
+    /// <param name="targetDir"></param>
     /// <param name="targetPos"></param>
     /// <param name="position"></param>
     /// <param name="networkInstanceId"></param>
     /// <param name="abilityKey"></param>
     [Rpc(SendTo.NotOwner)]
-    private void SpawnProjectileClientRpc(Vector3 direction, Vector3 targetPos, Vector3 position, int networkInstanceId, string abilityKey) {
+    private void SpawnProjectileClientRpc(Vector3 targetDir, Vector3 targetPos, Vector3 position, int networkInstanceId, string abilityKey) {
         if (!IsOwner && !IsServer) {
 
             var ability = _playerController.Abilities[abilityKey];
@@ -122,16 +123,15 @@ public class RPCController : NetworkBehaviour {
 
             // Set the position and rotation of the projectile
             newProjectile.transform.position = position;
-            newProjectile.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+            newProjectile.transform.rotation = Quaternion.LookRotation(targetDir, Vector3.up);
 
             // Activate the projectile
             newProjectile.SetActive(true);
             
             // Initialize projectile properties on the server
-            var projectileScript = newProjectile.GetComponent<ProjectileAbility>();
+            var projectileScript = newProjectile.GetComponent<ClientAbilityBehaviour>();
             if (projectileScript != null) {
-                projectileScript.InitProjectileProperties(direction, targetPos, ability,
-                    _playerController.projectiles, _playerController.playerType, _playerController);
+                projectileScript.InitialiseProperties(ability, _playerController,targetPos, targetDir);
                 projectileScript.ResetVFX();
             }
             else {
@@ -155,14 +155,14 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     private void UpdateMappingsServerRpc(ulong clientId, int localProjectileId, int networkInstanceId) {
         var networkProjectile = GameObject.Find(networkInstanceId.ToString());
-        var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
-        networkProjectileScript.Mappings[localProjectileId] = clientId;
+        var networkProjectileScript = networkProjectile.GetComponent<NetworkAbilityBehaviour>();
+        networkProjectileScript.ServerAbilityMappings[localProjectileId] = clientId;
     }
 
     [Rpc(SendTo.Server)]
     public void ReCastAbilityServerRpc(ulong clientId, string abilityKey) {
         var networkProjectile = NetworkActiveAbilityPrefabs[abilityKey];
-        var networkProjectileScript = networkProjectile.GetComponent<NetworkProjectileAbility>();
+        var networkProjectileScript = networkProjectile.GetComponent<NetworkAbilityBehaviour>();
         networkProjectileScript.isRecast = true;
     }
 

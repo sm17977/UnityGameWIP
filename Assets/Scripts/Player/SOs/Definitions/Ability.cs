@@ -55,12 +55,12 @@ public class Ability : ScriptableObject {
         _castingStrategy.ReCast(projectile, key);
     }
  
-    public float GetProjectileLifetime(){
+    public float GetLifetime(){
         return range / speed;
     }
 
     public float GetTotalLifetime(){
-        return GetProjectileLifetime() + lingeringLifetime;
+        return GetLifetime() + lingeringLifetime;
     }
 
     public void PutOnCooldown(){

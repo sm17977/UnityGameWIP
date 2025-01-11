@@ -1,11 +1,17 @@
-
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Lux_Q_Hit : ProjectileAbility {
+/*
+Lux_Q_Hit.cs
+
+Controls the movement of the Lux Q hit effect
+Component of: Lux_Q_Hit prefab
+
+*/
+
+public class Lux_Q_Hit : ClientAbilityBehaviour {
     // Target hit
     public GameObject target;
  
@@ -60,12 +66,15 @@ public class Lux_Q_Hit : ProjectileAbility {
         InitVfx();
     }
 
-    public void SetAbility(Ability abilityToSet) {
-        ability = abilityToSet;
+    public void InitialiseProperties(Ability ability, LuxPlayerController player, GameObject targetObject, Vector3 position) {
+        Ability = ability;
+        Player = player;
+        target = targetObject;
+        transform.position = position;
     }
-
+    
     private void CalculateVfxDuration(){
-        _stunDuration = ability.buff.Duration;
+        _stunDuration = Ability.buff.Duration;
         
         // If the stun duration is longer than the minimum stun time, add the difference to totalDuration
         totalDuration = (_fadeDuration * 2f) + _delayTime;
@@ -209,10 +218,8 @@ public class Lux_Q_Hit : ProjectileAbility {
             }
             else{
                 _startFadeOut = false;
-                canBeDestroyed = true;
-                if (GlobalState.IsMultiplayer) {
-                    ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Hit, gameObject);
-                }
+                CanBeDestroyed = true;
+                DestroyAbilityPrefab(AbilityPrefabType.Hit);
             }
         }
     }

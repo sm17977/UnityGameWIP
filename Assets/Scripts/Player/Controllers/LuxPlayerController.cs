@@ -104,7 +104,10 @@ public class LuxPlayerController : LuxController {
     public override void OnNetworkSpawn() {
         base.OnNetworkSpawn();
         InitAbilities();
-        if (IsServer) canMove.Value = true;
+        if (IsServer) {
+            canMove.Value = true;
+            movementSpeed.Value = champion.movementSpeed;
+        }
     }
 
     
@@ -129,21 +132,18 @@ public class LuxPlayerController : LuxController {
     /// Set the casting strategy for the ability depending on singleplayer/multiplayer
     /// </summary>
     private void InitAbilities() {
-        
-        if (abilitiesList.Count == 0) {
-            abilitiesList.Add(new AbilityEntry { key = "Q", ability = Instantiate(champion.abilityQ) });
-            abilitiesList.Add(new AbilityEntry { key = "W", ability = Instantiate(champion.abilityW) });
-            abilitiesList.Add(new AbilityEntry { key = "E", ability = Instantiate(champion.abilityE) });
-            abilitiesList.Add(new AbilityEntry { key = "R", ability = Instantiate(champion.abilityR) });
-        }
-        
-        // Initialize the Abilities dictionary using the list
-        Abilities = new Dictionary<string, Ability>();
-        foreach (var entry in abilitiesList) {
-            Abilities[entry.key] = entry.ability;
-            BuffEffect buffEffect = new MoveSpeedEffect();
-            Abilities[entry.key].buff = new Buff(buffEffect, entry.key, 3, 0);
-        }
+
+        // Initialise the abilities from the Champion SO
+        Abilities = new Dictionary<string, Ability>() {
+            { "Q", Instantiate(champion.abilityQ) },
+            { "W", Instantiate(champion.abilityW) },
+            { "E", Instantiate(champion.abilityE) },
+            { "R", Instantiate(champion.abilityR) },
+        };
+
+        // Assign buffs/de-buffs
+        Abilities["Q"].buff = new Buff(new RootEffect(), "Q", 3, 0);
+        Abilities["E"].buff = new Buff(new SlowEffect(), "E", 2f, 0.02f);
         
         ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
 

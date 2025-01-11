@@ -21,7 +21,6 @@ public class CastingState : State {
     public override void Enter() {
 
         if (_isRecast) {
-            Debug.Log("Re-casting State!");
             if (_player.ActiveAbilityPrefabs.TryGetValue(_ability.key, out var projectile)) {
                 _ability.Recast(projectile);
             }

@@ -2,7 +2,15 @@ using System;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Lux_E_Mis : ProjectileAbility {
+/*
+Lux_E_Mis.cs
+
+Controls the movement of the Lux E AOE ability
+Component of: Lux_E_Mis prefab
+
+*/
+
+public class Lux_E_Mis : ClientAbilityBehaviour {
     
     // GameObjects
     private GameObject _particles;
@@ -22,14 +30,13 @@ public class Lux_E_Mis : ProjectileAbility {
 
     private bool _canPlayRingVfx = true;
     private bool _canPlayExplosionVfx = true;
-    private bool _canTestQuads = true;
     private float _currentLingeringLifetime;
     private float _totalLifetime;
    
     void Start() {
-        
-        _totalLifetime = projectileLifetime + ability.lingeringLifetime;
-        _currentLingeringLifetime = ability.lingeringLifetime;
+
+        _totalLifetime = Ability.GetTotalLifetime();
+        _currentLingeringLifetime = Ability.lingeringLifetime;
         
         _particles = transform.GetChild(1).gameObject;
         _particlesVfx = _particles.GetComponent<VisualEffect>();
@@ -46,11 +53,11 @@ public class Lux_E_Mis : ProjectileAbility {
 
         _ring = transform.GetChild(3).gameObject;
         _ringVfx = _ring.GetComponent<VisualEffect>();
-        _ringVfx.SetFloat("lifetime", ability.lingeringLifetime);
+        _ringVfx.SetFloat("lifetime", Ability.lingeringLifetime);
 
         _particlesIn = transform.GetChild(4).gameObject;
         _particlesInVfx = _particlesIn.GetComponent<VisualEffect>();
-        _particlesInVfx.SetFloat("lifetime", ability.lingeringLifetime);
+        _particlesInVfx.SetFloat("lifetime", Ability.lingeringLifetime);
          
         _explosion = transform.GetChild(5).gameObject;
         _explosionVfx = _explosion.GetComponent<VisualEffect>();
@@ -60,10 +67,10 @@ public class Lux_E_Mis : ProjectileAbility {
     void Update(){
         
         // Play ring and particles when the projectile reaches target and stops moving
-        if(remainingDistance <= 0){
+        if(RemainingDistance <= 0){
             
             if (isRecast) {
-                ReCast();
+                Recast();
                 isRecast = false;
                 return;
             }
@@ -86,14 +93,13 @@ public class Lux_E_Mis : ProjectileAbility {
             if(_currentLingeringLifetime <= -0.5){
                 // Turn off shockwave distortion
                 _shockwaveQuad.SetActive(false);
-                canBeDestroyed = true;
-                player.ActiveAbilityPrefabs.Remove(ability.key);
-                ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
+                CanBeDestroyed = true;
+                DestroyAbilityPrefab(AbilityPrefabType.Projectile);
             }
         }
         else {
             // Move object
-            MoveProjectile();
+            Move();
         }
     }
     
@@ -103,7 +109,6 @@ public class Lux_E_Mis : ProjectileAbility {
         // Turn on shockwave distortion
         _shockwaveQuad.SetActive(true);
         _explosionVfx.Play();
-        _canTestQuads = false;
         _canPlayExplosionVfx = false;
     }
     
@@ -119,8 +124,7 @@ public class Lux_E_Mis : ProjectileAbility {
         
         _canPlayRingVfx = true;
         _canPlayExplosionVfx = true;
-        _canTestQuads = true;
-        canBeDestroyed = false;  
+        CanBeDestroyed = false;  
         
         _distortionQuad.SetActive(true);
         _shockwaveQuad.SetActive(false);
@@ -129,23 +133,23 @@ public class Lux_E_Mis : ProjectileAbility {
         _orbVfx.Play();
     }
 
-    public override void ReCast() {
+    public override void Recast() {
         _currentLingeringLifetime = 0;
     }
 
-    protected override void MoveProjectile() {
+    protected override void Move() {
         // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
+        float distance = Time.deltaTime * Ability.speed;
 
-        float inputRange = Vector3.Distance(projectileTargetPosition, initialPosition);
+        float inputRange = Vector3.Distance(TargetPosition, InitialPosition);
 
         // The current remaining distance the projectile must travel to reach the mouse position (at time of cast)
-        remainingDistance = (float)Math.Round(Math.Min(inputRange, projectileRange) - Vector3.Distance(transform.position, initialPosition), 2);
+        RemainingDistance = (float)Math.Round(Math.Min(inputRange, Ability.range) - Vector3.Distance(transform.position, InitialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
+        float travelDistance = Mathf.Min(distance, RemainingDistance);
 
         // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        transform.Translate(TargetDirection * travelDistance, Space.World);
     }
 }

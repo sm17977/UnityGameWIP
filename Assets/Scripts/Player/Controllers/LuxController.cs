@@ -11,15 +11,13 @@ public class LuxController : NetworkBehaviour {
     public Champion champion;
     public ClientBuffManager ClientBuffManager;
     public GlobalState globalState;
+    
     public NetworkVariable<bool> canMove = new NetworkVariable<bool>();
+    public NetworkVariable<float> movementSpeed = new NetworkVariable<float>();
     
     public void ProcessPlayerDeath(){
         if(playerType == PlayerType.Player && !GlobalState.IsMultiplayer){
             StartCoroutine(DelayLoadScene());
-        }
-
-        if (playerType == PlayerType.Player && GlobalState.IsMultiplayer) {
-            //canMove.Value = false;
         }
     }
     

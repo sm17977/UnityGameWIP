@@ -4,8 +4,15 @@ using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine;
 
+/*
+Lux_E_Mis_Net.cs
 
-public class Lux_E_Mis_Net : NetworkProjectileAbility {
+Controls the movement of the Lux E AOE ability (Networked version)
+Component of: Lux_E_Mis_Net prefab
+
+*/
+
+public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
    
     private float _currentLingeringLifetime;
     private float _totalLifetime;
@@ -13,7 +20,7 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
     // Projectile hitbox
     private GameObject _hitbox;
     
-    void Start(){
+    private void Start(){
         
         _currentLingeringLifetime = 4;
         
@@ -27,9 +34,9 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
         if(!IsServer) return;
         
         // Play ring and particles when the projectile reaches target and stops moving
-        if(remainingDistance <= 0){
+        if(RemainingDistance <= 0){
             if (isRecast) {
-                ReCast();
+                Recast();
                 isRecast = false;
                 return;
             }
@@ -38,62 +45,62 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
             if(_currentLingeringLifetime <= -0.5){
                 Detonate();
                 Debug.Log("Update Destroy");
-                canBeDestroyed = true;
+                CanBeDestroyed = true;
                 ScheduleDestroy(1);
                 _currentLingeringLifetime = 4;
             }
         }
         else {
             // Move object
-            MoveProjectile();
+            Move();
         }
     }
     
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(canBeDestroyed) DestroyProjectile();
+        if(CanBeDestroyed) DestroyProjectile();
     }
     
     private void ScheduleDestroy(float delay) {
         if (!gameObject.activeInHierarchy) return;
-        if (destructionScheduled) return;
-        destructionScheduled = true;
+        if (DestructionScheduled) return;
+        DestructionScheduled = true;
         StartCoroutine(DelayBeforeDestroy(delay));
     }
 
-    public void Detonate() {
+    private void Detonate() {
         
         Debug.Log("ReCast Lux E Net");
-        Debug.Log("isColliding: " + isColliding);
+        Debug.Log("isColliding: " + IsColliding);
         
-        if (ActiveCollision != null && isColliding) {
+        if (ActiveCollision != null && IsColliding) {
             Debug.Log("ReCast valid collision");
             var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
             var enemyClientId = playerNetworkObject.OwnerClientId;
             var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
             
-            target.health.TakeDamage(ability.damage);
-            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
+            target.health.TakeDamage(Ability.damage);
+            NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
         }
     }
 
-    public override void ReCast() {
+    public override void Recast() {
         
-        var jsonMappings = JsonConvert.SerializeObject(Mappings, Formatting.Indented);
+        var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
         
         Debug.Log("ReCast Lux E Net");
-        Debug.Log("isColliding: " + isColliding);
+        Debug.Log("isColliding: " + IsColliding);
         
-        if (ActiveCollision != null && isColliding) {
+        if (ActiveCollision != null && IsColliding) {
             Debug.Log("ReCast valid collision");
             var collisionPos = ActiveCollision.gameObject.transform.position;
             var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
             var enemyClientId = playerNetworkObject.OwnerClientId;
             var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
             
-            target.health.TakeDamage(ability.damage);
-            NetworkBuffManager.Instance.AddBuff(ability.buff, spawnedByClientId, enemyClientId);
-            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, ability.key);
+            target.health.TakeDamage(Ability.damage);
+            NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
+            TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
         }
         else {
             Debug.Log("ReCast non collision");
@@ -101,9 +108,9 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
         }
 
         Debug.Log("ReCast Destroy");
-        canBeDestroyed = true;
+        CanBeDestroyed = true;
         ScheduleDestroy(1);
-        isColliding = false;
+        IsColliding = false;
     }
 
     protected override void HandleServerCollision(Collision collision) {
@@ -128,20 +135,20 @@ public class Lux_E_Mis_Net : NetworkProjectileAbility {
         clientProjectileScript.isRecast = true;
     }
     
-    protected override void MoveProjectile() {
+    protected override void Move() {
         
         // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
+        float distance = Time.deltaTime * Ability.speed;
 
-        float inputRange = Vector3.Distance(projectileTargetPosition, initialPosition);
+        float inputRange = Vector3.Distance(TargetPosition, InitialPosition);
 
         // The current remaining distance the projectile must travel to reach the mouse position (at time of cast)
-        remainingDistance = (float)Math.Round(Math.Min(inputRange, projectileRange) - Vector3.Distance(transform.position, initialPosition), 2);
+        RemainingDistance = (float)Math.Round(Math.Min(inputRange, Ability.range) - Vector3.Distance(transform.position, InitialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
+        float travelDistance = Mathf.Min(distance, RemainingDistance);
 
         // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        transform.Translate(TargetDirection * travelDistance, Space.World);
     }
 }

@@ -12,7 +12,7 @@ Component of: Lux_Q_Mis prefab
 
 */
 
-public class Lux_Q_Mis : ProjectileAbility {
+public class Lux_Q_Mis : ClientAbilityBehaviour {
     
     // Projectile hitbox
     private GameObject _hitbox;
@@ -40,7 +40,7 @@ public class Lux_Q_Mis : ProjectileAbility {
         // Get Orb VFX
         _orbVfx = GetComponent<VisualEffect>();
         // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
-        _orbVfx.SetFloat("lifetime", projectileLifetime);
+        _orbVfx.SetFloat("lifetime", LifeTime);
 
         // Get Trails VFX
         _qTrails = gameObject.transform.Find("Q_Trails").gameObject;
@@ -50,21 +50,21 @@ public class Lux_Q_Mis : ProjectileAbility {
 
     private void Update() {
         // Handle end of life
-        if (remainingDistance <= 0) {
-            canBeDestroyed = true;
+        if (RemainingDistance <= 0) {
+            CanBeDestroyed = true;
             // Before end, set Trails VFX spawn rate block to inactive 
             if (_qTrailsVfx != null && _qTrailsVfx.GetBool("setActive")) _qTrailsVfx.SetBool("setActive", false);
             StartCoroutine(DelayBeforeDestroy(1f));
         }
         else {
             // Move object
-            MoveProjectile();
+            Move();
         }
     }
 
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(canBeDestroyed) DestroyProjectile();
+        if(CanBeDestroyed) DestroyAbilityPrefab(AbilityPrefabType.Projectile);
     }
 
     // Detect projectile hitbox collision with enemy 
@@ -74,17 +74,17 @@ public class Lux_Q_Mis : ProjectileAbility {
     }
 
     private void ProcessSinglePlayerCollision(Collision collision) {
-        if (((playerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") ||
-             (playerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player")) && !hasHit) {
-            hasHit = true;
+        if (((PlayerType == PlayerType.Player && collision.gameObject.name == "Lux_AI") ||
+             (PlayerType == PlayerType.Bot && collision.gameObject.name == "Lux_Player")) && !HasHit) {
+            HasHit = true;
             _target = collision.gameObject.GetComponent<LuxController>();
 
-            if (!_target.ClientBuffManager.HasBuffApplied(ability.buff)) {
+            if (!_target.ClientBuffManager.HasBuffApplied(Ability.buff)) {
                 SpawnHitVfx(collision.gameObject);
 
-                if (playerType == PlayerType.Bot) _target.ProcessPlayerDeath();
+                if (PlayerType == PlayerType.Bot) _target.ProcessPlayerDeath();
             }
-            ability.buff.Apply(_target);
+            Ability.buff.Apply(_target);
         }
     }
     
@@ -92,32 +92,26 @@ public class Lux_Q_Mis : ProjectileAbility {
     private void SpawnHitVfx(GameObject target) {
         // Spawn the prefab 
         _newQHit = Instantiate(qHit, target.transform.position, Quaternion.identity);
-        projectiles.Add(_newQHit);
         hitScript = _newQHit.GetComponent<Lux_Q_Hit>();
         hitScript.target = target;
     }
     
-    private void DestroyProjectile() {
-        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, gameObject);
-        canBeDestroyed = false;
-    }
-
     public override void ResetVFX() {
         Start();
     }
 
-    protected override void MoveProjectile() {
+    protected override void Move() {
         // The distance the projectile moves per frame
-        float distance = Time.deltaTime * projectileSpeed;
+        float distance = Time.deltaTime * Ability.speed;
 
         // The current remaining distance the projectile must travel to reach projectile range
-        remainingDistance = (float)Math.Round(projectileRange - Vector3.Distance(transform.position, initialPosition), 2);
+        RemainingDistance = (float)Math.Round(Ability.range - Vector3.Distance(transform.position, InitialPosition), 2);
 
         // Ensures the projectile stops moving once remaining distance is zero 
-        float travelDistance = Mathf.Min(distance, remainingDistance);
+        float travelDistance = Mathf.Min(distance, RemainingDistance);
 
         // Move the projectile
-        transform.Translate(projectileDirection * travelDistance, Space.World);
+        transform.Translate(TargetDirection * travelDistance, Space.World);
         
     }
 }
