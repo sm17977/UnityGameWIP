@@ -15,15 +15,9 @@ Component of: Lux_Q_Mis_Net prefab
 
 public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
     
-    // Projectile hitbox
     private GameObject _hitbox;
     
     private void Start() {
-        
-        // Set the projectile hitbox transform to move along the ground
-        _hitbox = gameObject.transform.Find("Hitbox").gameObject;
-        _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
-        _hitbox.transform.localScale = new Vector3(_hitbox.transform.localScale.x, 0.1f, _hitbox.transform.localScale.z);
         
     }
 
@@ -41,7 +35,7 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
     }
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(CanBeDestroyed) DestroyProjectile();
+        if(CanBeDestroyed) DestroyAbilityPrefab();
     }
     
     /// <summary>
@@ -60,9 +54,9 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         hitScript.ResetVFX();
     }
 
-    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject projectile) {
+    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject prefab) {
         // Deactivate the projectile
-        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, projectile);
+        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, prefab);
         SpawnClientHitVFX(position, player);
     }
     
@@ -81,7 +75,7 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         
         NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
         
-        DestroyProjectile();
+        DestroyAbilityPrefab();
     }
 
     protected override void Move() {

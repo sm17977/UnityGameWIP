@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1894600549252798281}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.12}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -169,17 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileDirection: {x: 0, y: 0, z: 0}
-  projectileSpeed: 0
-  projectileRange: 0
-  projectileLifetime: 0
-  remainingDistance: Infinity
-  canBeDestroyed: 0
-  ability: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
-  projectiles: []
-  playerType: 0
-  hasHit: 0
-  isHit: 0
+  isRecast: 0
   qHit: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483, type: 3}
   hitScript: {fileID: 0}
 --- !u!1 &4100793993242763836

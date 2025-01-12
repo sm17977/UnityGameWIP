@@ -16,18 +16,13 @@ public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
    
     private float _currentLingeringLifetime;
     private float _totalLifetime;
+    private float _lingeringLifetime;
+    private const float DetonationDelay = 1f;
     
-    // Projectile hitbox
     private GameObject _hitbox;
     
-    private void Start(){
-        
-        _currentLingeringLifetime = 4;
-        
-        // Set the projectile hitbox transform to move along the ground
-        _hitbox = gameObject.transform.Find("Hitbox").gameObject;
-        _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
-        _hitbox.transform.localScale = new Vector3(_hitbox.transform.localScale.x, 0.1f, _hitbox.transform.localScale.z);
+    private void Start() {
+        _currentLingeringLifetime = LingeringLifetime;
     }
     
     private void Update(){
@@ -42,54 +37,44 @@ public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
             }
             _currentLingeringLifetime -= Time.deltaTime;
             
-            if(_currentLingeringLifetime <= -0.5){
+            if(_currentLingeringLifetime <= 0){
                 Detonate();
-                Debug.Log("Update Destroy");
-                CanBeDestroyed = true;
-                ScheduleDestroy(1);
-                _currentLingeringLifetime = 4;
+                ScheduleDestroy(DetonationDelay);
+                _currentLingeringLifetime = LingeringLifetime;
             }
         }
         else {
-            // Move object
             Move();
         }
     }
     
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(CanBeDestroyed) DestroyProjectile();
+        if(CanBeDestroyed) DestroyAbilityPrefab();
     }
     
     private void ScheduleDestroy(float delay) {
         if (!gameObject.activeInHierarchy) return;
         if (DestructionScheduled) return;
         DestructionScheduled = true;
+        CanBeDestroyed = true;
         StartCoroutine(DelayBeforeDestroy(delay));
     }
 
     private void Detonate() {
+        if (!(ActiveCollision != null && IsColliding)) return;
         
-        Debug.Log("ReCast Lux E Net");
-        Debug.Log("isColliding: " + IsColliding);
+        var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
+        var enemyClientId = playerNetworkObject.OwnerClientId;
+        var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
         
-        if (ActiveCollision != null && IsColliding) {
-            Debug.Log("ReCast valid collision");
-            var playerNetworkObject = ActiveCollision.gameObject.GetComponent<NetworkObject>();
-            var enemyClientId = playerNetworkObject.OwnerClientId;
-            var target = ActiveCollision.gameObject.GetComponent<LuxPlayerController>();
-            
-            target.health.TakeDamage(Ability.damage);
-            NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
-        }
+        target.health.TakeDamage(Ability.damage);
+        NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
     }
 
     public override void Recast() {
         
         var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
-        
-        Debug.Log("ReCast Lux E Net");
-        Debug.Log("isColliding: " + IsColliding);
         
         if (ActiveCollision != null && IsColliding) {
             Debug.Log("ReCast valid collision");
@@ -103,32 +88,25 @@ public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
             TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
         }
         else {
-            Debug.Log("ReCast non collision");
             DetonateClientRpc(jsonMappings);
         }
-
-        Debug.Log("ReCast Destroy");
-        CanBeDestroyed = true;
-        ScheduleDestroy(1);
-        IsColliding = false;
+        ScheduleDestroy(DetonationDelay);
     }
 
     protected override void HandleServerCollision(Collision collision) {
         
     }
     
-    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject projectile) {
-        
+    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject prefab) {
         if(IsOwner) return;
-        
-        var projectileScript = projectile.GetComponent<Lux_E_Mis>();
+        var projectileScript = prefab.GetComponent<Lux_E_Mis>();
         projectileScript.isRecast = true;
     }
 
     [Rpc(SendTo.NotOwner)]
     private void DetonateClientRpc(string mappings) {
         // Get the projectile that collided
-        var clientProjectile = GetClientCollidedProjectile(mappings);
+        var clientProjectile = GetClientCollidedPrefab(mappings);
         if (clientProjectile == null) return;
 
         var clientProjectileScript = clientProjectile.GetComponent<Lux_E_Mis>();

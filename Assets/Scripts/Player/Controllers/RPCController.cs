@@ -80,14 +80,6 @@ public class RPCController : NetworkBehaviour {
         // Set the position and rotation of the projectile
         newNetworkProjectile.transform.position = position;
         newNetworkProjectile.transform.rotation = Quaternion.LookRotation(targetDirection, Vector3.up);
-
-        // Activate the projectile
-        newNetworkProjectile.SetActive(true);
-        
-        var networkObject = newNetworkProjectile.GetComponent<NetworkObject>();
-        if (!networkObject.IsSpawned) {
-            networkObject.Spawn(true);
-        }
         
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkAbilityBehaviour>();
@@ -99,6 +91,15 @@ public class RPCController : NetworkBehaviour {
         else {
             Debug.Log("Projectile Script is null");
         }
+        
+        // Activate the projectile
+        newNetworkProjectile.SetActive(true);
+        
+        var networkObject = newNetworkProjectile.GetComponent<NetworkObject>();
+        if (!networkObject.IsSpawned) {
+            networkObject.Spawn(true);
+        }
+        
         SpawnProjectileClientRpc(targetDirection, targetPosition, position, networkInstanceId, abilityKey);
     }
 

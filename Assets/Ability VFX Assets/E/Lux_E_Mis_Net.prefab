@@ -107,7 +107,7 @@ SphereCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!1 &7768291782423510599
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +137,7 @@ Transform:
   m_GameObject: {fileID: 7768291782423510599}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -209,21 +209,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  initialPosition: {x: 0, y: 0, z: 0}
-  projectileDirection: {x: 0, y: 0, z: 0}
-  projectileSpeed: 0
-  projectileRange: 0
-  projectileLifetime: 0
-  remainingDistance: 0
-  canBeDestroyed: 0
-  destructionScheduled: 0
-  ability: {fileID: 0}
-  projectiles: []
-  playerType: 0
-  hasHit: 0
-  isColliding: 0
-  isRecast: 0
   spawnedByClientId: 0
+  isRecast: 0
 --- !u!114 &452697803033174642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,14 +229,14 @@ MonoBehaviour:
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
-  SyncPositionY: 1
+  SyncPositionY: 0
   SyncPositionZ: 1
   SyncRotAngleX: 1
   SyncRotAngleY: 1
   SyncRotAngleZ: 1
-  SyncScaleX: 1
+  SyncScaleX: 0
   SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01

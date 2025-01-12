@@ -108,7 +108,6 @@ GameObject:
   - component: {fileID: 6112397078915289301}
   - component: {fileID: 6881271443565087466}
   - component: {fileID: 7686054493345482184}
-  - component: {fileID: 1504514774118711622}
   - component: {fileID: 1732250947714356030}
   - component: {fileID: 3799837274022872123}
   - component: {fileID: -3961866617289726453}
@@ -217,29 +216,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 1
---- !u!136 &1504514774118711622
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!114 &1732250947714356030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,7 +233,10 @@ MonoBehaviour:
   championSO: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   champion: {fileID: 0}
   globalState: {fileID: 0}
-  canMove: 1
+  canMove:
+    m_InternalValue: 0
+  movementSpeed:
+    m_InternalValue: 0
   projectiles: []
   vfxProjectileList: []
   projectileAA: {fileID: -2805702098513475222, guid: 29fa2eb67abbac245acc53af4efdabf7,
@@ -332,6 +311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe67813956ac46be9cf3ce957740c370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   _player: {fileID: 1732250947714356030}
   _networkStateManager: {fileID: 257863783551457560}
   movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,

@@ -26,3 +26,5 @@ MonoBehaviour:
   AA_missileSpeed: 8
   AA_attackSpeed: 0.625
   AA_direction: {x: -0.8854571, y: 0.0000004190906, z: 0.4647212}
+  modelHeight: 2
+  hitBoxRadius: 0.3

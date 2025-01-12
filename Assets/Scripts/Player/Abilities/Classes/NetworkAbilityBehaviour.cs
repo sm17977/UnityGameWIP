@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Unity.Netcode;
 
@@ -16,7 +17,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     protected Vector3 TargetDirection;
     protected Vector3 TargetPosition;
 
-    protected float LifeTime;
+    protected float LingeringLifetime;
     protected float RemainingDistance;
     
     protected bool CanBeDestroyed;
@@ -24,15 +25,18 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     protected bool HasHit;
     protected bool IsColliding;
     
-    private Transform _clientProjectilePool;
+    private Transform _clientObjectPoolParent;
     private LuxPlayerController _target;
     private PlayerType _playerType;
+
+    protected const float HitboxPosY = 0.5f;
+    protected const float HitboxLocalScaleY = 0.1f;
     
     protected abstract void HandleServerCollision(Collision collision);
-    protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject projectile);
+    protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject prefab);
 
     /// <summary>
-    /// Set the direction, speed and range of a projectile and other ability data
+    /// Set the direction, speed and range of an ability prefab
     /// </summary>
     /// <param name="targetDirection"></param>
     /// <param name="targetPosition"></param>
@@ -45,8 +49,8 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
         InitialPosition = transform.position;
         TargetPosition = targetPosition;
         TargetDirection = targetDirection;
-        
-        LifeTime = ability.GetLifetime();
+
+        LingeringLifetime = ability.lingeringLifetime;
         RemainingDistance = Mathf.Infinity;
         _playerType = type;
       
@@ -54,6 +58,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
         CanBeDestroyed = false;
         isRecast = false;
         DestructionScheduled = false;
+        IsColliding = false;
         
         ServerAbilityMappings = new Dictionary<int, ulong>();
         spawnedByClientId = clientId;
@@ -98,47 +103,44 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
 
         Debug.Log("Detected a collision!");
         
-        // Get the projectile that collided
-        var clientProjectile = GetClientCollidedProjectile(jsonMappings);
-        if (clientProjectile == null) return;
+        // Get the prefab that collided
+        var clientPrefab = GetClientCollidedPrefab(jsonMappings);
+        if (clientPrefab == null) return;
 
         // Get player that was hit
         var player = GetHitPlayer(collisionNetworkObjectId);
         if(player == null) return;
         
         var playerScript = player.GetComponent<LuxPlayerController>();
-        var projectileAbility = playerScript.Abilities[abilityKey];
+        var ability = playerScript.Abilities[abilityKey];
         
-        HandleClientCollision(position, player, projectileAbility, clientProjectile);
+        HandleClientCollision(position, player, ability, clientPrefab);
     }
     
     /// <summary>
-    /// Get the client version of the projectile game object that collided with a player (on the server)
+    /// Get the client version of the prefab game object that collided with a player (on the server)
     /// </summary>
-    /// <param name="jsonMappings">The JSON string mappings of projectile game objects to client IDs</param>
-    /// <returns>The client projectile game object</returns>
-    protected GameObject GetClientCollidedProjectile(string jsonMappings) {
+    /// <param name="jsonMappings">The JSON string mappings of prefab game objects to client IDs</param>
+    /// <returns>The client prefab game object</returns>
+    protected GameObject GetClientCollidedPrefab(string jsonMappings) {
 
-        GameObject localProjectile = null;
+        GameObject localPrefab = null;
         
-        // First find the parent game object that holds all the projectiles
-        _clientProjectilePool = GameObject.Find("Client Object Pool").transform;
+        // First find the parent game object that holds all the ability prefabs
+        _clientObjectPoolParent = GameObject.Find("Client Object Pool").transform;
         
         // Deserialize the json mappings into a dictionary
         Dictionary<int, ulong> mappings = JsonConvert.DeserializeObject<Dictionary<int, ulong>>(jsonMappings);
-
-        // Iterate over mappings to find the correct projectile for this client
-        foreach (var key in mappings.Keys) {
-            if (NetworkManager.LocalClientId == mappings[key]) {
-                localProjectile = _clientProjectilePool?.Find(key.ToString())?.gameObject;
-                break;
-            }
-        }
-        return localProjectile;
+        
+        // Find the correct prefab for this client
+        int prefabKey = mappings.FirstOrDefault(entry => entry.Value == NetworkManager.LocalClientId).Key;
+        localPrefab = _clientObjectPoolParent?.Find(prefabKey.ToString())?.gameObject;
+        
+        return localPrefab;
     }
     
     /// <summary>
-    /// Get the game object of the player hit by the projectile
+    /// Get the game object of the player hit by the prefab
     /// </summary>
     /// <param name="networkObjectId">The network object ID of the player</param>
     /// <returns>The player game object</returns>
@@ -158,7 +160,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
         return player;
     }
     
-    protected void DestroyProjectile() {
+    protected void DestroyAbilityPrefab() {
         ServerObjectPool.Instance.ReturnObjectToPool(Ability, AbilityPrefabType.Projectile, gameObject);
         CanBeDestroyed = false;
         DestructionScheduled = false; 

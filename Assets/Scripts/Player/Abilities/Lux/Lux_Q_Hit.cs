@@ -14,6 +14,7 @@ Component of: Lux_Q_Hit prefab
 public class Lux_Q_Hit : ClientAbilityBehaviour {
     // Target hit
     public GameObject target;
+    private LuxPlayerController _playerScript;
  
     // Ring Radii
     private float _baseRadius = 0.4f;
@@ -47,7 +48,7 @@ public class Lux_Q_Hit : ClientAbilityBehaviour {
     
     // Enemy 
     private float _enemyHeight;
-    private CapsuleCollider _enemyCollider;
+    private float _terrainHeight = 0.5f;
 
     // Timing
     // Minimum VFX and stun duration is fade in time + fade out time + delay time
@@ -86,7 +87,7 @@ public class Lux_Q_Hit : ClientAbilityBehaviour {
 
     private void Update(){
 
-        // Start timer after rings have prewarmed
+        // Start timer after rings have pre-warmed
         if(_vfxPlaying && _timer > 0){
             _timer -= Time.deltaTime;
         }
@@ -107,9 +108,9 @@ public class Lux_Q_Hit : ClientAbilityBehaviour {
     private void InitVfx(){
         _vfxPlaying = true;
 
-        // Calculate the y position to spawn the 2 rings and rays using the target's capsule collider
-        _enemyCollider = target.GetComponent<CapsuleCollider>();
-        _enemyHeight = _enemyCollider.height - _enemyCollider.radius;
+        // Calculate the y position to spawn the 2 rings and rays using the model's height
+        _playerScript = target.GetComponent<LuxPlayerController>();
+        _enemyHeight = _playerScript.champion.modelHeight - _terrainHeight;
         _bottomHeight = target.transform.position.y + 0.001f;
         _topHeight = _bottomHeight + _enemyHeight;
         _middleHeight = _topHeight / 2;
