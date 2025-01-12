@@ -14,9 +14,6 @@ Component of: Lux_Q_Mis prefab
 
 public class Lux_Q_Mis : ClientAbilityBehaviour {
     
-    // Projectile hitbox
-    private GameObject _hitbox;
-
     // VFX Assets
     private VisualEffect _orbVfx;
     private GameObject _qTrails;
@@ -32,13 +29,9 @@ public class Lux_Q_Mis : ClientAbilityBehaviour {
 
     private void Start() {
         
-        // Set the projectile hitbox transform to move along the ground
-        _hitbox = gameObject.transform.Find("Hitbox").gameObject;
-        _hitbox.transform.position = new Vector3(_hitbox.transform.position.x, 0.5f, _hitbox.transform.position.z);
-        _hitbox.transform.localScale = new Vector3(_hitbox.transform.localScale.x, 0.1f, _hitbox.transform.localScale.z);
-
         // Get Orb VFX
         _orbVfx = GetComponent<VisualEffect>();
+        
         // Set Orb VFX liftetime so the VFX stops when projectile range has been reached
         _orbVfx.SetFloat("lifetime", LifeTime);
 

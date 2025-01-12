@@ -14,19 +14,15 @@ Component of: Lux_Q_Mis_Net prefab
 */
 
 public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
-    
-    private GameObject _hitbox;
-    
-    private void Start() {
-        
-    }
 
+    private const float DestroyDelay = 1f;
+    
     private void Update() {
         if(!IsServer) return;
         // Handle end of life
         if (RemainingDistance <= 0) {
             CanBeDestroyed = true;
-            StartCoroutine(DelayBeforeDestroy(1f));
+            StartCoroutine(DelayBeforeDestroy(DestroyDelay));
         }
         else {
             // Move object
@@ -53,12 +49,6 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         hitPrefab.SetActive(true);
         hitScript.ResetVFX();
     }
-
-    protected override void HandleClientCollision(Vector3 position, GameObject player, Ability projectileAbility, GameObject prefab) {
-        // Deactivate the projectile
-        ClientObjectPool.Instance.ReturnObjectToPool(projectileAbility, AbilityPrefabType.Projectile, prefab);
-        SpawnClientHitVFX(position, player);
-    }
     
     protected override void HandleServerCollision(Collision collision) {
         
@@ -69,27 +59,42 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         
         HasHit = true;
         target.health.TakeDamage(Ability.damage);
+        NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
         
         var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
         TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
-        
-        NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
-        
         DestroyAbilityPrefab();
+    }
+    
+     
+    [Rpc(SendTo.ClientsAndHost)]
+    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
+        
+        // Get the prefab that collided
+        var clientPrefab = GetClientPrefab(jsonMappings);
+        if (clientPrefab == null) return;
+
+        // Get player that was hit
+        var player = GetHitPlayer(collisionNetworkObjectId);
+        if(player == null) return;
+        
+        var playerScript = player.GetComponent<LuxPlayerController>();
+        var ability = playerScript.Abilities[abilityKey];
+        
+        // Deactivate the projectile
+        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, clientPrefab);
+        
+        // Spawn the on hit VFX on all clients
+        SpawnClientHitVFX(position, player);
     }
 
     protected override void Move() {
         
-        // The distance the projectile moves per frame
+        // Move ability to max range
+        
         float distance = Time.deltaTime * Ability.speed;
-
-        // The current remaining distance the projectile must travel to reach projectile range
         RemainingDistance = (float)Math.Round(Ability.range - Vector3.Distance(transform.position, InitialPosition), 2);
-
-        // Ensures the projectile stops moving once remaining distance is zero 
         float travelDistance = Mathf.Min(distance, RemainingDistance);
-
-        // Move the projectile
         transform.Translate(TargetDirection * travelDistance, Space.World);
     }
 }

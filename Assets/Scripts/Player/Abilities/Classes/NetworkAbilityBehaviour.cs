@@ -28,13 +28,9 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     private Transform _clientObjectPoolParent;
     private LuxPlayerController _target;
     private PlayerType _playerType;
-
-    protected const float HitboxPosY = 0.5f;
-    protected const float HitboxLocalScaleY = 0.1f;
     
-    protected abstract void HandleServerCollision(Collision collision);
-    protected abstract void HandleClientCollision(Vector3 position, GameObject player, Ability ability, GameObject prefab);
-
+    protected virtual void HandleServerCollision(Collision collision){}
+    
     /// <summary>
     /// Set the direction, speed and range of an ability prefab
     /// </summary>
@@ -65,8 +61,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     }
 
     protected void OnCollisionEnter(Collision collision){
-        if (!IsServer) return;
-        if (!collision.gameObject.CompareTag("Player")) return;
+        if (!IsServer || !collision.gameObject.CompareTag("Player")) return;
         
         var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
         var enemyClientId = playerNetworkObject.OwnerClientId;
@@ -78,53 +73,25 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     }
     
     protected void OnCollisionStay(Collision collision) {
-        
-        if (!IsServer) return;
-        
-        if (!collision.gameObject.CompareTag("Player")) {
-            IsColliding = false;
-            return;
-        }
+        if (!IsServer || !collision.gameObject.CompareTag("Player")) return;
         
         var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
         var enemyClientId = playerNetworkObject.OwnerClientId;
         var isDifferentPlayer = enemyClientId != spawnedByClientId;
 
-        if (_playerType == PlayerType.Player && isDifferentPlayer) {
+        if (_playerType == PlayerType.Player && isDifferentPlayer && !HasHit) {
             IsColliding = true;
             ActiveCollision = collision;
         }
         else IsColliding = false;
     }
     
-    
-    [Rpc(SendTo.ClientsAndHost)]
-    protected void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
-
-        Debug.Log("Detected a collision!");
-        
-        // Get the prefab that collided
-        var clientPrefab = GetClientCollidedPrefab(jsonMappings);
-        if (clientPrefab == null) return;
-
-        // Get player that was hit
-        var player = GetHitPlayer(collisionNetworkObjectId);
-        if(player == null) return;
-        
-        var playerScript = player.GetComponent<LuxPlayerController>();
-        var ability = playerScript.Abilities[abilityKey];
-        
-        HandleClientCollision(position, player, ability, clientPrefab);
-    }
-    
     /// <summary>
-    /// Get the client version of the prefab game object that collided with a player (on the server)
+    /// Get the client version of the prefab game object
     /// </summary>
     /// <param name="jsonMappings">The JSON string mappings of prefab game objects to client IDs</param>
     /// <returns>The client prefab game object</returns>
-    protected GameObject GetClientCollidedPrefab(string jsonMappings) {
-
-        GameObject localPrefab = null;
+    protected GameObject GetClientPrefab(string jsonMappings) {
         
         // First find the parent game object that holds all the ability prefabs
         _clientObjectPoolParent = GameObject.Find("Client Object Pool").transform;
@@ -134,7 +101,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
         
         // Find the correct prefab for this client
         int prefabKey = mappings.FirstOrDefault(entry => entry.Value == NetworkManager.LocalClientId).Key;
-        localPrefab = _clientObjectPoolParent?.Find(prefabKey.ToString())?.gameObject;
+        var localPrefab = _clientObjectPoolParent?.Find(prefabKey.ToString())?.gameObject;
         
         return localPrefab;
     }
@@ -144,18 +111,12 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     /// </summary>
     /// <param name="networkObjectId">The network object ID of the player</param>
     /// <returns>The player game object</returns>
-    private GameObject GetHitPlayer(ulong networkObjectId) {
+    protected GameObject GetHitPlayer(ulong networkObjectId) {
 
-        GameObject player;
+        GameObject player = null;
         
-        // If the local client has been hit
-        if (NetworkManager.LocalClient.PlayerObject.NetworkObjectId == networkObjectId) {
-            player = NetworkManager.LocalClient.PlayerObject.gameObject;
-        }
-        // If a different client has been hit
-        else {
-            var players = GameObject.Find("Players").transform;
-            player = players.Find(networkObjectId.ToString()).gameObject;
+        if (NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(networkObjectId, out var playerNetworkObj)) {
+            player = playerNetworkObj.gameObject;
         }
         return player;
     }

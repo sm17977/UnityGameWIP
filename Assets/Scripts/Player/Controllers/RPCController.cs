@@ -83,18 +83,13 @@ public class RPCController : NetworkBehaviour {
         
         // Initialize projectile properties on the server
         var projectileScript = newNetworkProjectile.GetComponent<NetworkAbilityBehaviour>();
-        if (projectileScript != null) {
-            Debug.Log("Init Projectile Server Ability - " + abilityKey);
-            projectileScript.InitialiseProperties(ability, targetDirection, targetPosition, _playerController.playerType, clientId);
-            projectileScript.ServerAbilityMappings[instanceId] = clientId;
-        }
-        else {
-            Debug.Log("Projectile Script is null");
-        }
+        projectileScript.InitialiseProperties(ability, targetDirection, targetPosition, _playerController.playerType, clientId);
+        projectileScript.ServerAbilityMappings[instanceId] = clientId;
         
         // Activate the projectile
         newNetworkProjectile.SetActive(true);
         
+        // Make sure it's spawned
         var networkObject = newNetworkProjectile.GetComponent<NetworkObject>();
         if (!networkObject.IsSpawned) {
             networkObject.Spawn(true);
@@ -125,19 +120,14 @@ public class RPCController : NetworkBehaviour {
             // Set the position and rotation of the projectile
             newProjectile.transform.position = position;
             newProjectile.transform.rotation = Quaternion.LookRotation(targetDir, Vector3.up);
-
-            // Activate the projectile
-            newProjectile.SetActive(true);
             
             // Initialize projectile properties on the server
             var projectileScript = newProjectile.GetComponent<ClientAbilityBehaviour>();
-            if (projectileScript != null) {
-                projectileScript.InitialiseProperties(ability, _playerController,targetPos, targetDir);
-                projectileScript.ResetVFX();
-            }
-            else {
-                Debug.Log("ProjectileAbility component is missing on the projectile");
-            }
+            projectileScript.InitialiseProperties(ability, _playerController,targetPos, targetDir);
+            projectileScript.ResetVFX();
+            
+            // Activate the projectile
+            newProjectile.SetActive(true);
             
             var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
             var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
@@ -161,7 +151,7 @@ public class RPCController : NetworkBehaviour {
     }
 
     [Rpc(SendTo.Server)]
-    public void ReCastAbilityServerRpc(ulong clientId, string abilityKey) {
+    public void RecastAbilityServerRpc(ulong clientId, string abilityKey) {
         var networkProjectile = NetworkActiveAbilityPrefabs[abilityKey];
         var networkProjectileScript = networkProjectile.GetComponent<NetworkAbilityBehaviour>();
         networkProjectileScript.isRecast = true;

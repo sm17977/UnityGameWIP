@@ -17,7 +17,7 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
         projectileScript?.InitialiseProperties(ability, _playerController,targetPos, targetDir);
     }
 
-    public void ReCast(GameObject projectile, string abilityKey) {
+    public void Recast(GameObject projectile, string abilityKey) {
         throw new System.NotImplementedException();
     }
 }
@@ -69,16 +69,16 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         _rpcController.SpawnProjectileServerRpc(targetDir, abilitySpawnPos, targetPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
     }
 
-    public void ReCast(GameObject projectile, string abilityKey) {
+    public void Recast(GameObject projectile, string abilityKey) {
         
-        // Client side 
+        // Client 
         var projectileScript = projectile.GetComponent<ClientAbilityBehaviour>();
         projectileScript.isRecast = true;
         
         // Server
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
-        _rpcController.ReCastAbilityServerRpc(localClientId, abilityKey);
+        _rpcController.RecastAbilityServerRpc(localClientId, abilityKey);
         
     }
 }

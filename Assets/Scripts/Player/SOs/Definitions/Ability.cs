@@ -52,7 +52,7 @@ public class Ability : ScriptableObject {
     }
 
     public void Recast(GameObject projectile) {
-        _castingStrategy.ReCast(projectile, key);
+        _castingStrategy.Recast(projectile, key);
     }
  
     public float GetLifetime(){
