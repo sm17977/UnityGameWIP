@@ -60,8 +60,8 @@ public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
     }
 
     private void Detonate(bool recast) {
-        
-        var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
+
+        var networkObjectId = GetComponent<NetworkObject>().NetworkObjectId;
         
         if (ActiveCollision != null && IsColliding) {
 
@@ -75,15 +75,14 @@ public class Lux_E_Mis_Net : NetworkAbilityBehaviour {
         }
 
         // If it's a recast, force detonate VFX earlier on all clients
-        if (recast) DetonateClientRpc(jsonMappings);
-        
+        if (recast) DetonateClientRpc(networkObjectId);
         ScheduleDestroy(DetonationDelay);
     }
     
     [Rpc(SendTo.NotOwner)]
-    private void DetonateClientRpc(string mappings) {
+    private void DetonateClientRpc(ulong networkObjectId) {
         // Get the prefab that collided
-        var clientPrefab = GetClientPrefab(mappings);
+        var clientPrefab = GetClientPrefab(networkObjectId);
         if (clientPrefab == null) return;
 
         var clientPrefabScript = clientPrefab.GetComponent<Lux_E_Mis>();

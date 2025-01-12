@@ -66,7 +66,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
         var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
         
-        _rpcController.SpawnProjectileServerRpc(targetDir, abilitySpawnPos, targetPos, localClientId, newProjectile.transform.GetInstanceID(), ability.key);
+        _rpcController.SpawnProjectileServerRpc(targetDir, abilitySpawnPos, targetPos, localClientId, ability.key);
     }
 
     public void Recast(GameObject projectile, string abilityKey) {
@@ -77,8 +77,7 @@ public class MultiplayerCastingStrategy : ICastingStrategy {
         
         // Server
         var playerNetworkBehaviour = _player.GetComponent<NetworkBehaviour>();
-        var localClientId = playerNetworkBehaviour.NetworkManager.LocalClientId;
-        _rpcController.RecastAbilityServerRpc(localClientId, abilityKey);
+        _rpcController.RecastAbilityServerRpc(abilityKey);
         
     }
 }

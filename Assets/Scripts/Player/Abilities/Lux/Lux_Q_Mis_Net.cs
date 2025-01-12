@@ -51,7 +51,8 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
     }
     
     protected override void HandleServerCollision(Collision collision) {
-        
+
+        var prefabNetworkObjectId = GetComponent<NetworkObject>().NetworkObjectId;
         var collisionPos = collision.gameObject.transform.position;
         var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
         var enemyClientId = playerNetworkObject.OwnerClientId;
@@ -61,17 +62,16 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         target.health.TakeDamage(Ability.damage);
         NetworkBuffManager.Instance.AddBuff(Ability.buff, spawnedByClientId, enemyClientId);
         
-        var jsonMappings = JsonConvert.SerializeObject(ServerAbilityMappings, Formatting.Indented);
-        TriggerCollisionClientRpc(jsonMappings, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
+        TriggerCollisionClientRpc(prefabNetworkObjectId, collisionPos, playerNetworkObject.NetworkObjectId, Ability.key);
         DestroyAbilityPrefab();
     }
     
      
     [Rpc(SendTo.ClientsAndHost)]
-    private void TriggerCollisionClientRpc(string jsonMappings, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
+    private void TriggerCollisionClientRpc(ulong prefabNetworkObjectId, Vector3 position, ulong collisionNetworkObjectId, string abilityKey) {
         
         // Get the prefab that collided
-        var clientPrefab = GetClientPrefab(jsonMappings);
+        var clientPrefab = GetClientPrefab(prefabNetworkObjectId);
         if (clientPrefab == null) return;
 
         // Get player that was hit
@@ -83,6 +83,7 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         
         // Deactivate the projectile
         ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, clientPrefab);
+        ClientPrefabManager.Instance.UnregisterPrefab(prefabNetworkObjectId);
         
         // Spawn the on hit VFX on all clients
         SpawnClientHitVFX(position, player);

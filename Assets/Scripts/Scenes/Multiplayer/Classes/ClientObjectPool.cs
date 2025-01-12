@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ClientObjectPool : MonoBehaviour {
     public static ClientObjectPool Instance { get; private set; }
-
     public int poolSize;
     
     [SerializeField]

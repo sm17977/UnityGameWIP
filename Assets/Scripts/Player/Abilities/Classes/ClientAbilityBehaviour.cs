@@ -2,6 +2,7 @@
 public abstract class ClientAbilityBehaviour : MonoBehaviour {
     
     public bool isRecast;
+    public ulong linkedNetworkObjectId;
     
     protected Ability Ability;
     protected GameObject Hitbox;
@@ -58,6 +59,7 @@ public abstract class ClientAbilityBehaviour : MonoBehaviour {
     /// </summary>
     /// <param name="type"></param>
     protected void DestroyAbilityPrefab(AbilityPrefabType type) {
+        ClientPrefabManager.Instance.UnregisterPrefab(linkedNetworkObjectId);
         Player.ActiveAbilityPrefabs.Remove(Ability.key);
         ClientObjectPool.Instance.ReturnObjectToPool(Ability, type, gameObject);
         CanBeDestroyed = false;

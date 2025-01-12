@@ -6,7 +6,6 @@ using Unity.Netcode;
 
 public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     
-    public Dictionary<int, ulong> ServerAbilityMappings; // Maps prefab IDs to client IDs
     public ulong spawnedByClientId;
     public bool isRecast;
     
@@ -56,7 +55,6 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
         DestructionScheduled = false;
         IsColliding = false;
         
-        ServerAbilityMappings = new Dictionary<int, ulong>();
         spawnedByClientId = clientId;
     }
 
@@ -89,21 +87,10 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     /// <summary>
     /// Get the client version of the prefab game object
     /// </summary>
-    /// <param name="jsonMappings">The JSON string mappings of prefab game objects to client IDs</param>
+    /// <param name="networkObjectId"></param>
     /// <returns>The client prefab game object</returns>
-    protected GameObject GetClientPrefab(string jsonMappings) {
-        
-        // First find the parent game object that holds all the ability prefabs
-        _clientObjectPoolParent = GameObject.Find("Client Object Pool").transform;
-        
-        // Deserialize the json mappings into a dictionary
-        Dictionary<int, ulong> mappings = JsonConvert.DeserializeObject<Dictionary<int, ulong>>(jsonMappings);
-        
-        // Find the correct prefab for this client
-        int prefabKey = mappings.FirstOrDefault(entry => entry.Value == NetworkManager.LocalClientId).Key;
-        var localPrefab = _clientObjectPoolParent?.Find(prefabKey.ToString())?.gameObject;
-        
-        return localPrefab;
+    protected GameObject GetClientPrefab(ulong networkObjectId) {
+        return ClientPrefabManager.Instance.GetLocalPrefab(networkObjectId);
     }
     
     /// <summary>
