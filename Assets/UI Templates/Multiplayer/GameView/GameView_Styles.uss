@@ -58,7 +58,7 @@
     background-color: rgb(255, 0, 0);
     border-color: rgb(255, 0, 0);
     border-radius: 8px 0 0 8px;
-    transition: width 0.2s;
+    transition: width 0.05s;
 }
 
 /* Health bar border */

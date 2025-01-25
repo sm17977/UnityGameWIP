@@ -5,6 +5,10 @@ public class IdleState : State {
     public IdleState(LuxPlayerController controller) {
         playerController = controller;
     }
+
+    public IdleState() {
+        
+    }
     
     public override void Enter() {
     

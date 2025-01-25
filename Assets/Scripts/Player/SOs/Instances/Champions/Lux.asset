@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   championName: Lux
   health: 500
-  movementSpeed: 0.038
+  movementSpeed: 0.025
   turnSpeed: 18
   windupTime: 15.625
   stoppingDistance: 0.1
@@ -22,7 +22,7 @@ MonoBehaviour:
   abilityW: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   abilityE: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
   abilityR: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
-  AA_range: 0.6
+  AA_range: 6
   AA_missileSpeed: 8
   AA_attackSpeed: 0.625
   AA_direction: {x: -0.8854571, y: 0.0000004190906, z: 0.4647212}

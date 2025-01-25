@@ -30,6 +30,7 @@ public class Ability : ScriptableObject {
     public GameObject missilePrefab;
     public GameObject networkMissilePrefab;
     public GameObject hitPrefab;
+    public GameObject spellIndicatorPrefab;
     public float spawnHeight;
 
     [Header("Scripts")]

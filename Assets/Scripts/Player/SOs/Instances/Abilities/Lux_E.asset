@@ -29,6 +29,8 @@ MonoBehaviour:
   networkMissilePrefab: {fileID: 7768291782423510599, guid: 28775094b70f6cf45baf0152e5e8791b,
     type: 3}
   hitPrefab: {fileID: 0}
+  spellIndicatorPrefab: {fileID: 5475580677785024963, guid: a123734da81fe574ab5d138a22f53408,
+    type: 3}
   spawnHeight: 0.7
   spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
   hitScript: {fileID: 0}

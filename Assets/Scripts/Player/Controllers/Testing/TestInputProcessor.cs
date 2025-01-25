@@ -5,18 +5,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 
-public class InputProcessor : NetworkBehaviour {
+public class TestInputProcessor : NetworkBehaviour {
     
-    public event Action<string, float>? NotifyUICooldown;
-    
-    [SerializeField] private LuxPlayerController _player;
-    [SerializeField] private NetworkStateManager _networkStateManager;
+    [SerializeField] private BarebonesPlayerController _player;
     [SerializeField] private GameObject movementIndicatorPrefab;
     [SerializeField] private GameObject spellIndicatorPrefab;
     [SerializeField] private GameObject aaRangeIndicatorPrefab;
 
     private InputController _input;
-    
+
+    public bool normalCast;
     private bool _isAARangeIndicatorOn;
     private GameObject _aaRangeIndicator;
     private GameObject _movementIndicator;
@@ -29,15 +27,13 @@ public class InputProcessor : NetworkBehaviour {
     public Vector3 lastClickPosition;
     public Vector3 projectileAATargetPosition;
     
+    
+    private bool _isNewClick;
     public bool isAttackClick;
     public bool canCast;
     public bool incompleteMovement;
     public bool canAA;
-    
-    private bool _isNewClick;
     private bool _showSpellIndicator;
-
-    private static readonly float floorY = 0.5f;
 
     private void Awake() {
         _mainCamera = Camera.main;
@@ -52,10 +48,27 @@ public class InputProcessor : NetworkBehaviour {
         _input.OnInputCommandIssued -= EnqueueInputCommand;
     }
 
-    private void FixedUpdate() {
-        if (IsOwner) {
-            ProcessCommands();
+    private void Update() {
+        if (_showSpellIndicator && _spellIndicator != null) {
+            Vector3 mousePos = GetMousePosition();
+            
+            var xDiff = mousePos.x - transform.position.x;
+            var zDiff = mousePos.z - transform.position.z;
+            Vector3 dir = new Vector3(xDiff, 0, zDiff).normalized;
+            
+            Quaternion rotation = Quaternion.LookRotation(dir, Vector3.up);
+            _spellIndicator.transform.rotation = rotation;
+            
+            _spellIndicator.transform.position = new Vector3(
+                transform.position.x,
+                0.51f, 
+                transform.position.z
+            );
         }
+    }
+
+    private void FixedUpdate() {
+        ProcessCommands();
     }
 
     private void EnqueueInputCommand(InputCommand input) {
@@ -99,7 +112,7 @@ public class InputProcessor : NetworkBehaviour {
         }
     }
 
-    /// <summary>
+   /// <summary>
     ///  Detect if the player has clicked on the ground (movement command) or an enemy (attack command)
     ///  Store the position of the click in lastClickPosition
     ///  Return the input command type
@@ -126,12 +139,12 @@ public class InputProcessor : NetworkBehaviour {
         return InputCommandType.None;
     }
 
-    public static Vector3 GetMousePosition() {
-        // Define a horizontal plane at the floor height
-        Plane plane = new(Vector3.up, new Vector3(0, floorY, 0));
+    private Vector3 GetMousePosition() {
+        // Define a horizontal plane at the player's hitbox height
+        Plane plane = new(Vector3.up, new Vector3(0, _player.hitboxPos.y, 0));
         
         // Get a ray from the camera to the mouse 
-        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         // Detect move click
         return plane.Raycast(ray, out var enter) ? ray.GetPoint(enter) : new Vector3();
@@ -139,17 +152,13 @@ public class InputProcessor : NetworkBehaviour {
 
     private void HandleMovementCommand() {
         ShowMovementIndicator(lastClickPosition);
-        if (_player.canMove.Value) {
-            _player.StateManager.ChangeState(new MovingState(gameObject, false));
-            _networkStateManager.SendMoveCommand(lastClickPosition);
-        }
-        
+        _player.StateManager.ChangeState(new TestMovingState(gameObject, false));
     }
 
     private void HandleAttackCommand() {
         _player.direction = (lastClickPosition - transform.position).normalized;
         if (!IsInAttackRange(lastClickPosition, GetStoppingDistance()))
-            _player.StateManager.ChangeState(new MovingState(gameObject, true));
+            _player.StateManager.ChangeState(new TestMovingState(gameObject, true));
         else
             _player.StateManager.ChangeState(new AttackingState(gameObject));
 
@@ -158,39 +167,14 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void HandleSpellCommand(string key) {
+        if (!_showSpellIndicator) {
+            _showSpellIndicator = true;
+            ShowSpellIndicator(Quaternion.identity); 
         
-        if (_player.Abilities.TryGetValue(key, out Ability ability)) {
-            
-            spellIndicatorPrefab = ability.spellIndicatorPrefab;
-            
-                ability.OnCooldown_Net(gameObject, (bool networkCooldown) => {
-                    // Check cooldown before casting
-                    if (!networkCooldown) {
-                        
-                        // Spell indicator isn't already showing, show it and don't cast
-                        if (!_showSpellIndicator) {
-                            _showSpellIndicator = true;
-                            ShowSpellIndicator(ability); 
-                        }
-                        // Otherwise remove it and cast
-                        else {
-                            _showSpellIndicator = false;
-                            HideSpellIndicator();
-                            NotifyUICooldown?.Invoke(key, ability.maxCooldown);
-                            GetCastingTargetPosition();
-                            _player.StateManager.ChangeState(new CastingState(gameObject, ability));
-                            _networkStateManager.SendSpellCommand(key, ability);
-                            ability.canRecast = ability.hasRecast;
-                        }
-                    }
-                    // If ability is on CD and it's re-castable
-                    else if (ability.hasRecast && ability.canRecast) {
-                        _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
-                        ability.canRecast = false;
-                    }
-                });
+        } else {
+            _showSpellIndicator = false;
+            HideSpellIndicator();
         }
-        
     }
 
     private void ToggleAARange() {
@@ -213,21 +197,18 @@ public class InputProcessor : NetworkBehaviour {
             _isNewClick = false;
         }
     }
-    
-    private void ShowSpellIndicator(Ability ability) {
-        _spellIndicator = Instantiate(
+
+    private void ShowSpellIndicator(Quaternion rotation) {
+        _spellIndicator  = Instantiate(
             spellIndicatorPrefab,
             new Vector3(transform.position.x, 0.51f, transform.position.z),
-            Quaternion.identity
+            rotation
         );
-        var spellIndicatorScript = _spellIndicator.GetComponent<BaseSpellIndicator>();
-        spellIndicatorScript.InitializeProperties(ability);
     }
 
     private void HideSpellIndicator() {
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }
-
 
     private bool IsInAttackRange(Vector3 targetLocation, float stoppingDistance) {
         return Vector3.Distance(transform.position, targetLocation) <= stoppingDistance;

@@ -10,6 +10,10 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
         _playerController = playerController;
     }
     
+    public SinglePlayerCastingStrategy() {
+        
+    }
+    
     public void Cast(Ability ability, Vector3 targetDir, Vector3 targetPos, Vector3 abilitySpawnPos) {
         GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(targetDir, Vector3.up));
         _playerController.projectiles.Add(newProjectile);

@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2974585148
+  GlobalObjectIdHash: 4260087488
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -316,7 +316,9 @@ MonoBehaviour:
   _networkStateManager: {fileID: 257863783551457560}
   movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
     type: 3}
-  aaRangeIndicatorPrefab: {fileID: 6463663442880315242, guid: 52a4d16bfebf663458c88e8e2c3aea23,
+  spellIndicatorPrefab: {fileID: 4448765777282739813, guid: 1be24f9e473384e439a037eb8b312b48,
+    type: 3}
+  aaRangeIndicatorPrefab: {fileID: 5475580677785024963, guid: cdfca3dbd036ece479fa058999410afa,
     type: 3}
   projectileTargetPosition: {x: 0, y: 0, z: 0}
   lastClickPosition: {x: 0, y: 0, z: 0}
