@@ -32,6 +32,7 @@ MonoBehaviour:
   spellIndicatorPrefab: {fileID: 5475580677785024963, guid: a123734da81fe574ab5d138a22f53408,
     type: 3}
   spawnHeight: 0.7
+  hitboxRadius: 1
   spawnScript: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
   hitScript: {fileID: 0}
   animationClip: {fileID: 2986519980907021182, guid: 458163394b1b81746828f5eedf2ee10a,

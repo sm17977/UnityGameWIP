@@ -32,6 +32,7 @@ public class Ability : ScriptableObject {
     public GameObject hitPrefab;
     public GameObject spellIndicatorPrefab;
     public float spawnHeight;
+    public float hitboxRadius;
 
     [Header("Scripts")]
     public UnityEngine.Object spawnScript;

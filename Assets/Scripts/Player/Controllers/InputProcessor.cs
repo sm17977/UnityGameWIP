@@ -217,8 +217,8 @@ public class InputProcessor : NetworkBehaviour {
     private void ShowSpellIndicator(Ability ability) {
         _spellIndicator = Instantiate(
             spellIndicatorPrefab,
-            new Vector3(transform.position.x, 0.51f, transform.position.z),
-            Quaternion.identity
+            new Vector3(transform.position.x, 0.51f, transform.position.z), 
+            spellIndicatorPrefab.transform.rotation
         );
         var spellIndicatorScript = _spellIndicator.GetComponent<BaseSpellIndicator>();
         spellIndicatorScript.InitializeProperties(ability);

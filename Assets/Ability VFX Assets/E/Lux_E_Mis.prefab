@@ -702,19 +702,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfcd8e91f44775449879b221272351df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileDirection: {x: 0, y: 0, z: 0}
-  projectileSpeed: 0
-  projectileRange: 0
-  projectileLifetime: 0
-  remainingDistance: Infinity
-  canBeDestroyed: 0
-  ability: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
-  projectiles: []
-  playerType: 0
-  hasHit: 0
-  isHit: 0
   isRecast: 0
-  player: {fileID: 0}
+  linkedNetworkObjectId: 0
 --- !u!1 &7969168761625470230
 GameObject:
   m_ObjectHideFlags: 0
