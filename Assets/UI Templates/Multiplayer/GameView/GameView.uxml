@@ -6,31 +6,61 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
     
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" />
+    
     <!-- Game View -->
     <engine:VisualElement name="gameview-container" class="gameview-container">
+        
+        
+        <!-- Top bar -->
+        <engine:VisualElement name="top-bar" class="top-bar">
+            <engine:VisualElement name="team-portraits" class="team-portraits">
+                <engine:VisualElement name="team-portrait-container" class="team-portrait-container">
+                    <engine:VisualElement name="team-portrait" class ="team-portrait"/>
+                    <engine:VisualElement name="team-portrait-text" class ="team-portrait-text">
+                        <engine:Label text="Team A" name="team-portrait-label" class="team-portrait-label"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+                <engine:VisualElement name="team-portrait-container" class="team-portrait-container">
+                    <engine:VisualElement name="team-portrait" class ="team-portrait"/>
+                    <engine:VisualElement name="team-portrait-text" class ="team-portrait-text">
+                        <engine:Label text="Team B" name="team-portrait-label" class="team-portrait-label"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+            </engine:VisualElement>
+            
+            <engine:VisualElement name="game-timer-container" class="game-timer-container">
+                <engine:Label text="01:20" name="game-timer-label" class="game-timer-label"/>
+            </engine:VisualElement>
+            
+        </engine:VisualElement>
+        
+        <!-- Start Countdown timer -->
         <custom:CountdownTimerElement name="countdown-timer" myString="test"/>
         
         <!-- Player center -->
         <engine:VisualElement name="player-center" class="player-center-container">
-            <engine:VisualElement class="skills-container">
+            <engine:VisualElement name="skills-container" class="skills-container">
                 <engine:VisualElement name="q-box" class="skill">
-                    <engine:VisualElement name="q-overlay" class="cd-bar" />
-                    <engine:Label text="Q" class="skill-label" />
+                    <custom:RadialCooldownElement name="radial-cooldown" key="Q"/>
                 </engine:VisualElement>
                 <engine:VisualElement name="w-box" class="skill">
-                    <engine:VisualElement name="w-overlay" class="cd-bar" />
-                    <engine:Label text="W" class="skill-label" />
+                    <custom:RadialCooldownElement name="radial-cooldown" key="W"/>
                 </engine:VisualElement>
                 <engine:VisualElement name="e-box" class="skill">
-                    <engine:VisualElement name="e-overlay" class="cd-bar" />
-                    <engine:Label text="E" class="skill-label" />
+                    <custom:RadialCooldownElement name="radial-cooldown" key="E"/>
                 </engine:VisualElement>
                 <engine:VisualElement name="r-box" class="skill">
-                    <engine:VisualElement name="r-overlay" class="cd-bar" />
-                    <engine:Label text="R" class="skill-label" />
+                    <custom:RadialCooldownElement name="radial-cooldown" key="R"/>
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:VisualElement>
         
     </engine:VisualElement>
+    
+    <!-- Mini Map placeholder -->
+    <engine:VisualElement name="minimap-container" class="minimap-container"/>
+            
+ 
+    
 </UXML>

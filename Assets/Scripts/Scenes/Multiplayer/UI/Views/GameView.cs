@@ -75,41 +75,20 @@ namespace Multiplayer.UI {
         /// </summary>
         /// <param name="key"></param>
         /// <param name="duration"></param>
-        public void ActivateAbilityAnimation(string key, float duration) {
-            string overlayElementName = key.ToLower() + "-overlay";
-            var abilityBox = Template.Q<VisualElement>(overlayElementName);
-
-            if (abilityBox != null) {
-                // Reset height and transition
-                ResetAbilityBox(abilityBox);
-
-                abilityBox.schedule.Execute(() => {
-                    StartTransition(abilityBox, duration); 
-                }).StartingIn(50); 
+        public void ActivateAbilityAnimation(string key, float duration) { 
+            var skillsContainer = Template.Q<VisualElement>("skills-container");
+            var abilityBox = FindRadialCooldownElementByKey(skillsContainer, key);
+            if(abilityBox != null) abilityBox.StartCooldown(duration);
+        }
+        
+        private RadialCooldownElement FindRadialCooldownElementByKey(VisualElement container, string key) {
+            foreach (var child in container.Children()) {
+                var innerChild = child.Children().FirstOrDefault();
+                if (innerChild is RadialCooldownElement radialElement && radialElement.Key == key) {
+                    return radialElement;
+                }
             }
-        }
-        
-        private void ResetAbilityBox(VisualElement abilityBox) {
-            abilityBox.style.transitionDuration = new List<TimeValue>(0); 
-            abilityBox.style.height = new StyleLength(new Length(0, LengthUnit.Percent));
-            abilityBox.style.visibility = Visibility.Visible;
-        }
-        
-        private void StartTransition(VisualElement abilityBox, float durationInSeconds) {
-            abilityBox.style.transitionDuration = new List<TimeValue>
-                { new TimeValue(durationInSeconds, TimeUnit.Second) };
-            abilityBox.style.height = new StyleLength(new Length(100, LengthUnit.Percent)); 
-            abilityBox.RegisterCallback<TransitionEndEvent>(OnTransitionEnd);
-        }
-        
-        private void OnTransitionEnd(TransitionEndEvent evt) {
-            var abilityBox = evt.target as VisualElement;
-
-            if (abilityBox != null) {
-                ResetAbilityBox(abilityBox); 
-                abilityBox.style.visibility = Visibility.Hidden;
-                abilityBox.UnregisterCallback<TransitionEndEvent>(OnTransitionEnd);
-            }
+            return null;
         }
     }
 }
