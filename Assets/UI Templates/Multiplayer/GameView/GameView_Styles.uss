@@ -27,6 +27,7 @@
 .countdown-label{
     margin: auto;
     font-size: 112px;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
 }
 
 /* Countdown label container */
@@ -68,9 +69,9 @@
 
 /* Player center container */ 
 .player-center-container{
-    background-color: white;
-    height: 100px;
-    width: 400px;
+    background-color: rgba(255, 255, 255, 0.22);
+    height: 120px;
+    width: 500px;
     margin-top: auto;
     margin-right: auto;
     margin-left: auto;
@@ -82,39 +83,13 @@
     height: 100%;
     width: auto;
     flex-direction: row;
-    background-color: white;
-    justify-content: space-between;
     align-items: center;
-    padding-left: 10px;
-    padding-right: 10px;
+    margin: auto;
 }
 
 /* Skill box */
 .skill{
-    height: 60px;
-    width: 60px;
-    background-color: red;
-}
-
-/* Skill label Q/W/E/R */
-.skill-label{
-    margin: auto;
-    font-size: 38px;
-    color: white;
-}
-
-/* Cooldown bar */
-.cd-bar{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: blue;
-    visibility: hidden;
-}
-
-/* Cooldown bar transition */
-.cd-bar-transition{
-    height: 0;
+    margin: 2px;
 }
 
 /* Top bar */
@@ -187,17 +162,84 @@
     width: 60px;
     height: 60px;
     overflow: hidden;
-    --ready-color: rgba(255, 0, 0, 1); /* Red for ready state */
-    --cooldown-color: rgba(0, 0, 255, 1); /* Blue for cooldown state */
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+    border-color: black;
+    border-width: 1px;
+    background-image: var(--ready-image);
+    background-size: cover;
+    --cooldown-color: rgba(0, 0, 255, 0.68); /* Blue for cooldown state */
+
 }
 
+.q-skill {
+    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxQ.png");
+}
+
+.w-skill {
+    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxW.png");
+}
+
+.e-skill {
+    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxE.png");
+}
+
+.r-skill {
+    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxR.png");
+}
+
+
+
 .radial-cooldown__timer {
-    font-size: 28px;
+    font-size: 30px;
     color: white;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+    text-shadow: 5px 5px 0px rgb(0, 0, 0);
+}
+
+.skill-label{
+    display: flex;
+    -unity-font-style: bold;
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    width: 18px;
+    height: 18px;
+    background-color: #662a77;
+    position: absolute;
+    right: 50px;
+    bottom: -8px;
+    border-radius: 50%;
+    color: white;
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    flex-direction: column;
+    border-color: #dfa1f7;
+    border-width: 1px;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+}
+
+.skill-label Label {
+    align-self: center;
+    margin: 0;
+    font-size: 11px;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+}
+
+.center-healthbar {
+    background-color: #00ff0d;
+    height: 20px;
+    font-size: 14px;
+    color: #efefef;
+    -unity-font-style: bold;
+}
+
+.center-healthbar Label{
+    -unity-text-align: middle-center;
+    text-shadow: 6px 6px 0px rgb(0, 0, 0);
+    padding: 2px;
 }
 
 

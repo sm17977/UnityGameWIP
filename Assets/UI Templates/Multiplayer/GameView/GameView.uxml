@@ -40,20 +40,41 @@
         
         <!-- Player center -->
         <engine:VisualElement name="player-center" class="player-center-container">
+            
+            <!-- Skills container -->
             <engine:VisualElement name="skills-container" class="skills-container">
                 <engine:VisualElement name="q-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="Q"/>
+                    <custom:RadialCooldownElement name="radial-cooldown" key="Q" class="q-skill"/>
+                    <engine:VisualElement class="skill-label">
+                        <engine:Label text="Q"/>
+                    </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:VisualElement name="w-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="W"/>
+                    <custom:RadialCooldownElement name="radial-cooldown" key="W" class="w-skill"/>
+                    <engine:VisualElement class="skill-label">
+                        <engine:Label text="W"/>
+                    </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:VisualElement name="e-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="E"/>
+                    <custom:RadialCooldownElement name="radial-cooldown" key="E" class="e-skill"/>
+                    <engine:VisualElement class="skill-label">
+                        <engine:Label text="E"/>
+                    </engine:VisualElement>
                 </engine:VisualElement>
                 <engine:VisualElement name="r-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="R"/>
+                    <custom:RadialCooldownElement name="radial-cooldown" key="R" class="r-skill"/>
+                    <engine:VisualElement class="skill-label">
+                        <engine:Label text="R"/>
+                    </engine:VisualElement>
                 </engine:VisualElement>
             </engine:VisualElement>
+            
+            <!-- Health Bar -->
+            <engine:VisualElement class="center-healthbar">
+                <engine:Label text="100/100"/>
+            </engine:VisualElement>
+            
+            
         </engine:VisualElement>
         
     </engine:VisualElement>
