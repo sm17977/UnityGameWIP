@@ -507,6 +507,7 @@ public class MultiplayerUIController : MonoBehaviour {
             Debug.Log("Lobby Change - Player left!");
             var players = GetPlayers();
             _gameView.UpdatePlayerHealthBars(players);
+            _gameView.UpdateMinimap();
         }
 
         if (changes.Data.Added) {
@@ -523,6 +524,7 @@ public class MultiplayerUIController : MonoBehaviour {
                     if (!bool.Parse(isConnected.Value.Value)) continue;
                     var players = GetPlayers();
                     _gameView.UpdatePlayerHealthBars(players);
+                    _gameView.UpdateMinimap();
                 }
             }
         }

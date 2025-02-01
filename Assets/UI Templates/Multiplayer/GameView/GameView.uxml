@@ -73,14 +73,14 @@
             <engine:VisualElement class="center-healthbar">
                 <engine:Label text="100/100"/>
             </engine:VisualElement>
-            
-            
         </engine:VisualElement>
+        
+        <!-- Mini Map placeholder -->
+        <custom:MinimapElement name="minimap" class="minimap"/>
         
     </engine:VisualElement>
     
-    <!-- Mini Map placeholder -->
-    <engine:VisualElement name="minimap-container" class="minimap-container"/>
+
             
  
     

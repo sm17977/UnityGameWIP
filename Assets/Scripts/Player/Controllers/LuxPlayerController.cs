@@ -109,7 +109,6 @@ public class LuxPlayerController : LuxController {
             movementSpeed.Value = champion.movementSpeed;
         }
     }
-
     
     private void Update() {
         StateManager.Update();

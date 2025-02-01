@@ -14,6 +14,7 @@ namespace Multiplayer.UI {
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
         private PanelSettings _panelSettings;
+        private MinimapElement _minimap;
         public static event StartDuelCountdown OnStartGameModeCountdown;
 
         public GameView(VisualElement parentContainer, VisualTreeAsset vta, PanelSettings panelSettings) {
@@ -27,13 +28,15 @@ namespace Multiplayer.UI {
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
             _gameTimerLabel = Template.Q<Label>("game-timer-label");
+            _minimap = Template.Q<MinimapElement>("minimap");
         }
 
         public override void Show() {
             _panelSettings.scaleMode = PanelScaleMode.ConstantPixelSize;
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
-            base.Show();
             BindUIElements();
+            GenerateMinimap();
+            base.Show();
             GlobalState.GameModeManager.CurrentGameMode.UpdateCountdownText += _countdownTimerElement.UpdateCountdown;
             GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
@@ -48,12 +51,30 @@ namespace Multiplayer.UI {
 
         public override void Update() {
             _healthBarManager.SetHealthBarPosition();
+            _minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
         }
 
         public override void RePaint() {
         }
+        
+        private void GenerateMinimap() {
+            Debug.Log("GenerateMinimap");
+            foreach(var player in _playerGameObjects) {
+                var color = Color.red;
+                var playerId = player.name;
+                if (playerId == "Local Player") {
+                    color = Color.black;
+                } 
+                if(!_minimap.ContainsPlayerMarker(playerId)) _minimap.AddPlayerMarker(playerId, color);
+            }
+        }
 
+        public void UpdateMinimap() {
+            _minimap.ResetPlayerMarkers();
+            GenerateMinimap();
+        }
+        
         public void SetPlayers(List<GameObject> players) {
             _playerGameObjects = players;
         }
