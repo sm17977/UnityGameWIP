@@ -10,6 +10,7 @@ public delegate void StartDuelCountdown();
 namespace Multiplayer.UI {
     public class GameView : View {
         private CountdownTimerElement _countdownTimerElement;
+        private Label _gameTimerLabel;
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
         private PanelSettings _panelSettings;
@@ -25,6 +26,7 @@ namespace Multiplayer.UI {
 
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
+            _gameTimerLabel = Template.Q<Label>("game-timer-label");
         }
 
         public override void Show() {
@@ -46,6 +48,7 @@ namespace Multiplayer.UI {
 
         public override void Update() {
             _healthBarManager.SetHealthBarPosition();
+            _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
         }
 
         public override void RePaint() {

@@ -74,7 +74,7 @@ namespace Global.Game_Modes {
         /// </summary>
         /// <returns>The current game time in seconds</returns>
         public string GetGameTimer(){
-            decimal decimalValue = System.Math.Round((decimal)GameTimer, 2);
+            decimal decimalValue = System.Math.Round((decimal)GameTimer, 1);
             return decimalValue + "s";
         }
 
