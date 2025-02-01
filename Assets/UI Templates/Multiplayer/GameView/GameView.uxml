@@ -30,7 +30,7 @@
             </engine:VisualElement>
             
             <engine:VisualElement name="game-timer-container" class="game-timer-container">
-                <engine:Label text="01:20" name="game-timer-label" class="game-timer-label"/>
+                <engine:Label text="0.0s" name="game-timer-label" class="game-timer-label"/>
             </engine:VisualElement>
             
         </engine:VisualElement>

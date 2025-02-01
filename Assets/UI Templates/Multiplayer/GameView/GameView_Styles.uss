@@ -158,6 +158,15 @@
     border-width: 2px;
 }
 
+.skill{
+    border-color: black;
+    border-width: 1px;
+}
+
+.skill:hover{
+    border-color: white;
+}
+
 .radial-cooldown {
     width: 60px;
     height: 60px;
@@ -166,12 +175,14 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    border-color: black;
-    border-width: 1px;
     background-image: var(--ready-image);
     background-size: cover;
     --cooldown-color: rgba(0, 0, 255, 0.68); /* Blue for cooldown state */
+    --shimmer: false;
+}
 
+.radial-cooldown:hover{
+    --shimmer: true;
 }
 
 .q-skill {
@@ -202,8 +213,6 @@
 .skill-label{
     display: flex;
     -unity-font-style: bold;
-    /*align-items: center;*/
-    /*justify-content: center;*/
     width: 18px;
     height: 18px;
     background-color: #662a77;
@@ -212,8 +221,6 @@
     bottom: -8px;
     border-radius: 50%;
     color: white;
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
     flex-direction: column;
     border-color: #dfa1f7;
     border-width: 1px;
