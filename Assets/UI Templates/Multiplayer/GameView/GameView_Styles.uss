@@ -159,7 +159,7 @@
 }
 
 .minimap-player-marker {
-    transform-origin: 50% 50%;
+    position: absolute;
 }
 
 
