@@ -8,6 +8,7 @@ A LoL like battle arena game using Unity 6000.0.0f1
     - [x] Ability skill boxes 
     - [x] Primary Healthbar
     - [x] Game Timer
+    - [ ] Player name labels
     - [ ] Champ stats
     - [ ] Champ portrait
     - [ ] Mini-map
