@@ -1,6 +1,6 @@
 
 # Unity Game 🎮
-A LoL like battle arena game 
+A LoL like battle arena game using Unity 6000.0.0f1
 
 ## In progress...
 - [ ] In-Game UI
