@@ -217,6 +217,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _viewManager.UpdateGameView();
     }
 
+    
     /// <summary>
     /// Initialize all Views and store them in the Views list
     /// </summary>

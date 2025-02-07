@@ -160,6 +160,7 @@
 
 .minimap-player-marker {
     position: absolute;
+    border-radius: 50%;
 }
 
 

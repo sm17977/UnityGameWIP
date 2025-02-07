@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CustomElements;
 using Global.Game_Modes;
 using UnityEngine;
@@ -43,18 +45,19 @@ namespace Multiplayer.UI {
             OnStartGameModeCountdown?.Invoke();
             _healthBarManager.SetHealthBarPosition();
         }
-
+        
         public override void Hide() {
             base.Hide();
             _panelSettings.scaleMode = PanelScaleMode.ConstantPhysicalSize;
         }
 
         public override void Update() {
-            _healthBarManager.SetHealthBarPosition();
-            Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
+            _healthBarManager.SetHealthBarPosition(); 
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
+            Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
         }
 
+      
         public override void RePaint() {
         }
         

@@ -95,8 +95,11 @@ public class HealthBarManager {
             
             newPosition.x += -(Screen.width / 2);
             newPosition.y += -(Screen.height / 2) + HealthBarDefaultYOffset;
-
-            healthBar.transform.position = newPosition;
+            
+            //healthBar.transform.position = newPosition;
+            healthBar.usageHints = UsageHints.DynamicTransform; 
+            healthBar.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y, 0));
+            healthBar.MarkDirtyRepaint();
         }
     }
     

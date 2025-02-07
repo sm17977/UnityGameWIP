@@ -36,7 +36,6 @@ namespace CustomElements {
             var painter = mgc.painter2D;
             Rect rect = contentRect;
             
-            // Default the viewport center to the minimap center if not set.
             if (ViewPortCenter == Vector2.zero && rect.width > 0 && rect.height > 0) {
                 ViewPortCenter = new Vector2(rect.width * 0.5f, rect.height * 0.5f);
             }
@@ -110,7 +109,6 @@ namespace CustomElements {
             _showViewPort = true;
             MarkDirtyRepaint();
             evt.StopPropagation();
-            // For clicks, we can update target immediately.
             UpdateTargetCameraPosition();
         }
         
@@ -118,8 +116,6 @@ namespace CustomElements {
             if (!IsDragging) return;
             ViewPortCenter = evt.localPosition;
             MarkDirtyRepaint();
-            // Continuously update target during drag.
-            //UpdateTargetCameraPosition();
         }
         
         private void OnPointerUp(PointerUpEvent evt) {
