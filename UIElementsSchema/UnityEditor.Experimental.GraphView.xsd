@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:engine="UnityEngine.UIElements" xmlns="UnityEditor.Rendering.HighDefinition" elementFormDefault="qualified" targetNamespace="UnityEditor.Experimental.GraphView" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:custom="CustomElements" xmlns:engine="UnityEngine.UIElements" xmlns="Unity.Multiplayer.Tools.NetVis.Editor.UI" elementFormDefault="qualified" targetNamespace="UnityEditor.Experimental.GraphView" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
   <xs:complexType name="ResizableElementType">
     <xs:complexContent mixed="false">
@@ -54,7 +54,7 @@
       <xs:restriction base="engine:VisualElementType">
         <xs:attribute default="" name="name" type="xs:string" use="optional" />
         <xs:attribute default="true" name="enabled" type="xs:boolean" use="optional" />
-        <xs:attribute default="1b91f869-4cf3-4598-a145-36e933a4d5ff" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="813edb90-1130-4313-9235-58c233736db0" name="view-data-key" type="xs:string" use="optional" />
         <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
         <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
         <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />

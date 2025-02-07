@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:engine="UnityEngine.UIElements" xmlns="UnityEditor.Rendering.HighDefinition" elementFormDefault="qualified" targetNamespace="UnityEditor.VFX.UI" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:custom="CustomElements" xmlns:engine="UnityEngine.UIElements" xmlns="Unity.Multiplayer.Tools.NetVis.Editor.UI" elementFormDefault="qualified" targetNamespace="UnityEditor.VFX.UI" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
   <xs:complexType name="VFXSystemBorderType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
         <xs:attribute default="" name="name" type="xs:string" use="optional" />
         <xs:attribute default="true" name="enabled" type="xs:boolean" use="optional" />
-        <xs:attribute default="3cbc521d-e119-407b-b613-9f1e8bbc0eb7" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="f7524f67-546f-4145-9b2d-637b03e3bf14" name="view-data-key" type="xs:string" use="optional" />
         <xs:attribute default="Ignore" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
         <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
         <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
@@ -24,31 +24,6 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="VFXSystemBorder" substitutionGroup="engine:VisualElement" xmlns:q1="UnityEditor.VFX.UI" type="q1:VFXSystemBorderType" />
-  <xs:complexType name="VFXBoundsSelectorType">
-    <xs:complexContent mixed="false">
-      <xs:restriction base="engine:VisualElementType">
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-          <xs:element ref="engine:VisualElement" />
-        </xs:sequence>
-        <xs:attribute default="" name="name" type="xs:string" use="optional" />
-        <xs:attribute default="true" name="enabled" type="xs:boolean" use="optional" />
-        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
-        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
-        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
-        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
-        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
-        <xs:attribute default="false" name="focusable" type="xs:boolean" use="optional" />
-        <xs:attribute default="" name="class" type="xs:string" use="optional" />
-        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
-        <xs:attribute default="" name="style" type="xs:string" use="optional" />
-        <xs:attribute default="null" name="data-source" type="xs:string" use="optional" />
-        <xs:attribute default="" name="data-source-path" type="xs:string" use="optional" />
-        <xs:attribute default="null" name="data-source-type" type="xs:string" use="optional" />
-        <xs:anyAttribute processContents="lax" />
-      </xs:restriction>
-    </xs:complexContent>
-  </xs:complexType>
-  <xs:element name="VFXBoundsSelector" substitutionGroup="engine:VisualElement" xmlns:q2="UnityEditor.VFX.UI" type="q2:VFXBoundsSelectorType" />
   <xs:complexType name="VFXContextBorderType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -73,7 +48,7 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="VFXContextBorder" substitutionGroup="engine:VisualElement" xmlns:q3="UnityEditor.VFX.UI" type="q3:VFXContextBorderType" />
+  <xs:element name="VFXContextBorder" substitutionGroup="engine:VisualElement" xmlns:q2="UnityEditor.VFX.UI" type="q2:VFXContextBorderType" />
   <xs:complexType name="VFXComponentBoardBoundsSystemUIType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -98,7 +73,32 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="VFXComponentBoardBoundsSystemUI" substitutionGroup="engine:VisualElement" xmlns:q4="UnityEditor.VFX.UI" type="q4:VFXComponentBoardBoundsSystemUIType" />
+  <xs:element name="VFXComponentBoardBoundsSystemUI" substitutionGroup="engine:VisualElement" xmlns:q3="UnityEditor.VFX.UI" type="q3:VFXComponentBoardBoundsSystemUIType" />
+  <xs:complexType name="VFXBoundsRecorderFieldType">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="engine:VisualElementType">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:element ref="engine:VisualElement" />
+        </xs:sequence>
+        <xs:attribute default="" name="name" type="xs:string" use="optional" />
+        <xs:attribute default="true" name="enabled" type="xs:boolean" use="optional" />
+        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
+        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
+        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
+        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
+        <xs:attribute default="false" name="focusable" type="xs:boolean" use="optional" />
+        <xs:attribute default="" name="class" type="xs:string" use="optional" />
+        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
+        <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:attribute default="null" name="data-source" type="xs:string" use="optional" />
+        <xs:attribute default="" name="data-source-path" type="xs:string" use="optional" />
+        <xs:attribute default="null" name="data-source-type" type="xs:string" use="optional" />
+        <xs:anyAttribute processContents="lax" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="VFXBoundsRecorderField" substitutionGroup="engine:VisualElement" xmlns:q4="UnityEditor.VFX.UI" type="q4:VFXBoundsRecorderFieldType" />
   <xs:complexType name="VFXComponentBoardEventUIType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -124,7 +124,7 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="VFXComponentBoardEventUI" substitutionGroup="engine:VisualElement" xmlns:q5="UnityEditor.VFX.UI" type="q5:VFXComponentBoardEventUIType" />
-  <xs:complexType name="VFXBoundsRecorderFieldType">
+  <xs:complexType name="VFXBoundsSelectorType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -148,5 +148,5 @@
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="VFXBoundsRecorderField" substitutionGroup="engine:VisualElement" xmlns:q6="UnityEditor.VFX.UI" type="q6:VFXBoundsRecorderFieldType" />
+  <xs:element name="VFXBoundsSelector" substitutionGroup="engine:VisualElement" xmlns:q6="UnityEditor.VFX.UI" type="q6:VFXBoundsSelectorType" />
 </xs:schema>

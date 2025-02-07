@@ -18,7 +18,7 @@ public class ClientPrefabManager : MonoBehaviour {
     }
 
     private void Start() {
-        #if !DEDICATED_SERVER
+        #if !UNITY_SERVER
             _localPrefabs = new SerializedDictionary<ulong, GameObject>();
         #endif
     }

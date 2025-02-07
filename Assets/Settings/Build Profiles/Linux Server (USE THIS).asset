@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: Linux Server (USE THIS)
   m_EditorClassIdentifier: 
+  m_AssetVersion: 1
   m_BuildTarget: 24
   m_Subtarget: 1
   m_PlatformId: 91d938b35f6f4798811e41f2acf9377f
   m_PlatformBuildProfile:
     rid: 5420158438131892226
+  m_OverrideGlobalSceneList: 0
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/Scenes/Main Menu.unity
@@ -27,7 +29,7 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/Scenes/Multiplayer.unity
   m_ScriptingDefines:
-  - DEDICATED_SERVER
+  - UNITY_SERVER
   m_PlayerSettingsYaml:
     m_Settings:
     - line: '| PlayerSettings:'
@@ -79,6 +81,7 @@ MonoBehaviour:
     - line: '|   m_StereoRenderingPath: 0'
     - line: '|   m_ActiveColorSpace: 1'
     - line: '|   unsupportedMSAAFallback: 0'
+    - line: '|   m_SpriteBatchMaxVertexCount: 65535'
     - line: '|   m_SpriteBatchVertexThreshold: 300'
     - line: '|   m_MTRendering: 1'
     - line: '|   mipStripping: 0'
@@ -100,19 +103,18 @@ MonoBehaviour:
     - line: '|   androidRenderOutsideSafeArea: 1'
     - line: '|   androidUseSwappy: 0'
     - line: '|   androidBlitType: 0'
-    - line: '|   androidResizableWindow: 0'
+    - line: '|   androidResizeableActivity: 0'
     - line: '|   androidDefaultWindowWidth: 1920'
     - line: '|   androidDefaultWindowHeight: 1080'
     - line: '|   androidMinimumWindowWidth: 400'
     - line: '|   androidMinimumWindowHeight: 300'
     - line: '|   androidFullscreenMode: 1'
     - line: '|   androidAutoRotationBehavior: 1'
-    - line: '|   androidApplicationEntry: 1'
     - line: '|   androidPredictiveBackSupport: 0'
+    - line: '|   androidApplicationEntry: 1'
     - line: '|   defaultIsNativeResolution: 1'
     - line: '|   macRetinaSupport: 1'
     - line: '|   runInBackground: 0'
-    - line: '|   captureSingleScreen: 0'
     - line: '|   muteOtherAudioSources: 0'
     - line: '|   Prepare IOS For Recording: 0'
     - line: '|   Force IOS Speakers When Recording: 0'
@@ -595,6 +597,7 @@ MonoBehaviour:
     - line: '|   playModeTestRunnerEnabled: 0'
     - line: '|   runPlayModeTestAsEditModeTest: 0'
     - line: '|   actionOnDotNetUnhandledException: 1'
+    - line: '|   editorGfxJobOverride: 1'
     - line: '|   enableInternalProfiler: 0'
     - line: '|   logObjCUncaughtExceptions: 1'
     - line: '|   enableCrashReportAPI: 0'
@@ -913,8 +916,7 @@ MonoBehaviour:
     - line: '|   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628,
         a: 0}'
     - line: '|   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902,
-        b: 0.21568628,'
-    - line: '|     a: 1}'
+        b: 0.21568628,    a: 1}'
     - line: '|   metroSplashScreenUseBackgroundColor: 0'
     - line: '|   syncCapabilities: 0'
     - line: '|   platformCapabilities: {}'
@@ -984,6 +986,8 @@ MonoBehaviour:
     - line: '|   platformRequiresReadableAssets: 0'
     - line: '|   virtualTexturingSupportEnabled: 0'
     - line: '|   insecureHttpOption: 0'
+    - line: '|   androidVulkanDenyFilterList: []'
+    - line: '|   androidVulkanAllowFilterList: []'
     - line: '| '
   references:
     version: 2

@@ -22,7 +22,7 @@ public class ClientObjectPool : MonoBehaviour {
     }
 
     private void Start() {
-        #if !DEDICATED_SERVER
+        #if !UNITY_SERVER
             InitializePool();
         #endif
     }

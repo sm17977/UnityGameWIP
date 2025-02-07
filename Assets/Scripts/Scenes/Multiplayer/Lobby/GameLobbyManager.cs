@@ -42,7 +42,7 @@ public class GameLobbyManager : MonoBehaviour {
     bool canRequestGetJoinedLobbies = true;
     
     void Awake(){
-        #if DEDICATED_SERVER
+        #if UNITY_SERVER
             gameObject.SetActive(false);
             return;
         #endif

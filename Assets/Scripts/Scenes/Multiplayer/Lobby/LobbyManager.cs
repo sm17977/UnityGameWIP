@@ -211,7 +211,7 @@ public sealed class LobbyManager {
                 var joinLobbyByIdOptions = new JoinLobbyByIdOptions() {
                     Player = player
                 };
-                lobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
+                lobby = await LobbyService.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
                 return lobby;
             }
             catch (LobbyServiceException e) {
@@ -283,7 +283,7 @@ public sealed class LobbyManager {
 
         return await HandleRequest(LobbyRequestType.GetLobbiesList, async () => {
             try {
-                var queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+                var queryResponse = await LobbyService.Instance.QueryLobbiesAsync();
                 return queryResponse.Results.ToList<Lobby>();
             }
             catch (LobbyServiceException e) {
@@ -358,7 +358,7 @@ public sealed class LobbyManager {
     public async Task<ILobbyEvents> SubscribeToLobbyEvents(string lobbyId, LobbyEventCallbacks callbacks) {
         
         try {
-            return await Lobbies.Instance.SubscribeToLobbyEventsAsync(lobbyId, callbacks);
+            return await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobbyId, callbacks);
         }
         catch (Exception e) {
             Debug.LogError(e);

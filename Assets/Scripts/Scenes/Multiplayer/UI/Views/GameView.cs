@@ -14,7 +14,7 @@ namespace Multiplayer.UI {
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
         private PanelSettings _panelSettings;
-        private MinimapElement _minimap;
+        public MinimapElement Minimap;
         public static event StartDuelCountdown OnStartGameModeCountdown;
 
         public GameView(VisualElement parentContainer, VisualTreeAsset vta, PanelSettings panelSettings) {
@@ -28,7 +28,7 @@ namespace Multiplayer.UI {
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
             _gameTimerLabel = Template.Q<Label>("game-timer-label");
-            _minimap = Template.Q<MinimapElement>("minimap");
+            Minimap = Template.Q<MinimapElement>("minimap");
         }
 
         public override void Show() {
@@ -51,7 +51,7 @@ namespace Multiplayer.UI {
 
         public override void Update() {
             _healthBarManager.SetHealthBarPosition();
-            _minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
+            Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
         }
 
@@ -66,12 +66,12 @@ namespace Multiplayer.UI {
                 if (playerId == "Local Player") {
                     color = Color.black;
                 } 
-                if(!_minimap.ContainsPlayerMarker(playerId)) _minimap.AddPlayerMarker(playerId, color);
+                if(!Minimap.ContainsPlayerMarker(playerId)) Minimap.AddPlayerMarker(playerId, color);
             }
         }
 
         public void UpdateMinimap() {
-            _minimap.ResetPlayerMarkers();
+            Minimap.ResetPlayerMarkers();
             GenerateMinimap();
         }
         

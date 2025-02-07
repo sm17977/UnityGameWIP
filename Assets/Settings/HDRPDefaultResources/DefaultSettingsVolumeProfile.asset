@@ -58,9 +58,15 @@ MonoBehaviour:
   m_PhysicallyBased:
     m_OverrideState: 1
     m_Value: 0
+  m_AdaptiveSamplingWeight:
+    m_OverrideState: 1
+    m_Value: 0.75
   m_LimitManualRangeNearBlur:
     m_OverrideState: 1
     m_Value: 0
+  coCStabilization:
+    m_OverrideState: 1
+    m_Value: 1
 --- !u!114 &-8597110131866544011
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -522,6 +528,9 @@ MonoBehaviour:
   cullingDistance:
     m_OverrideState: 1
     m_Value: 1000
+  minSolidAngle:
+    m_OverrideState: 1
+    m_Value: 4
 --- !u!114 &-4403686198752765175
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1027,6 +1036,9 @@ MonoBehaviour:
   tileOpacityThreshold:
     m_OverrideState: 1
     m_Value: 1
+  writeDepthAlphaThreshold:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-501666580822207681
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1226,7 +1238,6 @@ MonoBehaviour:
   - {fileID: -9178262335207288582}
   - {fileID: 2313623144487461079}
   - {fileID: 9054116531618227227}
-  - {fileID: -3871835690559634798}
 --- !u!114 &394700926408080980
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -2556,6 +2567,11 @@ MonoBehaviour:
   rayMiss:
     m_OverrideState: 1
     m_Value: 3
+  adaptiveProbeVolumesLayerMask:
+    m_OverrideState: 1
+    m_Value:
+      serializedVersion: 0
+      m_Bits: 1
   depthBufferThickness:
     m_OverrideState: 1
     m_Value: 0.1
@@ -2670,3 +2686,6 @@ MonoBehaviour:
   skyOcclusionIntensityMultiplier:
     m_OverrideState: 1
     m_Value: 1
+  worldOffset:
+    m_OverrideState: 1
+    m_Value: {x: 0, y: 0, z: 0}

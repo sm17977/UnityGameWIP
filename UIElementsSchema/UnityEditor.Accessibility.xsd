@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:engine="UnityEngine.UIElements" xmlns="UnityEditor.Rendering.HighDefinition" elementFormDefault="qualified" targetNamespace="UnityEditor.Accessibility" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:editor="UnityEditor.UIElements" xmlns:custom="CustomElements" xmlns:engine="UnityEngine.UIElements" xmlns="Unity.Multiplayer.Tools.NetVis.Editor.UI" elementFormDefault="qualified" targetNamespace="UnityEditor.Accessibility" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
   <xs:simpleType name="AccessibilityHierarchyTreeViewItem_role_Type">
     <xs:restriction base="xs:string">

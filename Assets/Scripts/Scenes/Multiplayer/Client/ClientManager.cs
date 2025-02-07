@@ -25,7 +25,7 @@ namespace Multiplayer {
         
         private void Awake() {
             
-            #if DEDICATED_SERVER
+            #if UNITY_SERVER
                 gameObject.SetActive(false);
                 return;
             #endif

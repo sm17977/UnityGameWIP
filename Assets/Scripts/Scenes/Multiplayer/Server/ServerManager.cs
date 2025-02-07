@@ -5,14 +5,13 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
-using Unity.Services.Multiplay;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using Unity.Services.Multiplayer;
 
 namespace Multiplayer {
     public sealed class ServerManager {
 
-        #if DEDICATED_SERVER
+        #if UNITY_SERVER
             private IServerQueryHandler _serverQueryHandler;
         #endif
 
@@ -21,6 +20,7 @@ namespace Multiplayer {
         private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
         private GameObject _spawnPointsParent; 
         private List<Transform> _spawnPointsList;
+        private IMultiplayerService _iMultiplayerService;
         
         public static ServerManager Instance {
             get {
@@ -47,11 +47,13 @@ namespace Multiplayer {
             if (UnityServices.State != ServicesInitializationState.Initialized) {
                 var initializationOptions = new InitializationOptions();
 
-                #if DEDICATED_SERVER
+                #if UNITY_SERVER
                     await UnityServices.InitializeAsync();
-                    Debug.Log("DEDICATED_SERVER LOBBY - INITIALIZING");
+                    
+                    
+                    Debug.Log("UNITY_SERVER LOBBY - INITIALIZING");
 
-                    var multiplayEventCallbacks = new MultiplayEventCallbacks();
+                    MultiplayEventCallbacks multiplayEventCallbacks = new();
                     multiplayEventCallbacks.Allocate += OnAllocate;
                     multiplayEventCallbacks.Deallocate += OnDeallocate;
                     multiplayEventCallbacks.Error += OnError;
@@ -72,8 +74,8 @@ namespace Multiplayer {
                 #endif
             }
             else {
-                #if DEDICATED_SERVER
-                    Debug.Log("DEDICATED_SERVER LOBBY - ALREADY INITIALIZED");
+                #if UNITY_SERVER
+                    Debug.Log("UNITY_SERVER LOBBY - ALREADY INITIALIZED");
 
                     var serverConfig = MultiplayService.Instance.ServerConfig;
                     if (serverConfig.AllocationId != "") {
@@ -88,9 +90,11 @@ namespace Multiplayer {
         /// When a server is allocated, set the Network Manager's connection data and start the server
         /// Register a custom messaging manager to notify when the lobby host leaves
         /// </summary>
+        
+        #if UNITY_SERVER
         private void OnAllocate(MultiplayAllocation allocation) {
-            #if DEDICATED_SERVER
-                Debug.Log("DEDICATED_SERVER OnAllocate");
+           
+                Debug.Log("UNITY_SERVER OnAllocate");
                 
                 var serverConfig = MultiplayService.Instance.ServerConfig;
                 Debug.Log($"Server ID[{serverConfig.ServerId}]");
@@ -103,32 +107,39 @@ namespace Multiplayer {
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", port, "0.0.0.0");
                 StartServer();
                 NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
-            #endif
+          
         }
+        #endif
 
+#if UNITY_SERVER
         private void OnDeallocate(MultiplayDeallocation deallocation) {
-            #if DEDICATED_SERVER
+            
 
-            #endif
+        
         }
-
+#endif
+        
+#if UNITY_SERVER
         private void OnError(MultiplayError error) {
-            #if DEDICATED_SERVER
+           
 
-            #endif
+         
         }
+#endif
 
+#if UNITY_SERVER
         private void OnSubscriptionStateChanged(MultiplayServerSubscriptionState stateChanged) {
-            #if DEDICATED_SERVER
+            
 
-            #endif
+        
         }
+#endif
 
         /// <summary>
         /// Subscribe to the Network Manager event and start the server
         /// </summary>
         private async void StartServer() {
-            #if DEDICATED_SERVER
+            #if UNITY_SERVER
                     NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
                     NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
                     
@@ -159,7 +170,7 @@ namespace Multiplayer {
         /// <param name="response">Client connection response</param>
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request,
             NetworkManager.ConnectionApprovalResponse response) {
-            #if DEDICATED_SERVER
+            #if UNITY_SERVER
 
                 Debug.Log("Approving new client connection... ClientNetworkId: " + request.ClientNetworkId);
                 
@@ -216,7 +227,7 @@ namespace Multiplayer {
         /// Update the multiplay server to keep it alive
         /// </summary>
         public void UpdateServer() {
-            #if DEDICATED_SERVER
+            #if UNITY_SERVER
                 if (_serverQueryHandler != null) {
                     _serverQueryHandler.UpdateServerCheck();
                 }
@@ -246,7 +257,7 @@ namespace Multiplayer {
         /// <param name="clientId">Client ID</param>
         /// <param name="reader">reader</param>
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
-            #if DEDICATED_SERVER
+            #if UNITY_SERVER
                 foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
                     Debug.Log("Sending host leaving notification to client: " + client.ClientId);
                     NetworkManager.Singleton.SendHostLeavingMessageToClient(client.ClientId, new HostLeavingMessage());

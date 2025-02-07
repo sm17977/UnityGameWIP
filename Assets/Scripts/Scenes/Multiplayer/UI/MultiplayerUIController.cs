@@ -23,6 +23,10 @@ public class MultiplayerUIController : MonoBehaviour {
     private LuxPlayerController _playerScript;
     private InputProcessor _input;
     
+    // Camera
+    private Camera _mainCamera;
+    private Multiplayer_Camera _cameraScript;
+    
     // Managers
     private GameLobbyManager _gameLobbyManager;
     private static ViewManager _viewManager;
@@ -73,7 +77,7 @@ public class MultiplayerUIController : MonoBehaviour {
     private int _playersConnected = 0;
     
     private void Awake(){
-        #if DEDICATED_SERVER
+        #if UNITY_SERVER
             gameObject.SetActive(false);
             return;
         #endif
@@ -84,7 +88,8 @@ public class MultiplayerUIController : MonoBehaviour {
         _globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
         _gameLobbyManager = GameLobbyManager.Instance;
         _viewManager = ViewManager.Instance;
-        
+        _mainCamera = Camera.main;
+        _cameraScript = _mainCamera.GetComponent<Multiplayer_Camera>();
     }
 
      private async void Start() {
@@ -125,10 +130,6 @@ public class MultiplayerUIController : MonoBehaviour {
         _controls.UI.Enable();
         
         _controls.UI.ESC.performed += OnEscape;
-        // _controls.UI.Q.performed += _ => _gameView.ActivateAbilityAnimation("Q");
-        // _controls.UI.W.performed += _ => _gameView.ActivateAbilityAnimation("W");
-        // _controls.UI.E.performed += _ => _gameView.ActivateAbilityAnimation("E");
-        // _controls.UI.R.performed += _ => _gameView.ActivateAbilityAnimation("R");
         
         // Multiplayer Main Menu View Events
         _multiplayerMenuView.OpenCreateLobbyModal += (() => _viewManager.OpenModal(_createLobbyModal));
@@ -200,6 +201,8 @@ public class MultiplayerUIController : MonoBehaviour {
             var players = GetPlayers();
             _gameView.SetPlayers(players);
             _viewManager.ChangeView(_gameView);
+            _cameraScript.SetTarget(_player);
+            _cameraScript.SetMinimap(_gameView.Minimap);
         });
 
         Health.OnPlayerDeath += (async (player) =>  await ProcessDeadPlayer());

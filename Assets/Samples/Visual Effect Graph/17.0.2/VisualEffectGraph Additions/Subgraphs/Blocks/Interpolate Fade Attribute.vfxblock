@@ -104,7 +104,7 @@ MonoBehaviour:
     enumValues: []
     descendantCount: 0
   m_ImportDependencies: []
-  m_GraphVersion: 17
+  m_GraphVersion: 18
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: Attribute
@@ -229,6 +229,7 @@ MonoBehaviour:
     position: {x: -59, y: 601}
     expandedSlots: []
     expanded: 0
+    supecollapsed: 0
 --- !u!114 &9
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +313,7 @@ MonoBehaviour:
     expandedSlots:
     - {fileID: 11}
     expanded: 0
+    supecollapsed: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,6 +463,7 @@ MonoBehaviour:
     position: {x: 147, y: 470}
     expandedSlots: []
     expanded: 0
+    supecollapsed: 0
 --- !u!114 &15
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,7 +736,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
   m_LinkedSlots:
-  - {fileID: 48}
+  - {fileID: 49}
 --- !u!114 &26
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1336,11 +1339,11 @@ MonoBehaviour:
   m_UISuperCollapsed: 0
   m_InputSlots: []
   m_OutputSlots:
-  - {fileID: 48}
+  - {fileID: 49}
   attribute: fade
   location: 0
   mask: xyz
---- !u!114 &48
+--- !u!114 &49
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1358,7 +1361,7 @@ MonoBehaviour:
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
   m_UISuperCollapsed: 0
-  m_MasterSlot: {fileID: 48}
+  m_MasterSlot: {fileID: 49}
   m_MasterData:
     m_Owner: {fileID: 47}
     m_Value:
@@ -1368,7 +1371,7 @@ MonoBehaviour:
       m_SerializableObject: 0
     m_Space: -1
   m_Property:
-    name: fade
+    name: Fade
     m_serializedType:
       m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
