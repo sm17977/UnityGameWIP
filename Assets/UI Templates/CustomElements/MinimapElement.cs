@@ -6,30 +6,25 @@ using UnityEngine.UIElements;
 namespace CustomElements {
     [UxmlElement]
     public partial class MinimapElement : VisualElement {
-        public static readonly string ussClassName = "minimap-element";
+        private const string USSClassName = "minimap-element";
         
         private Dictionary<string, VisualElement> _playerMarkers = new Dictionary<string, VisualElement>();
-        // World bounds (set these as needed)
-        public Vector2 WorldMin = new Vector2(-60f, -60f);
-        public Vector2 WorldMax = new Vector2(60f, 60f);
         
-        // Viewport properties.
-        private bool _showViewPort = true; // Always show once activated.
+        public Vector2 WorldMin = new Vector2(-30f, -30f);
+        public Vector2 WorldMax = new Vector2(30f, 30f);
+        private bool _showViewPort = true; 
         public bool IsDragging = false;
-        public Vector2 ViewPortCenter; // In local minimap coordinates.
+        public Vector2 ViewPortCenter; 
         private float _viewPortWidth = 50f;
         private float _viewPortHeight = 50f;
-        
-        // For click vs. drag detection.
         private Vector2 _pointerDownPosition;
-        private const float ClickThreshold = 5f; // pixels
+        private const float ClickThreshold = 5f; 
         
-        // Event to send a target world position (for clicks, if needed).
-        public event System.Action<Vector3> OnMinimapTargetSet;
+        public event System.Action<Vector3>OnMinimapTargetSet;
 
         public MinimapElement() {
-            AddToClassList(ussClassName);
-            pickingMode = PickingMode.Position; // ensure we receive pointer events
+            AddToClassList(USSClassName);
+            pickingMode = PickingMode.Position; 
             generateVisualContent += GenerateVisualContent;
             RegisterCallback<PointerDownEvent>(OnPointerDown);
             RegisterCallback<PointerMoveEvent>(OnPointerMove);
@@ -50,7 +45,6 @@ namespace CustomElements {
             }
         }
         
-        // This mapping converts a world position to minimap coordinates.
         private Vector2 WorldToMinimapPosition(Vector3 worldPos, Vector2 worldMin, Vector2 worldMax, Rect minimapRect) {
             float centerX = (worldMin.x + worldMax.x) * 0.5f;
             float centerZ = (worldMin.y + worldMax.y) * 0.5f;
@@ -89,8 +83,8 @@ namespace CustomElements {
                 if (_playerMarkers.TryGetValue(playerId, out VisualElement marker)) {
                     Rect currentRect = contentRect;
                     Vector2 minimapPos = WorldToMinimapPosition(playerScript.transform.position, WorldMin, WorldMax, currentRect);
-                    marker.style.left = minimapPos.x;
-                    marker.style.top = minimapPos.y;
+                    marker.style.left = minimapPos.x - marker.resolvedStyle.width * 0.5f;
+                    marker.style.top = minimapPos.y - marker.resolvedStyle.height * 0.5f;
                 }
             }
         }
@@ -106,8 +100,6 @@ namespace CustomElements {
             _playerMarkers = new Dictionary<string, VisualElement>();
         }
         
-        #region Pointer Event Handlers
-
         private void OnPointerDown(PointerDownEvent evt) {
             if (evt.button != 0) return;
             if (!contentRect.Contains(evt.localPosition)) return;
@@ -127,7 +119,7 @@ namespace CustomElements {
             ViewPortCenter = evt.localPosition;
             MarkDirtyRepaint();
             // Continuously update target during drag.
-            UpdateTargetCameraPosition();
+            //UpdateTargetCameraPosition();
         }
         
         private void OnPointerUp(PointerUpEvent evt) {
@@ -136,12 +128,7 @@ namespace CustomElements {
             IsDragging = false;
             MarkDirtyRepaint();
             if (dist < ClickThreshold) {
-                // This was a click—immediately update target.
                 ViewPortCenter = evt.localPosition;
-                UpdateTargetCameraPosition();
-            }
-            else {
-                // End of drag—update target one last time.
                 UpdateTargetCameraPosition();
             }
         }
@@ -149,7 +136,6 @@ namespace CustomElements {
         private void OnPointerLeave(PointerLeaveEvent evt) {
             IsDragging = false;
         }
-        #endregion
         
         private void DrawViewPort(Painter2D painter, Rect rect) {
             float halfWidth = _viewPortWidth * 0.5f;
@@ -169,13 +155,11 @@ namespace CustomElements {
             painter.Stroke();
         }
         
-        // In this delta-based approach, we don’t fire the event during drag.
-        // However, for a click, UpdateTargetCameraPosition computes the target from the current ViewPortCenter.
         private void UpdateTargetCameraPosition() {
             Rect rect = contentRect;
             if (rect.width == 0 || rect.height == 0) return;
             float normalizedX = ViewPortCenter.x / rect.width;
-            float normalizedY = 1 - (ViewPortCenter.y / rect.height); // invert Y
+            float normalizedY = 1 - (ViewPortCenter.y / rect.height); 
             float worldX = Mathf.Lerp(WorldMin.x, WorldMax.x, normalizedX);
             float worldZ = Mathf.Lerp(WorldMin.y, WorldMax.y, normalizedY);
             Vector3 correctedWorldPos = new Vector3(worldX, 0f, worldZ);
@@ -189,8 +173,6 @@ namespace CustomElements {
             OnMinimapTargetSet?.Invoke(target);
         }
         
-        // For the camera to update its viewport indicator when it moves,
-        // we convert the camera world position to minimap coordinates.
         public void UpdateViewPortIndicatorFromCamera(Vector3 cameraWorldPos) {
             Rect rect = contentRect;
             if (rect.width == 0 || rect.height == 0) return;
