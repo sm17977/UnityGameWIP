@@ -11,7 +11,7 @@ A LoL like battle arena game using Unity 6000.0.0f1
     - [ ] Player name labels
     - [ ] Champ stats
     - [ ] Champ portrait
-    - [ ] Mini-map
+    - [x] Mini-map
     - [ ] FPS counter
     - [ ] Network RTT (ping)
 - [ ] VFX
