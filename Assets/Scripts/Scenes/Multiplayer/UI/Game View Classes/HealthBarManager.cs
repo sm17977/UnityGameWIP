@@ -6,13 +6,13 @@ using UnityEngine.UIElements;
 public class HealthBarManager {
 
     private VisualElement _template;
-    private Dictionary<LuxPlayerController, VisualElement> _playerHealthBarMappings;
+    private Dictionary<LuxPlayerController, Dictionary<string, VisualElement>> _playerHealthBarMappings;
     private const float HealthBarDefaultYOffset = -60f;
     private const float HealthBarDefaultWidth = 150f;
 
     public HealthBarManager(VisualElement template) {
         _template = template;
-        _playerHealthBarMappings = new Dictionary<LuxPlayerController, VisualElement>();
+        _playerHealthBarMappings = new Dictionary<LuxPlayerController, Dictionary<string, VisualElement>>();
         Health.OnHealthChanged += UpdateHealthBar;
     }
     
@@ -42,8 +42,23 @@ public class HealthBarManager {
             
             healthBarContainer.Add(healthBar);
             _template.Add(healthBarContainer);
+
+            _playerHealthBarMappings[playerScript] = new();
+            _playerHealthBarMappings[playerScript]["HealthBar"] = healthBarContainer;
+
+            var playerNameContainer = new VisualElement();
+            var playerNameLabel = new Label();
             
-            _playerHealthBarMappings[playerScript] = healthBarContainer;
+            playerNameContainer.AddToClassList("player-name-container");
+            playerNameLabel.AddToClassList("player-name-label");
+
+            playerNameLabel.name = "player-name-label";
+            playerNameLabel.text = playerScript.playerName.Value;
+            playerNameContainer.Add(playerNameLabel);
+            
+            _template.Add(playerNameContainer);
+
+            _playerHealthBarMappings[playerScript]["PlayerName"] = playerNameContainer;
         }
     }
 
@@ -56,7 +71,7 @@ public class HealthBarManager {
     private void UpdateHealthBar(LuxPlayerController playerScript, float currentHealth, float maxHealth) {
         if(playerScript == null) return;
         if (_playerHealthBarMappings.ContainsKey(playerScript)) {
-            var healthBarContainer = _playerHealthBarMappings[playerScript];
+            var healthBarContainer = _playerHealthBarMappings[playerScript]["HealthBar"];
             var healthBar = healthBarContainer.Q<VisualElement>("health-bar");
 
             if (healthBar != null) {
@@ -78,7 +93,8 @@ public class HealthBarManager {
     /// <param name="playerScript"></param>
     public void RemoveHealthBar(LuxPlayerController playerScript) {
         if (_playerHealthBarMappings.ContainsKey(playerScript)) {
-            _playerHealthBarMappings[playerScript].RemoveFromHierarchy();
+            _playerHealthBarMappings[playerScript]["HealthBar"].RemoveFromHierarchy();
+            _playerHealthBarMappings[playerScript]["PlayerName"].RemoveFromHierarchy();
             _playerHealthBarMappings.Remove(playerScript);
         }
     }
@@ -87,8 +103,11 @@ public class HealthBarManager {
     /// Update the position of the health bars above the player models
     /// </summary>
     public void SetHealthBarPosition() {
-        foreach (var (player, healthBar) in _playerHealthBarMappings) {
-            if (player == null || healthBar == null) continue;
+        foreach (var (player, elements) in _playerHealthBarMappings) {
+            if (player == null || elements == null) continue;
+
+            var healthBar = elements["HealthBar"];
+            var playerName = elements["PlayerName"];
 
             Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
                 healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
@@ -96,9 +115,10 @@ public class HealthBarManager {
             newPosition.x += -(Screen.width / 2);
             newPosition.y += -(Screen.height / 2) + HealthBarDefaultYOffset;
             
-            //healthBar.transform.position = newPosition;
+           
             healthBar.usageHints = UsageHints.DynamicTransform; 
             healthBar.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y, 0));
+            playerName.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y + -30, 0));
             healthBar.MarkDirtyRepaint();
         }
     }

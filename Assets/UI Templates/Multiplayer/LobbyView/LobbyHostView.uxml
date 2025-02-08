@@ -14,7 +14,7 @@
         
         <!-- Multiplayer Heading -->
         <ui:VisualElement name="title-container" class="lobby-title-container">
-            <ui:Label text="Sean's Lobby" class="lobby-title"/>
+            <ui:Label name="lobby-name-label" class="lobby-title"/>
         </ui:VisualElement>
         
         <!-- Game Mode Info -->

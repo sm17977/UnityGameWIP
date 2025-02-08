@@ -1129,6 +1129,8 @@ MonoBehaviour:
     type: 3}
   exitGameModalTmpl: {fileID: 9197481963319205126, guid: f169c3dd518c4dc382f6ddecfe4764ac,
     type: 3}
+  setPlayerNameModalTmpl: {fileID: 9197481963319205126, guid: 96d805f8d96441e898983d0e4d48871d,
+    type: 3}
   messageModalSignInConnectingTmpl: {fileID: 9197481963319205126, guid: 37b72af13b2649da87f9abd12c03bcd5,
     type: 3}
   messageModalSignInFailedTmpl: {fileID: 9197481963319205126, guid: 94919d8198584bf287859603b3c99a5e,

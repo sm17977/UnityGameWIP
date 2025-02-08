@@ -32,8 +32,9 @@ public class MultiplayerUIController : MonoBehaviour {
     private static ViewManager _viewManager;
     private ClientManager _clientManager;
     
-    // Global State
+    // State
     private static GlobalState _globalState;
+    private bool _playerNameRequired = true; //TODO: Disabled if integrating with Steam profile
     
     // Input System
     private Controls _controls;
@@ -52,6 +53,7 @@ public class MultiplayerUIController : MonoBehaviour {
     private CreateLobbyModal _createLobbyModal;
     private ExitGameModal _exitGameModal;
     private MessageModal _messageModal;
+    private SetPlayerNameModal _setPlayerNameModal;
     
     // UXML Templates
     // Views
@@ -65,12 +67,13 @@ public class MultiplayerUIController : MonoBehaviour {
     // Modals
     public VisualTreeAsset createLobbyModalTmpl;
     public VisualTreeAsset exitGameModalTmpl;
+    public VisualTreeAsset setPlayerNameModalTmpl;
     
     // Message Modals
-   public VisualTreeAsset messageModalSignInConnectingTmpl;
-   public VisualTreeAsset messageModalSignInFailedTmpl;
-   public VisualTreeAsset messageModalLobbyFailedTmpl;
-   public VisualTreeAsset messageModalServerConnectingTmpl;
+    public VisualTreeAsset messageModalSignInConnectingTmpl;
+    public VisualTreeAsset messageModalSignInFailedTmpl;
+    public VisualTreeAsset messageModalLobbyFailedTmpl;
+    public VisualTreeAsset messageModalServerConnectingTmpl;
    
     //Gamemode
     private GameMode _currentGameMode;
@@ -131,7 +134,9 @@ public class MultiplayerUIController : MonoBehaviour {
         
         _controls.UI.ESC.performed += OnEscape;
         
-        // Multiplayer Main Menu View Events
+        // Events
+        
+        // Multiplayer Main Menu View 
         _multiplayerMenuView.OpenCreateLobbyModal += (() => _viewManager.OpenModal(_createLobbyModal));
         _multiplayerMenuView.ShowLobbyView += (() => {
             _viewManager.ChangeView(IsPlayerHost() ? _lobbyHostView : _lobbyPlayerView);
@@ -155,6 +160,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _lobbyHostView.GetLobbyPlayerId += () => _clientManager.Client.ID;
         _lobbyHostView.IsPlayerHost += (playerId) => IsPlayerHost(playerId);
         _lobbyHostView.GetLobbyGameMode += () => _gameLobbyManager.GetLobbyGameMode();
+        _lobbyHostView.GetLobbyName += () => _gameLobbyManager.GetLobbyName();
         
         // Lobby Player View
         _lobbyPlayerView.ReadyUp += (async () => await ReadyUp());
@@ -163,24 +169,27 @@ public class MultiplayerUIController : MonoBehaviour {
         _lobbyPlayerView.GetLobbyPlayerId += () => _clientManager.Client.ID;
         _lobbyPlayerView.IsPlayerHost += (playerId) => IsPlayerHost(playerId);
         _lobbyPlayerView.GetLobbyGameMode += () => _gameLobbyManager.GetLobbyGameMode();
+        _lobbyPlayerView.GetLobbyName += () => _gameLobbyManager.GetLobbyName();
         
-        // Create Lobby Modal Events
+        // Create Lobby Modal 
         _createLobbyModal.CreateLobby += (async (lobbyName, maxPlayers, gameMode) => await CreateLobby(lobbyName, maxPlayers, gameMode));
         _createLobbyModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
-
-        _deathScreenView.Rematch += (async() => {
-            await Rematch();
-        });
+        
+        // Set Player Name Modal
+        _setPlayerNameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
+        _setPlayerNameModal.ConfirmPlayerName += (playerName) => {
+            _gameLobbyManager.CreatePlayer(playerName);
+        };
+        
+        // Death Screen View
+        _deathScreenView.Rematch += (async() => { await Rematch(); });
         _deathScreenView.LeaveLobby += (async () => await LeaveLobby());
         
-        
-        // Exit Game Modal Events
+        // Exit Game Modal
         _exitGameModal.CloseModal += (modal) => _viewManager.CloseModal(modal);
-        _exitGameModal.DisconnectClient += (async () => {
-            await DisconnectClient();
-        });
+        _exitGameModal.DisconnectClient += (async () => { await DisconnectClient(); });
 
-        // Message modal events
+        // Message Modal
         _gameLobbyManager.OnShowMessage += ShowLobbyErrorMessage;
         
         // Player network spawn event
@@ -201,6 +210,7 @@ public class MultiplayerUIController : MonoBehaviour {
             var players = GetPlayers();
             _gameView.SetPlayers(players);
             _viewManager.ChangeView(_gameView);
+            _cameraScript.SetInput();
             _cameraScript.SetTarget(_player);
             _cameraScript.SetMinimap(_gameView.Minimap);
         });
@@ -252,11 +262,13 @@ public class MultiplayerUIController : MonoBehaviour {
         _createLobbyModal = new CreateLobbyModal(root, createLobbyModalTmpl);
         _exitGameModal = new ExitGameModal(root, exitGameModalTmpl);
         _messageModal = new MessageModal(root, messageModalSignInConnectingTmpl);
+        _setPlayerNameModal = new SetPlayerNameModal(root, setPlayerNameModalTmpl);
 
         _modals = new List<Modal>() {
             _createLobbyModal,
             _exitGameModal,
-            _messageModal
+            _messageModal,
+            _setPlayerNameModal
         };
     }
     
@@ -290,6 +302,8 @@ public class MultiplayerUIController : MonoBehaviour {
             _viewManager.CloseModal();
             var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
             _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
+            await Task.Delay(250);
+            if(_playerNameRequired) _viewManager.OpenModal(_setPlayerNameModal);
         }
         else {
             _viewManager.ChangeOpenModalTemplate(messageModalSignInFailedTmpl);
@@ -630,6 +644,14 @@ public class MultiplayerUIController : MonoBehaviour {
     private async Task ReadyUp() {
         await _gameLobbyManager.UpdatePlayerIsReadyData();
         _viewManager.CurrentView.RePaint();
+    }
+
+    private async Task SetPlayerName(string playerName) {
+        Dictionary<string, string> update = new() {
+            { "Name", playerName }
+        };
+
+        await _gameLobbyManager.UpdatePlayerData(update);
     }
 
     /// <summary>

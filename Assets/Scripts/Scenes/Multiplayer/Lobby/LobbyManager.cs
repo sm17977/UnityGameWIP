@@ -160,13 +160,11 @@ public sealed class LobbyManager {
     /// 2 requests per 6 seconds
     /// </summary>
     /// <returns>The created lobby</returns>
-    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, string gameMode, Dictionary<string, string> data)
+    public async Task<Lobby> CreateLobby(string lobbyName, int maxPlayers, string gameMode, Player player)
     {
         return await HandleRequest(LobbyRequestType.CreateLobby, async () =>
         {
-            var playerData = SerializePlayerData(data);
-            var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
-
+            
             var options = new CreateLobbyOptions()
             {
                 IsPrivate = false,
@@ -200,13 +198,10 @@ public sealed class LobbyManager {
     /// 2 requests per 6 seconds
     /// </summary>
     /// <returns>The joined lobby</returns>
-    public async Task<Lobby> JoinLobby(Lobby lobby, Dictionary<string, string> data) {
+    public async Task<Lobby> JoinLobby(Lobby lobby, Player player) {
 
         return await HandleRequest(LobbyRequestType.JoinLobby, async () => {
-
-            var playerData = SerializePlayerData(data);
-            var player = new Player(AuthenticationService.Instance.PlayerId, null, playerData);
-
+            
             try {
                 var joinLobbyByIdOptions = new JoinLobbyByIdOptions() {
                     Player = player
@@ -342,7 +337,7 @@ public sealed class LobbyManager {
     /// <returns>The updated lobby</returns>
     public async Task<Lobby> UpdateLobbyPlayerData(UpdatePlayerOptions options, string playerId, string lobbyId) {
 
-        return await HandleRequest(LobbyRequestType.JoinLobby, async () => {
+        return await HandleRequest(LobbyRequestType.UpdateLobbyPlayerData, async () => {
 
             try {
                 var lobby = await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, options);
@@ -364,7 +359,6 @@ public sealed class LobbyManager {
             Debug.LogError(e);
             return null;
         }
-        
     }
     
     public async Task<bool> UnsubscribeToLobbyEvents(ILobbyEvents lobbyEvents) {
@@ -382,11 +376,11 @@ public sealed class LobbyManager {
     /// Serialize a lobby player's data
     /// </summary>
     /// <returns>The serialized lobby player's data</returns>
-    private Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data) {
+    public Dictionary<string, PlayerDataObject> SerializePlayerData(Dictionary<string, string> data) {
         var playerData = new Dictionary<string, PlayerDataObject>();
         foreach (var (key, value) in data) {
             playerData.Add(key, new PlayerDataObject(
-                PlayerDataObject.VisibilityOptions.Member,
+                PlayerDataObject.VisibilityOptions.Public,
                 value));
         }
         return playerData;

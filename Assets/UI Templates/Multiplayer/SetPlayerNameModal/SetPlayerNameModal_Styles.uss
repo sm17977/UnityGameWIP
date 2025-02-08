@@ -1,0 +1,168 @@
+﻿/* Top level container */
+.setname-modal-container{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    display: flex;
+}
+
+/* Modal */
+.setname-modal-content{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 500px;
+    height: 300px;
+    align-items: center;
+    align-content: center;
+    padding: 20px;
+    border-width: 2px;
+    border-color: black;
+    border-radius: 20px;
+    opacity: 0;
+}
+
+/* Modal size and opacity values to transition to when opened */
+.setname-modal-active{
+    width: 750px;
+    height: 400px;
+    opacity: 1;
+}
+
+/* This is called OuterGlow (custom element) but is actually used as a shadow for the Modal */
+OuterGlow {
+    border-radius: 20px;
+    --glow-color: clear;
+    --glow-size: 50;
+}
+
+/* The shadow is only shown when the modal is not transitioning to avoid artifacts (it looked a bit laggy too) */
+.shadow-active{
+    --glow-color: rgba(100, 100, 111, 0.1);
+}
+
+/* Modal opening transitions */
+.setname-modal-show-transition{
+    transition: all 0.2s ease-out-back, opacity 0.2s;
+}
+
+/* Modal closing transitions */
+.setname-modal-hide-transition{
+    transition: all 0.2s ease-in-back, opacity 0.2s;
+}
+
+.setname-modal-header{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.setname-modal-header-label{
+    color: black;
+    padding: 10px;
+    -unity-font-style: bold;
+    font-size: 60px;
+}
+
+.setname-modal-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-color: white;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+}
+
+.form-inputs-container{
+    display: flex;
+    width: 60%;
+    min-width: 60%;
+    max-width: 60%;
+}
+
+.modal-input-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.modal-input-field{
+    width: 100%;
+    font-size: 18px;
+    border-radius: 5px;
+    border-color: white;
+}
+
+.modal-input-field TextInput{
+    border-color: white;
+    border-radius: 5px;
+}
+
+.modal-input-field DropdownField {
+    background-color: red;
+}
+
+.btn-columns-container{
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+    /*height: 100px;*/
+    margin-top: 10px;
+}
+
+.btn-column{
+    display: flex;
+    width: 50%;
+    -unity-text-align: middle-center;
+}
+
+.btn-container{
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.btn-border{
+    display: flex;
+    flex-direction: row;
+}
+
+.btn{
+    background-color: white;
+    border-color: white;
+    border-width: 3px;
+    border-radius: 10px;
+    -unity-font-style: bold;
+    font-size: 40px;
+}
+
+.confirm-btn{
+    background-color: #50dcb5;
+    color: white;
+    transition: 0.3s background-color, 0.1s font-size;
+}
+
+.confirm-btn:hover{
+    background-color: #45bc9b;
+}
+
+.confirm-btn:active, .cancel-btn:active{
+    font-size: 43px;
+}
+
+.cancel-btn{
+    background-color: #dc5050;
+    color: white;
+    transition: 0.3s background-color, 0.1s font-size;
+}
+
+.cancel-btn:hover{
+    background-color: #9a3b3b;
+}

@@ -30,12 +30,16 @@ public class Multiplayer_Camera : NetworkBehaviour {
         playerTransform = player.transform;
     }
 
-    private void OnEnable() {
+    public void SetInput() {
         _controls = new Controls();
         _controls.Player.Enable();
         _controls.Player.MiddleBtn.performed += OnMiddleBtnDown;
         _controls.Player.MiddleBtn.canceled += OnMiddleBtnReleased;
         _controls.Player.Space.performed += OnSpacebarDown;
+    }
+
+    private void OnEnable() {
+ 
     }
 
     private void OnDisable() {

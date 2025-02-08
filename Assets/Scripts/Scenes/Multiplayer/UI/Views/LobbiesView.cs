@@ -86,7 +86,7 @@ namespace Multiplayer.UI {
                 
                 VisualElement host = new VisualElement();
                 Label hostLabel = new Label();
-                hostLabel.text = lobby.HostId;
+                hostLabel.text = lobby.Players.Find((player => player.Id == lobby.HostId)).Data["Name"].Value;
                 host.Add(hostLabel);
                 host.AddToClassList("lobbies-col-width");
                 

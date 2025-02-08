@@ -14,6 +14,7 @@ public class LuxController : NetworkBehaviour {
     
     public NetworkVariable<bool> canMove = new NetworkVariable<bool>();
     public NetworkVariable<float> movementSpeed = new NetworkVariable<float>();
+    public NetworkVariable<string> playerName = new NetworkVariable<string>();
     
     public void ProcessPlayerDeath(){
         if(playerType == PlayerType.Player && !GlobalState.IsMultiplayer){

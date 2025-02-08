@@ -255,4 +255,9 @@
     padding: 2px;
 }
 
-
+.player-name-container{
+    position: absolute;
+    display: flex;
+    width: 150px;
+    height: 25px;
+}

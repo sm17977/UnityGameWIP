@@ -27,10 +27,10 @@ namespace Multiplayer.UI {
         public CreateLobbyModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
-            InitializeElements();
+            BindUIElements();
         }
         
-        private void InitializeElements() {
+        private void BindUIElements() {
             _lobbyNameInput = Template.Q<TextField>("lobby-name-input");
             _lobbyMaxPlayersInput = Template.Q<UnsignedIntegerField>("lobby-max-players-input");
             _gameModeDropdown = Template.Q<DropdownField>("lobby-gamemode-input");
@@ -101,7 +101,7 @@ namespace Multiplayer.UI {
         
         private void ClearFormInput() {
             _lobbyNameInput.SetValueWithoutNotify("");
-            InitializeElements();
+            BindUIElements();
         }
 
         private void ValidateFormInput() {

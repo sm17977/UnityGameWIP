@@ -1,0 +1,55 @@
+﻿<ui:UXML 
+    xmlns:ui="UnityEngine.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    engine="UnityEngine.UIElements" 
+    editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/SetPlayerNameModal/SetPlayerNameModal_Styles.uss" />
+    
+    <!-- Create Lobby Modal -->
+    <ui:VisualElement name="create-lobby" class="setname-modal-container">
+        <OuterGlow name="container-shadow">
+            <ui:VisualElement name="setname-modal-content" class="setname-modal-content setname-modal-active">
+                <ui:VisualElement name="setname-modal-header" class="setname-modal-header">
+                    <ui:Label text="Who's playing?" class="setname-modal-header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="setname-modal-form" class="setname-modal-form">
+                    
+                    <ui:VisualElement class="form-inputs-container">
+                   
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:Label text="Player Name" class=""/>
+                            </ui:VisualElement>
+                        
+                            <ui:VisualElement name="modal-input-container" class="modal-input-container">
+                                <ui:TextField name="player-name-input" class="modal-input-field" placeholder-text="Enter your name here" value="" />
+                            </ui:VisualElement>
+                        
+                    </ui:VisualElement>
+                    
+                    <ui:VisualElement class="btn-columns-container">
+                        
+                        <ui:VisualElement class="btn-column">
+                            <ui:VisualElement class="btn-container">
+                                <ui:Button text="Cancel" name="cancel-name-btn" class="btn cancel-btn"/>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        
+                        <ui:VisualElement class="btn-column">
+                            <ui:VisualElement class="btn-container">
+                                <ui:VisualElement class="btn-border">
+                                    <ui:Button text="Confirm" name="confirm-name-btn" class="btn confirm-btn"/>
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </OuterGlow>
+    </ui:VisualElement>
+    
+
+    
+</ui:UXML>

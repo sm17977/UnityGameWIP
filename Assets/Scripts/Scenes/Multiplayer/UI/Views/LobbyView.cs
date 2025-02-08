@@ -13,6 +13,7 @@ namespace Multiplayer.UI {
     public delegate Task<List<Player>> OnGetLobbyPlayerTableData(bool sendNewRequest);
     public delegate string OnGetLobbyPlayerId();
     public delegate string OnGetLobbyGameMode();
+    public delegate string OnGetLobbyName();
     
     public class LobbyView : View {
         public event OnLeaveLobby LeaveLobby;
@@ -21,9 +22,11 @@ namespace Multiplayer.UI {
         public event OnGetLobbyPlayerTableData GetLobbyPlayerTableData;
         public event OnGetLobbyPlayerId GetLobbyPlayerId;
         public event OnGetLobbyGameMode GetLobbyGameMode;
+        public event OnGetLobbyName GetLobbyName;
         
         private VisualElement _playersTableA;
         private VisualElement _playersTableB;
+        private Label _lobbyName;
         private Label _playerId;
         private Label _gameModeName;
         private Label _gameModePlayerCount;
@@ -85,6 +88,7 @@ namespace Multiplayer.UI {
             _playersTableB = Template.Q<VisualElement>("lobby-table-body-b");
             
             // Text Labels
+            _lobbyName = Template.Q<Label>("lobby-name-label");
             _playerId = Template.Q<Label>("player-id-text");
             _gameModeName = Template.Q<Label>("gamemode-name");
             _gameModePlayerCount = Template.Q<Label>("gamemode-player-count");
@@ -103,6 +107,7 @@ namespace Multiplayer.UI {
             var playersPerTeam = gameMode.MinimumRequiredPlayers/2;
             _gameModeName.text = gameModeName;
             _gameModePlayerCount.text = playersPerTeam + "v" + playersPerTeam;
+            _lobbyName.text = GetLobbyName?.Invoke();
         }   
 
         public override async void Show() {
@@ -141,15 +146,15 @@ namespace Multiplayer.UI {
                 row.AddToClassList("table-row");
                 
                 // Player ID
-                Label playerIdLabel = new Label();
-                playerIdLabel.text = lobbyPlayer.Id;
+                Label playerNameLabel = new Label();
+                playerNameLabel.text = lobbyPlayer.Data["Name"].Value;
                 
                 // Player indicator
                 var playerId = GetLobbyPlayerId?.Invoke();
                 if (playerId != null && playerId == lobbyPlayer.Id) {
-                    playerIdLabel.AddToClassList("player-name-highlight");
+                    playerNameLabel.AddToClassList("player-name-highlight");
                 }
-                row.Add(playerIdLabel);
+                row.Add(playerNameLabel);
                 
                 // Player ready indicator
                 var playerReady = bool.Parse(lobbyPlayer.Data["IsReady"].Value);

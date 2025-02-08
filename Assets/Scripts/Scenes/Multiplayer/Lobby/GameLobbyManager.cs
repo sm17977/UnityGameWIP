@@ -12,12 +12,13 @@ using UnityEngine.Serialization;
 
 public delegate void ShowMessage();
 public class GameLobbyManager : MonoBehaviour {
-
     public event ShowMessage OnShowMessage;
 
     public static GameLobbyManager Instance;
     private LobbyManager _lobbyManager;
-    
+
+    private Player _player;
+    public string playerName;
     private Lobby _lobby;
     private string _playerId;
     private LobbyPlayerData _playerData;
@@ -25,7 +26,7 @@ public class GameLobbyManager : MonoBehaviour {
     private List<String> _joinedLobbyList;
     private List<Lobby> _localLobbyList;
     
-    private List<LobbyPlayerData> _lobbyPlayerDatas = new List<LobbyPlayerData>();
+    private List<LobbyPlayerData> _lobbyPlayerData = new List<LobbyPlayerData>();
     private LobbyPlayerData _localLobbyPlayerData;
     private ILobbyEvents _lobbyEvents;
 
@@ -109,11 +110,8 @@ public class GameLobbyManager : MonoBehaviour {
     /// </summary>
     public async Task<bool> CreateLobby(string lobbyName, int maxPlayers, string gameMode) {
         
-        _playerData = new LobbyPlayerData();
-        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Host", "");
-        
         // Create a lobby
-        _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, gameMode, _playerData.Serialize());
+        _lobby = await _lobbyManager.CreateLobby(lobbyName, maxPlayers, gameMode, _player);
 
         if (_lobby == null) {
             OnShowMessage?.Invoke();
@@ -136,10 +134,7 @@ public class GameLobbyManager : MonoBehaviour {
     /// TODO: Check if we need the clientId in playerData
     public async Task<bool> JoinLobby(Lobby lobbyToJoin){
         
-        _playerData = new LobbyPlayerData();
-        _playerData.Initialize(AuthenticationService.Instance.PlayerId, "Player", "");
-        
-        _lobby = await _lobbyManager.JoinLobby(lobbyToJoin, _playerData.Serialize());
+        _lobby = await _lobbyManager.JoinLobby(lobbyToJoin, _player);
 
         if (_lobby == null) {
             OnShowMessage?.Invoke();
@@ -151,6 +146,18 @@ public class GameLobbyManager : MonoBehaviour {
         callbacks.LobbyChanged += async(change) => _uiController.OnLobbyChanged(change);
         _lobbyEvents = await _lobbyManager.SubscribeToLobbyEvents(_lobby.Id, callbacks);
         return true;
+    }
+
+    /// <summary>
+    /// Create the player object
+    /// </summary>
+    /// <param name="inputPlayerName"></param>
+    public void CreatePlayer(string inputPlayerName) {
+        _playerData = new LobbyPlayerData();
+        _playerData.Initialize(AuthenticationService.Instance.PlayerId, inputPlayerName, "");
+        var serialized = _lobbyManager.SerializePlayerData(_playerData.Serialize());
+        _player = new Player(AuthenticationService.Instance.PlayerId, null, serialized);
+        playerName = inputPlayerName;
     }
     
     /// <summary>
@@ -499,6 +506,10 @@ public class GameLobbyManager : MonoBehaviour {
         return GetLobbyData("GameMode");
     }
 
+    public string GetLobbyName() {
+        return _lobby.Name;
+    }
+
     public bool PlayersReady() {
         foreach (var player in _lobby.Players) {
             if (player.Id != _lobby.HostId && !bool.Parse(player.Data["IsReady"].Value)) return false;
@@ -528,27 +539,30 @@ public class GameLobbyManager : MonoBehaviour {
         else OnShowMessage?.Invoke();
     }
     
-    public async Task UpdatePlayerIsAliveData() {
+    public async Task UpdatePlayerData(Dictionary<string, string> newPlayerData) {
         LobbyPlayerData playerData = new LobbyPlayerData();
         UpdatePlayerOptions options = new UpdatePlayerOptions();
-        
-        foreach(Player player in _lobby.Players) {
-            if (player.Id == _playerId) {
-                var clientId = player.Data["ClientId"].Value;
-                var playerName = player.Data["Name"].Value;
-                var connected = bool.Parse(player.Data["IsConnected"].Value);
-                var ready = !bool.Parse(player.Data["IsReady"].Value);
-                playerData.Initialize(_playerId, playerName, clientId, connected, ready, false);
-                break;
+
+        var player = _lobby.Players.Find((player) => player.Id == _playerId);
+
+        if (player != null) {
+            playerData.Initialize(player.Data);
+            var serialized = playerData.Serialize(); 
+            
+            foreach (var entry in newPlayerData) { 
+                serialized[entry.Key] = entry.Value;
             }
-        }
-        options.Data = playerData.SerializeUpdate();
-        var lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
-        if (lobby != null) {
-            _lobby = lobby;
+            
+            var updated = _lobbyManager.SerializePlayerData(serialized); 
+            playerData.Initialize(updated);
+            options.Data = playerData.SerializeUpdate();
+            
+            var lobby = await _lobbyManager.UpdateLobbyPlayerData(options, _playerId, _lobby.Id);
+            if (lobby != null) {
+                _lobby = lobby;
+            }
+            else OnShowMessage?.Invoke();
         }
         else OnShowMessage?.Invoke();
     }
-    
-    
 }

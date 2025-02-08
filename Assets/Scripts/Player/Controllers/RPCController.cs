@@ -31,6 +31,8 @@ public class RPCController : NetworkBehaviour {
         // Make the player a child object of the 'Players' game object
         _players = GameObject.Find("Players");
         if(IsServer)transform.SetParent(_players.transform, true);
+
+        if (IsServer) _playerController.playerName.Value = GameLobbyManager.Instance.playerName;
         
         // Trigger event to let the UI script know the player has spawned on the network
         if(IsOwner)NetworkSpawn?.Invoke(gameObject);
