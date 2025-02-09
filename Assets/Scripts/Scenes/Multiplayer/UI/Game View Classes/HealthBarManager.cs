@@ -53,7 +53,7 @@ public class HealthBarManager {
             playerNameLabel.AddToClassList("player-name-label");
 
             playerNameLabel.name = "player-name-label";
-            playerNameLabel.text = playerScript.playerName.Value;
+            playerNameLabel.text = playerScript.playerName.Value.ToString();
             playerNameContainer.Add(playerNameLabel);
             
             _template.Add(playerNameContainer);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using QFSW.QC;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -32,7 +33,7 @@ public class RPCController : NetworkBehaviour {
         _players = GameObject.Find("Players");
         if(IsServer)transform.SetParent(_players.transform, true);
 
-        if (IsServer) _playerController.playerName.Value = GameLobbyManager.Instance.playerName;
+        if (IsServer) _playerController.playerName.Value = new FixedString32Bytes(GameLobbyManager.Instance.playerName);
         
         // Trigger event to let the UI script know the player has spawned on the network
         if(IsOwner)NetworkSpawn?.Invoke(gameObject);

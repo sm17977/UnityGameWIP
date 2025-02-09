@@ -5,9 +5,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
-#if UNITY_SERVER
 using Unity.Services.Multiplay;
-#endif
 using UnityEngine;
 using Unity.Services.Multiplayer;
 

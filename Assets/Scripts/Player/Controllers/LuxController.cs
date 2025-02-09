@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,8 +15,8 @@ public class LuxController : NetworkBehaviour {
     
     public NetworkVariable<bool> canMove = new NetworkVariable<bool>();
     public NetworkVariable<float> movementSpeed = new NetworkVariable<float>();
-    public NetworkVariable<string> playerName = new NetworkVariable<string>();
-    
+    public NetworkVariable<FixedString32Bytes> playerName {get; private set;} = new();
+ 
     public void ProcessPlayerDeath(){
         if(playerType == PlayerType.Player && !GlobalState.IsMultiplayer){
             StartCoroutine(DelayLoadScene());
