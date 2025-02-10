@@ -77,6 +77,7 @@ namespace CustomElements {
         public void UpdatePlayerMarkersPosition(List<GameObject> players) {
             if (players == null) return;
             foreach (var player in players) {
+                if(player == null) continue;
                 var playerScript = player.GetComponent<LuxPlayerController>();
                 var playerId = player.name;
                 if (_playerMarkers.TryGetValue(playerId, out VisualElement marker)) {

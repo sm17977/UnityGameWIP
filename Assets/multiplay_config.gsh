@@ -2,7 +2,7 @@ version: 1.0
 builds:
   Linux Remote Build: # replace with the name for your build
     executableName: linux-build.x86_64 # the name of your build executable
-    buildPath: linuxserverv10 # the location of the build files
+    buildPath: linux_ds_build # the location of the build files
 buildConfigurations:
   Linux Remote Build Config: # replace with the name for your build configuration
     build: Linux Remote Build # replace with the name for your build

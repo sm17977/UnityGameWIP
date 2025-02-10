@@ -53,7 +53,7 @@ public class HealthBarManager {
             playerNameLabel.AddToClassList("player-name-label");
 
             playerNameLabel.name = "player-name-label";
-            playerNameLabel.text = playerScript.playerName.Value.ToString();
+            playerNameLabel.text = playerScript.playerName;
             playerNameContainer.Add(playerNameLabel);
             
             _template.Add(playerNameContainer);
@@ -83,6 +83,19 @@ public class HealthBarManager {
                     healthBar.RemoveFromClassList("health-bar-borders");
                 }
                 healthBar.style.width = new Length(newWidth, LengthUnit.Pixel);
+            }
+        }
+    }
+
+    public void UpdatePlayerNameLabels() {
+        foreach (var player in _playerHealthBarMappings) {
+
+            var playerScript = player.Key;
+            
+            if (_playerHealthBarMappings.ContainsKey(playerScript)) {
+                var playerNameContainer = _playerHealthBarMappings[playerScript]["PlayerName"];
+                var playerNameLabel = playerNameContainer.Q<Label>("player-name-label");
+                playerNameLabel.text = playerScript.playerName;
             }
         }
     }

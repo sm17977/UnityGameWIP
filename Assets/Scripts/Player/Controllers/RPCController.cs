@@ -8,6 +8,8 @@ using UnityEngine;
 public class RPCController : NetworkBehaviour {
 
     public event Action<bool> OnCooldownReceived;
+
+    public event Action OnPlayerNameSet;
     public static event Action<GameObject> NetworkSpawn;
     
     public Dictionary<string, GameObject> NetworkActiveAbilityPrefabs;
@@ -26,14 +28,18 @@ public class RPCController : NetworkBehaviour {
     }
 
     public override void OnNetworkSpawn() {
+        base.OnNetworkSpawn();
+        
         // Set local player game object name to 'Local Player'
         gameObject.name = IsLocalPlayer ? "Local Player" : GetComponent<NetworkObject>().NetworkObjectId.ToString();
         
         // Make the player a child object of the 'Players' game object
         _players = GameObject.Find("Players");
-        if(IsServer)transform.SetParent(_players.transform, true);
+        if(IsServer) transform.SetParent(_players.transform, true);
 
-        if (IsServer) _playerController.playerName.Value = new FixedString32Bytes(GameLobbyManager.Instance.playerName);
+        if (IsServer) {
+            _players = GameObject.Find("Players");
+        }
         
         // Trigger event to let the UI script know the player has spawned on the network
         if(IsOwner)NetworkSpawn?.Invoke(gameObject);
@@ -209,6 +215,42 @@ public class RPCController : NetworkBehaviour {
             var ability = sourcePlayerScript.Abilities[key];
             var buff = ability.buff;
             _playerController.ApplyBuff(buff);
+        }
+    }
+
+    /// <summary>
+    /// Set the player's name on the server
+    /// </summary>
+    /// <param name="playerName"></param>
+    /// <param name="sourceNetworkObject"></param>
+    [Rpc(SendTo.Server)]
+    public void SetPlayerNameServerRpc(string playerName, NetworkObjectReference sourceNetworkObject) {
+        
+        Debug.Log("Set Player Name On Server RPC");
+        
+        if (sourceNetworkObject.TryGet(out NetworkObject obj)) {
+            var player = obj.gameObject;
+            var playerScript = player.GetComponent<LuxPlayerController>();
+            playerScript.playerName = playerName;
+            SetPlayerNameClientRpc(playerName, sourceNetworkObject);
+        }
+    }
+
+    /// <summary>
+    /// Set player's name on clients
+    /// </summary>
+    /// <param name="playerName"></param>
+    /// <param name="sourceNetworkObject"></param>
+    [Rpc(SendTo.NotServer)]
+    private void SetPlayerNameClientRpc(string playerName, NetworkObjectReference sourceNetworkObject) {
+        
+        Debug.Log("Set Player Name On Client RPC");
+        
+        if (sourceNetworkObject.TryGet(out NetworkObject obj)) {
+            var player = obj.gameObject;
+            var playerScript = player.GetComponent<LuxPlayerController>();
+            playerScript.playerName = playerName;
+            OnPlayerNameSet.Invoke();
         }
     }
 }

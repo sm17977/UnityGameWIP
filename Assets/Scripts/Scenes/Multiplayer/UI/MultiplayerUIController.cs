@@ -22,6 +22,7 @@ public class MultiplayerUIController : MonoBehaviour {
     private GameObject _player;
     private LuxPlayerController _playerScript;
     private InputProcessor _input;
+    private RPCController _rpcController;
     
     // Camera
     private Camera _mainCamera;
@@ -201,6 +202,14 @@ public class MultiplayerUIController : MonoBehaviour {
                 _input.NotifyUICooldown += (key, duration) => {
                     _gameView.ActivateAbilityAnimation(key, duration);
                 };
+                _rpcController = _player.GetComponent<RPCController>();
+                _rpcController.OnPlayerNameSet += () => {
+                    var players = GetPlayers();
+                    _gameView.SetPlayers(players);
+                    _gameView.UpdatePlayerHealthBars(players);
+                };
+                
+                _rpcController.SetPlayerNameServerRpc(_gameLobbyManager.playerName, _player.GetComponent<NetworkObject>());
             }
             else {
                 Debug.Log(("Player is null! D:"));

@@ -95,6 +95,8 @@ namespace Multiplayer.UI {
 
             // Delegate generation of new health bars
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
+            
+            _healthBarManager.UpdatePlayerNameLabels();
         }
 
         /// <summary>
