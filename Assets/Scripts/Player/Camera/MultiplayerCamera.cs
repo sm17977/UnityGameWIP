@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Multiplayer_Camera : NetworkBehaviour {
+public class MultiplayerCamera : NetworkBehaviour {
     public Transform playerTransform;
     public float heightOffset = 0f;
     public float depthOffset = 0f;
@@ -19,7 +19,7 @@ public class Multiplayer_Camera : NetworkBehaviour {
     private Vector2 _minimapDragOrigin = Vector2.zero;
     private Vector3 _cameraPosAtMinimapDragStart = Vector3.zero; 
     private Vector3 _cameraVelocity = Vector3.zero;
-    public float minimapSmoothTime = 0.2f;
+    public float minimapSmoothTime = 0.05f;
     
     public void SetMinimap(MinimapElement minimapElement) {
         _minimap = minimapElement;

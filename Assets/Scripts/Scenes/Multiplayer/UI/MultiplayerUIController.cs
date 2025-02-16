@@ -26,7 +26,7 @@ public class MultiplayerUIController : MonoBehaviour {
     
     // Camera
     private Camera _mainCamera;
-    private Multiplayer_Camera _cameraScript;
+    private MultiplayerCamera _cameraScript;
     
     // Managers
     private GameLobbyManager _gameLobbyManager;
@@ -93,7 +93,7 @@ public class MultiplayerUIController : MonoBehaviour {
         _gameLobbyManager = GameLobbyManager.Instance;
         _viewManager = ViewManager.Instance;
         _mainCamera = Camera.main;
-        _cameraScript = _mainCamera.GetComponent<Multiplayer_Camera>();
+        _cameraScript = _mainCamera.GetComponent<MultiplayerCamera>();
     }
 
      private async void Start() {
@@ -236,7 +236,11 @@ public class MultiplayerUIController : MonoBehaviour {
         _viewManager.UpdateGameView();
     }
 
-    
+    private void FixedUpdate() {
+        _viewManager.FixedUpdateGameView();
+    }
+
+
     /// <summary>
     /// Initialize all Views and store them in the Views list
     /// </summary>

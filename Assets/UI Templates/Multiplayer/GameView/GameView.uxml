@@ -11,6 +11,10 @@
     <!-- Game View -->
     <engine:VisualElement name="gameview-container" class="gameview-container">
         
+        <engine:VisualElement name="ping-container" class="ping-container">
+            <engine:Label text="27ms" name="ping-label" class="ping-label"/>
+        </engine:VisualElement>
+        
         
         <!-- Top bar -->
         <engine:VisualElement name="top-bar" class="top-bar">
@@ -73,6 +77,42 @@
             <engine:VisualElement class="center-healthbar">
                 <engine:Label text="100/100"/>
             </engine:VisualElement>
+            <engine:VisualElement class="center-manabar">
+                <engine:Label text="100/100"/>
+            </engine:VisualElement>
+            
+            
+            <!-- Champion Portrait -->
+            <engine:VisualElement class="portrait-container">
+                <engine:VisualElement class="portrait"/>
+            </engine:VisualElement>
+            
+            <!-- Champion Stats -->
+            <engine:VisualElement class="champion-stats-container">
+                <engine:VisualElement class="champion-stats">
+                    <engine:VisualElement class="champion-stat armor">
+                        <engine:VisualElement class="stat-icon armor"/>
+                        <engine:Label text="10" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat damage">
+                        <engine:VisualElement class="stat-icon damage"/>
+                        <engine:Label text="5" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat movespeed">
+                        <engine:VisualElement class="stat-icon movespeed"/>
+                        <engine:Label text="550" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat range">
+                        <engine:VisualElement class="stat-icon range"/>
+                        <engine:Label text="10" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat attackspeed">
+                        <engine:VisualElement class="stat-icon attackspeed"/>
+                        <engine:Label text="10" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                </engine:VisualElement>
+            </engine:VisualElement>
+            
         </engine:VisualElement>
         
         <!-- Mini Map placeholder -->

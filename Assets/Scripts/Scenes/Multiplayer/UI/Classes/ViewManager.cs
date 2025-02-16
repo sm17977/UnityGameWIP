@@ -165,6 +165,12 @@ namespace Multiplayer.UI {
                 gameView.Update();
             }
         }
+
+        public void FixedUpdateGameView() {
+            if (CurrentView is GameView gameView) {
+                gameView.FixedUpdate();
+            }
+        }
         
     }
 }

@@ -24,6 +24,8 @@ namespace Multiplayer.UI {
         }
 
         public abstract void Update();
+
+        public virtual void FixedUpdate(){}
         public abstract void RePaint();
         
         /// <summary>

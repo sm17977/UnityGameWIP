@@ -69,9 +69,9 @@
 
 /* Player center container */ 
 .player-center-container{
-    background-color: rgba(255, 255, 255, 0.22);
-    height: 120px;
-    width: 500px;
+    background-color: rgba(255, 255, 255, 0);
+    height: 150px;
+    width: 700px;
     margin-top: auto;
     margin-right: auto;
     margin-left: auto;
@@ -90,6 +90,14 @@
 /* Skill box */
 .skill{
     margin: 2px;
+}
+
+.ping-container{
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: white;
+    padding: 5px;
 }
 
 /* Top bar */
@@ -183,7 +191,7 @@
     position: relative;
     background-image: var(--ready-image);
     background-size: cover;
-    --cooldown-color: rgba(0, 0, 255, 0.68); /* Blue for cooldown state */
+    --cooldown-color: rgba(0, 0, 255, 0.68); 
     --shimmer: false;
 }
 
@@ -192,19 +200,19 @@
 }
 
 .q-skill {
-    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxQ.png");
+    --ready-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxQ.png");
 }
 
 .w-skill {
-    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxW.png");
+    --ready-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxW.png");
 }
 
 .e-skill {
-    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxE.png");
+    --ready-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxE.png");
 }
 
 .r-skill {
-    --ready-image: url("/Assets/UI Templates/HUD/Icons/LuxR.png");
+    --ready-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxR.png");
 }
 
 
@@ -242,17 +250,37 @@
 }
 
 .center-healthbar {
-    background-color: #00ff0d;
-    height: 20px;
-    font-size: 14px;
+    background-color: #10d11f;
+    font-size: 16px;
     color: #efefef;
     -unity-font-style: bold;
+    border-color: grey;
+    border-width: 1px;
+    margin: 2px;
+    padding: 4px;
+    width: 400px;
+    align-self: center;
 }
 
-.center-healthbar Label{
+.center-manabar {
+    background-color: #0aa1ff;
+    font-size: 16px;
+    color: #efefef;
+    -unity-font-style: bold;
+    border-color: grey;
+    border-width: 1px;
+    margin: 2px;
+    padding: 4px;
+    width: 400px;
+    align-self: center;
+}
+
+.center-healthbar Label, .center-manabar Label{
     -unity-text-align: middle-center;
     text-shadow: 6px 6px 0px rgb(0, 0, 0);
-    padding: 2px;
+    /*-unity-text-outline-color: black;*/
+    /*-unity-text-outline-width: 0.5px;*/
+    margin: 0px;
 }
 
 .player-name-container{
@@ -264,4 +292,50 @@
     color: white;
     text-shadow: 6px 6px 0px rgb(0, 0, 0);
     font-size: 22px;
+}
+
+.portrait-container{
+    height: 125px;
+    width: 125px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 12.5px;
+    border-color: #ffffff;
+    border-width: 2px;
+}
+
+.portrait{
+    background-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxPortrait.png");
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+
+.champion-stats-container{
+    background-color: rgba(255, 255, 255, 0.25);
+    width: 200px;
+    height: 100px;
+    position: absolute;
+    left: -200px;
+    bottom: 0;
+    padding: 5px;
+}
+
+.champion-stats{
+    display: flex;
+    color: white;
+}
+
+champion-stat{
+    display: flex;
+}
+
+.champion-stat Label{
+    margin: 0;
+}
+
+.stat-icon{
+    height: 100%;
+    width: 100%;
+    background-color: white;
 }

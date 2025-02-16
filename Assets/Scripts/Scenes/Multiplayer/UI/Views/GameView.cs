@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CustomElements;
 using Global.Game_Modes;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,12 +14,15 @@ namespace Multiplayer.UI {
     public class GameView : View {
         private CountdownTimerElement _countdownTimerElement;
         private Label _gameTimerLabel;
+        private Label _pingLabel;
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
         private PanelSettings _panelSettings;
         public MinimapElement Minimap;
         public static event StartDuelCountdown OnStartGameModeCountdown;
-
+        private float _timeSinceLastPingUpdate = 0f;
+        private readonly float _pingUpdateInterval = 2f;
+        
         public GameView(VisualElement parentContainer, VisualTreeAsset vta, PanelSettings panelSettings) {
             Template = vta.Instantiate().Children().FirstOrDefault();
             ParentContainer = parentContainer;
@@ -30,6 +34,7 @@ namespace Multiplayer.UI {
         private void BindUIElements() {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
             _gameTimerLabel = Template.Q<Label>("game-timer-label");
+            _pingLabel = Template.Q<Label>("ping-label");
             Minimap = Template.Q<MinimapElement>("minimap");
         }
 
@@ -55,6 +60,20 @@ namespace Multiplayer.UI {
             _healthBarManager.SetHealthBarPosition(_panelSettings); 
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
             Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
+        }
+
+        public override void FixedUpdate() {
+            _timeSinceLastPingUpdate += Time.fixedDeltaTime;
+            if (_timeSinceLastPingUpdate >= _pingUpdateInterval) {
+                _timeSinceLastPingUpdate = 0f;
+                UpdatePing();
+            }
+        }
+
+        private void UpdatePing() {
+            var ping = NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetCurrentRtt(
+                NetworkManager.Singleton.NetworkConfig.NetworkTransport.ServerClientId);
+            _pingLabel.text = ping + "ms";
         }
 
       
