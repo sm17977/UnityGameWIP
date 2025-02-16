@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-
-namespace Multiplayer {
+﻿namespace Multiplayer {
     public class QueueAllocationRequest {
         
         public string allocationId {get; set;}

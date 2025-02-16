@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_SERVER
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Collections;
@@ -9,20 +10,21 @@ using Unity.Services.Multiplay;
 using UnityEngine;
 using Unity.Services.Multiplayer;
 
+
 namespace Multiplayer {
     public sealed class ServerManager {
 
-        #if UNITY_SERVER
+#if UNITY_SERVER
             private IServerQueryHandler _serverQueryHandler;
-        #endif
+#endif
 
         private static ServerManager _instance = null;
         private static readonly object Padlock = new object();
         private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
-        private GameObject _spawnPointsParent; 
+        private GameObject _spawnPointsParent;
         private List<Transform> _spawnPointsList;
         private IMultiplayerService _iMultiplayerService;
-        
+
         public static ServerManager Instance {
             get {
                 lock (Padlock) {
@@ -31,7 +33,7 @@ namespace Multiplayer {
                 }
             }
         }
-        
+
         public void Initialize(GameObject spawnPointsParent) {
             _spawnPointsList = new List<Transform>();
             _spawnPointsParent = spawnPointsParent;
@@ -48,7 +50,7 @@ namespace Multiplayer {
             if (UnityServices.State != ServicesInitializationState.Initialized) {
                 var initializationOptions = new InitializationOptions();
 
-                #if UNITY_SERVER
+#if UNITY_SERVER
                     await UnityServices.InitializeAsync();
                     
                     
@@ -72,10 +74,10 @@ namespace Multiplayer {
                         OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
                             serverConfig.AllocationId));
                     }
-                #endif
+#endif
             }
             else {
-                #if UNITY_SERVER
+#if UNITY_SERVER
                     Debug.Log("UNITY_SERVER LOBBY - ALREADY INITIALIZED");
 
                     var serverConfig = MultiplayService.Instance.ServerConfig;
@@ -83,7 +85,7 @@ namespace Multiplayer {
                         OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
                             serverConfig.AllocationId));
                     }
-                #endif
+#endif
             }
         }
 
@@ -91,8 +93,8 @@ namespace Multiplayer {
         /// When a server is allocated, set the Network Manager's connection data and start the server
         /// Register a custom messaging manager to notify when the lobby host leaves
         /// </summary>
-        
-        #if UNITY_SERVER
+
+#if UNITY_SERVER
         private void OnAllocate(MultiplayAllocation allocation) {
            
                 Debug.Log("UNITY_SERVER OnAllocate");
@@ -110,7 +112,7 @@ namespace Multiplayer {
                 NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
           
         }
-        #endif
+#endif
 
 #if UNITY_SERVER
         private void OnDeallocate(MultiplayDeallocation deallocation) {
@@ -119,7 +121,7 @@ namespace Multiplayer {
         
         }
 #endif
-        
+
 #if UNITY_SERVER
         private void OnError(MultiplayError error) {
            
@@ -140,7 +142,7 @@ namespace Multiplayer {
         /// Subscribe to the Network Manager event and start the server
         /// </summary>
         private async void StartServer() {
-            #if UNITY_SERVER
+#if UNITY_SERVER
                     NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
                     NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
                     
@@ -152,7 +154,7 @@ namespace Multiplayer {
                     
                     NetworkManager.Singleton.StartServer();
                     await MultiplayService.Instance.ReadyServerForPlayersAsync();
-            #endif
+#endif
         }
 
 
@@ -162,7 +164,7 @@ namespace Multiplayer {
         public void Disconnect() {
             NetworkManager.Singleton.Shutdown();
         }
-        
+
         /// <summary>
         /// Approve clients attempting to connect, set the spawn position
         /// and store the client's player data
@@ -171,7 +173,7 @@ namespace Multiplayer {
         /// <param name="response">Client connection response</param>
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request,
             NetworkManager.ConnectionApprovalResponse response) {
-            #if UNITY_SERVER
+#if UNITY_SERVER
 
                 Debug.Log("Approving new client connection... ClientNetworkId: " + request.ClientNetworkId);
                 
@@ -194,7 +196,7 @@ namespace Multiplayer {
 
                 _playerDataDictionary[request.ClientNetworkId] = playerData;
                 response.Pending = false;
-            #endif
+#endif
         }
 
         /// <summary>
@@ -209,9 +211,10 @@ namespace Multiplayer {
             if (NetworkBuffManager.Instance == null) {
                 Debug.Log("NetworkBuffManager is null!");
             }
+
             NetworkBuffManager.Instance.AddPlayerToBuffStore(clientId);
         }
-        
+
         /// <summary>
         /// When a client disconnects, notify all other clients
         /// </summary>
@@ -223,18 +226,18 @@ namespace Multiplayer {
             _playerDataDictionary.Remove(clientId);
             NetworkBuffManager.Instance.RemovePlayerFromBuffStore(clientId);
         }
-        
+
         /// <summary>
         /// Update the multiplay server to keep it alive
         /// </summary>
         public void UpdateServer() {
-            #if UNITY_SERVER
+#if UNITY_SERVER
                 if (_serverQueryHandler != null) {
                     _serverQueryHandler.UpdateServerCheck();
                 }
-            #endif
+#endif
         }
-        
+
         /// <summary>
         /// Notify all other clients when a player connects or disconnects from the multiplay server
         /// </summary>
@@ -247,31 +250,32 @@ namespace Multiplayer {
             };
 
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-                Debug.Log("Sending connection event notification to client: " + client.ClientId + " with playerID: " + msg.PlayerId);
+                Debug.Log("Sending connection event notification to client: " + client.ClientId + " with playerID: " +
+                          msg.PlayerId);
                 NetworkManager.Singleton.SendCustomMessageToClient(client.ClientId, msg);
             }
         }
-        
+
         /// <summary>
         /// When the host attempts to disconnect, send a message to notify all other clients
         /// </summary>
         /// <param name="clientId">Client ID</param>
         /// <param name="reader">reader</param>
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
-            #if UNITY_SERVER
+#if UNITY_SERVER
                 foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
                     Debug.Log("Sending host leaving notification to client: " + client.ClientId);
                     NetworkManager.Singleton.SendHostLeavingMessageToClient(client.ClientId, new HostLeavingMessage());
                 }
-            #endif
+#endif
         }
-        
+
         private Vector3 GetSpawnPoint() {
 
             if (_spawnPointsList.Count == 0) {
                 Initialize(_spawnPointsParent);
             }
-            
+
             var spawnPoint = _spawnPointsList[0];
             _spawnPointsList.RemoveAt(0);
             Debug.Log("Spawn Pos: " + spawnPoint.position);
@@ -279,3 +283,4 @@ namespace Multiplayer {
         }
     }
 }
+#endif

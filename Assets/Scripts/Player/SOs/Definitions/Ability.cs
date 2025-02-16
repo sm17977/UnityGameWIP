@@ -1,6 +1,5 @@
 using System;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Ability", menuName = "Scriptable Objects/Ability")]

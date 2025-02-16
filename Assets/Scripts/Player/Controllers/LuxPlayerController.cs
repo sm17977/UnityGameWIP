@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Multiplayer;
-using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
 using Unity.Netcode;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;

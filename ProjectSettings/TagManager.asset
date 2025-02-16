@@ -7,6 +7,7 @@ TagManager:
   - Projectile
   - NetworkProjectile
   - Hit
+  - ServerOnly
   layers:
   - Default
   - TransparentFX

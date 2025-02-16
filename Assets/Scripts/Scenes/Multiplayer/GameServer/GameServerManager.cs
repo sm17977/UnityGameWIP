@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿#if UNITY_SERVER
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Multiplayer {
@@ -45,3 +46,13 @@ namespace Multiplayer {
         }
     }
 }
+#endif
+
+#if PLATFORM_STANDALONE_WIN
+using UnityEngine;
+public class GameServerManager : MonoBehaviour {
+    
+ 
+}
+
+#endif

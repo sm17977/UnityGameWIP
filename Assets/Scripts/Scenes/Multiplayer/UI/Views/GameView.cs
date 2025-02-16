@@ -34,7 +34,7 @@ namespace Multiplayer.UI {
         }
 
         public override void Show() {
-            _panelSettings.scaleMode = PanelScaleMode.ConstantPixelSize;
+            _panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
             _healthBarManager.GenerateHealthBars(_playerGameObjects);
             BindUIElements();
             GenerateMinimap();
@@ -43,16 +43,16 @@ namespace Multiplayer.UI {
             GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
-            _healthBarManager.SetHealthBarPosition();
+            _healthBarManager.SetHealthBarPosition(_panelSettings);
         }
         
         public override void Hide() {
             base.Hide();
-            _panelSettings.scaleMode = PanelScaleMode.ConstantPhysicalSize;
+            _panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
         }
 
         public override void Update() {
-            _healthBarManager.SetHealthBarPosition(); 
+            _healthBarManager.SetHealthBarPosition(_panelSettings); 
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
             Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class HealthBarManager {
@@ -115,7 +116,7 @@ public class HealthBarManager {
     /// <summary>
     /// Update the position of the health bars above the player models
     /// </summary>
-    public void SetHealthBarPosition() {
+    public void SetHealthBarPosition(PanelSettings panelSettings) {
         foreach (var (player, elements) in _playerHealthBarMappings) {
             if (player == null || elements == null) continue;
 
@@ -125,10 +126,9 @@ public class HealthBarManager {
             Vector2 newPosition = RuntimePanelUtils.CameraTransformWorldToPanel(
                 healthBar.panel, player.healthBarAnchor.transform.position, player.mainCamera);
             
-            newPosition.x += -(Screen.width / 2);
-            newPosition.y += -(Screen.height / 2) + HealthBarDefaultYOffset;
+            newPosition.x += -(panelSettings.referenceResolution.x / 2);
+            newPosition.y += -(panelSettings.referenceResolution.y / 2) + HealthBarDefaultYOffset;
             
-           
             healthBar.usageHints = UsageHints.DynamicTransform; 
             healthBar.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y, 0));
             playerName.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y + -30, 0));
