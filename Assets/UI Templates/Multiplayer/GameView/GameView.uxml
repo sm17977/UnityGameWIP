@@ -118,6 +118,8 @@
         <!-- Mini Map placeholder -->
         <custom:MinimapElement name="minimap" class="minimap"/>
         
+        <custom:ChatBoxElement name="chat" class="chatbox"/>
+        
     </engine:VisualElement>
     
 

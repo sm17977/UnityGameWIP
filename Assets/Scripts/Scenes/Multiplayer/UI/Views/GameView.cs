@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CustomElements;
 using Global.Game_Modes;
+using Scenes.Multiplayer.GameChat;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -18,6 +19,8 @@ namespace Multiplayer.UI {
         private List<GameObject> _playerGameObjects;
         private readonly HealthBarManager _healthBarManager;
         private PanelSettings _panelSettings;
+        public ChatBoxElement Chat;
+        private BlinkingTextField _chatInput;
         public MinimapElement Minimap;
         public static event StartDuelCountdown OnStartGameModeCountdown;
         private float _timeSinceLastPingUpdate = 0f;
@@ -35,6 +38,8 @@ namespace Multiplayer.UI {
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
             _gameTimerLabel = Template.Q<Label>("game-timer-label");
             _pingLabel = Template.Q<Label>("ping-label");
+            Chat = Template.Q<ChatBoxElement>("chat");
+            _chatInput = Chat.ChatInputField;
             Minimap = Template.Q<MinimapElement>("minimap");
         }
 
@@ -138,5 +143,18 @@ namespace Multiplayer.UI {
             }
             return null;
         }
+
+        public bool IsChatActive() {
+            return _chatInput.IsFocused;
+        }
+
+        public void ActivateChat() {
+            _chatInput.Focus();
+        }
+
+        public string GetCurrentChatInput() {
+            return _chatInput.value;
+        }
+
     }
 }

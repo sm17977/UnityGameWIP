@@ -95,7 +95,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""RightClick"",
                     ""type"": ""Button"",
                     ""id"": ""300e3fd8-94ca-457c-8fd2-31fb096c0bed"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -223,7 +223,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""Q"",
                     ""type"": ""Button"",
                     ""id"": ""ecc4b5db-597b-498b-8a90-1fe57511a165"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -259,7 +259,16 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""ESC"",
                     ""type"": ""Button"",
                     ""id"": ""503191c2-42d1-489d-9ba0-be674b2d446c"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ENTER"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c97f6e6-d19f-4135-866f-94a314783ae9"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -320,6 +329,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""ESC"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5180fdef-87a8-4393-ac65-8fd60594e474"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ENTER"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -341,6 +361,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_UI_W = m_UI.FindAction("W", throwIfNotFound: true);
         m_UI_R = m_UI.FindAction("R", throwIfNotFound: true);
         m_UI_ESC = m_UI.FindAction("ESC", throwIfNotFound: true);
+        m_UI_ENTER = m_UI.FindAction("ENTER", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -578,6 +599,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_W;
     private readonly InputAction m_UI_R;
     private readonly InputAction m_UI_ESC;
+    private readonly InputAction m_UI_ENTER;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -609,6 +631,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/ESC".
         /// </summary>
         public InputAction @ESC => m_Wrapper.m_UI_ESC;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/ENTER".
+        /// </summary>
+        public InputAction @ENTER => m_Wrapper.m_UI_ENTER;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -650,6 +676,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @ESC.started += instance.OnESC;
             @ESC.performed += instance.OnESC;
             @ESC.canceled += instance.OnESC;
+            @ENTER.started += instance.OnENTER;
+            @ENTER.performed += instance.OnENTER;
+            @ENTER.canceled += instance.OnENTER;
         }
 
         /// <summary>
@@ -676,6 +705,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @ESC.started -= instance.OnESC;
             @ESC.performed -= instance.OnESC;
             @ESC.canceled -= instance.OnESC;
+            @ENTER.started -= instance.OnENTER;
+            @ENTER.performed -= instance.OnENTER;
+            @ENTER.canceled -= instance.OnENTER;
         }
 
         /// <summary>
@@ -801,5 +833,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnESC(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ENTER" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnENTER(InputAction.CallbackContext context);
     }
 }

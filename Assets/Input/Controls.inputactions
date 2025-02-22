@@ -9,7 +9,7 @@
                     "name": "RightClick",
                     "type": "Button",
                     "id": "300e3fd8-94ca-457c-8fd2-31fb096c0bed",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -137,7 +137,7 @@
                     "name": "Q",
                     "type": "Button",
                     "id": "ecc4b5db-597b-498b-8a90-1fe57511a165",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -173,7 +173,16 @@
                     "name": "ESC",
                     "type": "Button",
                     "id": "503191c2-42d1-489d-9ba0-be674b2d446c",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ENTER",
+                    "type": "Button",
+                    "id": "5c97f6e6-d19f-4135-866f-94a314783ae9",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -232,6 +241,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ESC",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5180fdef-87a8-4393-ac65-8fd60594e474",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ENTER",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

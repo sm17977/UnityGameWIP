@@ -168,7 +168,7 @@ MonoBehaviour:
   fadeRadius: 0
   priority: 1
   customPasses:
-  - rid: 6420439022679621890
+  - rid: -2
   injectionPoint: 1
   m_TargetCamera: {fileID: 1887283008}
   useTargetCamera: 0
@@ -177,18 +177,6 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 6420439022679621890
-      type: {class: CustomBlurPass1, ns: , asm: Assembly-CSharp}
-      data:
-        m_Name: Custom Pass
-        enabled: 1
-        targetColorBuffer: 0
-        targetDepthBuffer: 0
-        clearFlags: 0
-        passFoldout: 0
-        m_Version: 0
-        blurMaterial: {fileID: 2100000, guid: c34ee902aaa04af48bb4ed979e8b519d, type: 2}
-        blurSize: 1
 --- !u!65 &830516230
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -242,7 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: a09261a26a199b244b802f78271a50d6, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 96d805f8d96441e898983d0e4d48871d,
+  sourceAsset: {fileID: 9197481963319205126, guid: 713d2423497c41f29bca02e6c3437072,
     type: 3}
   m_SortingOrder: 0
   m_WorldSpaceSizeMode: 1

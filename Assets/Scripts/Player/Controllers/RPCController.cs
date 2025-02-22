@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using QFSW.QC;
+using Scenes.Multiplayer.GameChat;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class RPCController : NetworkBehaviour {
 
@@ -18,6 +20,7 @@ public class RPCController : NetworkBehaviour {
     private NetworkStateManager _networkState;
     private GameObject _player;
     private GameObject _players;
+    public ChatServer ChatServer;
     
     
     private void Start() {
@@ -40,6 +43,9 @@ public class RPCController : NetworkBehaviour {
         if (IsServer) {
             _players = GameObject.Find("Players");
         }
+        
+        var chatServerGameObj =  GameObject.Find("Chat Server");
+        ChatServer = chatServerGameObj.GetComponent<ChatServer>();
         
         // Trigger event to let the UI script know the player has spawned on the network
         if(IsOwner)NetworkSpawn?.Invoke(gameObject);
@@ -253,4 +259,11 @@ public class RPCController : NetworkBehaviour {
             OnPlayerNameSet.Invoke();
         }
     }
+
+    [Rpc(SendTo.Server)]
+    public void SendChatMessageServerRpc(string message, string playerName, NetworkObjectReference networkObjectRef) {
+        var chatMessage = new ChatMessage(0, message, playerName);
+        ChatServer.AddMessage(chatMessage, networkObjectRef);
+    }
+    
 }
