@@ -87,9 +87,19 @@
                 <engine:VisualElement class="portrait"/>
             </engine:VisualElement>
             
+            
+            <!-- <engine:VisualElement class="champion-stat armor"> -->
+            <!--     <engine:VisualElement class="champion-stat-left"> -->
+            <!--         <engine:VisualElement class="stat-icon armor"/> -->
+            <!--     </engine:VisualElement> -->
+            <!--     <engine:VisualElement class="champion-stat-right"> -->
+            <!--         <engine:Label text="10" class="champion-stat-label"/> -->
+            <!--     </engine:VisualElement> -->
+            <!-- </engine:VisualElement> -->
+            
             <!-- Champion Stats -->
             <engine:VisualElement class="champion-stats-container">
-                <engine:VisualElement class="champion-stats">
+                <engine:VisualElement class="champion-stats stats-left">
                     <engine:VisualElement class="champion-stat armor">
                         <engine:VisualElement class="stat-icon armor"/>
                         <engine:Label text="10" class="champion-stat-label"/>
@@ -100,14 +110,29 @@
                     </engine:VisualElement>
                     <engine:VisualElement class="champion-stat movespeed">
                         <engine:VisualElement class="stat-icon movespeed"/>
-                        <engine:Label text="550" class="champion-stat-label"/>
+                        <engine:Label text="55" class="champion-stat-label"/>
                     </engine:VisualElement>
                     <engine:VisualElement class="champion-stat range">
                         <engine:VisualElement class="stat-icon range"/>
                         <engine:Label text="10" class="champion-stat-label"/>
                     </engine:VisualElement>
-                    <engine:VisualElement class="champion-stat attackspeed">
-                        <engine:VisualElement class="stat-icon attackspeed"/>
+                </engine:VisualElement>
+                
+                <engine:VisualElement class="champion-stats stats-right">
+                    <engine:VisualElement class="champion-stat armor">
+                        <engine:VisualElement class="stat-icon armor"/>
+                        <engine:Label text="20" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat damage">
+                        <engine:VisualElement class="stat-icon damage"/>
+                        <engine:Label text="55" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat movespeed">
+                        <engine:VisualElement class="stat-icon movespeed"/>
+                        <engine:Label text="20" class="champion-stat-label"/>
+                    </engine:VisualElement>
+                    <engine:VisualElement class="champion-stat range">
+                        <engine:VisualElement class="stat-icon range"/>
                         <engine:Label text="10" class="champion-stat-label"/>
                     </engine:VisualElement>
                 </engine:VisualElement>

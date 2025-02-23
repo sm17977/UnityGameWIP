@@ -161,7 +161,7 @@
     align-self: flex-end;
     bottom: 0;
     background-color: white;
-    opacity: 0.5;
+    opacity: 0.3;
     border-color: grey;
     border-width: 2px;
 }
@@ -170,7 +170,6 @@
     position: absolute;
     border-radius: 50%;
 }
-
 
 .skill{
     border-color: black;
@@ -214,8 +213,6 @@
 .r-skill {
     --ready-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxR.png");
 }
-
-
 
 .radial-cooldown__timer {
     font-size: 30px;
@@ -312,32 +309,47 @@
 }
 
 .champion-stats-container{
-    background-color: rgba(255, 255, 255, 0.25);
-    width: 200px;
-    height: 100px;
+    background-color: rgba(0, 0, 0, 0.24);
+    width: auto;
+    height: auto;
     position: absolute;
-    left: -200px;
-    bottom: 0;
-    padding: 5px;
+    left: -120px;
+    bottom: 0px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
 }
 
 .champion-stats{
-    display: flex;
     color: white;
 }
 
-champion-stat{
+.champion-stat{
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 3px;
+    -unity-text-align: middle-center;
+}
+
+.stats-left, .stats-right{
+    width: 50%;
 }
 
 .champion-stat Label{
     margin: 0;
+    padding: 0;
+    padding-left: 3px;
 }
 
 .stat-icon{
-    height: 100%;
-    width: 100%;
+    height: 13px;
+    width: 13px;
     background-color: white;
+    margin: 0;
 }
 
 .chatbox{
