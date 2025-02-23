@@ -14,6 +14,5 @@ namespace Scenes.Multiplayer.GameChat {
             PlayerName = playerName;
             Timestamp = Convert.ToString((int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
         }
-        
     }
 }

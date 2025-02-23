@@ -17,11 +17,8 @@ namespace Scenes.Multiplayer.GameChat {
 
         public void AddMessage(ChatMessage message, NetworkObjectReference networkObjectRef) {
             _messages.Add(message);
-            Debug.Log("_messages length: " + _messages.Count);
             ChatMessageListWrapper wrapper = new ChatMessageListWrapper { messages = _messages.ToArray() };
-            Debug.Log("wrapper.messages length: " + wrapper.messages.Length);
             string jsonMessages = JsonConvert.SerializeObject(wrapper);
-            Debug.Log("jsonMessages (server RPC): " +  jsonMessages);
             SendChatMessagesClientRpc(jsonMessages, networkObjectRef);
         }
 
@@ -31,7 +28,6 @@ namespace Scenes.Multiplayer.GameChat {
 
         [Rpc(SendTo.NotOwner)]
         private void SendChatMessagesClientRpc(string jsonMessages, NetworkObjectReference networkObjectRef) {
-            Debug.Log("jsonMessages (client RPC): " + jsonMessages);
             if (networkObjectRef.TryGet(out NetworkObject obj)) {
                 ChatMessageListWrapper wrapper = JsonConvert.DeserializeObject<ChatMessageListWrapper>(jsonMessages);
                 _chatUI.UpdateMessages(wrapper.messages.ToList());

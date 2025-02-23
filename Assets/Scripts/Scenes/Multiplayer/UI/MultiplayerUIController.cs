@@ -691,15 +691,12 @@ public class MultiplayerUIController : MonoBehaviour {
 
     private void OnEnter(InputAction.CallbackContext context) {
         if (_gameView.IsChatActive()) {
-            Debug.Log("OnEnter - Typing = false");
             var content = _gameView.GetCurrentChatInput();
-            Debug.Log("OnEnter, message content: " + content);
             _rpcController.SendChatMessageServerRpc(content, _gameLobbyManager.playerName, _player.GetComponent<NetworkObject>());
             _gameView.BlurInput();
             _input.isTyping = false;
         }
         else {
-            Debug.Log("OnEnter - Typing = true");
             _input.isTyping = true;
             _gameView.FocusInput();
         }

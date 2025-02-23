@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class MultiplayerCamera : NetworkBehaviour {
     public Transform playerTransform;
+    private InputProcessor _inputProcessor;
     public float heightOffset = 0f;
     public float depthOffset = 0f;
     public Camera cam;
@@ -28,6 +29,7 @@ public class MultiplayerCamera : NetworkBehaviour {
 
     public void SetTarget(GameObject player) {
         playerTransform = player.transform;
+        _inputProcessor = player.GetComponent<InputProcessor>();
     }
 
     public void SetInput() {
@@ -51,19 +53,22 @@ public class MultiplayerCamera : NetworkBehaviour {
             _minimap.OnMinimapTargetSet -= OnMinimapTargetSetHandler;
     }
 
-    public void OnMiddleBtnDown(InputAction.CallbackContext context) {
+    private void OnMiddleBtnDown(InputAction.CallbackContext context) {
         if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
+        if(_inputProcessor.isTyping) return;
         _dragOrigin = GetWorldPointAtCameraHeight(Mouse.current.position.ReadValue());
         _isMiddleMouseDragging = true;
     }
 
-    public void OnMiddleBtnReleased(InputAction.CallbackContext context) {
+    private void OnMiddleBtnReleased(InputAction.CallbackContext context) {
         if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
+        if(_inputProcessor.isTyping) return;
         _isMiddleMouseDragging = false;
     }
 
-    public void OnSpacebarDown(InputAction.CallbackContext context) {
+    private void OnSpacebarDown(InputAction.CallbackContext context) {
         if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
+        if(_inputProcessor.isTyping) return;
         var cameraPosition = playerTransform.position;
         cameraPosition -= Vector3.forward * depthOffset;
         cameraPosition += Vector3.up * heightOffset;

@@ -99,7 +99,6 @@ namespace CustomElements {
         }
 
         private void AddMessageToUI(ChatMessage message) {
-            Debug.Log("Add Message to UI: " + message.Content);
             var messageElement = new VisualElement();
             var messageLabel = new Label($"{message.PlayerName}: {message.Content}");
             messageLabel.AddToClassList("chat-message-label");
@@ -109,13 +108,10 @@ namespace CustomElements {
         }
 
         public void UpdateMessages(List<ChatMessage> messages) {
-            Debug.Log("Update Messages");
             _messages = messages;
             _messages.Sort((a, b) => int.Parse(a.Timestamp).CompareTo(int.Parse(b.Timestamp)));
             _messagesScrollView.Clear();
-            Debug.Log("Messages Length: " + _messages.Count);
             foreach (var message in _messages) {
-                Debug.Log("Adding Message...");
                 AddMessageToUI(message);
             }
         }
