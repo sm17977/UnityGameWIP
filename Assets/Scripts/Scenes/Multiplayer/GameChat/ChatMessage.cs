@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace Scenes.Multiplayer.GameChat {
-    [Serializable]
     public class ChatMessage {
         
         public int ClientId;

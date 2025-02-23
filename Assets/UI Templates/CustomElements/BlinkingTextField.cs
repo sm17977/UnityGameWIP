@@ -1,5 +1,6 @@
 ﻿using System;
 using Scenes.Multiplayer.GameChat;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 
@@ -78,14 +79,16 @@ namespace CustomElements {
         }
 
         private void OnFocus(FocusEvent evt) {
-            textEdition.placeholder = "";
             if (!_isBlinkEnabled)
                 return;
 
+            Debug.Log("Text Field is focussed: " + evt.target);
+            textEdition.placeholder = "";
             _blink.Resume();
         }
-
+        
         private void OnInputEnded(BlurEvent evt) {
+            Debug.Log("Text Field is un-focussed");
             textEdition.placeholder = _defaultText;
             _blink.Pause();
         }

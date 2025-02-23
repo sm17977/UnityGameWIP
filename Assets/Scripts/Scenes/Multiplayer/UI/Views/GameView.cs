@@ -147,14 +147,24 @@ namespace Multiplayer.UI {
         public bool IsChatActive() {
             return _chatInput.IsFocused;
         }
-
-        public void ActivateChat() {
-            _chatInput.Focus();
-        }
-
+        
         public string GetCurrentChatInput() {
-            return _chatInput.value;
+            var text = _chatInput.value;
+            _chatInput.SetValueWithoutNotify("");
+            return text;
         }
 
+        public void BlurInput() {
+            if(_chatInput.IsFocused) _chatInput.Blur();
+        }
+
+        public void FocusInput() {
+            // Have to delay this or focus won't work
+            if (!_chatInput.IsFocused) {
+                _chatInput.schedule.Execute(() => {
+                    _chatInput.Focus();
+                }).StartingIn(100);
+            }
+        }
     }
 }

@@ -357,6 +357,7 @@ champion-stat{
     position: relative;
     bottom: 0;
     margin: 0;
+    margin-top: auto;
 }
 
 .chat-input TextInput{
@@ -376,6 +377,9 @@ champion-stat{
 
 .chat-message-label{
     white-space: normal;
+    padding: 0;
+    margin: 0;
+    padding-left: 2px;
 }
 
 .unity-scroller--vertical {

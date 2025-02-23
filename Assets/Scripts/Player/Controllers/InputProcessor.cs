@@ -33,6 +33,8 @@ public class InputProcessor : NetworkBehaviour {
     public bool canCast;
     public bool incompleteMovement;
     public bool canAA;
+
+    public bool isTyping;
     
     private bool _isNewClick;
     private bool _showSpellIndicator;
@@ -59,6 +61,7 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void EnqueueInputCommand(InputCommand input) {
+        if(isTyping) return;
         _inputQueue.Enqueue(input);
     }
 

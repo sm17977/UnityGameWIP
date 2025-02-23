@@ -256,7 +256,7 @@ public class RPCController : NetworkBehaviour {
             var player = obj.gameObject;
             var playerScript = player.GetComponent<LuxPlayerController>();
             playerScript.playerName = playerName;
-            OnPlayerNameSet.Invoke();
+            OnPlayerNameSet?.Invoke();
         }
     }
 
@@ -265,5 +265,4 @@ public class RPCController : NetworkBehaviour {
         var chatMessage = new ChatMessage(0, message, playerName);
         ChatServer.AddMessage(chatMessage, networkObjectRef);
     }
-    
 }

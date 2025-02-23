@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using CustomElements;
+using Newtonsoft.Json;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,13 +11,17 @@ namespace Scenes.Multiplayer.GameChat {
         private List<ChatMessage> _messages;
         private ChatBoxElement _chatUI;
 
-        private void Start() {
+        private void Awake() {
             _messages = new List<ChatMessage>();
         }
 
         public void AddMessage(ChatMessage message, NetworkObjectReference networkObjectRef) {
             _messages.Add(message);
-            var jsonMessages = JsonUtility.ToJson(_messages);
+            Debug.Log("_messages length: " + _messages.Count);
+            ChatMessageListWrapper wrapper = new ChatMessageListWrapper { messages = _messages.ToArray() };
+            Debug.Log("wrapper.messages length: " + wrapper.messages.Length);
+            string jsonMessages = JsonConvert.SerializeObject(wrapper);
+            Debug.Log("jsonMessages (server RPC): " +  jsonMessages);
             SendChatMessagesClientRpc(jsonMessages, networkObjectRef);
         }
 
@@ -25,11 +31,12 @@ namespace Scenes.Multiplayer.GameChat {
 
         [Rpc(SendTo.NotOwner)]
         private void SendChatMessagesClientRpc(string jsonMessages, NetworkObjectReference networkObjectRef) {
+            Debug.Log("jsonMessages (client RPC): " + jsonMessages);
             if (networkObjectRef.TryGet(out NetworkObject obj)) {
-                var player = obj.gameObject;
-                var messages = JsonUtility.FromJson<List<ChatMessage>>(jsonMessages);
-                _chatUI.UpdateMessages(messages);
+                ChatMessageListWrapper wrapper = JsonConvert.DeserializeObject<ChatMessageListWrapper>(jsonMessages);
+                _chatUI.UpdateMessages(wrapper.messages.ToList());
             }
         }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI_Templates.DrawHelper {
+namespace UI_Templates.Helpers {
     public class DrawHelper {
         private static Painter2D _painter;
         

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Scenes.Multiplayer.GameChat;
-using UI_Templates.DrawHelper;
+using UI_Templates.Helpers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -23,7 +24,7 @@ namespace CustomElements {
         
         static readonly CustomStyleProperty<Color> StartColor = new CustomStyleProperty<Color>("--start-color");
         static readonly CustomStyleProperty<Color> EndColor = new CustomStyleProperty<Color>("--end-color");
-        private ScrollView _messageView;
+        private ScrollView _messagesScrollView;
         private List<ChatMessage> _messages;
         private LuxPlayerController _player;
 
@@ -34,12 +35,40 @@ namespace CustomElements {
             RegisterCallback<CustomStyleResolvedEvent>(OnStylesResolved);
             _messages = new List<ChatMessage>();
          
-            _messageView = new ScrollView();
-            _messageView.AddToClassList("message-container");
+            _messagesScrollView = new ScrollView();
+            _messagesScrollView.AddToClassList("message-container");
+            
+            
             ChatInputField = new BlinkingTextField();
             ChatInputField.AddToClassList("chat-input");
             
-            Add(_messageView);
+            Add(_messagesScrollView);
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
+            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
             AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
             Add(ChatInputField);
         }
@@ -70,20 +99,30 @@ namespace CustomElements {
         }
 
         private void AddMessageToUI(ChatMessage message) {
+            Debug.Log("Add Message to UI: " + message.Content);
             var messageElement = new VisualElement();
             var messageLabel = new Label($"{message.PlayerName}: {message.Content}");
             messageLabel.AddToClassList("chat-message-label");
             messageElement.Add(messageLabel);
-            if(!_messageView.Contains(messageLabel))_messageView.Add(messageElement);
+            if(!_messagesScrollView.Contains(messageLabel))_messagesScrollView.Add(messageElement);
+            UIHelper.ScrollToImmediate(_messagesScrollView, _messagesScrollView.Children().Last());
         }
 
         public void UpdateMessages(List<ChatMessage> messages) {
+            Debug.Log("Update Messages");
             _messages = messages;
             _messages.Sort((a, b) => int.Parse(a.Timestamp).CompareTo(int.Parse(b.Timestamp)));
-            _messageView.Clear();
+            _messagesScrollView.Clear();
+            Debug.Log("Messages Length: " + _messages.Count);
             foreach (var message in _messages) {
+                Debug.Log("Adding Message...");
                 AddMessageToUI(message);
             }
+        }
+
+        private void LayoutCallback(GeometryChangedEvent evt) {
+            _messagesScrollView.UnregisterCallback<GeometryChangedEvent>(LayoutCallback);
+            _messagesScrollView.ScrollTo(_messagesScrollView.Children().Last());
         }
     }
 }
