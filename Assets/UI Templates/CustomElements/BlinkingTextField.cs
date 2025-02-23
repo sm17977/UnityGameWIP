@@ -13,6 +13,7 @@ namespace CustomElements {
         private long _blinkInterval = 500;
         private bool _isBlinkEnabled = true;
         private string _blinkStyle = "cursor-transparent";
+        private string _defaultStyle = "cursor-default";
         private readonly string _defaultText = "Press Enter to Chat";
         
         /// <summary>
@@ -65,6 +66,7 @@ namespace CustomElements {
 
         public BlinkingTextField() {
             textEdition.placeholder = _defaultText;
+            AddToClassList(_defaultStyle);
             RegisterCallback<FocusEvent>(OnFocus);
             RegisterCallback<BlurEvent>(OnInputEnded);
 
@@ -79,16 +81,18 @@ namespace CustomElements {
         }
 
         private void OnFocus(FocusEvent evt) {
+
+            parent.MarkDirtyRepaint();
+            
             if (!_isBlinkEnabled)
                 return;
-
-            Debug.Log("Text Field is focussed: " + evt.target);
+            
             textEdition.placeholder = "";
             _blink.Resume();
         }
         
         private void OnInputEnded(BlurEvent evt) {
-            Debug.Log("Text Field is un-focussed");
+            parent.MarkDirtyRepaint();
             textEdition.placeholder = _defaultText;
             _blink.Pause();
         }

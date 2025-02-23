@@ -351,6 +351,7 @@ champion-stat{
     --end-color: rgba(255, 255, 255, 0);
     overflow: scroll;
     font-size: 12px;
+    padding: 2px;
 }
 
 .chat-input{
@@ -361,10 +362,15 @@ champion-stat{
 }
 
 .chat-input TextInput{
-    background-color: rgba(255, 255, 255, 0);
-    padding: 0;
+    background-color: rgba(0, 0, 0, 0.24);
     color: white;
     border-width: 0;
+    padding: 0;
+    -unity-font-style: bold;
+}
+
+.cursor-default{
+    --unity-cursor-color: white;
 }
 
 .cursor-transparent{
@@ -372,7 +378,7 @@ champion-stat{
 }
 
 .message-container{
-
+    
 }
 
 .chat-message-label{

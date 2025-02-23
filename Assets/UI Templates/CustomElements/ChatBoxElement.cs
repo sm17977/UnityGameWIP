@@ -37,46 +37,26 @@ namespace CustomElements {
          
             _messagesScrollView = new ScrollView();
             _messagesScrollView.AddToClassList("message-container");
-            
+            _messagesScrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             
             ChatInputField = new BlinkingTextField();
             ChatInputField.AddToClassList("chat-input");
             
             Add(_messagesScrollView);
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
-            AddMessage(new ChatMessage(1, "Hello, this is a test message!", "Sean"));
             Add(ChatInputField);
         }
         
         private void GenerateVisualContent(MeshGenerationContext mgc) {
-            var painter2d = mgc.painter2D;
-            DrawHelper.init(painter2d);
-            DrawHelper.DrawGradientRect((int)_width, (int)_height, _startColor, _endColor, DrawHelper.GradientDirection.Vertical);
+            if (ChatInputField.IsFocused) {
+                var painter2d = mgc.painter2D;
+                DrawHelper.init(painter2d);
+                DrawHelper.DrawGradientRect((int)_width, (int)_height, _startColor, _endColor,
+                    DrawHelper.GradientDirection.Vertical);
+                _messagesScrollView.verticalScrollerVisibility = ScrollerVisibility.AlwaysVisible;
+            }
+            else {
+                _messagesScrollView.verticalScrollerVisibility = ScrollerVisibility.Hidden;
+            }
         }
 
         private void OnStylesResolved(CustomStyleResolvedEvent evt) {
@@ -103,8 +83,10 @@ namespace CustomElements {
             var messageLabel = new Label($"{message.PlayerName}: {message.Content}");
             messageLabel.AddToClassList("chat-message-label");
             messageElement.Add(messageLabel);
-            if(!_messagesScrollView.Contains(messageLabel))_messagesScrollView.Add(messageElement);
-            UIHelper.ScrollToImmediate(_messagesScrollView, _messagesScrollView.Children().Last());
+            if (!_messagesScrollView.Contains(messageLabel) && message.Content.Length > 0) {
+                _messagesScrollView.Add(messageElement);
+                UIHelper.ScrollToImmediate(_messagesScrollView, _messagesScrollView.Children().Last());
+            }
         }
 
         public void UpdateMessages(List<ChatMessage> messages) {
@@ -114,11 +96,6 @@ namespace CustomElements {
             foreach (var message in _messages) {
                 AddMessageToUI(message);
             }
-        }
-
-        private void LayoutCallback(GeometryChangedEvent evt) {
-            _messagesScrollView.UnregisterCallback<GeometryChangedEvent>(LayoutCallback);
-            _messagesScrollView.ScrollTo(_messagesScrollView.Children().Last());
         }
     }
 }

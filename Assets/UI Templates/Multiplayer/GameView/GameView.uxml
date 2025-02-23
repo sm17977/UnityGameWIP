@@ -115,15 +115,12 @@
             
         </engine:VisualElement>
         
-        <!-- Mini Map placeholder -->
+        <!-- Mini Map -->
         <custom:MinimapElement name="minimap" class="minimap"/>
         
+        <!-- Chat box -->
         <custom:ChatBoxElement name="chat" class="chatbox"/>
         
     </engine:VisualElement>
-    
-
-            
- 
     
 </UXML>
