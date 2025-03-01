@@ -70,7 +70,7 @@
 /* Player center container */ 
 .player-center-container{
     background-color: rgba(255, 255, 255, 0);
-    height: 150px;
+    height: 160px;
     width: 700px;
     margin-top: auto;
     margin-right: auto;
@@ -89,7 +89,10 @@
 
 /* Skill box */
 .skill{
-    margin: 2px;
+    margin-left: 2px;
+    margin-right: 2px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .ping-container{
@@ -158,12 +161,25 @@
     width: 300px;
     display: flex;
     position: absolute;
-    align-self: flex-end;
+    right: 0;
     bottom: 0;
     background-color: white;
     opacity: 0.3;
     border-color: grey;
     border-width: 2px;
+    margin: 6px;
+}
+
+.minimap-corner{
+    /*position: absolute;*/
+    /*height: 150px;*/
+    /*width: 150px;*/
+    /*right: 250;*/
+    /*bottom: 250;*/
+    /*background-color: ;*/
+    /*!*transform-origin: 50% 50%;*!*/
+    /*!*transform: rotate(45deg);*!*/
+    /*rotate: 45deg;*/
 }
 
 .minimap-player-marker {
@@ -222,62 +238,65 @@
 }
 
 .skill-label{
-    display: flex;
-    -unity-font-style: bold;
-    width: 18px;
-    height: 18px;
-    background-color: #662a77;
+    flex-direction: column;
     position: absolute;
+    width: 24px;
+    height: 24px;
     right: 50px;
     bottom: -8px;
+    background-color: #662a77;
     border-radius: 50%;
-    color: white;
-    flex-direction: column;
     border-color: #dfa1f7;
     border-width: 1px;
-    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
 }
 
 .skill-label Label {
-    align-self: center;
     margin: 0;
-    font-size: 11px;
+    margin-top: 1px;
+    align-self: center;
+    color: white;
+    font-size: 18px;
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
     -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+    text-shadow: 2px 12px rgb(0, 0, 0);
 }
 
-.center-healthbar {
-    background-color: #10d11f;
-    font-size: 16px;
-    color: #efefef;
-    -unity-font-style: bold;
-    border-color: grey;
-    border-width: 1px;
-    margin: 2px;
-    padding: 4px;
-    width: 400px;
+.resource-bars{
+    display: flex;
+}
+
+.resource-bar-container{
+    display: flex;
+    justify-content: center;
     align-self: center;
+    padding: 6px;
 }
 
-.center-manabar {
-    background-color: #0aa1ff;
-    font-size: 16px;
-    color: #efefef;
-    -unity-font-style: bold;
-    border-color: grey;
-    border-width: 1px;
-    margin: 2px;
-    padding: 4px;
+.resource-bar {
+    border-width: 2px;
+    padding: 2px;
+    border-radius: 4px;
     width: 400px;
-    align-self: center;
+    height: 4px;
+    margin-top: 1px;
 }
 
-.center-healthbar Label, .center-manabar Label{
-    -unity-text-align: middle-center;
+.mana{
+    background-color: #00a6ff;
+    border-color: #d3f0f4;
+}
+
+.health{
+    background-color: #01af18;
+    border-color: #85f191;
+}
+.resource-bar-label{
+    color: white;
     text-shadow: 6px 6px 0px rgb(0, 0, 0);
-    /*-unity-text-outline-color: black;*/
-    /*-unity-text-outline-width: 0.5px;*/
-    margin: 0px;
+    -unity-text-align: middle-center;
+    margin: 0;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
 }
 
 .player-name-container{

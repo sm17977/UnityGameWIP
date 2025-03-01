@@ -73,29 +73,22 @@
                 </engine:VisualElement>
             </engine:VisualElement>
             
-            <!-- Health Bar -->
-            <engine:VisualElement class="center-healthbar">
-                <engine:Label text="100/100"/>
+            <!-- Resource Bars -->
+            <engine:VisualElement class="resource-bars">
+                <engine:VisualElement class="resource-bar-container">
+                    <engine:Label text="100/100" class="resource-bar-label"/>
+                    <engine:VisualElement class="resource-bar health"/>
+                </engine:VisualElement>
+                <engine:VisualElement class="resource-bar-container">
+                    <engine:Label text="100/100" class="resource-bar-label"/>
+                    <engine:VisualElement class="resource-bar mana"/>
+                </engine:VisualElement>
             </engine:VisualElement>
-            <engine:VisualElement class="center-manabar">
-                <engine:Label text="100/100"/>
-            </engine:VisualElement>
-            
             
             <!-- Champion Portrait -->
             <engine:VisualElement class="portrait-container">
                 <engine:VisualElement class="portrait"/>
             </engine:VisualElement>
-            
-            
-            <!-- <engine:VisualElement class="champion-stat armor"> -->
-            <!--     <engine:VisualElement class="champion-stat-left"> -->
-            <!--         <engine:VisualElement class="stat-icon armor"/> -->
-            <!--     </engine:VisualElement> -->
-            <!--     <engine:VisualElement class="champion-stat-right"> -->
-            <!--         <engine:Label text="10" class="champion-stat-label"/> -->
-            <!--     </engine:VisualElement> -->
-            <!-- </engine:VisualElement> -->
             
             <!-- Champion Stats -->
             <engine:VisualElement class="champion-stats-container">
@@ -142,6 +135,7 @@
         
         <!-- Mini Map -->
         <custom:MinimapElement name="minimap" class="minimap"/>
+        <engine:VisualElement class="minimap-corner"/>
         
         <!-- Chat box -->
         <custom:ChatBoxElement name="chat" class="chatbox"/>
