@@ -14,6 +14,14 @@ A LoL like battle arena game using Unity 6000.0.40f
     - [x] Mini-map
     - [ ] FPS counter
     - [x] Network RTT (ping)
+    - [ ] In-Game Chat
+      - [x] Network Logic
+      - [x] Enable/Disable via keyboard input
+      - [ ] Automated System messages
+        - [ ] Player Connected
+        - [ ] Player Disconnected
+        - [ ] Game Mode Events (?)
+      - [ ] Timestamps
 - [ ] VFX
     - [ ] W ability
     - [ ] R ability
