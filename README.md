@@ -1,6 +1,6 @@
 
 # Unity Game 🎮
-A LoL like battle arena game using Unity 6000.0.0f1
+A LoL like battle arena game using Unity 6000.0.40f
 
 ## In progress...
 - [ ] In-Game UI
@@ -8,12 +8,12 @@ A LoL like battle arena game using Unity 6000.0.0f1
     - [x] Ability skill boxes 
     - [x] Primary Healthbar
     - [x] Game Timer
-    - [ ] Player name labels
+    - [x] Player name labels
     - [ ] Champ stats
-    - [ ] Champ portrait
+    - [x] Champ portrait
     - [x] Mini-map
     - [ ] FPS counter
-    - [ ] Network RTT (ping)
+    - [x] Network RTT (ping)
 - [ ] VFX
     - [ ] W ability
     - [ ] R ability
