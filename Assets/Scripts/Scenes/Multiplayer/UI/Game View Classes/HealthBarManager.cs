@@ -58,6 +58,9 @@ public class HealthBarManager {
             playerNameContainer.Add(playerNameLabel);
             
             _template.Add(playerNameContainer);
+            
+            healthBarContainer.SendToBack();
+            playerNameContainer.SendToBack();
 
             _playerHealthBarMappings[playerScript]["PlayerName"] = playerNameContainer;
         }
