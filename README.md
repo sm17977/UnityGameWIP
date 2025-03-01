@@ -10,10 +10,14 @@ A LoL like battle arena game using Unity 6000.0.40f
     - [x] Game Timer
     - [x] Player name labels
     - [ ] Champ stats
+      - [ ] Styling
+      - [ ] Icons
+      - [ ] Bind values   
     - [x] Champ portrait
-    - [x] Mini-map
+    - [ ] Mini-map
+      - [ ] Add background texture 
     - [ ] FPS counter
-    - [x] Network RTT (ping)
+    - [x] Network RTT counter (ping)
     - [ ] In-Game Chat
       - [x] Network Logic
       - [x] Enable/Disable via keyboard input
@@ -22,6 +26,8 @@ A LoL like battle arena game using Unity 6000.0.40f
         - [ ] Player Disconnected
         - [ ] Game Mode Events (?)
       - [ ] Timestamps
+      - [ ] Health/Mana bars
+        - [ ] Bind values   
 - [ ] VFX
     - [ ] W ability
     - [ ] R ability
