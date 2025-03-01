@@ -42,15 +42,13 @@ namespace Multiplayer.UI {
                     _lobbyMaxPlayersInput.value = 2;
                     _lobbyMaxPlayersInput.SetEnabled(false);
                 }
+                
                 else {
                     _lobbyMaxPlayersInput.SetEnabled(true);
                 }
             });
             
-            if (_gameModeDropdown.value == "Duel") {
-                _lobbyMaxPlayersInput.value = 2;
-                _lobbyMaxPlayersInput.SetEnabled(false);
-            }
+            ValidateFormInput();
             
             _createLobbyBtn = Template.Q<Button>("create-lobby-btn");
             _cancelLobbyBtn = Template.Q<Button>("cancel-lobby-btn");

@@ -28,6 +28,7 @@ public class GlobalState : MonoBehaviour {
         var ability = Instantiate(LuxQAbilitySO);
         GameModeManager.AddGameMode(new Arena(ability));
         GameModeManager.AddGameMode(new Duel());
+        GameModeManager.AddGameMode(new Dev());
         GameModeManager.AddGameMode(new MultiplayerPlaceholder());
         MultiplayerGameModes = GameModeManager.GameModes.FindAll(gm => gm.GameModeType == GameMode.Type.Multiplayer);
     }
