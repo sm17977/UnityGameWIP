@@ -53,7 +53,7 @@ A LoL like battle arena game using Unity 6000.0.40f
 ## Screenshots
 
 # Duel HUD
-![Duel HUD](https://i.imgur.com/zt9nwrA.png)
+![Duel HUD](https://i.imgur.com/PpePVhl.png)
 # Create lobby modal
 ![Create lobby modal](https://i.imgur.com/sBROwR7.png)
 # Lobby host view
