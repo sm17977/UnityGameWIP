@@ -1,12 +1,16 @@
-
-
-Shader "OutlineShader/Fullscreen"
+﻿Shader "0utlineShader/Fullscreen"
 {
     properties
     {
-        _Iterations ("Iterations", Range(1,3) ) = 1
+        _SamplePrecision ("Sampling Precision", Range(1,3) ) = 1
         _OutlineWidth ("Outline Width", Float ) = 5
-        _InsideColor ("Inside Color", Color) = (1, 1, 0, 0.5)
+        
+        _InnerColor ("Inner Color", Color) = (1, 1, 0, 0.5)
+        _OuterColor( "Outer Color", Color ) = (1, 1, 0, 1)
+        _Texture ("Texture", 2D ) = "black" {}
+        _TextureSize("Texture Pixels Size", Vector) = (64,64,0,0)
+        
+        _BehindFactor("Behind Factor", Range(0,1)) = 0.2
     }
 
     HLSLINCLUDE
@@ -67,9 +71,16 @@ Shader "OutlineShader/Fullscreen"
         float2( -s225, -c225 )
     };
     
-    int _Iterations;
+    int _SamplePrecision;
     float _OutlineWidth;
-    float4 _InsideColor;
+    
+    float4 _InnerColor;
+    float4 _OuterColor;
+    
+    Texture2D _Texture;
+    float2 _TextureSize;
+    
+    float _BehindFactor;
 
     float4 FullScreenPass(Varyings varyings) : SV_Target
     {
@@ -78,18 +89,39 @@ Shader "OutlineShader/Fullscreen"
         float depth = LoadCameraDepth(varyings.positionCS.xy);
         PositionInputs posInput = GetPositionInput(varyings.positionCS.xy, _ScreenSize.zw, depth, UNITY_MATRIX_I_VP, UNITY_MATRIX_V);
         float3 viewDirection = GetWorldSpaceNormalizeViewDir(posInput.positionWS);
+        
+        float d = LoadCustomDepth(posInput.positionSS);
+        float db = LoadCameraDepth(posInput.positionSS);
+        
+        float alphaFactor = (db>d)?_BehindFactor:1;
+
 		float4 c = LoadCustomColor(posInput.positionSS);
-        float2 uvOffsetPerPixel = 1.0/_ScreenSize .xy;
-        uint sampleCount = min( 2 * pow(2, _Iterations ), MAXSAMPLES ) ;
+
+        float obj = c.a;
+        
+        uint offset = 5;
+        
+        uint sampleCount = min( 2 * pow(2, _SamplePrecision ), MAXSAMPLES ) ;
+        
         float4 outline = float4(0,0,0,0);
+        
+        float2 uvOffsetPerPixel = 1.0/_ScreenSize .xy;
+        
         for (uint i=0 ; i<sampleCount ; ++i )
         {
             outline =  max( SampleCustomColor( posInput.positionNDC + uvOffsetPerPixel * _OutlineWidth * offsets[i] ), outline );
         }
 
         float4 o = float4(0,0,0,0);
-        o = lerp(o, float4(outline.rgb, 1), outline.a);
-        o = lerp(o, _InsideColor, c.a);
+        
+        float4 innerColor = SAMPLE_TEXTURE2D( _Texture, s_trilinear_repeat_sampler, posInput.positionSS / _TextureSize) * _InnerColor;
+        
+        innerColor.a *= alphaFactor;
+        
+        o = lerp(o, _OuterColor * float4(outline.rgb, 1), outline.a);
+        
+        o = lerp( o, innerColor * float4(c.rgb, 1), obj);
+        
         return o;
     }
 
@@ -113,4 +145,3 @@ Shader "OutlineShader/Fullscreen"
     }
     Fallback Off
 }
-

@@ -8,7 +8,7 @@ public class RangeIndicator : MonoBehaviour {
     void Start() {
         var parent = transform.parent.gameObject;
         _playerController = parent.GetComponent<LuxPlayerController>();
-        _size = _playerController.champion.AA_range;
+        _size = _playerController.champion.AA_range * 2;
     }
     
     // Update is called once per frame

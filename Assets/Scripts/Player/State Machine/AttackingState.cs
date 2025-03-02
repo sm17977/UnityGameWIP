@@ -19,14 +19,12 @@ public class AttackingState : State {
         _player = _playerObj.GetComponent<LuxPlayerController>();
         _input = _playerObj.GetComponent<InputProcessor>();
         _direction = _player.direction;
-        _playerObj = gameObject;
         _windupTime = _player.champion.windupTime;
     }
 
     public override void Enter() {
         _input.canAA = false;
         _player.animator.SetTrigger("isAttacking");
-        _player.networkAnimator.SetTrigger("isAttacking");
     }
 
     public override void Execute() {
@@ -38,7 +36,7 @@ public class AttackingState : State {
         // Get animation timings
         GetCurrentAnimationTime();
                 
-        // Get the direction the abliity should move towards
+        // Get the direction the attack projectile should move towards
         Vector3 attackDirection = (_input.projectileAATargetPosition - _playerObj.transform.position).normalized;
         _player.champion.AA_direction = attackDirection;
 
@@ -47,19 +45,28 @@ public class AttackingState : State {
         if (IsWindupCompleted() && _input.canAA) {
         
             // Create Visual Effect instance
-            _newProjectile = LuxPlayerController.Instantiate(_player.projectileAA, new Vector3(_playerObj.transform.position.x, 1f, _playerObj.transform.position.z), Quaternion.LookRotation(_direction, Vector3.up));
+            var startPos = new Vector3(_playerObj.transform.position.x,
+                1f, _playerObj.transform.position.z);
+            var startRot = Quaternion.LookRotation(_direction, Vector3.up);
 
+            _newProjectile = ClientObjectPool.Instance.GetPooledAutoAttack();
             _vfxController = _newProjectile.GetComponent<VFXController>();
 
             // Set the player and controller references in the VFX Controller 
             _vfxController.player = _playerObj;
             _vfxController.playerController = _player;
+            _vfxController.Initialise(startPos, startRot);
 
             // Add the VFX projectile to a list so they can be destroyed after VFX is complete
-            _player.vfxProjectileList.Add(_newProjectile.gameObject);
+            //_player.vfxProjectileList.Add(_newProjectile.gameObject);
 
             // Prevent player spamming AAs
             _input.canAA = false;
+        }
+        
+        if (_newProjectile != null && _vfxController.die) {
+            Debug.Log("Returning AA to pool");
+            ClientObjectPool.Instance.ReturnPooledAutoAttack(_newProjectile);
         }
     }
 
@@ -72,7 +79,7 @@ public class AttackingState : State {
         return _currentTime >= _windupTime / 100f;
     }
 
-    // Get the current animation time as a perecentage (start to finish)
+    // Get the current animation time as a percentage (start to finish)
     // Track when a new animation loop as started
     private void GetCurrentAnimationTime(){
         AnimatorStateInfo animState = _player.animator.GetCurrentAnimatorStateInfo(0);

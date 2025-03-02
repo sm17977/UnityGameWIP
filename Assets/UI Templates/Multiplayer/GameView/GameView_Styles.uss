@@ -320,11 +320,33 @@
     border-width: 2px;
 }
 
-.portrait{
+.portrait {
     background-image: url("/Assets/UI Templates/Multiplayer/GameView/HUD/Icons/LuxPortrait.png");
     height: 100%;
     width: 100%;
     border-radius: 50%;
+}
+    
+.player-level-container{
+    position: absolute;
+    margin: 0;
+    width: 30px;
+    height: 30px;
+    right: 0;
+    bottom: 0;
+    background-color: #b25cf8;
+    border-radius: 50%;
+    border-width: 2px;
+    border-color: white;
+}
+
+.player-level-label{
+    font-size: 18px;
+    color: white;
+    margin: auto;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+    text-shadow: 4px 12px rgb(0, 0, 0);
 }
 
 .champion-stats-container{

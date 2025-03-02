@@ -24,7 +24,7 @@ namespace Global.Game_Modes {
         }
 
         public override void FixedUpdate() {
-            throw new System.NotImplementedException();
+            
         }
 
         public override void End() {

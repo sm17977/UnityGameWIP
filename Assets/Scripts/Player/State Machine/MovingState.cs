@@ -29,9 +29,7 @@ public class MovingState : State {
 
     public override void Execute() {
         
-        if(!_player.canMove.Value){
-            _player.TransitionToIdle();
-        }
+        if(!_player.canMove.Value) _player.TransitionToIdle();
 
         // Calculate the direction the player wants to move in
         Vector3 direction = (_targetLocation - _playerObj.transform.position).normalized;

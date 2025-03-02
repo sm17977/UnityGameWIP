@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ClientObjectPool : MonoBehaviour {
     public static ClientObjectPool Instance { get; private set; }
@@ -8,6 +9,10 @@ public class ClientObjectPool : MonoBehaviour {
     
     [SerializeField]
     public List<Ability> abilityPool;
+
+    public VisualEffect autoAttackPrefab;
+    private List<VisualEffect> _autoAttackMissilePool;
+    private int _autoAttackPoolSize = 3;
     
     [SerializedDictionary("Test", "Test")]
     public SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>> _pool;
@@ -29,6 +34,7 @@ public class ClientObjectPool : MonoBehaviour {
 
     private void InitializePool() {
         _pool = new SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>>();
+        _autoAttackMissilePool = new List<VisualEffect>();
 
         // Iterate over each unique ability
         foreach (var ability in abilityPool) {
@@ -53,6 +59,12 @@ public class ClientObjectPool : MonoBehaviour {
                     _pool[ability][AbilityPrefabType.Hit].Enqueue(hit);
                 }
             }
+        }
+
+        for (int i = 0; i < _autoAttackPoolSize; i++) {
+            var autoAttackMissile = Instantiate(autoAttackPrefab);
+            autoAttackMissile.enabled = false;
+            _autoAttackMissilePool.Add(autoAttackMissile);
         }
     }
 
@@ -85,6 +97,25 @@ public class ClientObjectPool : MonoBehaviour {
         if (obj.activeInHierarchy) return null;
         return obj;
     }
+
+    public VisualEffect GetPooledAutoAttack() {
+        if (_autoAttackMissilePool.Count > 0) {
+            var autoAttackMissile = _autoAttackMissilePool[0];
+            _autoAttackMissilePool.RemoveAt(0);
+            autoAttackMissile.enabled = false;
+            return autoAttackMissile;
+        }
+
+        return null;
+    }
+
+    public void ReturnPooledAutoAttack(VisualEffect autoAttackMissile) {
+        if (autoAttackMissile == null) return;     
+        autoAttackMissile.Reinit();
+        autoAttackMissile.enabled = false;
+        _autoAttackMissilePool.Add(autoAttackMissile);
+    }
+    
     public void ReturnObjectToPool(Ability ability, AbilityPrefabType prefabType, GameObject obj) {
    
         if (obj == null) return;

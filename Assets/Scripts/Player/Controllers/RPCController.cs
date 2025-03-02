@@ -8,23 +8,20 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 public class RPCController : NetworkBehaviour {
-
     public event Action<bool> OnCooldownReceived;
-
     public event Action OnPlayerNameSet;
     public static event Action<GameObject> NetworkSpawn;
     
-    public Dictionary<string, GameObject> NetworkActiveAbilityPrefabs;
+    public ChatServer chatServer;
     
+    private Dictionary<string, GameObject> _networkActiveAbilityPrefabs;
     private LuxPlayerController _playerController;
     private NetworkStateManager _networkState;
     private GameObject _player;
     private GameObject _players;
-    public ChatServer ChatServer;
-    
     
     private void Start() {
-        NetworkActiveAbilityPrefabs = new Dictionary<string, GameObject>();
+        _networkActiveAbilityPrefabs = new Dictionary<string, GameObject>();
         _playerController = GetComponent<LuxPlayerController>();
         _networkState = GetComponent<NetworkStateManager>();
         _player = gameObject;
@@ -45,7 +42,7 @@ public class RPCController : NetworkBehaviour {
         }
         
         var chatServerGameObj =  GameObject.Find("Chat Server");
-        ChatServer = chatServerGameObj.GetComponent<ChatServer>();
+        chatServer = chatServerGameObj.GetComponent<ChatServer>();
         
         // Trigger event to let the UI script know the player has spawned on the network
         if(IsOwner)NetworkSpawn?.Invoke(gameObject);
@@ -89,7 +86,7 @@ public class RPCController : NetworkBehaviour {
             return;
         }
 
-        NetworkActiveAbilityPrefabs[abilityKey] = newNetworkProjectile;
+        _networkActiveAbilityPrefabs[abilityKey] = newNetworkProjectile;
         
         // Set the position and rotation of the projectile
         newNetworkProjectile.transform.position = position;
@@ -160,7 +157,7 @@ public class RPCController : NetworkBehaviour {
     
     [Rpc(SendTo.Server)]
     public void RecastAbilityServerRpc(string abilityKey) {
-        var networkProjectile = NetworkActiveAbilityPrefabs[abilityKey];
+        var networkProjectile = _networkActiveAbilityPrefabs[abilityKey];
         var networkProjectileScript = networkProjectile.GetComponent<NetworkAbilityBehaviour>();
         networkProjectileScript.isRecast = true;
     }
@@ -263,6 +260,6 @@ public class RPCController : NetworkBehaviour {
     [Rpc(SendTo.Server)]
     public void SendChatMessageServerRpc(string message, string playerName, NetworkObjectReference networkObjectRef) {
         var chatMessage = new ChatMessage(0, message, playerName);
-        ChatServer.AddMessage(chatMessage, networkObjectRef);
+        chatServer.AddMessage(chatMessage, networkObjectRef);
     }
 }

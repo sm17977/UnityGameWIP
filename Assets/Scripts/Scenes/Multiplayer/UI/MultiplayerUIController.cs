@@ -212,7 +212,7 @@ public class MultiplayerUIController : MonoBehaviour {
 
                 _rpcController.SetPlayerNameServerRpc(_gameLobbyManager.playerName,
                     _player.GetComponent<NetworkObject>());
-                _rpcController.ChatServer.SetUI(_gameView.Chat);
+                _rpcController.chatServer.SetUI(_gameView.Chat);
             }
             else {
                 Debug.Log(("Player is null! D:"));

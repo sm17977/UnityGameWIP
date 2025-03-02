@@ -19,6 +19,7 @@ public class LuxPlayerController : LuxController {
     public VisualEffect projectileAA;
     public Vector3 projectileAATargetPosition;
     public double timeSinceLastAttack = 0;
+    public GameObject currentAATarget;
 
     // Hitbox
     public GameObject hitboxGameObj;

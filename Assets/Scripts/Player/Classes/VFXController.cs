@@ -16,10 +16,22 @@ public class VFXController : MonoBehaviour
 
         vfx = GetComponent<VisualEffect>();
 
+    }
+
+    public void Initialise(Vector3 startPos, Quaternion startRot) {
+
+        die = false;
+
+        transform.position = startPos;
+        transform.rotation = startRot;
+        
         // Distance between player and enemy
-        distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.luxAI.transform.position);
+        distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.currentAATarget.transform.position);
+        Debug.Log("AA Distance: " + distance);
+        
         // Particle speed
-        speed = 7;
+        speed = playerController.champion.AA_missileSpeed;
+        
         // Particle lifetime
         time = distance/speed;
 
@@ -28,19 +40,22 @@ public class VFXController : MonoBehaviour
         vfx.SetFloat("lifetime", time);
         vfx.SetFloat("speed", speed);
 
+        vfx.enabled = true;
+
         // Initiate timer
         timer = time;
     }
 
     void Update(){
 
-        // Set die to true when the particle lifetime ends
-        if(timer > 0){
-            timer -= Time.deltaTime;
-        }
-        else{
-            die = true;
+        if (vfx != null && vfx.enabled) {
+            // Set die to true when the particle lifetime ends
+            if (timer > 0) {
+                timer -= Time.deltaTime;
+            }
+            else {
+                die = true;
+            }
         }
     }
-
 }

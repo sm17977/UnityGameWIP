@@ -38,6 +38,7 @@ public class InputProcessor : NetworkBehaviour {
     
     private bool _isNewClick;
     private bool _showSpellIndicator;
+    private GameObject _lastSelectedEnemy;
 
     private static readonly float floorY = 0.5f;
 
@@ -58,6 +59,10 @@ public class InputProcessor : NetworkBehaviour {
         if (IsOwner) {
             ProcessCommands();
         }
+    }
+
+    private void Update() {
+        DetectEnemySelection();
     }
 
     private void EnqueueInputCommand(InputCommand input) {
@@ -97,7 +102,6 @@ public class InputProcessor : NetworkBehaviour {
         HideSpellIndicator();
         var inputType = GetClickInput();
         if (inputType != InputCommandType.None) {
-            // Enqueue a resolved input command (movement or attack)
             _inputQueue.Enqueue(new InputCommand { Type = inputType });
         }
     }
@@ -109,10 +113,11 @@ public class InputProcessor : NetworkBehaviour {
     /// </summary>
     private InputCommandType GetClickInput() {
         if (_player.hitboxColliderRadius == 0 || _player.hitboxGameObj == null) return InputCommandType.None;
+
+        if (IsAttackClick()) return InputCommandType.Attack;
         
         // Get world space radius of the hitbox + account for scaling
         var worldRadius = _player.hitboxColliderRadius * _player.hitboxGameObj.transform.lossyScale.x;
-
         var mousePos = GetMousePosition();
             
         // Get vector from players hitbox to the mouse
@@ -129,6 +134,24 @@ public class InputProcessor : NetworkBehaviour {
         return InputCommandType.None;
     }
 
+    private bool IsAttackClick() {
+        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (Physics.Raycast(ray, out var hit)) {
+        
+            var obj = hit.transform.gameObject;
+            var objTransform = hit.transform;
+            if (obj.CompareTag("Player") && (obj.name != "Local Player" || objTransform.parent.gameObject.name != "Local Player")) {
+                lastClickPosition = hit.point;
+                isAttackClick = true;
+                _player.currentAATarget = obj;
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public static Vector3 GetMousePosition() {
         // Define a horizontal plane at the floor height
         Plane plane = new(Vector3.up, new Vector3(0, floorY, 0));
@@ -146,7 +169,6 @@ public class InputProcessor : NetworkBehaviour {
             _player.StateManager.ChangeState(new MovingState(gameObject, false));
             _networkStateManager.SendMoveCommand(lastClickPosition);
         }
-        
     }
 
     private void HandleAttackCommand() {
@@ -155,9 +177,8 @@ public class InputProcessor : NetworkBehaviour {
             _player.StateManager.ChangeState(new MovingState(gameObject, true));
         else
             _player.StateManager.ChangeState(new AttackingState(gameObject));
-
-        // Notify network about an attack command if needed
-       // _networkStateManager.SendAttackCommand(lastClickPosition);
+        
+        // _networkStateManager.SendAttackCommand(lastClickPosition);
     }
 
     private void HandleSpellCommand(string key) {
@@ -166,34 +187,33 @@ public class InputProcessor : NetworkBehaviour {
             
             spellIndicatorPrefab = ability.spellIndicatorPrefab;
             
-                ability.OnCooldown_Net(gameObject, (bool networkCooldown) => {
-                    // Check cooldown before casting
-                    if (!networkCooldown) {
-                        
-                        // Spell indicator isn't already showing, show it and don't cast
-                        if (!_showSpellIndicator) {
-                            _showSpellIndicator = true;
-                            ShowSpellIndicator(ability); 
-                        }
-                        // Otherwise remove it and cast
-                        else {
-                            _showSpellIndicator = false;
-                            HideSpellIndicator();
-                            NotifyUICooldown?.Invoke(key, ability.maxCooldown);
-                            GetCastingTargetPosition();
-                            _player.StateManager.ChangeState(new CastingState(gameObject, ability));
-                            _networkStateManager.SendSpellCommand(key, ability);
-                            ability.canRecast = ability.hasRecast;
-                        }
+            ability.OnCooldown_Net(gameObject, (bool networkCooldown) => {
+                // Check cooldown before casting
+                if (!networkCooldown) {
+                    
+                    // Spell indicator isn't already showing, show it and don't cast
+                    if (!_showSpellIndicator) {
+                        _showSpellIndicator = true;
+                        ShowSpellIndicator(ability); 
                     }
-                    // If ability is on CD and it's re-castable
-                    else if (ability.hasRecast && ability.canRecast) {
-                        _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
-                        ability.canRecast = false;
+                    // Otherwise remove it and cast
+                    else {
+                        _showSpellIndicator = false;
+                        HideSpellIndicator();
+                        NotifyUICooldown?.Invoke(key, ability.maxCooldown);
+                        GetCastingTargetPosition();
+                        _player.StateManager.ChangeState(new CastingState(gameObject, ability));
+                        _networkStateManager.SendSpellCommand(key, ability);
+                        ability.canRecast = ability.hasRecast;
                     }
-                });
+                }
+                // If ability is on CD and it's re-castable
+                else if (ability.hasRecast && ability.canRecast) {
+                    _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
+                    ability.canRecast = false;
+                }
+            });
         }
-        
     }
 
     private void ToggleAARange() {
@@ -230,8 +250,7 @@ public class InputProcessor : NetworkBehaviour {
     private void HideSpellIndicator() {
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }
-
-
+    
     private bool IsInAttackRange(Vector3 targetLocation, float stoppingDistance) {
         return Vector3.Distance(transform.position, targetLocation) <= stoppingDistance;
     }
@@ -245,10 +264,9 @@ public class InputProcessor : NetworkBehaviour {
         
         // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
         if (isAttackClick) {
-            var calculatedAttackRange = _player.champion.AA_range * 10 / 2;
+            var calculatedAttackRange = _player.champion.AA_range;
             distance = calculatedAttackRange + _player.hitboxColliderRadius;
         }
-
         return distance;
     }
 
@@ -267,5 +285,26 @@ public class InputProcessor : NetworkBehaviour {
             var hitPoint = ray.GetPoint(enter);
             projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
         }
+    }
+
+    private void DetectEnemySelection() {
+        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (Physics.Raycast(ray, out var hit)) {
+            var hitObj = hit.transform.gameObject;
+            if (hitObj.CompareTag("Player") && hitObj.name != "Local Player") {
+                _lastSelectedEnemy = hitObj;
+                _lastSelectedEnemy.layer = LayerMask.NameToLayer("Selection");
+                foreach(Transform child in _lastSelectedEnemy.transform) {
+                    child.gameObject.layer = LayerMask.NameToLayer("Selection");
+                }
+            }
+            else if(_lastSelectedEnemy != null) {
+                _lastSelectedEnemy.layer = LayerMask.NameToLayer("Default");
+                foreach(Transform child in _lastSelectedEnemy.transform) {
+                    child.gameObject.layer = LayerMask.NameToLayer("Default");
+                }
+            }
+        }
+      
     }
 }

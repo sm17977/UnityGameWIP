@@ -88,6 +88,9 @@
             <!-- Champion Portrait -->
             <engine:VisualElement class="portrait-container">
                 <engine:VisualElement class="portrait"/>
+                <engine:VisualElement class="player-level-container">
+                    <engine:Label text="7" class="player-level-label"/>
+                </engine:VisualElement>
             </engine:VisualElement>
             
             <!-- Champion Stats -->
