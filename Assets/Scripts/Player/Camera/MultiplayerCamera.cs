@@ -19,7 +19,7 @@ public class MultiplayerCamera : NetworkBehaviour {
     private Vector2 _minimapDragOrigin = Vector2.zero;
     private Vector3 _cameraPosAtMinimapDragStart = Vector3.zero; 
     private Vector3 _cameraVelocity = Vector3.zero;
-    public float minimapSmoothTime = 0.05f;
+    public float minimapSmoothTime = 0.01f;
     
     public void SetMinimap(MinimapElement minimapElement) {
         _minimap = minimapElement;

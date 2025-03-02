@@ -36,6 +36,20 @@ namespace CustomElements {
             var painter = mgc.painter2D;
             Rect rect = contentRect;
             
+            if (Camera.main.orthographic) {
+                float viewHeight = 2f * Camera.main.orthographicSize;
+                float viewWidth = viewHeight * Camera.main.aspect;
+
+                float worldWidth = WorldMax.x - WorldMin.x;
+                float worldHeight = WorldMax.y - WorldMin.y;
+
+                float scaleX = rect.width / worldWidth;    
+                float scaleY = rect.height / worldHeight;    
+
+                _viewPortWidth = viewWidth * scaleX;
+                _viewPortHeight = viewHeight * scaleY;
+            }
+            
             if (ViewPortCenter == Vector2.zero && rect.width > 0 && rect.height > 0) {
                 ViewPortCenter = new Vector2(rect.width * 0.5f, rect.height * 0.5f);
             }
