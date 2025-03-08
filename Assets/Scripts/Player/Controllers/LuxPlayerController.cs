@@ -63,7 +63,7 @@ public class LuxPlayerController : LuxController {
         
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         globalState = GameObject.Find("Global State").GetComponent<GlobalState>();
-        hitboxGameObj = GameObject.Find("Hitbox");
+        hitboxGameObj = transform.Find("model/root/Hitbox").gameObject;
         healthBarAnchor = transform.Find("HealthBarAnchor").gameObject;
         
         networkAnimator = GetComponent<ClientNetworkAnimator>();

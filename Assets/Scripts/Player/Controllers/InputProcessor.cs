@@ -28,6 +28,7 @@ public class InputProcessor : NetworkBehaviour {
     public Vector3 projectileTargetPosition;
     public Vector3 lastClickPosition;
     public Vector3 projectileAATargetPosition;
+    public float projectileAATargetDistance;
     
     public bool isAttackClick;
     public bool canCast;
@@ -40,7 +41,7 @@ public class InputProcessor : NetworkBehaviour {
     private bool _showSpellIndicator;
     private GameObject _lastSelectedEnemy;
 
-    private static readonly float floorY = 0.5f;
+    public static readonly float floorY = 0.5f;
 
     private void Awake() {
         _mainCamera = Camera.main;
@@ -112,9 +113,11 @@ public class InputProcessor : NetworkBehaviour {
     ///  Return the input command type
     /// </summary>
     private InputCommandType GetClickInput() {
-        if (_player.hitboxColliderRadius == 0 || _player.hitboxGameObj == null) return InputCommandType.None;
+        if (_player.hitboxColliderRadius == 0 || _player.hitboxGameObj == null) 
+            return InputCommandType.None;
 
-        if (IsAttackClick()) return InputCommandType.Attack;
+        if (IsAttackClick()) 
+            return InputCommandType.Attack;
         
         // Get world space radius of the hitbox + account for scaling
         var worldRadius = _player.hitboxColliderRadius * _player.hitboxGameObj.transform.lossyScale.x;
@@ -122,13 +125,13 @@ public class InputProcessor : NetworkBehaviour {
             
         // Get vector from players hitbox to the mouse
         var diff = mousePos - _player.hitboxPos;
-        
         var dist = Mathf.Sqrt(diff.x * diff.x / (_mainCamera.aspect * _mainCamera.aspect) + diff.z * diff.z);
         
         if (dist > worldRadius) {
             // Move click is valid (outside the players hitbox)
-            lastClickPosition = new Vector3(mousePos.x, transform.position.y, mousePos.z);
+            lastClickPosition = new Vector3(mousePos.x, floorY, mousePos.z);
             isAttackClick = false;
+            _player.currentAATarget = null;
             return InputCommandType.Movement;
         }
         return InputCommandType.None;
@@ -138,11 +141,12 @@ public class InputProcessor : NetworkBehaviour {
         var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(ray, out var hit)) {
-        
             var obj = hit.transform.gameObject;
-            var objTransform = hit.transform;
-            if (obj.CompareTag("Player") && (obj.name != "Local Player" || objTransform.parent.gameObject.name != "Local Player")) {
-                lastClickPosition = hit.point;
+            if (obj.CompareTag("Player") && obj != gameObject) {
+                Debug.Log("Clicked on: " + obj.name);
+                var enemyHitbox = obj.GetComponent<LuxPlayerController>().hitboxGameObj;
+                projectileAATargetPosition = enemyHitbox.transform.position;
+                lastClickPosition = GetHitboxEdge(hit.point, enemyHitbox);
                 isAttackClick = true;
                 _player.currentAATarget = obj;
                 return true;
@@ -150,6 +154,14 @@ public class InputProcessor : NetworkBehaviour {
         }
         
         return false;
+    }
+
+    private Vector3 GetHitboxEdge(Vector3 clickPos, GameObject hitbox) {
+        var hitboxCollider = hitbox.GetComponent<SphereCollider>();
+        var directionToHitboxEdge = (clickPos - hitbox.transform.position).normalized;
+        var edge = hitbox.transform.position + directionToHitboxEdge * hitboxCollider.radius;
+        edge.y = floorY;
+        return edge;
     }
     
     public static Vector3 GetMousePosition() {
@@ -262,14 +274,14 @@ public class InputProcessor : NetworkBehaviour {
     public float GetStoppingDistance() {
         var distance = _player.champion.stoppingDistance;
         
-        // If we inputted an attack click, the distance is calculated from the edge of the players attack range and the center of the enemy
+        // If we inputted an attack click, the distance is calculated from the edge of the players attack range to the edge of the enemies hitbox
         if (isAttackClick) {
-            var calculatedAttackRange = _player.champion.AA_range;
-            distance = calculatedAttackRange + _player.hitboxColliderRadius;
+            //return _player.champion.AA_range;
+            distance = _player.champion.AA_range + _player.hitboxColliderRadius;
         }
         return distance;
     }
-
+    
     /// <summary>
     /// Get mouse position
     /// </summary>

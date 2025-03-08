@@ -56,16 +56,12 @@ public class AttackingState : State {
             _vfxController.player = _playerObj;
             _vfxController.playerController = _player;
             _vfxController.Initialise(startPos, startRot);
-
-            // Add the VFX projectile to a list so they can be destroyed after VFX is complete
-            //_player.vfxProjectileList.Add(_newProjectile.gameObject);
-
+            
             // Prevent player spamming AAs
             _input.canAA = false;
         }
         
         if (_newProjectile != null && _vfxController.die) {
-            Debug.Log("Returning AA to pool");
             ClientObjectPool.Instance.ReturnPooledAutoAttack(_newProjectile);
         }
     }

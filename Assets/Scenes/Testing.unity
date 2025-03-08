@@ -692,6 +692,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1004837217 stripped
+SphereCollider:
+  m_CorrespondingSourceObject: {fileID: 4061616120029314635, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+    type: 3}
+  m_PrefabInstance: {fileID: 1962623845}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1224224407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1458,11 +1464,36 @@ PrefabInstance:
       propertyPath: _networkStateManager
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3023221880122020523, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3023221880122020523, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 3023221880122020523, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3023221880122020523, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 3799837274022872123, guid: 0a143c7a372e9b341b63855efd0a5bf8,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6226082279351157599, guid: 0a143c7a372e9b341b63855efd0a5bf8,
+        type: 3}
+      propertyPath: _sphereCollider
+      value: 
+      objectReference: {fileID: 1004837217}
     - target: {fileID: 7686054493345482184, guid: 0a143c7a372e9b341b63855efd0a5bf8,
         type: 3}
       propertyPath: GlobalObjectIdHash

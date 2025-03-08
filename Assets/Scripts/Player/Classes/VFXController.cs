@@ -13,9 +13,7 @@ public class VFXController : MonoBehaviour
     public GameObject player;
 
     void Start(){
-
         vfx = GetComponent<VisualEffect>();
-
     }
 
     public void Initialise(Vector3 startPos, Quaternion startRot) {
@@ -27,7 +25,6 @@ public class VFXController : MonoBehaviour
         
         // Distance between player and enemy
         distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.currentAATarget.transform.position);
-        Debug.Log("AA Distance: " + distance);
         
         // Particle speed
         speed = playerController.champion.AA_missileSpeed;
