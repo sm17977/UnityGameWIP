@@ -12,8 +12,8 @@ public class ClientObjectPool : MonoBehaviour {
     [SerializeField]
     public List<Ability> abilityPool;
 
-    public VisualEffect autoAttackPrefab;
-    private List<VisualEffect> _autoAttackMissilePool;
+    public GameObject autoAttackPrefab;
+    private List<GameObject> _autoAttackPool;
     private int _autoAttackPoolSize = 3;
     
     [SerializedDictionary("Test", "Test")]
@@ -36,7 +36,7 @@ public class ClientObjectPool : MonoBehaviour {
 
     private void InitializePool() {
         _pool = new SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>>();
-        _autoAttackMissilePool = new List<VisualEffect>();
+        _autoAttackPool = new List<GameObject>();
 
         // Iterate over each unique ability
         foreach (var ability in abilityPool) {
@@ -62,16 +62,15 @@ public class ClientObjectPool : MonoBehaviour {
                 }
             }
         }
-        StartCoroutine(InitAAPrefabs(2));
+        InitAAPrefabs();
     }
 
-    private IEnumerator InitAAPrefabs(int seconds) {
-        yield return new WaitForSeconds(seconds);
+    private void InitAAPrefabs() {
         for (int i = 0; i < _autoAttackPoolSize; i++) {
-            var autoAttackMissile = Instantiate(autoAttackPrefab);
-            autoAttackMissile.enabled = false;
-            _autoAttackMissilePool.Add(autoAttackMissile);
-            yield return new WaitForSeconds(seconds);
+            var autoAttack = Instantiate(autoAttackPrefab, transform);
+            autoAttack.name = autoAttack.transform.GetInstanceID().ToString();
+            autoAttack.SetActive(false);
+            _autoAttackPool.Add(autoAttack);
         }
     }
 
@@ -105,22 +104,25 @@ public class ClientObjectPool : MonoBehaviour {
         return obj;
     }
 
-    public VisualEffect GetPooledAutoAttack() {
-        if (_autoAttackMissilePool.Count > 0) {
-            var autoAttackMissile = _autoAttackMissilePool[0];
-            _autoAttackMissilePool.RemoveAt(0);
-            autoAttackMissile.enabled = false;
-            return autoAttackMissile;
+    public GameObject GetPooledAutoAttack() {
+        if (_autoAttackPool.Count > 0) {
+            var autoAttack = _autoAttackPool[0];
+            _autoAttackPool.RemoveAt(0);
+            autoAttack.SetActive(false);
+            return autoAttack;
         }
 
         return null;
     }
 
-    public void ReturnPooledAutoAttack(VisualEffect autoAttackMissile) {
-        if (autoAttackMissile == null) return;     
-        autoAttackMissile.Reinit();
-        autoAttackMissile.enabled = false;
-        _autoAttackMissilePool.Add(autoAttackMissile);
+    public void ReturnPooledAutoAttack(GameObject autoAttack) {
+        if (autoAttack == null) return;
+        var autoAttackScript = autoAttack.GetComponent<ClientAutoAttackController>();
+        autoAttackScript.vfx.Reinit();
+        Debug.Log("Returning AA back to pool");
+        autoAttack.SetActive(false);
+        Debug.Log("Is AA active? " + autoAttack.activeSelf);
+        _autoAttackPool.Add(autoAttack);
     }
     
     public void ReturnObjectToPool(Ability ability, AbilityPrefabType prefabType, GameObject obj) {

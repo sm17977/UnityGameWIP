@@ -19,7 +19,9 @@ public class ClientAutoAttackController : MonoBehaviour {
     }
 
     public void Initialise(Vector3 startPos, Quaternion startRot) {
-
+        
+        if(vfx == null) vfx = GetComponent<VisualEffect>();
+        
         isFinished = false;
 
         transform.position = startPos;
@@ -45,7 +47,7 @@ public class ClientAutoAttackController : MonoBehaviour {
         _timer = _time;
     }
 
-    void Update(){
+    private void Update(){
 
         if (vfx != null && vfx.enabled) {
             // Set die to true when the particle lifetime ends
@@ -54,7 +56,13 @@ public class ClientAutoAttackController : MonoBehaviour {
             }
             else {
                 isFinished = true;
+                DeactivateAutoAttack();
             }
         }
+    }
+    
+    private void DeactivateAutoAttack() {
+        gameObject.SetActive(false);
+        ClientObjectPool.Instance.ReturnPooledAutoAttack(gameObject);
     }
 }

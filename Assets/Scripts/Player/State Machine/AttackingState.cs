@@ -12,7 +12,7 @@ public class AttackingState : State {
     private float _lastAttackCount = 0f;
     private float _windupTime;
     private float _currentAttackCount;
-    private VisualEffect _newProjectile;
+    private GameObject _newProjectile;
     
     public AttackingState(GameObject gameObject) {
         _playerObj = gameObject;
@@ -50,6 +50,7 @@ public class AttackingState : State {
             var startRot = Quaternion.LookRotation(_direction, Vector3.up);
 
             _newProjectile = ClientObjectPool.Instance.GetPooledAutoAttack();
+            _newProjectile.SetActive(true);
             _clientAutoAttackController = _newProjectile.GetComponent<ClientAutoAttackController>();
 
             // Set the player and controller references in the VFX Controller 
@@ -59,10 +60,6 @@ public class AttackingState : State {
             
             // Prevent player spamming AAs
             _input.canAA = false;
-        }
-        
-        if (_newProjectile != null && _clientAutoAttackController.isFinished) {
-            ClientObjectPool.Instance.ReturnPooledAutoAttack(_newProjectile);
         }
     }
 

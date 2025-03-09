@@ -1426,7 +1426,7 @@ MonoBehaviour:
   abilityPool:
   - {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   - {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
-  autoAttackPrefab: {fileID: -2805702098513475222, guid: 29fa2eb67abbac245acc53af4efdabf7,
+  autoAttackPrefab: {fileID: 4893924379906605979, guid: 29fa2eb67abbac245acc53af4efdabf7,
     type: 3}
   _pool:
     _serializedList: []
