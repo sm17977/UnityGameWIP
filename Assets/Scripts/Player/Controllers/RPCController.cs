@@ -111,6 +111,45 @@ public class RPCController : NetworkBehaviour {
         SendNetworkObjectIdClientRpc(networkObjectId, abilityKey);
     }
 
+    [Rpc(SendTo.Server)]
+    public void SpawnAAServerRpc(NetworkObjectReference targetRef, Vector3 startPos, Quaternion startRot) {
+        Debug.Log("Server AA RPC");
+        var newNetworkAA = ServerObjectPool.Instance.GetPooledAutoAttack();
+        var autoAttackScript = newNetworkAA.GetComponent<NetworkAutoAttackController>();
+        if (targetRef.TryGet(out NetworkObject obj)) {
+            Debug.Log("Found target");
+            var targetPlayer = obj.gameObject;
+            var direction = (targetPlayer.transform.position - startPos).normalized; 
+            newNetworkAA.SetActive(true);
+            autoAttackScript.Initialise(_player, targetPlayer, startPos);
+            
+            var sourceRef = _player.gameObject.GetComponent<NetworkObject>();
+            SpawnAAClientRpc(sourceRef, targetRef, startPos, startRot, direction);
+        }
+    }
+
+    [Rpc(SendTo.NotOwner)]
+    private void SpawnAAClientRpc(NetworkObjectReference sourceRef, NetworkObjectReference targetRef, Vector3 startPos, Quaternion startRot, Vector3 direction) {
+        if (!IsServer) {
+            if (sourceRef.TryGet(out NetworkObject sourceNetworkObj) &&
+                targetRef.TryGet(out NetworkObject targetNetworkObj)) {
+                Debug.Log("Found source and target objects");
+                var sourcePlayer = sourceNetworkObj.gameObject;
+                var targetPlayer = targetNetworkObj.gameObject;
+
+                var sourcePlayerScript = sourcePlayer.GetComponent<LuxPlayerController>();
+                sourcePlayerScript.currentAATarget = targetPlayer;
+                
+                var autoAttack = ClientObjectPool.Instance.GetPooledAutoAttack();
+                if (autoAttack != null) {
+                    autoAttack.SetActive(true);
+                    var autoAttackController = autoAttack.GetComponent<ClientAutoAttackController>();
+                    autoAttackController.Initialise(sourcePlayer, startPos, startRot, direction);
+                }
+            }
+        }
+    }
+    
     [Rpc(SendTo.Owner)]
     private void SendNetworkObjectIdClientRpc(ulong networkObjectId, string abilityKey) {
         if (IsServer) return;

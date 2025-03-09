@@ -20,6 +20,7 @@ public class Champion : ScriptableObject {
     public Ability abilityR;
     
     [Header("Auto Attacks")] 
+    public float AA_damage;
     public float AA_range;
     public float AA_missileSpeed;
     public double AA_attackSpeed; 

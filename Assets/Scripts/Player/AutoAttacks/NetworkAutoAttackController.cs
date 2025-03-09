@@ -1,62 +1,105 @@
-﻿using Unity.Netcode;
+﻿using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.VFX;
 
 public class NetworkAutoAttackController : NetworkBehaviour {
     
-    public VisualEffect vfx;
-    public LuxPlayerController playerController;
-    public GameObject player;
-    public bool isFinished = false;
+    private LuxPlayerController _playerController;
+    private GameObject _player;
+    
+    private GameObject _target;
+    private LuxPlayerController _targetController;
     
     private float _timer;
     private float _distance;
     private float _speed;
     private float _time;
 
+    
+    public void Initialise(GameObject playerObj, GameObject target, Vector3 startPos) {
+        Debug.Log("Init server auto attack");
+        Debug.Log($"Time.deltaTime: {Time.deltaTime}, Time.timeScale: {Time.timeScale}");
 
-    private void Start(){
-        vfx = GetComponent<VisualEffect>();
-    }
-
-    public void Initialise(Vector3 startPos, Quaternion startRot) {
-
-        isFinished = false;
+        _player = playerObj;
+        _playerController = _player.GetComponent<LuxPlayerController>();
+        _target = target;
+        _targetController = _target.GetComponent<LuxPlayerController>();
 
         transform.position = startPos;
-        transform.rotation = startRot;
-        
-        // Distance between player and enemy
-        _distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.currentAATarget.transform.position);
-        
-        // Particle speed
-        _speed = playerController.champion.AA_missileSpeed;
-        
-        // Particle lifetime
-        _time = _distance/_speed;
 
-        // Set VFX Graph exposed properties
-        vfx.SetVector3("targetDirection", playerController.direction);
-        vfx.SetFloat("lifetime", _time);
-        vfx.SetFloat("speed", _speed);
-
-        vfx.enabled = true;
-
-        // Initiate timer
+        // Calculate time until damage should be applied
+        _distance = Vector3.Distance(
+            new Vector3(_player.transform.position.x, 1f, _player.transform.position.z), 
+            _target.transform.position
+        );
+        _speed = _playerController.champion.AA_missileSpeed;
+        _time = _distance / _speed;
         _timer = _time;
+        
+        Debug.Log($"Timer set to: {_timer}");
+
+        if (IsServer && !IsValidAutoAttack()) {
+            Debug.Log("Invalid AA");
+            DeactivateAutoAttack();
+        }
+        else if(IsServer && IsValidAutoAttack()) {
+            Debug.Log("Valid AA");
+        }
     }
 
-    void Update(){
+    private void Update() {
+        Debug.Log("Update, time: " + _timer);
+        if (!IsServer) return;
 
-        if (vfx != null && vfx.enabled) {
-            // Set die to true when the particle lifetime ends
-            if (_timer > 0) {
-                _timer -= Time.deltaTime;
-            }
-            else {
-                isFinished = true;
-            }
+        if (_timer > 0) {
+            _timer -= Time.deltaTime;
+            Debug.Log($"Timer: {_timer}");
         }
+        else {
+            Debug.Log("Timer finished, applying damage");
+            ApplyDamage();
+            DeactivateAutoAttack();
+        }
+    }
+    
+    private void ApplyDamage() {
+        Debug.Log("Applying damage server side");
+        var damage = _playerController.champion.AA_damage;
+        _targetController.health.TakeDamage(damage);
+    }
+    
+    private void DeactivateAutoAttack() 
+    {  Debug.Log("Deactviating auto attack");
+        gameObject.SetActive(false);
+        ServerObjectPool.Instance.ReturnPooledAutoAttack(gameObject);
+    }
+    
+    private bool IsValidAutoAttack() {
+        if (_playerController == null || _target == null) return false;
+
+        Debug.Log("After null check");
+
+        var distance = Vector3.Distance(
+            new Vector3(_player.transform.position.x, 1f, _player.transform.position.z),
+            _target.transform.position
+        );
+
+        Debug.Log("IsValid distance: " + distance);
+        Debug.Log("IsValid timeSinceLastAttack: " + _playerController.timeSinceLastAttack);
+        
+        return distance <= _playerController.champion.AA_range &&
+               _playerController.timeSinceLastAttack <= 0;
+    }
+    
+    private void OnEnable() {
+        Debug.Log($"[{gameObject.name}] OnEnable");
+    }
+
+    private void OnDisable() {
+        Debug.Log($"[{gameObject.name}] OnDisable");
+    }
+    
+    private void OnDestroy() {
+        Debug.Log($"[{gameObject.name}] OnDestroy");
     }
 }

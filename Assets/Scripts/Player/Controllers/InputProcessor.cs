@@ -28,7 +28,6 @@ public class InputProcessor : NetworkBehaviour {
     public Vector3 projectileTargetPosition;
     public Vector3 lastClickPosition;
     public Vector3 projectileAATargetPosition;
-    public float projectileAATargetDistance;
     
     public bool isAttackClick;
     public bool canCast;
@@ -300,23 +299,24 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void DetectEnemySelection() {
-        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (Physics.Raycast(ray, out var hit)) {
-            var hitObj = hit.transform.gameObject;
-            if (hitObj.CompareTag("Player") && hitObj.name != "Local Player") {
-                _lastSelectedEnemy = hitObj;
-                _lastSelectedEnemy.layer = LayerMask.NameToLayer("Selection");
-                foreach(Transform child in _lastSelectedEnemy.transform) {
-                    child.gameObject.layer = LayerMask.NameToLayer("Selection");
+        if (!IsServer) {
+            var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (Physics.Raycast(ray, out var hit)) {
+                var hitObj = hit.transform.gameObject;
+                if (hitObj.CompareTag("Player") && hitObj.name != "Local Player") {
+                    _lastSelectedEnemy = hitObj;
+                    _lastSelectedEnemy.layer = LayerMask.NameToLayer("Selection");
+                    foreach (Transform child in _lastSelectedEnemy.transform) {
+                        child.gameObject.layer = LayerMask.NameToLayer("Selection");
+                    }
                 }
-            }
-            else if(_lastSelectedEnemy != null) {
-                _lastSelectedEnemy.layer = LayerMask.NameToLayer("Default");
-                foreach(Transform child in _lastSelectedEnemy.transform) {
-                    child.gameObject.layer = LayerMask.NameToLayer("Default");
+                else if (_lastSelectedEnemy != null) {
+                    _lastSelectedEnemy.layer = LayerMask.NameToLayer("Default");
+                    foreach (Transform child in _lastSelectedEnemy.transform) {
+                        child.gameObject.layer = LayerMask.NameToLayer("Default");
+                    }
                 }
             }
         }
-      
     }
 }

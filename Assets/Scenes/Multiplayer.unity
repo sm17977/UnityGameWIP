@@ -872,6 +872,8 @@ MonoBehaviour:
   abilityPool:
   - {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   - {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
+  autoAttackPrefab: {fileID: 4893924379906605979, guid: 06ccc2a014cdda04c8bf3fcb56c8b76a,
+    type: 3}
 --- !u!4 &546521814
 Transform:
   m_ObjectHideFlags: 0

@@ -12,6 +12,11 @@ public class ServerObjectPool : MonoBehaviour {
 
     [SerializeField]
     public List<Ability> abilityPool;
+    
+    public GameObject autoAttackPrefab;
+    private List<GameObject> _autoAttackPool;
+    private int _autoAttackPoolSize = 15;
+
 
     private void Awake() {
         if (Instance == null) {
@@ -33,7 +38,8 @@ public class ServerObjectPool : MonoBehaviour {
         Debug.Log("Initializing Server Object Pool");
         
         _pool = new SerializedDictionary<Ability, SerializedDictionary<AbilityPrefabType, Queue<GameObject>>>();
-
+        _autoAttackPool = new List<GameObject>();
+        
         // Iterate over each unique ability
         foreach (var ability in abilityPool) {
             
@@ -52,6 +58,16 @@ public class ServerObjectPool : MonoBehaviour {
 
                 _pool[ability][AbilityPrefabType.Projectile].Enqueue(projectile);
             }
+        }
+        InitAAPrefabs();
+    }
+    
+    private void InitAAPrefabs() {
+        for (int i = 0; i < _autoAttackPoolSize; i++) {
+            var autoAttack = Instantiate(autoAttackPrefab, transform);
+            autoAttack.name = autoAttack.transform.GetInstanceID().ToString();
+            autoAttack.SetActive(false);
+            _autoAttackPool.Add(autoAttack);
         }
     }
 
@@ -83,6 +99,39 @@ public class ServerObjectPool : MonoBehaviour {
         var obj = queue.Dequeue();
         if (obj.activeInHierarchy) return null;
         return obj;
+    }
+    
+    public GameObject GetPooledAutoAttack() {
+        if (_autoAttackPool.Count > 0) {
+            var autoAttack = _autoAttackPool[0];
+            _autoAttackPool.RemoveAt(0);
+            
+            var networkObject = autoAttack.GetComponent<NetworkObject>();
+            if (networkObject != null) {
+                networkObject.Spawn();
+                Debug.Log("Spawned AA");
+            }
+            else {
+                Debug.Log("Failed to spawn AA");
+            }
+        
+            return autoAttack;
+        }
+
+        return null;
+    }
+    
+    public void ReturnPooledAutoAttack(GameObject autoAttack) {
+        Debug.Log("Returning AA to pool");
+        if (autoAttack == null) return;
+        
+        var networkObject = autoAttack.GetComponent<NetworkObject>();
+        if (networkObject != null && networkObject.IsSpawned) {
+            networkObject.Despawn(false);
+        }
+
+        autoAttack.SetActive(false);
+        _autoAttackPool.Add(autoAttack);
     }
     
     public void ReturnObjectToPool(Ability ability, AbilityPrefabType prefabType, GameObject obj) {

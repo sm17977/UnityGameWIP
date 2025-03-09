@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
-using UnityEngine.VFX;
 
 public class ClientObjectPool : MonoBehaviour {
     public static ClientObjectPool Instance { get; private set; }
@@ -119,9 +116,7 @@ public class ClientObjectPool : MonoBehaviour {
         if (autoAttack == null) return;
         var autoAttackScript = autoAttack.GetComponent<ClientAutoAttackController>();
         autoAttackScript.vfx.Reinit();
-        Debug.Log("Returning AA back to pool");
         autoAttack.SetActive(false);
-        Debug.Log("Is AA active? " + autoAttack.activeSelf);
         _autoAttackPool.Add(autoAttack);
     }
     
