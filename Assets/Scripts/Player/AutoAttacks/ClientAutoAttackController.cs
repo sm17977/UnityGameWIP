@@ -1,57 +1,59 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class VFXController : MonoBehaviour
-{
-    public bool die = false;
-    private float timer;
-    private float distance;
-    private float speed;
-    private float time;
+public class ClientAutoAttackController : MonoBehaviour {
+    
     public VisualEffect vfx;
     public LuxPlayerController playerController;
     public GameObject player;
+    public bool isFinished = false;
+    
+    private float _timer;
+    private float _distance;
+    private float _speed;
+    private float _time;
 
-    void Start(){
+
+    private void Start(){
         vfx = GetComponent<VisualEffect>();
     }
 
     public void Initialise(Vector3 startPos, Quaternion startRot) {
 
-        die = false;
+        isFinished = false;
 
         transform.position = startPos;
         transform.rotation = startRot;
         
         // Distance between player and enemy
-        distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.currentAATarget.transform.position);
+        _distance = Vector3.Distance( new Vector3(player.transform.position.x, 1f, player.transform.position.z), playerController.currentAATarget.transform.position);
         
         // Particle speed
-        speed = playerController.champion.AA_missileSpeed;
+        _speed = playerController.champion.AA_missileSpeed;
         
         // Particle lifetime
-        time = distance/speed;
+        _time = _distance/_speed;
 
         // Set VFX Graph exposed properties
         vfx.SetVector3("targetDirection", playerController.direction);
-        vfx.SetFloat("lifetime", time);
-        vfx.SetFloat("speed", speed);
+        vfx.SetFloat("lifetime", _time);
+        vfx.SetFloat("speed", _speed);
 
         vfx.enabled = true;
 
         // Initiate timer
-        timer = time;
+        _timer = _time;
     }
 
     void Update(){
 
         if (vfx != null && vfx.enabled) {
             // Set die to true when the particle lifetime ends
-            if (timer > 0) {
-                timer -= Time.deltaTime;
+            if (_timer > 0) {
+                _timer -= Time.deltaTime;
             }
             else {
-                die = true;
+                isFinished = true;
             }
         }
     }

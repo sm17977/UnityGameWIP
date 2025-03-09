@@ -5,7 +5,7 @@ public class AttackingState : State {
     private GameObject _playerObj;
     private LuxPlayerController _player;
     private InputProcessor _input;
-    private VFXController _vfxController;
+    private ClientAutoAttackController _clientAutoAttackController;
 
     private Vector3 _direction;
     private float _currentTime;
@@ -50,18 +50,18 @@ public class AttackingState : State {
             var startRot = Quaternion.LookRotation(_direction, Vector3.up);
 
             _newProjectile = ClientObjectPool.Instance.GetPooledAutoAttack();
-            _vfxController = _newProjectile.GetComponent<VFXController>();
+            _clientAutoAttackController = _newProjectile.GetComponent<ClientAutoAttackController>();
 
             // Set the player and controller references in the VFX Controller 
-            _vfxController.player = _playerObj;
-            _vfxController.playerController = _player;
-            _vfxController.Initialise(startPos, startRot);
+            _clientAutoAttackController.player = _playerObj;
+            _clientAutoAttackController.playerController = _player;
+            _clientAutoAttackController.Initialise(startPos, startRot);
             
             // Prevent player spamming AAs
             _input.canAA = false;
         }
         
-        if (_newProjectile != null && _vfxController.die) {
+        if (_newProjectile != null && _clientAutoAttackController.isFinished) {
             ClientObjectPool.Instance.ReturnPooledAutoAttack(_newProjectile);
         }
     }

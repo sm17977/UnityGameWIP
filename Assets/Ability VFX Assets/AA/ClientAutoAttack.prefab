@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -701793559454014325}
   - component: {fileID: 3645449750454809528}
   m_Layer: 0
-  m_Name: AutoAttackMissile
+  m_Name: ClientAutoAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,5 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f874104dba02684d97238d169c1cb44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   die: 0
+  vfx: {fileID: 0}
+  playerController: {fileID: 0}
   player: {fileID: 8661120606669196666, guid: 14266636b25d5da4baa680f02c9f0178, type: 3}

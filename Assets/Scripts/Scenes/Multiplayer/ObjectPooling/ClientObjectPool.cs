@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -60,11 +62,16 @@ public class ClientObjectPool : MonoBehaviour {
                 }
             }
         }
+        StartCoroutine(InitAAPrefabs(2));
+    }
 
+    private IEnumerator InitAAPrefabs(int seconds) {
+        yield return new WaitForSeconds(seconds);
         for (int i = 0; i < _autoAttackPoolSize; i++) {
             var autoAttackMissile = Instantiate(autoAttackPrefab);
             autoAttackMissile.enabled = false;
             _autoAttackMissilePool.Add(autoAttackMissile);
+            yield return new WaitForSeconds(seconds);
         }
     }
 
