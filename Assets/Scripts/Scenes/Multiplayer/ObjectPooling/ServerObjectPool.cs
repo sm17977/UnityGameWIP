@@ -105,24 +105,12 @@ public class ServerObjectPool : MonoBehaviour {
         if (_autoAttackPool.Count > 0) {
             var autoAttack = _autoAttackPool[0];
             _autoAttackPool.RemoveAt(0);
-            
-            var networkObject = autoAttack.GetComponent<NetworkObject>();
-            if (networkObject != null) {
-                networkObject.Spawn();
-                Debug.Log("Spawned AA");
-            }
-            else {
-                Debug.Log("Failed to spawn AA");
-            }
-        
             return autoAttack;
         }
-
         return null;
     }
     
     public void ReturnPooledAutoAttack(GameObject autoAttack) {
-        Debug.Log("Returning AA to pool");
         if (autoAttack == null) return;
         
         var networkObject = autoAttack.GetComponent<NetworkObject>();

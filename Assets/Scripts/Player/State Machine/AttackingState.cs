@@ -31,13 +31,13 @@ public class AttackingState : State {
     }
 
     public override void Execute() {
-      
+        
+        // Get animation timings
+        GetCurrentAnimationTime();
+        
         if(_player.timeSinceLastAttack > 0){
             _player.timeSinceLastAttack -= Time.deltaTime;
         }
-    
-        // Get animation timings
-        GetCurrentAnimationTime();
                 
         // Get the direction the attack projectile should move towards
         // Vector3 attackDirection = (_input.projectileAATargetPosition - _playerObj.transform.position).normalized;
@@ -53,18 +53,15 @@ public class AttackingState : State {
             var startRot = Quaternion.LookRotation(attackDirection, Vector3.up);
 
             // Spawn client side auto attack
-            Debug.Log("Spawning client AA");
             _newAutoAttack = ClientObjectPool.Instance.GetPooledAutoAttack();
             _newAutoAttack.SetActive(true);
             _autoAttackController = _newAutoAttack.GetComponent<ClientAutoAttackController>();
             _autoAttackController.Initialise(_playerObj, startPos, startRot, attackDirection);
             
             // Spawn server side auto attack
-            Debug.Log("Spawning server AA");
             var targetNetworkRef = _player.currentAATarget.GetComponent<NetworkObject>();
             _rpc.SpawnAAServerRpc(targetNetworkRef, startPos, startRot);
-
-            _player.timeSinceLastAttack = 1.15;
+            
             // Prevent player spamming AAs
             _input.canAA = false;
         }
