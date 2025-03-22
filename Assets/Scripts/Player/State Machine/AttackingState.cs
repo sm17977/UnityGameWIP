@@ -81,7 +81,7 @@ public class AttackingState : State {
             // Prevent player spamming AAs with attack speed delay
             _attackTimer = _attackSpeedDelay; 
         }
-        
+        //
         Vector3 targetPosition = _input.GetCurrentHitboxEdge();
         if (_input.IsInAttackRange(targetPosition)) {
             _input.canAA = true;
