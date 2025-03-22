@@ -163,6 +163,15 @@ public class InputProcessor : NetworkBehaviour {
         return edge;
     }
     
+    public Vector3 GetCurrentHitboxEdge() {
+        var enemyHitbox = _player.currentAATarget.GetComponent<LuxPlayerController>().hitboxGameObj;
+        var directionToHitboxEdge = (transform.position - enemyHitbox.transform.position).normalized;
+        var edge = enemyHitbox.transform.position + directionToHitboxEdge * enemyHitbox.GetComponent<SphereCollider>().radius;
+        edge.y = floorY;
+        return edge;
+    }
+    
+    
     public static Vector3 GetMousePosition() {
         // Define a horizontal plane at the floor height
         Plane plane = new(Vector3.up, new Vector3(0, floorY, 0));
@@ -184,7 +193,7 @@ public class InputProcessor : NetworkBehaviour {
 
     private void HandleAttackCommand() {
         _player.direction = (lastClickPosition - transform.position).normalized;
-        if (!IsInAttackRange(lastClickPosition, GetStoppingDistance()))
+        if (!IsInAttackRange(lastClickPosition))
             _player.StateManager.ChangeState(new MovingState(gameObject, true));
         else
             _player.StateManager.ChangeState(new AttackingState(gameObject));
@@ -262,7 +271,14 @@ public class InputProcessor : NetworkBehaviour {
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }
     
-    private bool IsInAttackRange(Vector3 targetLocation, float stoppingDistance) {
+    public bool IsInAttackRange(Vector3 targetLocation) {
+        
+        if (isAttackClick && _player.currentAATarget != null) {
+            float currentEdgeDistance = GetCurrentEdgeDistance();
+            return currentEdgeDistance <= _player.champion.AA_range;
+        }
+        
+        float stoppingDistance = GetStoppingDistance();
         return Vector3.Distance(transform.position, targetLocation) <= stoppingDistance;
     }
 
@@ -271,14 +287,7 @@ public class InputProcessor : NetworkBehaviour {
     /// </summary>
     /// <returns></returns>
     public float GetStoppingDistance() {
-        var distance = _player.champion.stoppingDistance;
-        
-        // If we inputted an attack click, the distance is calculated from the edge of the players attack range to the edge of the enemies hitbox
-        if (isAttackClick) {
-            //return _player.champion.AA_range;
-            distance = _player.champion.AA_range + _player.hitboxColliderRadius;
-        }
-        return distance;
+        return _player.champion.stoppingDistance;
     }
     
     /// <summary>
@@ -296,6 +305,29 @@ public class InputProcessor : NetworkBehaviour {
             var hitPoint = ray.GetPoint(enter);
             projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
         }
+    }
+    
+    public float GetCurrentEdgeDistance() {
+        // Recalculate the distance.
+        var playerCenter = new Vector3(
+            _player.hitboxGameObj.transform.position.x,
+            InputProcessor.floorY,
+            _player.hitboxGameObj.transform.position.z);
+
+        var enemyController = _player.currentAATarget.GetComponent<LuxPlayerController>();
+        var enemyCenter = new Vector3(
+            enemyController.hitboxGameObj.transform.position.x,
+            InputProcessor.floorY,
+            enemyController.hitboxGameObj.transform.position.z);
+
+        float centerDistance = Vector3.Distance(playerCenter, enemyCenter);
+        float currentEdgeDistance = Mathf.Max(0,
+            centerDistance - (_player.hitboxColliderRadius + enemyController.hitboxColliderRadius));
+
+        Debug.Log("Current edge-to-edge distance: " + currentEdgeDistance + " | AA Range: " +
+                  _player.champion.AA_range);
+
+        return currentEdgeDistance;
     }
 
     private void DetectEnemySelection() {

@@ -8,7 +8,7 @@ public class AnimTest : StateMachineBehaviour {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex){
         if (_input == null) _input = animator.GetComponent<InputProcessor>();
         if (_player == null) _player = animator.GetComponent<LuxPlayerController>();
-        _input.canAA = true;
+        // _input.canAA = true;
     }
     
     //OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

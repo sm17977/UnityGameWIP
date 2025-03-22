@@ -77,7 +77,8 @@ namespace Multiplayer.UI {
 
         private void UpdatePing() {
             var ping = NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetCurrentRtt(
-                NetworkManager.Singleton.NetworkConfig.NetworkTransport.ServerClientId);
+                NetworkManager.ServerClientId);
+            
             _pingLabel.text = ping + "ms";
         }
 

@@ -2,17 +2,17 @@
 using UnityEngine;
 
 namespace Global.Game_Modes {
-    
     public class Duel : GameMode {
         
         private readonly int _requiredPlayerCount = 2;        
-        private readonly int _countdownTime = 5;
+        private readonly int _countdownTime = 3;
         
         public Duel() {
             GameModeType = Type.Multiplayer;
             MinimumRequiredPlayers = _requiredPlayerCount;
             Name = "Duel";
         }
+        
         public override void Start() {
             GlobalState.Pause(true);
             GameView.OnStartGameModeCountdown += () => StartCountdown(this);
@@ -24,6 +24,7 @@ namespace Global.Game_Modes {
         }
 
         public override void FixedUpdate() {
+            
         }
         
         public override void End() {

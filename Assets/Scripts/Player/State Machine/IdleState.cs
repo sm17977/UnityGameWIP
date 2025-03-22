@@ -1,9 +1,11 @@
 
+using UnityEngine;
+
 public class IdleState : State {
 
-    private LuxPlayerController playerController;
+    private LuxPlayerController _playerController;
     public IdleState(LuxPlayerController controller) {
-        playerController = controller;
+        _playerController = controller;
     }
 
     public IdleState() {
@@ -11,7 +13,8 @@ public class IdleState : State {
     }
     
     public override void Enter() {
-    
+        Debug.Log("Idle State - entering");
+        _playerController.animator.SetTrigger("isIdle");
     }
 
     public override void Execute() {
