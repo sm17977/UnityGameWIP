@@ -171,7 +171,6 @@ public class InputProcessor : NetworkBehaviour {
         return edge;
     }
     
-    
     public static Vector3 GetMousePosition() {
         // Define a horizontal plane at the floor height
         Plane plane = new(Vector3.up, new Vector3(0, floorY, 0));
@@ -275,7 +274,8 @@ public class InputProcessor : NetworkBehaviour {
         
         if (isAttackClick && _player.currentAATarget != null) {
             float currentEdgeDistance = GetCurrentEdgeDistance();
-            return currentEdgeDistance <= _player.champion.AA_range;
+            Debug.Log("Is in attack range: " + currentEdgeDistance + " | AA Range: " + _player.champion.AA_range + 1);
+            return currentEdgeDistance <= _player.champion.AA_range + 1;
         }
         
         float stoppingDistance = GetStoppingDistance();
@@ -323,9 +323,9 @@ public class InputProcessor : NetworkBehaviour {
         float centerDistance = Vector3.Distance(playerCenter, enemyCenter);
         float currentEdgeDistance = Mathf.Max(0,
             centerDistance - (_player.hitboxColliderRadius + enemyController.hitboxColliderRadius));
-
-        Debug.Log("Current edge-to-edge distance: " + currentEdgeDistance + " | AA Range: " +
-                  _player.champion.AA_range);
+        //
+        // Debug.Log("Current edge-to-edge distance: " + currentEdgeDistance + " | AA Range: " +
+        //           _player.champion.AA_range);
 
         return currentEdgeDistance;
     }

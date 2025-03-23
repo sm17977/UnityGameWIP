@@ -165,8 +165,7 @@ public class LuxPlayerController : LuxController {
     }
 
     public void TransitionToIdle() {
-        Debug.Log("Transition to Idle");
-        StateManager.ChangeState(_idleState);
+        StateManager.ChangeState(new IdleState(this));
     }
 
     public void TransitionToAttack() {

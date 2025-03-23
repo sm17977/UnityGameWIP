@@ -17,7 +17,7 @@ public class AttackingState : State {
     private GameObject _newAutoAttack;
     private float _attackSpeedDelay;
     private float _attackTimer;
-    private bool _firstAttack;
+    private Vector3 _cachedEnemyHitboxCenter;
     
     public AttackingState(GameObject gameObject) {
         _playerObj = gameObject;
@@ -32,37 +32,40 @@ public class AttackingState : State {
     }
 
     public override void Enter() {
-        _firstAttack = true;
         if (_attackTimer == 0) {
             _player.animator.SetTrigger("isAttacking");
             _input.canAA = true;
         }
+        var enemyController = _player.currentAATarget.GetComponent<LuxPlayerController>();
+        _cachedEnemyHitboxCenter = new Vector3(
+            enemyController.hitboxGameObj.transform.position.x,
+            InputProcessor.floorY,
+            enemyController.hitboxGameObj.transform.position.z
+        );
     }
 
     public override void Execute() {
+        
+        // Trigger the animation again for subsequent attacks
+        if(!_player.animator.GetBool("isAttacking"))_player.animator.SetTrigger("isAttacking");
+        
+        // Get animation timings
+        GetCurrentAnimationTime();
         
         if (_attackTimer > 0) {
             _attackTimer -= Time.deltaTime;
             return;
         }
         
-        // Get animation timings
-        GetCurrentAnimationTime();
-        
         if(_player.timeSinceLastAttack > 0){
             _player.timeSinceLastAttack -= Time.deltaTime;
         }
-                
-        // Get the direction the attack projectile should move towards
-        // Vector3 attackDirection = (_input.projectileAATargetPosition - _playerObj.transform.position).normalized;
-        // _player.champion.AA_direction = attackDirection;
+        
         Vector3 attackDirection = (_player.currentAATarget.transform.position - _playerObj.transform.position).normalized;
    
         // Once the windup window has passed, fire the projectile
-        if (IsWindupCompleted() && (_input.canAA || _firstAttack)) {
-            if(!IsPlayingAttackAnimation()) _player.animator.SetTrigger("isAttacking");
-            Debug.Log("Attacking");
-        
+        if (IsWindupCompleted() && _input.canAA) {
+            
             // Get start position and rotation
             var startPos = new Vector3(_playerObj.transform.position.x,
                 1f, _playerObj.transform.position.z);
@@ -81,22 +84,23 @@ public class AttackingState : State {
             // Prevent player spamming AAs with attack speed delay
             _attackTimer = _attackSpeedDelay; 
         }
-        //
+        
         Vector3 targetPosition = _input.GetCurrentHitboxEdge();
         if (_input.IsInAttackRange(targetPosition)) {
             _input.canAA = true;
         }
         else {
+            Debug.Log("Not in range!");
             _input.canAA = false;
+            _player.TransitionToIdle();
         }
-
-        _firstAttack = false;
     }
 
     public override void Exit() {
         _attackTimer = 0;
+        _player.animator.ResetTrigger("isAttacking");
+        
     }
-
 
     // Track the windup window
     private bool IsWindupCompleted() {
@@ -105,16 +109,18 @@ public class AttackingState : State {
     
     private bool IsPlayingAttackAnimation() {
         AnimatorStateInfo animState = _player.animator.GetCurrentAnimatorStateInfo(0);
-        return (animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2") ||
+        var result = (animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2") ||
                 animState.IsName("Attack.Variant Picker")) && animState.length >
                animState.normalizedTime;
+        Debug.Log("IsPlayingAttackAnimation: " + result);
+        return result;
     }
 
     // Get the current animation time as a percentage (start to finish)
     // Track when a new animation loop as started
     private void GetCurrentAnimationTime(){
         AnimatorStateInfo animState = _player.animator.GetCurrentAnimatorStateInfo(0);
-
+        
         if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
             _currentTime = animState.normalizedTime % 1;
             _currentAttackCount = (int)animState.normalizedTime;

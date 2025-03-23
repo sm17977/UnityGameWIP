@@ -22,7 +22,7 @@ MonoBehaviour:
   abilityW: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
   abilityE: {fileID: 11400000, guid: 1fc5ec873e5a0df4bb7f441b4ca94b84, type: 2}
   abilityR: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
-  AA_damage: 30
+  AA_damage: 10
   AA_range: 6
   AA_missileSpeed: 8
   AA_attackSpeed: 0.625

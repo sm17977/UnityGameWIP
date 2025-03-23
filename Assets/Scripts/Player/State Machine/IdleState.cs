@@ -13,7 +13,6 @@ public class IdleState : State {
     }
     
     public override void Enter() {
-        Debug.Log("Idle State - entering");
         _playerController.animator.SetTrigger("isIdle");
     }
 
@@ -22,6 +21,6 @@ public class IdleState : State {
     }
 
     public override void Exit() {
- 
+        _playerController.animator.ResetTrigger("isIdle");
     }
 }
