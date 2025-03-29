@@ -39,7 +39,6 @@ public class MovingState : State {
             var currentEdgeDistance = _input.GetCurrentEdgeDistance();
             // Only transition to attack state if within range
             if (currentEdgeDistance < _player.champion.AA_range) {
-                Debug.Log("Transitioning to attack");
                 _player.TransitionToAttack();
                 return;
             }

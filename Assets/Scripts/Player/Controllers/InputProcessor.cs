@@ -39,6 +39,7 @@ public class InputProcessor : NetworkBehaviour {
     private bool _isNewClick;
     private bool _showSpellIndicator;
     private GameObject _lastSelectedEnemy;
+    private readonly float _attackRangeTolerance = 1;
 
     public static readonly float floorY = 0.5f;
 
@@ -274,8 +275,9 @@ public class InputProcessor : NetworkBehaviour {
         
         if (isAttackClick && _player.currentAATarget != null) {
             float currentEdgeDistance = GetCurrentEdgeDistance();
-            Debug.Log("Is in attack range: " + currentEdgeDistance + " | AA Range: " + _player.champion.AA_range + 1);
-            return currentEdgeDistance <= _player.champion.AA_range + 1;
+            // Need to add a tolerance to the attack range check because the player's hitbox transform moves a bit even
+            // after stopping, probably because animations are moving it
+            return currentEdgeDistance <= _player.champion.AA_range + _attackRangeTolerance;
         }
         
         float stoppingDistance = GetStoppingDistance();
