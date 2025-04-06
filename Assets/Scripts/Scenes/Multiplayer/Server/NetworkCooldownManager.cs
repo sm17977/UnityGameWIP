@@ -86,6 +86,9 @@ public class NetworkCooldownManager : NetworkBehaviour {
         }
         catch (Exception e) {
             Debug.Log("Error in IsAbilityOnCooldown: " + e);
+            Debug.Log("Client ID: " + player);
+            Debug.Log("Ability key: " + ability?.key);
+            Debug.Log("_cooldowns[player]: " + _cooldowns[player]);
         }
         return false;
     }

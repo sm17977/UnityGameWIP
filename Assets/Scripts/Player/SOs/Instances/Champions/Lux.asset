@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   championName: Lux
   health: 500
-  movementSpeed: 0.025
-  turnSpeed: 18
+  movementSpeed: 0.04
+  turnSpeed: 16
   windupTime: 15.625
   stoppingDistance: 0.1
   abilityQ: {fileID: 11400000, guid: 8340a240e133d914e9226790f3baecd0, type: 2}
@@ -25,7 +25,7 @@ MonoBehaviour:
   AA_damage: 10
   AA_range: 6
   AA_missileSpeed: 8
-  AA_attackSpeed: 0.625
+  AA_attackSpeed: 0.2
   AA_direction: {x: -0.8854571, y: 0.0000004190906, z: 0.4647212}
   modelHeight: 2
   hitBoxRadius: 0.3

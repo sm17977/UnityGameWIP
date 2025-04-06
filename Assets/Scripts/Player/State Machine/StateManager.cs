@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public sealed class StateManager {
     
     private static StateManager _instance = null;

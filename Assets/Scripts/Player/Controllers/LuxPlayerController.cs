@@ -108,12 +108,18 @@ public class LuxPlayerController : LuxController {
             canMove.Value = true;
             movementSpeed.Value = champion.movementSpeed;
         }
+
+        if (IsLocalPlayer) {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+        }
     }
     
     private void Update() {
+        
+        if (globalState.currentScene == "Multiplayer" && !IsLocalPlayer) return;
         StateManager.Update();
         
-        if (globalState.currentScene == "Multiplayer" && !IsOwner) return;
         if(hitboxGameObj != null) hitboxPos = hitboxGameObj.transform.position;
         
         ClientBuffManager.Update();

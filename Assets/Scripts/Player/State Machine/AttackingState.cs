@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.VFX;
 public class AttackingState : State {
 
+    public bool IsWindingUp;
+
     private GameObject _playerObj;
     private LuxPlayerController _player;
     private InputProcessor _input;
@@ -19,6 +21,7 @@ public class AttackingState : State {
     private float _attackTimer;
     private Vector3 _cachedEnemyHitboxCenter;
     
+    
     public AttackingState(GameObject gameObject) {
         _playerObj = gameObject;
         _player = _playerObj.GetComponent<LuxPlayerController>();
@@ -33,7 +36,8 @@ public class AttackingState : State {
 
     public override void Enter() {
         if (_attackTimer == 0) {
-            _player.animator.SetTrigger("isAttacking");
+            // _player.animator.SetTrigger("isAttacking");
+            _player.networkAnimator.SetTrigger("isAttacking");
             _input.canAA = true;
         }
         var enemyController = _player.currentAATarget.GetComponent<LuxPlayerController>();
@@ -122,13 +126,17 @@ public class AttackingState : State {
         AnimatorStateInfo animState = _player.animator.GetCurrentAnimatorStateInfo(0);
         
         if(animState.IsName("Attack.Attack1") || animState.IsName("Attack.Attack2")){
+            
             _currentTime = animState.normalizedTime % 1;
             _currentAttackCount = (int)animState.normalizedTime;
             
             // Need this check to prevent extra attacking spawning while in the variant picker state
             if (_currentTime >= 0.99f) {
                 _input.canAA = false;
+                IsWindingUp = false;
             }
+
+            IsWindingUp = true;
         }
         else {
             _currentTime = 0;

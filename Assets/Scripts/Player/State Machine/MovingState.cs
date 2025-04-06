@@ -60,8 +60,8 @@ public class MovingState : State {
         }
     }
 
-    void MoveAndRotate(Vector3 direction) {
-        float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks /  Time.deltaTime;
+    private void MoveAndRotate(Vector3 direction) {
+        float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
         // Move player towards last mouse click 
         _playerObj.transform.Translate(_player.movementSpeed.Value * lerpFraction * direction, Space.World);
         _player.RotateTowardsTarget(direction);

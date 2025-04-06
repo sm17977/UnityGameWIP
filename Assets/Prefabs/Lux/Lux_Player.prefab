@@ -109,13 +109,13 @@ GameObject:
   - component: {fileID: 6881271443565087466}
   - component: {fileID: 7686054493345482184}
   - component: {fileID: 1732250947714356030}
+  - component: {fileID: 5362854548189572190}
+  - component: {fileID: 257863783551457560}
+  - component: {fileID: 833371891401816774}
   - component: {fileID: 3799837274022872123}
   - component: {fileID: -3961866617289726453}
-  - component: {fileID: 5362854548189572190}
-  - component: {fileID: 833371891401816774}
-  - component: {fileID: 257863783551457560}
   - component: {fileID: 9115143384317293223}
-  - component: {fileID: 1121567372837355459}
+  - component: {fileID: 5952103161160890641}
   m_Layer: 0
   m_Name: Lux_Player
   m_TagString: Player
@@ -260,6 +260,60 @@ MonoBehaviour:
   health: {fileID: 0}
   healthBarAnchor: {fileID: 0}
   mainCamera: {fileID: 0}
+--- !u!114 &5362854548189572190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7502f69b6d264bb0864be5ed387cd85c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &257863783551457560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e886f3a34d846ea9e59db6ecfa17cef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &833371891401816774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206841937268976223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe67813956ac46be9cf3ce957740c370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  _player: {fileID: 1732250947714356030}
+  _networkStateManager: {fileID: 257863783551457560}
+  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
+    type: 3}
+  spellIndicatorPrefab: {fileID: 4448765777282739813, guid: 1be24f9e473384e439a037eb8b312b48,
+    type: 3}
+  aaRangeIndicatorPrefab: {fileID: 5475580677785024963, guid: cdfca3dbd036ece479fa058999410afa,
+    type: 3}
+  projectileTargetPosition: {x: 0, y: 0, z: 0}
+  lastClickPosition: {x: 0, y: 0, z: 0}
+  projectileAATargetPosition: {x: 0, y: 0, z: 0}
+  isAttackClick: 0
+  canCast: 0
+  incompleteMovement: 0
+  canAA: 0
+  isTyping: 0
 --- !u!114 &3799837274022872123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -290,60 +344,6 @@ MonoBehaviour:
   currentHealth:
     m_InternalValue: 0
   maxHealth: 100
---- !u!114 &5362854548189572190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7502f69b6d264bb0864be5ed387cd85c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &833371891401816774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe67813956ac46be9cf3ce957740c370, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  _player: {fileID: 1732250947714356030}
-  _networkStateManager: {fileID: 257863783551457560}
-  movementIndicatorPrefab: {fileID: 3461757688097335893, guid: 4cf0603ce11369743829b655d7206dea,
-    type: 3}
-  spellIndicatorPrefab: {fileID: 4448765777282739813, guid: 1be24f9e473384e439a037eb8b312b48,
-    type: 3}
-  aaRangeIndicatorPrefab: {fileID: 5475580677785024963, guid: cdfca3dbd036ece479fa058999410afa,
-    type: 3}
-  projectileTargetPosition: {x: 0, y: 0, z: 0}
-  lastClickPosition: {x: 0, y: 0, z: 0}
-  projectileAATargetPosition: {x: 0, y: 0, z: 0}
-  isAttackClick: 0
-  canCast: 0
-  incompleteMovement: 0
-  canAA: 0
-  isTyping: 0
---- !u!114 &257863783551457560
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 206841937268976223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e886f3a34d846ea9e59db6ecfa17cef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &9115143384317293223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +358,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -47317214
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1680125592
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 551563386
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 2081823275
@@ -393,6 +414,27 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: 1276664872
     TransitionIndex: 6
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -47317214
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1680125592
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 2
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 551563386
+    DestinationState: 2081823275
+    TransitionDuration: 0.25
+    TriggerNameHash: 2098831385
+    TransitionIndex: 3
   - IsCrossFadeExit: 0
     Layer: 0
     OriginatingState: 1748754976
@@ -429,7 +471,7 @@ MonoBehaviour:
     TriggerNameHash: 1276664872
     TransitionIndex: 6
   m_Animator: {fileID: 6881271443565087466}
---- !u!114 &1121567372837355459
+--- !u!114 &5952103161160890641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -854,7 +896,7 @@ GameObject:
   - component: {fileID: 4716081777564896128}
   - component: {fileID: 4061616120029314635}
   - component: {fileID: 6226082279351157599}
-  - component: {fileID: 2314784375909878211}
+  - component: {fileID: 2581086625246888290}
   m_Layer: 0
   m_Name: Hitbox
   m_TagString: Player
@@ -965,7 +1007,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sphereCollider: {fileID: 4061616120029314635}
   centerPos: {x: 0, y: 0, z: 0}
---- !u!114 &2314784375909878211
+--- !u!114 &2581086625246888290
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

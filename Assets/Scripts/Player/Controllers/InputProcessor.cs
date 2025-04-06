@@ -35,10 +35,12 @@ public class InputProcessor : NetworkBehaviour {
     public bool canAA;
 
     public bool isTyping;
-    
+
+    private bool _isNewTarget;
     private bool _isNewClick;
     private bool _showSpellIndicator;
     private GameObject _lastSelectedEnemy;
+    private bool _selectionHighlightActive;
     private readonly float _attackRangeTolerance = 1;
 
     public static readonly float floorY = 0.5f;
@@ -63,7 +65,7 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void Update() {
-        DetectEnemySelection();
+        DetectMouseHoverOnEnemy();
     }
 
     private void EnqueueInputCommand(InputCommand input) {
@@ -116,8 +118,14 @@ public class InputProcessor : NetworkBehaviour {
         if (_player.hitboxColliderRadius == 0 || _player.hitboxGameObj == null) 
             return InputCommandType.None;
 
-        if (IsAttackClick()) 
+        if (IsAttackClick() && _isNewTarget) 
             return InputCommandType.Attack;
+        
+        // If we're clicking on the same target, don't re-issue another attack command
+        if (IsAttackClick() && !_isNewTarget)
+            return InputCommandType.None;
+        
+        HighLightGameObject(_player.currentAATarget, false);
         
         // Get world space radius of the hitbox + account for scaling
         var worldRadius = _player.hitboxColliderRadius * _player.hitboxGameObj.transform.lossyScale.x;
@@ -148,11 +156,17 @@ public class InputProcessor : NetworkBehaviour {
                 projectileAATargetPosition = enemyHitbox.transform.position;
                 lastClickPosition = GetHitboxEdge(hit.point, enemyHitbox);
                 isAttackClick = true;
+                _isNewTarget = _player?.currentAATarget == null || _player?.currentAATarget?.name != obj.name;
+                if(_isNewTarget) HighLightGameObject(_player?.currentAATarget, false);
                 _player.currentAATarget = obj;
+                HighLightGameObject(_player.currentAATarget, true);
+                _selectionHighlightActive = true;
+                Debug.Log("IsNewTarget: " +  _isNewTarget);
                 return true;
             }
         }
-        
+
+        _selectionHighlightActive = false;
         return false;
     }
 
@@ -192,6 +206,7 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void HandleAttackCommand() {
+        
         _player.direction = (lastClickPosition - transform.position).normalized;
         if (!IsInAttackRange(lastClickPosition))
             _player.StateManager.ChangeState(new MovingState(gameObject, true));
@@ -332,24 +347,46 @@ public class InputProcessor : NetworkBehaviour {
         return currentEdgeDistance;
     }
 
-    private void DetectEnemySelection() {
-        if (!IsServer) {
-            var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out var hit)) {
-                var hitObj = hit.transform.gameObject;
-                if (hitObj.CompareTag("Player") && hitObj.name != "Local Player") {
-                    _lastSelectedEnemy = hitObj;
-                    _lastSelectedEnemy.layer = LayerMask.NameToLayer("Selection");
-                    foreach (Transform child in _lastSelectedEnemy.transform) {
-                        child.gameObject.layer = LayerMask.NameToLayer("Selection");
-                    }
-                }
-                else if (_lastSelectedEnemy != null) {
-                    _lastSelectedEnemy.layer = LayerMask.NameToLayer("Default");
-                    foreach (Transform child in _lastSelectedEnemy.transform) {
-                        child.gameObject.layer = LayerMask.NameToLayer("Default");
-                    }
-                }
+    private void DetectMouseHoverOnEnemy() {
+        if (!IsLocalPlayer) return; 
+        if (_player?.currentAATarget != null) return;
+        
+        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+     
+        if (Physics.Raycast(ray, out var hit)) {
+            var hitObj = hit.transform.gameObject;
+        
+            if (hitObj.CompareTag("Player") && hitObj.name != "Local Player" && hitObj != _player.currentAATarget) {
+                _lastSelectedEnemy = hitObj;
+                HighLightGameObject(_lastSelectedEnemy, true);
+            }
+      
+            else if (_lastSelectedEnemy != null && _lastSelectedEnemy != _player.currentAATarget) {
+                HighLightGameObject(_lastSelectedEnemy, false);
+            }
+        }
+        else if (_lastSelectedEnemy != null) {
+            if (_lastSelectedEnemy != _player.currentAATarget) {
+                HighLightGameObject(_lastSelectedEnemy, false);
+            }
+        }
+    }
+
+    
+    private void HighLightGameObject(GameObject target, bool enable) {
+        if (!IsLocalPlayer) return;
+        if (target == null) return;
+        
+        if (enable) {
+            target.layer = LayerMask.NameToLayer("Selection");
+            foreach (Transform child in target.transform) {
+                child.gameObject.layer = LayerMask.NameToLayer("Selection");
+            }
+        }
+        else {
+            target.layer = LayerMask.NameToLayer("Default");
+            foreach (Transform child in target.transform) {
+                child.gameObject.layer = LayerMask.NameToLayer("Default");
             }
         }
     }
