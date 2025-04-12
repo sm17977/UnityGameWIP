@@ -59,12 +59,13 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void FixedUpdate() {
-        if (IsOwner) {
-            ProcessCommands();
-        }
+   
     }
 
     private void Update() {
+        if (IsOwner) {
+            ProcessCommands();
+        }
         DetectMouseHoverOnEnemy();
     }
 

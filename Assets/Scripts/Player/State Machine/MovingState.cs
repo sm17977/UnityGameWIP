@@ -1,3 +1,5 @@
+using Mono.CSharp;
+using QFSW.QC;
 using UnityEngine;
 
 public class MovingState : State {
@@ -10,6 +12,8 @@ public class MovingState : State {
     private Vector3 _targetLocation;
     private float _stoppingDistance;
     private bool _movingToAttack;
+    private int _frameCount = 0; // Add this to track frames
+
     
     public MovingState(GameObject gameObject, bool attack) {
         _playerObj = gameObject;
@@ -20,6 +24,8 @@ public class MovingState : State {
         _targetLocation = _input.lastClickPosition;
         _stoppingDistance = _input.GetStoppingDistance();
         _movingToAttack = attack;
+        
+        
     }
 
     public override void Enter() {
@@ -37,6 +43,14 @@ public class MovingState : State {
         // Only if we're moving to attack
         if (_movingToAttack && _player.currentAATarget != null) {
             var currentEdgeDistance = _input.GetCurrentEdgeDistance();
+            
+            if (_frameCount++ % 2 == 0) {
+                Debug.Log($"Frame {Time.frameCount}, " +
+                          $"Current Edge Distance = {currentEdgeDistance}, " +
+                          $"Current Target = {_targetLocation}"
+                );
+            }
+            
             // Only transition to attack state if within range
             if (currentEdgeDistance < _player.champion.AA_range) {
                 _player.TransitionToAttack();
@@ -44,9 +58,12 @@ public class MovingState : State {
             }
         }
 
+        
         // Calculate the direction the player wants to move in
         Vector3 direction = (_targetLocation - _playerObj.transform.position).normalized;
         direction.y = 0f;
+        
+        
         MoveAndRotate(direction);
         
         // Check if we've reached the target location
@@ -61,6 +78,7 @@ public class MovingState : State {
     }
 
     private void MoveAndRotate(Vector3 direction) {
+        //float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
         float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
         // Move player towards last mouse click 
         _playerObj.transform.Translate(_player.movementSpeed.Value * lerpFraction * direction, Space.World);
