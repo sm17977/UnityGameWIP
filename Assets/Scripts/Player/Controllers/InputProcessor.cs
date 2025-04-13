@@ -44,6 +44,7 @@ public class InputProcessor : NetworkBehaviour {
     private readonly float _attackRangeTolerance = 1;
 
     public static readonly float floorY = 0.5f;
+    public Vector3 edgeTest = new Vector3(0, 0, 0);
 
     private void Awake() {
         _mainCamera = Camera.main;
@@ -170,12 +171,22 @@ public class InputProcessor : NetworkBehaviour {
         _selectionHighlightActive = false;
         return false;
     }
+    
+    void OnDrawGizmos() {
+        Gizmos.color = new Color(1, 1, 1, 800);
+        Gizmos.DrawSphere(edgeTest, 0.25f);
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, lastClickPosition);
+    }
 
     private Vector3 GetHitboxEdge(Vector3 clickPos, GameObject hitbox) {
         var hitboxCollider = hitbox.GetComponent<SphereCollider>();
         var directionToHitboxEdge = (clickPos - hitbox.transform.position).normalized;
         var edge = hitbox.transform.position + directionToHitboxEdge * hitboxCollider.radius;
         edge.y = floorY;
+        edgeTest = edge;
+
         return edge;
     }
     
@@ -209,8 +220,10 @@ public class InputProcessor : NetworkBehaviour {
     private void HandleAttackCommand() {
         
         _player.direction = (lastClickPosition - transform.position).normalized;
-        if (!IsInAttackRange(lastClickPosition))
+        if (!IsInAttackRange(lastClickPosition)) {
             _player.StateManager.ChangeState(new MovingState(gameObject, true));
+            _networkStateManager.SendMoveCommand(lastClickPosition);
+        }
         else
             _player.StateManager.ChangeState(new AttackingState(gameObject));
         

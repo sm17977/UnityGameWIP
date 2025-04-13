@@ -19,7 +19,7 @@ public class Hitbox : MonoBehaviour {
     }
 
     void OnDrawGizmos() {
-        Gizmos.color = new Color(1, 1, 1, 800);
-        //Gizmos.DrawSphere(_sphereCollider.transform.position, 0.4f);
+        // Gizmos.color = new Color(1, 1, 1, 800);
+        // Gizmos.DrawSphere(_sphereCollider.transform.position, 0.4f);
     }
 }

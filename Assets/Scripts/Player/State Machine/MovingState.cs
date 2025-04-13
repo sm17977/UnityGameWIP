@@ -24,8 +24,6 @@ public class MovingState : State {
         _targetLocation = _input.lastClickPosition;
         _stoppingDistance = _input.GetStoppingDistance();
         _movingToAttack = attack;
-        
-        
     }
 
     public override void Enter() {
@@ -34,6 +32,7 @@ public class MovingState : State {
     }
 
     public override void Execute() {
+        _frameCount++;
         
         if (!_player.canMove.Value) {
             _player.TransitionToIdle();
@@ -43,28 +42,20 @@ public class MovingState : State {
         // Only if we're moving to attack
         if (_movingToAttack && _player.currentAATarget != null) {
             var currentEdgeDistance = _input.GetCurrentEdgeDistance();
-            
-            if (_frameCount++ % 2 == 0) {
-                Debug.Log($"Frame {Time.frameCount}, " +
-                          $"Current Edge Distance = {currentEdgeDistance}, " +
-                          $"Current Target = {_targetLocation}"
-                );
-            }
-            
             // Only transition to attack state if within range
             if (currentEdgeDistance < _player.champion.AA_range) {
                 _player.TransitionToAttack();
                 return;
             }
+            
         }
-
         
         // Calculate the direction the player wants to move in
         Vector3 direction = (_targetLocation - _playerObj.transform.position).normalized;
         direction.y = 0f;
         
-        
         MoveAndRotate(direction);
+        
         
         // Check if we've reached the target location
         if(!_movingToAttack) {
@@ -78,8 +69,40 @@ public class MovingState : State {
     }
 
     private void MoveAndRotate(Vector3 direction) {
-        //float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
+
+      
+        
+        
         float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
+        
+        if (_movingToAttack) {
+          
+            Debug.Log($" (Moving to attack) Frame {Time.frameCount}, " +
+                      $"Player Pos = {_playerObj.transform.position}, " +
+                      $"Current Target = {_targetLocation}, " + 
+                      $"Min time between ticks  = {_networkState.NetworkTimer.MinTimeBetweenTicks}, " +
+                      $"Time.deltaTime = {Time.deltaTime}" + 
+                      $"lerpFraction = {lerpFraction}, " +
+                      $"direction = {direction}, " +
+                      $"movementSpeed.Value = {_player.movementSpeed.Value}"
+            );
+            
+        }
+        else {
+     
+            Debug.Log($" (Regular movement) Frame {Time.frameCount}, " +
+                      $"Player Pos = {_playerObj.transform.position}, " +
+                      $"Current Target = {_targetLocation}, " + 
+                      $"Min time between ticks  = {_networkState.NetworkTimer.MinTimeBetweenTicks}, " +
+                      $"Time.deltaTime = {Time.deltaTime}, " +
+                      $"lerpFraction = {lerpFraction}, " +
+                      $"direction = {direction}, " +
+                      $"movementSpeed.Value = {_player.movementSpeed.Value}"
+            );
+            
+        }
+        
+        
         // Move player towards last mouse click 
         _playerObj.transform.Translate(_player.movementSpeed.Value * lerpFraction * direction, Space.World);
         _player.RotateTowardsTarget(direction);
