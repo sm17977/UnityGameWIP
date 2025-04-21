@@ -56,13 +56,12 @@
 .health-bar{
     height: 25px;
     background-color: rgb(255, 0, 0);
-    border-color: rgb(255, 0, 0);
     transition: width 0.05s;
 }
 
 /* Health bar border */
 .health-bar-borders{
-    border-width: 5px;
+  
 }
 
 /* Player center container */ 

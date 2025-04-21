@@ -69,40 +69,7 @@ public class MovingState : State {
     }
 
     private void MoveAndRotate(Vector3 direction) {
-
-      
-        
-        
         float lerpFraction = _networkState.NetworkTimer.MinTimeBetweenTicks / Time.deltaTime;
-        
-        if (_movingToAttack) {
-          
-            Debug.Log($" (Moving to attack) Frame {Time.frameCount}, " +
-                      $"Player Pos = {_playerObj.transform.position}, " +
-                      $"Current Target = {_targetLocation}, " + 
-                      $"Min time between ticks  = {_networkState.NetworkTimer.MinTimeBetweenTicks}, " +
-                      $"Time.deltaTime = {Time.deltaTime}" + 
-                      $"lerpFraction = {lerpFraction}, " +
-                      $"direction = {direction}, " +
-                      $"movementSpeed.Value = {_player.movementSpeed.Value}"
-            );
-            
-        }
-        else {
-     
-            Debug.Log($" (Regular movement) Frame {Time.frameCount}, " +
-                      $"Player Pos = {_playerObj.transform.position}, " +
-                      $"Current Target = {_targetLocation}, " + 
-                      $"Min time between ticks  = {_networkState.NetworkTimer.MinTimeBetweenTicks}, " +
-                      $"Time.deltaTime = {Time.deltaTime}, " +
-                      $"lerpFraction = {lerpFraction}, " +
-                      $"direction = {direction}, " +
-                      $"movementSpeed.Value = {_player.movementSpeed.Value}"
-            );
-            
-        }
-        
-        
         // Move player towards last mouse click 
         _playerObj.transform.Translate(_player.movementSpeed.Value * lerpFraction * direction, Space.World);
         _player.RotateTowardsTarget(direction);

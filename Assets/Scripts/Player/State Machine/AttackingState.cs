@@ -30,7 +30,7 @@ public class AttackingState : State {
         _direction = _player.direction;
         _windupTime = _player.champion.windupTime;
         
-        _attackSpeedDelay = 1f / (float)_player.champion.AA_attackSpeed; // Convert attacks per second to delay
+        _attackSpeedDelay = 1f / (float)_player.champion.AA_attackSpeed; 
         _attackTimer = 0f;
     }
 
