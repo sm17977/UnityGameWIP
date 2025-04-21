@@ -690,6 +690,7 @@ public class MultiplayerUIController : MonoBehaviour {
     }
 
     private void OnEnter(InputAction.CallbackContext context) {
+        if(_viewManager.CurrentView != _gameView) return;
         if (_gameView.IsChatActive()) {
             var content = _gameView.GetCurrentChatInput();
             _rpcController.SendChatMessageServerRpc(content, _gameLobbyManager.playerName, _player.GetComponent<NetworkObject>());

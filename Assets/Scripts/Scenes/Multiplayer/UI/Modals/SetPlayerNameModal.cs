@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using CustomElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Multiplayer.UI {
@@ -15,7 +17,7 @@ namespace Multiplayer.UI {
         private VisualElement _contentContainer;
         private OuterGlow _containerShadow;
         
-        private TextField _playerNameInput;
+        private BlinkingTextField _playerNameInput;
 
         public SetPlayerNameModal(VisualElement parentContainer, VisualTreeAsset vta) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -24,16 +26,21 @@ namespace Multiplayer.UI {
         }
 
         private void BindUIElements() {
-            _playerNameInput = Template.Q<TextField>("player-name-input");
+            _playerNameInput = Template.Q<BlinkingTextField>("player-name-input");
             
             _confirmNameBtn = Template.Q<Button>("confirm-name-btn");
             _cancelNameBtn = Template.Q<Button>("cancel-name-btn");
             
             _contentContainer = Template.Q("setname-modal-content");
             _containerShadow = Template.Q<OuterGlow>("container-shadow");
+
+            _confirmNameBtn.clicked += OnClickConfirmPlayerNameBtn;
+            _cancelNameBtn.clicked += OnClickCancelPlayerNameBtn;
             
-            _confirmNameBtn.RegisterCallback<ClickEvent>(evt => OnClickConfirmPlayerNameBtn());
-            _cancelNameBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelPlayerNameBtn());
+            _playerNameInput.RegisterCallback<KeyDownEvent>(evt => {
+                if(evt.keyCode == KeyCode.Return)OnClickConfirmPlayerNameBtn();
+            });
+            
         }
         
         public override async void ShowModal() {
@@ -42,6 +49,7 @@ namespace Multiplayer.UI {
             await Task.Delay(200);
             _contentContainer.AddToClassList("setname-modal-active");
             _containerShadow.AddToClassList("shadow-active");
+            _playerNameInput.Focus();
         }
 
         public override async void HideModal() {

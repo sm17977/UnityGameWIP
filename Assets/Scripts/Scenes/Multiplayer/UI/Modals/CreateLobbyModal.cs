@@ -56,11 +56,14 @@ namespace Multiplayer.UI {
             _contentContainer = Template.Q("lobby-modal-content");
             _containerShadow = Template.Q<OuterGlow>("container-shadow");
             
-            _createLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCreateLobbyBtn());
-            _cancelLobbyBtn.RegisterCallback<ClickEvent>(evt => OnClickCancelBtn());
+            _createLobbyBtn.clicked += OnClickCreateLobbyBtn;
+            _cancelLobbyBtn.clicked += OnClickCancelBtn;
+            
+            _lobbyNameInput.RegisterCallback<KeyDownEvent>(evt => {
+                if (evt.keyCode == KeyCode.Return)OnClickCreateLobbyBtn();
+            });
             
             Loader = Template.Q<VisualElement>("lobby-loader");
-           
         }
 
         public override async void ShowModal() {
@@ -69,6 +72,7 @@ namespace Multiplayer.UI {
             await Task.Delay(200);
             _contentContainer.AddToClassList("lobby-modal-active");
             _containerShadow.AddToClassList("shadow-active");
+            _lobbyNameInput.Focus();
         }
 
         public override async void HideModal() {

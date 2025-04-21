@@ -166,3 +166,11 @@ OuterGlow {
 .cancel-btn:hover{
     background-color: #9a3b3b;
 }
+
+.cursor-default{
+    --unity-cursor-color: white;
+}
+
+.cursor-transparent{
+    --unity-cursor-color: rgba(0, 0, 0, 0);
+}

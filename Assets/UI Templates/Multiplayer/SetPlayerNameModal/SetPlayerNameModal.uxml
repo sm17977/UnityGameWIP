@@ -1,5 +1,6 @@
 ﻿<ui:UXML 
     xmlns:ui="UnityEngine.UIElements"
+    xmlns:custom="CustomElements"
     xsi="http://www.w3.org/2001/XMLSchema-instance" 
     engine="UnityEngine.UIElements" 
     editor="UnityEditor.UIElements" 
@@ -24,7 +25,7 @@
                             </ui:VisualElement>
                         
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <ui:TextField name="player-name-input" class="modal-input-field" placeholder-text="Enter your name here" value="" />
+                                <custom:BlinkingTextField name="player-name-input" class="modal-input-field" placeholder-text="Enter your name here" value="" />
                             </ui:VisualElement>
                         
                     </ui:VisualElement>
