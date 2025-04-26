@@ -1,0 +1,23 @@
+﻿
+/* Health bar container */
+.health-bar-container{
+    position: absolute;
+    display: flex;
+    width: 150px;
+    height: 25px;
+    border-color: black;
+    border-width: 4px;
+    overflow: hidden;
+}
+
+/* Health bar */
+.health-bar{
+    height: 25px;
+    background-color: rgb(255, 0, 0);
+    transition: width 0.05s;
+}
+
+/* Health bar border */
+.health-bar-borders{
+
+}

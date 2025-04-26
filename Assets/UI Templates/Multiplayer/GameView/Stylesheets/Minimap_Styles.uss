@@ -1,0 +1,30 @@
+﻿.minimap{
+    height: 300px;
+    width: 300px;
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    opacity: 0.3;
+    border-color: grey;
+    border-width: 2px;
+    margin: 6px;
+}
+
+.minimap-corner{
+    /*position: absolute;*/
+    /*height: 150px;*/
+    /*width: 150px;*/
+    /*right: 250;*/
+    /*bottom: 250;*/
+    /*background-color: ;*/
+    /*!*transform-origin: 50% 50%;*!*/
+    /*!*transform: rotate(45deg);*!*/
+    /*rotate: 45deg;*/
+}
+
+.minimap-player-marker {
+    position: absolute;
+    border-radius: 50%;
+}

@@ -17,7 +17,7 @@ namespace Multiplayer.UI {
         private Label _gameTimerLabel;
         private Label _pingLabel;
         private List<GameObject> _playerGameObjects;
-        private readonly HealthBarManager _healthBarManager;
+        private readonly FloatingUIManager _floatingUIManager;
         private PanelSettings _panelSettings;
         public ChatBoxElement Chat;
         private BlinkingTextField _chatInput;
@@ -31,7 +31,7 @@ namespace Multiplayer.UI {
             ParentContainer = parentContainer;
             BindUIElements();
             _panelSettings = panelSettings;
-            _healthBarManager = new HealthBarManager(Template);
+            _floatingUIManager = new FloatingUIManager(Template);
         }
 
         private void BindUIElements() {
@@ -45,7 +45,7 @@ namespace Multiplayer.UI {
 
         public override void Show() {
             _panelSettings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
-            _healthBarManager.GenerateHealthBars(_playerGameObjects);
+            _floatingUIManager.GenerateUIComponents(_playerGameObjects);
             BindUIElements();
             GenerateMinimap();
             base.Show();
@@ -53,7 +53,7 @@ namespace Multiplayer.UI {
             GlobalState.GameModeManager.CurrentGameMode.HideCountdown += _countdownTimerElement.HideCountdown;
             GlobalState.GameModeManager.CurrentGameMode.ShowCountdown += _countdownTimerElement.ShowCountdown;
             OnStartGameModeCountdown?.Invoke();
-            _healthBarManager.SetHealthBarPosition(_panelSettings);
+            _floatingUIManager.SetUIComponentPositions(_panelSettings);
         }
         
         public override void Hide() {
@@ -62,7 +62,7 @@ namespace Multiplayer.UI {
         }
 
         public override void Update() {
-            _healthBarManager.SetHealthBarPosition(_panelSettings); 
+            _floatingUIManager.SetUIComponentPositions(_panelSettings); 
             _gameTimerLabel.text = GlobalState.GameModeManager.CurrentGameMode.GetGameTimer();
             Minimap.UpdatePlayerMarkersPosition(_playerGameObjects);
         }
@@ -109,19 +109,19 @@ namespace Multiplayer.UI {
 
         public void UpdatePlayerHealthBars(List<GameObject> players) {
             // Clean up health bars for players that have left
-            var playerScriptsToRemove = _healthBarManager.GetPlayerScriptsToRemove(players);
+            var playerScriptsToRemove = _floatingUIManager.GetPlayerScriptsToRemove(players);
 
             foreach (var playerScript in playerScriptsToRemove) {
-                _healthBarManager.RemoveHealthBar(playerScript);
+                _floatingUIManager.RemoveUIComponents(playerScript);
             }
 
             // Update the player list
             _playerGameObjects = players;
 
             // Delegate generation of new health bars
-            _healthBarManager.GenerateHealthBars(_playerGameObjects);
+            _floatingUIManager.GenerateUIComponents(_playerGameObjects);
             
-            _healthBarManager.UpdatePlayerNameLabels();
+            _floatingUIManager.UpdatePlayerNameLabels();
         }
 
         /// <summary>

@@ -6,8 +6,6 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
     
-    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/GameView_Styles.uss" />
-    
     <!-- Game View -->
     <engine:VisualElement name="gameview-container" class="gameview-container">
         

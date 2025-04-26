@@ -1,0 +1,29 @@
+﻿
+.ping-container{
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: white;
+    padding: 5px;
+}
+
+/* Top bar */
+.top-bar{
+    height: 200px;
+    width: 500px;
+    padding: 10px;
+}
+
+
+.game-timer-container{
+    width: 100%;
+    margin-top: -30px;
+}
+
+.game-timer-label{
+    font-size: 40px;
+    color: white;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+    text-shadow: 5px 5px 0px rgb(0, 0, 0);
+}

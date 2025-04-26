@@ -1,0 +1,32 @@
+﻿.team-portraits{
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: row;
+}
+
+.team-portrait-container{
+    width: 50%;
+    height: 125px;
+}
+
+.team-portrait{
+    width: 100px;
+    height: 150px;
+    background-color: white;
+    opacity: 0.1;
+    border-radius: 50%;
+    align-self: center;
+}
+
+.team-portrait-text{
+    height: 50px;
+    width: 100%;
+}
+
+.team-portrait-label{
+    color: white;
+    -unity-text-align: middle-center;
+    -unity-font-definition: url("/Assets/Resources/Fonts & Materials/ContrailOne-Regular SDF.asset");
+    font-size: 20px;
+}

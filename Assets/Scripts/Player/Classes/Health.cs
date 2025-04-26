@@ -7,7 +7,7 @@ public class Health : NetworkBehaviour {
     public NetworkVariable<float> currentHealth = new NetworkVariable<float>();
     private LuxPlayerController _playerScript;
     public float maxHealth;
-    public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth);
+    public delegate void HealthChanged(LuxPlayerController player, float currentHealth, float maxHealth, float damage);
     public delegate Task PlayerDied(LuxPlayerController player);
     public static event HealthChanged OnHealthChanged;
     public static event PlayerDied OnPlayerDeath;
@@ -37,7 +37,8 @@ public class Health : NetworkBehaviour {
     public override void OnNetworkSpawn() {
         // Sync health across clients when it changes
         currentHealth.OnValueChanged += (oldHealth, newHealth) => {
-            OnHealthChanged?.Invoke(_playerScript, newHealth, maxHealth);
+            float diff = oldHealth - newHealth;
+            OnHealthChanged?.Invoke(_playerScript, newHealth, maxHealth, diff);
             if(newHealth == 0) OnPlayerDeath?.Invoke(_playerScript);
         };
     }

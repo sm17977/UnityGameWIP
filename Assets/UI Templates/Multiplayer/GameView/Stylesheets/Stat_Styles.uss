@@ -1,0 +1,43 @@
+﻿.champion-stats-container{
+    background-color: rgba(0, 0, 0, 0.24);
+    width: auto;
+    height: auto;
+    position: absolute;
+    left: -120px;
+    bottom: 0px;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+}
+
+.champion-stats{
+    color: white;
+}
+
+.champion-stat{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 3px;
+    -unity-text-align: middle-center;
+}
+
+.stats-left, .stats-right{
+    width: 50%;
+}
+
+.champion-stat Label{
+    margin: 0;
+    padding: 0;
+    padding-left: 3px;
+}
+
+.stat-icon{
+    height: 13px;
+    width: 13px;
+    background-color: white;
+    margin: 0;
+}
