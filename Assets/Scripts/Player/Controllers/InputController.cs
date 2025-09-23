@@ -13,6 +13,7 @@ public class InputController : MonoBehaviour {
         _controls.Player.RightClick.performed += OnRightClick;
         _controls.Player.Q.performed += OnQ;
         _controls.Player.E.performed += OnE;
+        _controls.Player.R.performed += OnR;
         _controls.Player.A.performed += OnA;
     }
 
@@ -20,6 +21,7 @@ public class InputController : MonoBehaviour {
         _controls.Player.RightClick.performed -= OnRightClick;
         _controls.Player.Q.performed -= OnQ;
         _controls.Player.E.performed -= OnE;
+        _controls.Player.R.performed -= OnR;
         _controls.Player.A.performed -= OnA;
         _controls.Player.Disable();
     }
@@ -36,6 +38,10 @@ public class InputController : MonoBehaviour {
 
     private void OnE(InputAction.CallbackContext context) {
         OnInputCommandIssued?.Invoke(new InputCommand { Type = InputCommandType.CastSpell, Key = "E" });
+    }
+    
+    private void OnR(InputAction.CallbackContext context) {
+        OnInputCommandIssued?.Invoke(new InputCommand { Type = InputCommandType.CastSpell, Key = "R" });
     }
 
     private void OnA(InputAction.CallbackContext context) {
