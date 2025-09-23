@@ -15,7 +15,7 @@ public class SinglePlayerCastingStrategy : ICastingStrategy {
     }
     
     public void Cast(Ability ability, Vector3 targetDir, Vector3 targetPos, Vector3 abilitySpawnPos) {
-        GameObject newProjectile = Object.Instantiate(ability.missilePrefab, abilitySpawnPos, Quaternion.LookRotation(targetDir, Vector3.up));
+        GameObject newProjectile = Object.Instantiate(ability.spawnPrefab, abilitySpawnPos, Quaternion.LookRotation(targetDir, Vector3.up));
         _playerController.projectiles.Add(newProjectile);
         ClientAbilityBehaviour projectileScript = newProjectile.GetComponent<ClientAbilityBehaviour>();
         projectileScript?.InitialiseProperties(ability, _playerController,targetPos, targetDir);

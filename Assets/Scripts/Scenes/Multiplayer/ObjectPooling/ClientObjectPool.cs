@@ -45,7 +45,7 @@ public class ClientObjectPool : MonoBehaviour {
             // Pool size determines how many prefabs of each type we'll store
             for (var i = 0; i < poolSize; i++) {
 
-                var projectile = Instantiate(ability.missilePrefab, transform);
+                var projectile = Instantiate(ability.spawnPrefab, transform);
                 projectile.SetActive(false);
                 projectile.name = projectile.transform.GetInstanceID().ToString();
 

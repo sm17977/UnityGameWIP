@@ -26,8 +26,8 @@ public class Ability : ScriptableObject {
     public Buff buff;
 
    [Header("Prefab Data")]
-    public GameObject missilePrefab;
-    public GameObject networkMissilePrefab;
+    public GameObject spawnPrefab;
+    public GameObject networkSpawnPrefab;
     public GameObject hitPrefab;
     public GameObject spellIndicatorPrefab;
     public float spawnHeight;

@@ -47,7 +47,7 @@ public class CastingState : State {
         }
        
         // Get the direction the ability should move towards
-        Vector3 direction = (_input.projectileTargetPosition - _playerObj.transform.position).normalized;
+        Vector3 direction = (_input.abilityTargetPosition - _playerObj.transform.position).normalized;
   
         // Rotate the player in the direction the spell was cast
         _player.RotateTowardsTarget(direction);
@@ -59,7 +59,7 @@ public class CastingState : State {
             float worldRadius = _player.hitboxColliderRadius * _player.hitboxGameObj.transform.lossyScale.x;
             Vector3 abilitySpawnPos = new Vector3(_playerObj.transform.position.x, _ability.spawnHeight, _playerObj.transform.position.z) + direction * worldRadius;
 
-            _ability.Cast(direction, _input.projectileTargetPosition, abilitySpawnPos);
+            _ability.Cast(direction, _input.abilityTargetPosition, abilitySpawnPos);
           
             _input.canCast = false;
         }

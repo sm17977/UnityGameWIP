@@ -51,7 +51,7 @@ public class ServerObjectPool : MonoBehaviour {
 
                 Debug.Log("Instantiating ability " + ability.key);
 
-                var projectile = Instantiate(ability.networkMissilePrefab, transform);
+                var projectile = Instantiate(ability.networkSpawnPrefab, transform);
                 projectile.SetActive(false);
                 projectile.name = projectile.transform.GetInstanceID().ToString();
                 projectile.GetComponent<Rigidbody>().isKinematic = false;
