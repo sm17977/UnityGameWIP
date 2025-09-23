@@ -25,7 +25,7 @@ public class InputProcessor : NetworkBehaviour {
     private Queue<InputCommand> _inputQueue = new Queue<InputCommand>();
 
     private Camera _mainCamera;
-    public Vector3 projectileTargetPosition;
+    public Vector3 abilityTargetPosition;
     public Vector3 lastClickPosition;
     public Vector3 projectileAATargetPosition;
     
@@ -286,6 +286,11 @@ public class InputProcessor : NetworkBehaviour {
     }
     
     private void ShowSpellIndicator(Ability ability) {
+
+        if (!spellIndicatorPrefab) {
+            Debug.LogError("Missing spell indicator prefab for ability: " + ability.name);
+            return;
+        }
         
         _spellIndicator = Instantiate(
             spellIndicatorPrefab,
@@ -330,12 +335,11 @@ public class InputProcessor : NetworkBehaviour {
         var plane = new Plane(Vector3.up, new Vector3(0, _player.hitboxPos.y, 0));
         // Get a ray from the camera to the mouse
         var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        projectileTargetPosition = transform.position; // Setting a default, not sure if we still need this
-
-        // Check if the ray intersects with the plane, if it intersects we can find the projectile target position
+       
+        // Check if the ray intersects with the plane, if it intersects, we can find the projectile target position
         if (plane.Raycast(ray, out var enter)) {
             var hitPoint = ray.GetPoint(enter);
-            projectileTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
+            abilityTargetPosition = new Vector3(hitPoint.x, transform.position.y, hitPoint.z);
         }
     }
     
