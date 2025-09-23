@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eeea76e6b8ef5240a03dc2e4f72283b, type: 3}
+  m_Name: Lux_R
+  m_EditorClassIdentifier: 
+  abilityName: LuxR
+  abilityDescription: 
+  champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
+  key: R
+  damage: 200
+  currentCooldown: 0
+  maxCooldown: 5
+  range: 0
+  speed: 0
+  lingeringLifetime: 0
+  hasRecast: 0
+  canRecast: 0
+  missilePrefab: {fileID: 0}
+  networkMissilePrefab: {fileID: 0}
+  hitPrefab: {fileID: 0}
+  spellIndicatorPrefab: {fileID: 0}
+  spawnHeight: 1
+  hitboxRadius: 0
+  spawnScript: {fileID: 0}
+  hitScript: {fileID: 0}
+  animationClip: {fileID: 1443336664255416576, guid: 458163394b1b81746828f5eedf2ee10a,
+    type: 3}
+  animationTrigger: rAbility
+  animationState: R Ability
