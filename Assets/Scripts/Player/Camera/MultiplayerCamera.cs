@@ -1,3 +1,4 @@
+using System;
 using CustomElements;
 using Unity.Netcode;
 using UnityEngine;
@@ -20,7 +21,15 @@ public class MultiplayerCamera : NetworkBehaviour {
     private Vector3 _cameraPosAtMinimapDragStart = Vector3.zero; 
     private Vector3 _cameraVelocity = Vector3.zero;
     public float minimapSmoothTime = 0.01f;
-    
+
+    private readonly float _defaultCameraSize = 7;
+    private float _currentCameraSize;
+
+    public void Start() {
+        cam.orthographicSize = _defaultCameraSize;
+        _currentCameraSize = _defaultCameraSize;
+    }
+
     public void SetMinimap(MinimapElement minimapElement) {
         _minimap = minimapElement;
         _minimap.OnMinimapTargetSet += OnMinimapTargetSetHandler;
@@ -37,6 +46,7 @@ public class MultiplayerCamera : NetworkBehaviour {
         _controls.Player.MiddleBtn.performed += OnMiddleBtnDown;
         _controls.Player.MiddleBtn.canceled += OnMiddleBtnReleased;
         _controls.Player.Space.performed += OnSpacebarDown;
+        _controls.Player.MouseScroll.performed += OnMouseScroll;
     }
 
     private void OnEnable() {
@@ -50,6 +60,18 @@ public class MultiplayerCamera : NetworkBehaviour {
         _controls.Player.Disable();
         if (_minimap != null)
             _minimap.OnMinimapTargetSet -= OnMinimapTargetSetHandler;
+    }
+
+    private void OnMouseScroll(InputAction.CallbackContext context) {
+        if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
+        if(_inputProcessor.isTyping) return;
+        var scrollDelta = context.ReadValue<float>();
+
+        Debug.Log("Scroll Delta: " + scrollDelta);
+        Debug.Log("Current Camera Size: " + _currentCameraSize);
+        if(_currentCameraSize <= 1 && scrollDelta > 0) return; 
+        _currentCameraSize -= scrollDelta/2;
+        cam.orthographicSize = _currentCameraSize;
     }
 
     private void OnMiddleBtnDown(InputAction.CallbackContext context) {

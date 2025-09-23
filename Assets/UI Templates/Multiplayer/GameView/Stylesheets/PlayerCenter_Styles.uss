@@ -1,7 +1,6 @@
 ﻿
 /* Player center container */
 .player-center-container{
-    background-color: rgba(255, 255, 255, 0);
     height: 160px;
     width: 700px;
     margin-top: auto;
@@ -19,19 +18,43 @@
     margin: auto;
 }
 
-/* Skill box */
-.skill{
-    margin-left: 2px;
-    margin-right: 2px;
-    margin-top: 0;
-    margin-bottom: 0;
+/* Skills box row */
+.skills-box{
+    height: 100%;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    margin: auto;
 }
 
+.summoner-spells-container{
+    display: flex;
+    flex-direction: column;
+    margin-left: 4px;
+    margin-right: 4px;
+}
 
+.summoner-spell{
+    height: 28px;
+    width: 28px;
+    border-color: #4fffcd;
+    border-width: 2px;
+}
 
+.summoner-spell-1{
+    background-color: rgb(255, 251, 0);
+    margin-bottom: 4px;
+}
+.summoner-spell-2{
+    background-color: rgb(48, 255, 0);
+}
+
+/* Skill box */
 .skill{
-    border-color: black;
-    border-width: 1px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-color: #4fffcd;
+    border-width: 2px;
 }
 
 .skill:hover{
@@ -86,10 +109,10 @@
     height: 24px;
     right: 50px;
     bottom: -8px;
-    background-color: #662a77;
+    background-color: #379379;
     border-radius: 50%;
-    border-color: #dfa1f7;
-    border-width: 1px;
+    border-color: #4fffcd;
+    border-width: 2px;
 }
 
 .skill-label Label {
@@ -149,16 +172,16 @@
     -unity-text-align: middle-center;
     color: white;
     text-shadow: 6px 6px 0px rgb(0, 0, 0);
-    font-size: 22px;
+    font-size: 18px;
 }
 
 .portrait-container{
-    height: 125px;
-    width: 125px;
+    height: 110px;
+    width: 110px;
     border-radius: 50%;
     position: absolute;
     bottom: 12.5px;
-    border-color: #ffffff;
+    border-color: #4fffcd;
     border-width: 2px;
 }
 
@@ -176,10 +199,10 @@
     height: 30px;
     right: 0;
     bottom: 0;
-    background-color: #b25cf8;
+    background-color: #379379;
     border-radius: 50%;
     border-width: 2px;
-    border-color: white;
+    border-color: #4fffcd;
 }
 
 .player-level-label{

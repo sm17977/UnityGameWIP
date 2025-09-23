@@ -10,23 +10,12 @@
 
 
 .damage-number-label {
-    /* start off invisible and centered at 0,0 */
     opacity: 0;
-    transform: translate(0px, 0px);
-    transition: transform 0.3s ease-out, opacity 0.3s ease-in;
+    transition: opacity 0.3s ease-in;
 }
 
-.damage-number-label--pop {
-    /* pop up and fade in */
+.damage-number-label-active {
     opacity: 1;
-    transform: translate(0px, -30px);
-}
-
-.damage-number-label--fall {
-    /* then fall down and off to the left */
-    opacity: 0;
-    transform: translate(-40px, 0px);
-    transition: transform 0.5s ease-in, opacity 0.5s ease-in;
 }
 
 

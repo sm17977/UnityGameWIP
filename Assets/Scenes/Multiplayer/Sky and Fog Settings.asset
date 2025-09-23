@@ -279,6 +279,7 @@ MonoBehaviour:
   - {fileID: 4061426939120297211}
   - {fileID: -6248177546174981728}
   - {fileID: -5496189636373088052}
+  - {fileID: 8303161841984403312}
 --- !u!114 &4061426939120297211
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -423,3 +424,49 @@ MonoBehaviour:
   planetCenterPosition:
     m_OverrideState: 0
     m_Value: {x: 0, y: -6378100, z: 0}
+--- !u!114 &8303161841984403312
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24f077503be6ae942a1e1245dbd53ea9, type: 3}
+  m_Name: Bloom
+  m_EditorClassIdentifier: 
+  active: 0
+  quality:
+    m_OverrideState: 1
+    m_Value: 2
+  threshold:
+    m_OverrideState: 1
+    m_Value: 0.93
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.036
+  scatter:
+    m_OverrideState: 1
+    m_Value: 0.387
+  tint:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0, b: 0.016949177, a: 1}
+  dirtTexture:
+    m_OverrideState: 0
+    m_Value: {fileID: 0}
+  dirtIntensity:
+    m_OverrideState: 0
+    m_Value: 0
+  anamorphic:
+    m_OverrideState: 0
+    m_Value: 1
+  m_Resolution:
+    m_OverrideState: 1
+    m_Value: 2
+  m_HighQualityPrefiltering:
+    m_OverrideState: 1
+    m_Value: 1
+  m_HighQualityFiltering:
+    m_OverrideState: 1
+    m_Value: 1

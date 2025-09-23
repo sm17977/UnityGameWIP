@@ -18,7 +18,8 @@ namespace CustomElements {
         private float _viewPortWidth = 50f;
         private float _viewPortHeight = 50f;
         private Vector2 _pointerDownPosition;
-        private const float ClickThreshold = 5f; 
+        private const float ClickThreshold = 5f;
+        private const float DefaultCameraOrthoSize = 7f;
         
         public event System.Action<Vector3>OnMinimapTargetSet;
 
@@ -37,7 +38,7 @@ namespace CustomElements {
             Rect rect = contentRect;
             
             if (Camera.main.orthographic) {
-                float viewHeight = 2f * Camera.main.orthographicSize;
+                float viewHeight = 2f * DefaultCameraOrthoSize;
                 float viewWidth = viewHeight * Camera.main.aspect;
 
                 float worldWidth = WorldMax.x - WorldMin.x;

@@ -170,6 +170,8 @@ namespace CustomElements {
         }
 
         public void StartCooldown(float duration) {
+            Debug.Log("Start Cooldown");
+            
             _cooldownSchedule?.Pause();
             _fadeSchedule?.Pause();
             ShimmerEffect();

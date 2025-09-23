@@ -104,7 +104,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""Q"",
                     ""type"": ""Button"",
                     ""id"": ""d18b7fa8-893e-473a-bcc7-5b4e83dd13e0"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -140,10 +140,19 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""E"",
                     ""type"": ""Button"",
                     ""id"": ""aa2104a0-5a99-4d29-bc70-46151e50a2c6"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MouseScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""18c54019-afeb-4a79-8aa7-0f63517d0e3e"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""E"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""299ced98-fe54-4fa1-9f1e-86955a0271d5"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MouseScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -232,7 +252,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""E"",
                     ""type"": ""Button"",
                     ""id"": ""a68af0ba-f13b-4c6d-849d-10e285d47313"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -241,7 +261,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""W"",
                     ""type"": ""Button"",
                     ""id"": ""9e52e0aa-6465-4229-b2b6-20b266da9d62"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -272,6 +292,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Mouse"",
+                    ""type"": ""Value"",
+                    ""id"": ""41c9a973-3d98-4324-9cd1-a134bda5edc2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -340,6 +369,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""ENTER"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""96fa35de-8a90-4293-a48f-1c342e1919b0"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Mouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -354,6 +394,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_MiddleBtn = m_Player.FindAction("MiddleBtn", throwIfNotFound: true);
         m_Player_Space = m_Player.FindAction("Space", throwIfNotFound: true);
         m_Player_E = m_Player.FindAction("E", throwIfNotFound: true);
+        m_Player_MouseScroll = m_Player.FindAction("MouseScroll", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Q = m_UI.FindAction("Q", throwIfNotFound: true);
@@ -362,6 +403,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_UI_R = m_UI.FindAction("R", throwIfNotFound: true);
         m_UI_ESC = m_UI.FindAction("ESC", throwIfNotFound: true);
         m_UI_ENTER = m_UI.FindAction("ENTER", throwIfNotFound: true);
+        m_UI_Mouse = m_UI.FindAction("Mouse", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -449,6 +491,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MiddleBtn;
     private readonly InputAction m_Player_Space;
     private readonly InputAction m_Player_E;
+    private readonly InputAction m_Player_MouseScroll;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -484,6 +527,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/E".
         /// </summary>
         public InputAction @E => m_Wrapper.m_Player_E;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/MouseScroll".
+        /// </summary>
+        public InputAction @MouseScroll => m_Wrapper.m_Player_MouseScroll;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -528,6 +575,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @E.started += instance.OnE;
             @E.performed += instance.OnE;
             @E.canceled += instance.OnE;
+            @MouseScroll.started += instance.OnMouseScroll;
+            @MouseScroll.performed += instance.OnMouseScroll;
+            @MouseScroll.canceled += instance.OnMouseScroll;
         }
 
         /// <summary>
@@ -557,6 +607,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @E.started -= instance.OnE;
             @E.performed -= instance.OnE;
             @E.canceled -= instance.OnE;
+            @MouseScroll.started -= instance.OnMouseScroll;
+            @MouseScroll.performed -= instance.OnMouseScroll;
+            @MouseScroll.canceled -= instance.OnMouseScroll;
         }
 
         /// <summary>
@@ -600,6 +653,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_R;
     private readonly InputAction m_UI_ESC;
     private readonly InputAction m_UI_ENTER;
+    private readonly InputAction m_UI_Mouse;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -635,6 +689,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/ENTER".
         /// </summary>
         public InputAction @ENTER => m_Wrapper.m_UI_ENTER;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/Mouse".
+        /// </summary>
+        public InputAction @Mouse => m_Wrapper.m_UI_Mouse;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -679,6 +737,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @ENTER.started += instance.OnENTER;
             @ENTER.performed += instance.OnENTER;
             @ENTER.canceled += instance.OnENTER;
+            @Mouse.started += instance.OnMouse;
+            @Mouse.performed += instance.OnMouse;
+            @Mouse.canceled += instance.OnMouse;
         }
 
         /// <summary>
@@ -708,6 +769,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @ENTER.started -= instance.OnENTER;
             @ENTER.performed -= instance.OnENTER;
             @ENTER.canceled -= instance.OnENTER;
+            @Mouse.started -= instance.OnMouse;
+            @Mouse.performed -= instance.OnMouse;
+            @Mouse.canceled -= instance.OnMouse;
         }
 
         /// <summary>
@@ -790,6 +854,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnE(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MouseScroll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMouseScroll(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -840,5 +911,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnENTER(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Mouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMouse(InputAction.CallbackContext context);
     }
 }

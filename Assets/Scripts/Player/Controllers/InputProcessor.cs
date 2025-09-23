@@ -247,7 +247,6 @@ public class InputProcessor : NetworkBehaviour {
                     }
                     // Otherwise remove it and cast
                     else {
-                        _showSpellIndicator = false;
                         HideSpellIndicator();
                         NotifyUICooldown?.Invoke(key, ability.maxCooldown);
                         GetCastingTargetPosition();
@@ -287,16 +286,18 @@ public class InputProcessor : NetworkBehaviour {
     }
     
     private void ShowSpellIndicator(Ability ability) {
+        
         _spellIndicator = Instantiate(
             spellIndicatorPrefab,
             new Vector3(transform.position.x, 0.51f, transform.position.z), 
-            spellIndicatorPrefab.transform.rotation
+            spellIndicatorPrefab.transform.rotation, _player.transform
         );
         var spellIndicatorScript = _spellIndicator.GetComponent<BaseSpellIndicator>();
         spellIndicatorScript.InitializeProperties(ability);
     }
 
     private void HideSpellIndicator() {
+        _showSpellIndicator = false;
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }
     

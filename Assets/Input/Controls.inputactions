@@ -18,7 +18,7 @@
                     "name": "Q",
                     "type": "Button",
                     "id": "d18b7fa8-893e-473a-bcc7-5b4e83dd13e0",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,10 +54,19 @@
                     "name": "E",
                     "type": "Button",
                     "id": "aa2104a0-5a99-4d29-bc70-46151e50a2c6",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MouseScroll",
+                    "type": "Value",
+                    "id": "18c54019-afeb-4a79-8aa7-0f63517d0e3e",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -126,6 +135,17 @@
                     "action": "E",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "299ced98-fe54-4fa1-9f1e-86955a0271d5",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseScroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -146,7 +166,7 @@
                     "name": "E",
                     "type": "Button",
                     "id": "a68af0ba-f13b-4c6d-849d-10e285d47313",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -155,7 +175,7 @@
                     "name": "W",
                     "type": "Button",
                     "id": "9e52e0aa-6465-4229-b2b6-20b266da9d62",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -186,6 +206,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Mouse",
+                    "type": "Value",
+                    "id": "41c9a973-3d98-4324-9cd1-a134bda5edc2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -252,6 +281,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "ENTER",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "96fa35de-8a90-4293-a48f-1c342e1919b0",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Mouse",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -6,6 +6,25 @@
     noNamespaceSchemaLocation="../../../../../../UIElementsSchema/UIElements.xsd" 
     editor-extension-mode="False">
     
+    <Style src="project://database/Assets/UI Templates/Multiplayer/Multiplayer_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/CreateLobbyModal/CreateLobbyModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/MessageModal/MessageModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/SetPlayerNameModal/SetPlayerNameModal_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbyView/LobbyView_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/LobbiesView/LobbiesView_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/DeathScreenView/DeathScreenView_Styles.uss" />
+    
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/Main_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/Countdown_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/HealthBar_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/Chat_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/Minimap_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/PlayerCenter_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/Stat_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/TeamPortraits_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/TopBar_Styles.uss" />
+    <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/DamageNumber_Styles.uss" />
+    
     <!-- Game View -->
     <engine:VisualElement name="gameview-container" class="gameview-container">
         
@@ -45,30 +64,44 @@
             
             <!-- Skills container -->
             <engine:VisualElement name="skills-container" class="skills-container">
-                <engine:VisualElement name="q-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="Q" class="q-skill"/>
-                    <engine:VisualElement class="skill-label">
-                        <engine:Label text="Q"/>
+                
+                <!-- Q-W-E-R Skills -->
+                <engine:VisualElement name="skills-box" class="skills-box">
+                    <engine:VisualElement name="q-box" class="skill">
+                        <custom:RadialCooldownElement name="radial-cooldown" key="Q" class="q-skill"/>
+                        <engine:VisualElement class="skill-label">
+                            <engine:Label text="Q"/>
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                    <engine:VisualElement name="w-box" class="skill">
+                        <custom:RadialCooldownElement name="radial-cooldown" key="W" class="w-skill"/>
+                        <engine:VisualElement class="skill-label">
+                            <engine:Label text="W"/>
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                    <engine:VisualElement name="e-box" class="skill">
+                        <custom:RadialCooldownElement name="radial-cooldown" key="E" class="e-skill"/>
+                        <engine:VisualElement class="skill-label">
+                            <engine:Label text="E"/>
+                        </engine:VisualElement>
+                    </engine:VisualElement>
+                    <engine:VisualElement name="r-box" class="skill">
+                        <custom:RadialCooldownElement name="radial-cooldown" key="R" class="r-skill"/>
+                        <engine:VisualElement class="skill-label">
+                            <engine:Label text="R"/>
+                        </engine:VisualElement>
                     </engine:VisualElement>
                 </engine:VisualElement>
-                <engine:VisualElement name="w-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="W" class="w-skill"/>
-                    <engine:VisualElement class="skill-label">
-                        <engine:Label text="W"/>
+                
+                <!-- Summoner Spells -->
+                <engine:VisualElement name="summoner-spells-container" class="summoner-spells-container">
+                    <engine:VisualElement name="summoner-spell" class="summoner-spell summoner-spell-1">
+                    </engine:VisualElement>
+                    <engine:VisualElement name="summoner-spell" class="summoner-spell summoner-spell-2">
                     </engine:VisualElement>
                 </engine:VisualElement>
-                <engine:VisualElement name="e-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="E" class="e-skill"/>
-                    <engine:VisualElement class="skill-label">
-                        <engine:Label text="E"/>
-                    </engine:VisualElement>
-                </engine:VisualElement>
-                <engine:VisualElement name="r-box" class="skill">
-                    <custom:RadialCooldownElement name="radial-cooldown" key="R" class="r-skill"/>
-                    <engine:VisualElement class="skill-label">
-                        <engine:Label text="R"/>
-                    </engine:VisualElement>
-                </engine:VisualElement>
+                    
+                
             </engine:VisualElement>
             
             <!-- Resource Bars -->

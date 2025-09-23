@@ -56,7 +56,6 @@ public class MovingState : State {
         
         MoveAndRotate(direction);
         
-        
         // Check if we've reached the target location
         if(!_movingToAttack) {
             float distToTarget = Vector3.Distance(_playerObj.transform.position, _targetLocation);

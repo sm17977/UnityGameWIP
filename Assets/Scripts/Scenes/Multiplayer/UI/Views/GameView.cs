@@ -130,7 +130,7 @@ namespace Multiplayer.UI {
         /// <param name="key"></param>
         /// <param name="duration"></param>
         public void ActivateAbilityAnimation(string key, float duration) { 
-            var skillsContainer = Template.Q<VisualElement>("skills-container");
+            var skillsContainer = Template.Q<VisualElement>("skills-box");
             var abilityBox = FindRadialCooldownElementByKey(skillsContainer, key);
             if(abilityBox != null) abilityBox.StartCooldown(duration);
         }
@@ -156,10 +156,14 @@ namespace Multiplayer.UI {
         }
 
         public void BlurInput() {
-            if(_chatInput.IsFocused) _chatInput.Blur();
+            if (_chatInput.IsFocused) {
+                _chatInput.Blur();
+                _chatInput.focusable = false;
+            }
         }
 
         public void FocusInput() {
+            _chatInput.focusable = true;
             // Have to delay this or focus won't work
             if (!_chatInput.IsFocused) {
                 _chatInput.schedule.Execute(() => {

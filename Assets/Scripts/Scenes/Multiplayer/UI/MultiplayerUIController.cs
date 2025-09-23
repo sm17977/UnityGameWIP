@@ -136,6 +136,7 @@ public class MultiplayerUIController : MonoBehaviour {
 
         _controls.UI.ESC.performed += OnEscape;
         _controls.UI.ENTER.performed += OnEnter;
+        _controls.UI.W.performed += OnW;
 
             // Events
 
@@ -687,6 +688,10 @@ public class MultiplayerUIController : MonoBehaviour {
             await Task.Delay(3000);
             _viewManager.ChangeView(_deathScreenView);
         }
+    }
+
+    private void OnW(InputAction.CallbackContext context) {
+        Debug.Log("Pressed W");
     }
 
     private void OnEnter(InputAction.CallbackContext context) {

@@ -41,6 +41,7 @@ namespace CustomElements {
             
             ChatInputField = new BlinkingTextField();
             ChatInputField.AddToClassList("chat-input");
+            ChatInputField.focusable = false;
             
             Add(_messagesScrollView);
             Add(ChatInputField);
@@ -48,6 +49,7 @@ namespace CustomElements {
         
         private void GenerateVisualContent(MeshGenerationContext mgc) {
             if (ChatInputField.IsFocused) {
+                Debug.Log("Focussed Chat!");
                 var painter2d = mgc.painter2D;
                 DrawHelper.init(painter2d);
                 DrawHelper.DrawGradientRect((int)_width, (int)_height, _startColor, _endColor,

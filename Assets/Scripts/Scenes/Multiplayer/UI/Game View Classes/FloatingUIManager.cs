@@ -11,6 +11,7 @@ public class FloatingUIManager {
     private Dictionary<LuxPlayerController, Dictionary<UIComponent, VisualElement>> _playerUIComponents;
     private const float HealthBarDefaultYOffset = -60f;
     private const float HealthBarDefaultWidth = 142f;
+    private const int HealthBarSections = 10;
 
     public FloatingUIManager(VisualElement template) {
         _template = template;
@@ -68,6 +69,18 @@ public class FloatingUIManager {
         healthBar.name = "health-bar";
         healthBar.style.width = new Length(HealthBarDefaultWidth, LengthUnit.Pixel);
         healthBarContainer.Add(healthBar);
+        
+        for(var i = 0; i < HealthBarSections; i++) {
+            var section = new VisualElement();
+            section.AddToClassList("health-bar-section");
+            if(i < HealthBarSections - 1) {
+                section.AddToClassList("border-right");
+            }
+            else {
+                section.AddToClassList("border-left");
+            }
+            healthBar.Add(section);
+        }
 
         return healthBarContainer;
     }
@@ -125,7 +138,7 @@ public class FloatingUIManager {
 
             var damageTextLabelContainer = _playerUIComponents[playerScript][UIComponent.PlayerDamageText];
             var damageTextLabel = damageTextLabelContainer.Q<Label>("damage-number-label");
-            //ShowDamageNumberLabel(damageTextLabel, damage);
+            ShowDamageNumberLabel(damageTextLabel, damage);
 
             if (healthBar != null) {
                 float healthPercentage = currentHealth / maxHealth;
@@ -143,16 +156,13 @@ public class FloatingUIManager {
     private void ShowDamageNumberLabel(Label label, float damageAmount) {
         
         label.text = damageAmount.ToString();
-        
-        
-        label.AddToClassList("damage-number-label--pop");
+        label.AddToClassList("damage-number-label-active");
         
         label.schedule
             .Execute(() => {
-                label.RemoveFromClassList("damage-number-label--pop");
-                label.AddToClassList("damage-number-label--fall");
+                label.RemoveFromClassList("damage-number-label-active");
             })
-            .StartingIn(300);    
+            .StartingIn(1000);    
     }
     
 
