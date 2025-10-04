@@ -80,7 +80,7 @@ public class RPCController : NetworkBehaviour {
     public void SpawnProjectileServerRpc(Vector3 targetDirection, Vector3 position, Vector3 targetPosition, ulong clientId, string abilityKey) {
 
         var ability = _playerController.Abilities[abilityKey];
-        var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
+        var newNetworkProjectile = ServerObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Spawn);
         if (newNetworkProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;
@@ -175,7 +175,7 @@ public class RPCController : NetworkBehaviour {
 
             var ability = _playerController.Abilities[abilityKey];
 
-            var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
+            var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Spawn);
             if (newProjectile == null) {
                 Debug.Log("No available projectiles in the pool");
             }

@@ -94,7 +94,7 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
                 // Turn off shockwave distortion
                 _shockwaveQuad.SetActive(false);
                 CanBeDestroyed = true;
-                DestroyAbilityPrefab(AbilityPrefabType.Projectile);
+                DestroyAbilityPrefab(AbilityPrefabType.Spawn);
             }
         }
         else {

@@ -109,7 +109,7 @@ public abstract class NetworkAbilityBehaviour : NetworkBehaviour {
     }
     
     protected void DestroyAbilityPrefab() {
-        ServerObjectPool.Instance.ReturnObjectToPool(Ability, AbilityPrefabType.Projectile, gameObject);
+        ServerObjectPool.Instance.ReturnObjectToPool(Ability, AbilityPrefabType.Spawn, gameObject);
         CanBeDestroyed = false;
         DestructionScheduled = false; 
     }

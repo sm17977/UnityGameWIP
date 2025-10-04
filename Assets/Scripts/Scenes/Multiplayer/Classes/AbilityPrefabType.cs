@@ -1,5 +1,4 @@
 ﻿public enum AbilityPrefabType {
-    Projectile,
-    Hit,
-    AreaOfEffect
+    Spawn,
+    Hit
 }

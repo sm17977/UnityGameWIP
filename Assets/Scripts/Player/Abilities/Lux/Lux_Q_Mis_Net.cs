@@ -82,7 +82,7 @@ public class Lux_Q_Mis_Net : NetworkAbilityBehaviour {
         var ability = playerScript.Abilities[abilityKey];
         
         // Deactivate the projectile
-        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Projectile, clientPrefab);
+        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Spawn, clientPrefab);
         ClientPrefabManager.Instance.UnregisterPrefab(prefabNetworkObjectId);
         
         // Spawn the on hit VFX on all clients

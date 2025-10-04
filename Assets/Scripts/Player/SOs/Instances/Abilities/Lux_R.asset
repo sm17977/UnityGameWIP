@@ -25,13 +25,16 @@ MonoBehaviour:
   lingeringLifetime: 0
   hasRecast: 0
   canRecast: 0
-  spawnPrefab: {fileID: 0}
-  networkSpawnPrefab: {fileID: 0}
+  lifetime: 3
+  spawnPrefab: {fileID: 8546719537712807869, guid: a56752fa405bbdf4584f93124917ae5b,
+    type: 3}
+  networkSpawnPrefab: {fileID: 8546719537712807869, guid: 7c4bcb051783a824c90ccda8df87f64b,
+    type: 3}
   hitPrefab: {fileID: 0}
   spellIndicatorPrefab: {fileID: 0}
-  spawnHeight: 1
+  spawnHeight: 0
   hitboxRadius: 0
-  spawnScript: {fileID: 0}
+  spawnScript: {fileID: 11500000, guid: 03c9648a9f9640708fe0858f0ae70d24, type: 3}
   hitScript: {fileID: 0}
   animationClip: {fileID: 1443336664255416576, guid: 458163394b1b81746828f5eedf2ee10a,
     type: 3}

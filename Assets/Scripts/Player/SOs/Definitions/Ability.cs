@@ -21,6 +21,7 @@ public class Ability : ScriptableObject {
     public float lingeringLifetime;
     public bool hasRecast;
     public bool canRecast;
+    public float lifetime;
 
     public enum AbilityArchetype {
         Projectile,
@@ -63,7 +64,9 @@ public class Ability : ScriptableObject {
     }
  
     public float GetLifetime(){
-        return range / speed;
+        if (archetype == AbilityArchetype.Projectile) return range / speed;
+        if (archetype == AbilityArchetype.Aoe) return lifetime;
+        return 0;
     }
 
     public float GetTotalLifetime(){

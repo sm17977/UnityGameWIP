@@ -44,19 +44,19 @@ public class ServerObjectPool : MonoBehaviour {
         foreach (var ability in abilityPool) {
             
             _pool[ability] = new SerializedDictionary<AbilityPrefabType, Queue<GameObject>>();
-            _pool[ability][AbilityPrefabType.Projectile] = new Queue<GameObject>();
+            _pool[ability][AbilityPrefabType.Spawn] = new Queue<GameObject>();
             
             // Pool size determines how many prefabs of each type we'll store
             for (var i = 0; i < poolSize; i++) {
 
                 Debug.Log("Instantiating ability " + ability.key);
 
-                var projectile = Instantiate(ability.networkSpawnPrefab, transform);
-                projectile.SetActive(false);
-                projectile.name = projectile.transform.GetInstanceID().ToString();
-                projectile.GetComponent<Rigidbody>().isKinematic = false;
+                var abilityPrefab = Instantiate(ability.networkSpawnPrefab, transform);
+                abilityPrefab.SetActive(false);
+                abilityPrefab.name = abilityPrefab.transform.GetInstanceID().ToString();
+                abilityPrefab.GetComponent<Rigidbody>().isKinematic = false;
 
-                _pool[ability][AbilityPrefabType.Projectile].Enqueue(projectile);
+                _pool[ability][AbilityPrefabType.Spawn].Enqueue(abilityPrefab);
             }
         }
         InitAAPrefabs();

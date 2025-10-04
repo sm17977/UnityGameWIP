@@ -57,7 +57,7 @@ public class Lux_Q_Mis : ClientAbilityBehaviour {
 
     private IEnumerator DelayBeforeDestroy(float delayInSeconds) {
         yield return new WaitForSeconds(delayInSeconds);
-        if(CanBeDestroyed) DestroyAbilityPrefab(AbilityPrefabType.Projectile);
+        if(CanBeDestroyed) DestroyAbilityPrefab(AbilityPrefabType.Spawn);
     }
 
     // Detect projectile hitbox collision with enemy 

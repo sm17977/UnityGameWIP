@@ -4,7 +4,7 @@
 public class ProjectileCastBehaviour : ICastBehaviour {
     public void Cast(Ability ability, CastContext ctx, LuxPlayerController playerController) {
         
-        var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Projectile);
+        var newProjectile = ClientObjectPool.Instance.GetPooledObject(ability, AbilityPrefabType.Spawn);
         if (newProjectile == null) {
             Debug.Log("No available projectiles in the pool");
             return;

@@ -39,17 +39,19 @@ public class ClientObjectPool : MonoBehaviour {
         foreach (var ability in abilityPool) {
             
             _pool[ability] = new SerializedDictionary<AbilityPrefabType, Queue<GameObject>>();
-            _pool[ability][AbilityPrefabType.Projectile] = new Queue<GameObject>();
+            _pool[ability][AbilityPrefabType.Spawn] = new Queue<GameObject>();
+            
+            // Only create a hit prefab pool if the ability has a hit prefab assigned
             if (ability.hitPrefab != null) _pool[ability][AbilityPrefabType.Hit] = new Queue<GameObject>();
 
             // Pool size determines how many prefabs of each type we'll store
             for (var i = 0; i < poolSize; i++) {
 
-                var projectile = Instantiate(ability.spawnPrefab, transform);
-                projectile.SetActive(false);
-                projectile.name = projectile.transform.GetInstanceID().ToString();
+                var abilityPrefab = Instantiate(ability.spawnPrefab, transform);
+                abilityPrefab.SetActive(false);
+                abilityPrefab.name = abilityPrefab.transform.GetInstanceID().ToString();
 
-                _pool[ability][AbilityPrefabType.Projectile].Enqueue(projectile);
+                _pool[ability][AbilityPrefabType.Spawn].Enqueue(abilityPrefab);
 
                 if (ability.hitPrefab != null) {
                     var hit = Instantiate(ability.hitPrefab, transform);
