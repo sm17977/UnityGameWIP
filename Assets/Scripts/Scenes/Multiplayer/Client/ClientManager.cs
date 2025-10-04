@@ -132,7 +132,11 @@ namespace Multiplayer {
         private async Task<ClientConnectionInfo> GetClientConnectionInfo(CancellationToken cancellationToken, WebServicesAPI webServicesAPI) {
             
            // Queue allocation request for a game server
-           await webServicesAPI.QueueAllocationRequest();
+           var result = await webServicesAPI.QueueAllocationRequest();
+           if(!result) {
+               Debug.LogError("Failed to queue allocation request.");
+               return new ClientConnectionInfo { IP = "", Port = 0 };
+           }
            
            // Check for an active machine
            var status  = await webServicesAPI.GetMachineStatus();

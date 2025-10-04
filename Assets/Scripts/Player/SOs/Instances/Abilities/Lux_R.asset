@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: R
+  archetype: 1
   damage: 200
   currentCooldown: 0
   maxCooldown: 5
@@ -24,8 +25,8 @@ MonoBehaviour:
   lingeringLifetime: 0
   hasRecast: 0
   canRecast: 0
-  missilePrefab: {fileID: 0}
-  networkMissilePrefab: {fileID: 0}
+  spawnPrefab: {fileID: 0}
+  networkSpawnPrefab: {fileID: 0}
   hitPrefab: {fileID: 0}
   spellIndicatorPrefab: {fileID: 0}
   spawnHeight: 1

@@ -12,6 +12,7 @@ public class Ability : ScriptableObject {
     public string key;
 
     [Header("Ability Properties")] 
+    public AbilityArchetype archetype;
     public float damage;
     public float currentCooldown = 0;
     public float maxCooldown;
@@ -21,6 +22,11 @@ public class Ability : ScriptableObject {
     public bool hasRecast;
     public bool canRecast;
 
+    public enum AbilityArchetype {
+        Projectile,
+        Aoe
+    };
+    
 
     [Header("Buffs/Debuffs")]
     public Buff buff;
@@ -42,18 +48,18 @@ public class Ability : ScriptableObject {
     public string animationTrigger;
     public string animationState;
    
-    private ICastingStrategy _castingStrategy;
+    private AbilityCaster _caster;
 
-    public void SetCastingStrategy(ICastingStrategy strategy) {
-        _castingStrategy = strategy;
+    public void SetCaster(AbilityCaster caster) {
+        _caster = caster;
     }
 
     public void Cast(Vector3 direction, Vector3 targetPos, Vector3 abilitySpawnPos) {
-        _castingStrategy.Cast(this, direction, targetPos, abilitySpawnPos);
+        _caster.Cast(this, direction, targetPos, abilitySpawnPos);
     }
 
     public void Recast(GameObject projectile) {
-        _castingStrategy.Recast(projectile, key);
+        _caster.Recast(projectile, key);
     }
  
     public float GetLifetime(){

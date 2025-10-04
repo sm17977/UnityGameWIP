@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: Q
+  archetype: 0
   damage: 80
   currentCooldown: 0
   maxCooldown: 4
@@ -24,15 +25,16 @@ MonoBehaviour:
   lingeringLifetime: 0
   hasRecast: 0
   canRecast: 0
-  missilePrefab: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94,
+  spawnPrefab: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94,
     type: 3}
-  networkMissilePrefab: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,
+  networkSpawnPrefab: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,
     type: 3}
   hitPrefab: {fileID: 667572507000123376, guid: cd706b9b30c54c04d95dacffa9e6c483,
     type: 3}
   spellIndicatorPrefab: {fileID: 4448765777282739813, guid: 1be24f9e473384e439a037eb8b312b48,
     type: 3}
   spawnHeight: 1
+  hitboxRadius: 0
   spawnScript: {fileID: 11500000, guid: ab93edfea4b093f419ac05f47d4660c8, type: 3}
   hitScript: {fileID: 11500000, guid: 3f5ffe9187b2e67408c641ec9fc31151, type: 3}
   animationClip: {fileID: -5794426142000061655, guid: 458163394b1b81746828f5eedf2ee10a,

@@ -55,49 +55,66 @@ namespace Multiplayer {
             return Convert.ToBase64String(keyByteArray);
         }
 
-        private async Task<UnityWebRequest> SendRequest(string uri, string method, string payload = null,
-            bool tokenRequired = false) {
-            UnityWebRequest www;
-            if (method == "POST" || method == "DELETE") {
-                www = new UnityWebRequest(uri, method);
-                if (!string.IsNullOrEmpty(payload)) {
-                    byte[] bodyRaw = Encoding.UTF8.GetBytes(payload);
-                    www.uploadHandler = new UploadHandlerRaw(bodyRaw);
-                    www.SetRequestHeader("Content-Type", "application/json");
-                }
-            }
-            else {
-                www = UnityWebRequest.Get(uri);
-            }
-
+        private async Task<UnityWebRequest> SendRequest(string uri, string method, string payload = null, bool tokenRequired = false) {
+            if (tokenRequired && string.IsNullOrEmpty(_apiToken)) await RequestAPIToken();
+            var www = new UnityWebRequest(uri, method);
             www.downloadHandler = new DownloadHandlerBuffer();
-            if (tokenRequired) {
-                if (_apiToken.IsNullOrEmpty()) await RequestAPIToken();
-                var auth = "Bearer " + _apiToken;
-                www.SetRequestHeader("Authorization", auth);
-            }
-            else {
-                www.SetRequestHeader("Authorization", "Basic " + _authHeader);
-            }
+            
+            // Log the request
+            Logger.LogRequest(method, uri, payload);
+            var startTime = Time.realtimeSinceStartup;
 
-            await www.SendWebRequest();
+            try {
+                // Set up headers
+                www.SetRequestHeader("Authorization", tokenRequired ? $"Bearer {_apiToken}" : $"Basic {_authHeader}");
+                www.SetRequestHeader("Content-Type", "application/json");
 
-            return www;
+                if (!string.IsNullOrEmpty(payload)) {
+                    var bodyRaw = Encoding.UTF8.GetBytes(payload);
+                    www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                }
+
+                await www.SendWebRequest();
+
+                // Calculate request duration
+                var duration = Time.realtimeSinceStartup - startTime;
+
+                if (www.result == UnityWebRequest.Result.Success) {
+                    Logger.LogResponse(method, uri, www.responseCode, www.downloadHandler.text, duration);
+                }
+                else {
+                    Logger.LogError(method, uri, www.responseCode,
+                        $"{www.error}\nResponse: {www.downloadHandler?.text}");
+                }
+
+
+                return www;
+            }
+            catch (Exception ex) {
+                Logger.LogError(method, uri, www.responseCode,
+                    $"{www.error}\nResponse: {www.downloadHandler?.text}");
+                throw;
+            }
         }
 
         private async Task<T> HandleResponse<T>(UnityWebRequest www) {
-            if (www.result == UnityWebRequest.Result.ConnectionError ||
-                www.result == UnityWebRequest.Result.ProtocolError) {
-                Debug.LogError($"Error: {www.error}");
+
+            if (www.result != UnityWebRequest.Result.Success) {
+                var errorMessage = $"Request failed: {www.error}\n" +
+                                   $"Status Code: {www.responseCode}\n" +
+                                   $"Response: {www.downloadHandler?.text}";
+                Logger.LogError(www.method, www.url, www.responseCode, errorMessage);
                 return default;
             }
-
+            
             var jsonResponse = www.downloadHandler.text;
+            
             try {
                 return JsonConvert.DeserializeObject<T>(jsonResponse);
             }
             catch (Exception e) {
-                Debug.LogError($"Error: {e}");
+                Logger.LogError(www.method, www.url, www.responseCode,
+                    $"JSON Deserialization Error: {e.Message}\nRaw Response: {jsonResponse}");
                 return default;
             }
         }
@@ -118,7 +135,7 @@ namespace Multiplayer {
             Debug.Log($"Access Token: {_apiToken}");
         }
 
-        public async Task QueueAllocationRequest() {
+        public async Task<bool> QueueAllocationRequest() {
             var payload = new QueueAllocationRequest {
                 buildConfigurationId = BuildConfigurationId,
                 allocationId = AllocationId,
@@ -126,11 +143,16 @@ namespace Multiplayer {
             };
             var jsonPayload = JsonConvert.SerializeObject(payload);
             var uri = Protocol + MultiplayDomain + QueueAllocationRequestEndpoint;
+            
+            Logger.LogRequest("POST", "QueueAllocation", jsonPayload);
 
             using var www = await SendRequest(uri, "POST", jsonPayload, true);
             var response = await HandleResponse<QueueAllocationResponse>(www);
-            Debug.Log($"Allocation ID: {response?.allocationId}");
-            Debug.Log($"href: {response?.href}");
+           
+            Logger.LogResponse("POST", "QueueAllocation", www.responseCode,
+                $"Allocation ID: {response?.allocationId}, href: {response?.href}", 0);
+            
+            return !string.IsNullOrEmpty(response?.allocationId);
         }
 
         public async Task<GetAllocationResponse> GetAllocationRequest() {
@@ -144,17 +166,24 @@ namespace Multiplayer {
             var elapsed = 0;
             const int pollInterval = 5;
             GetAllocationResponse response;
+            var pollCount = 0;
 
             do {
-                Debug.Log("Polling for allocation");
+                pollCount++;
+                Logger.LogRequest("GET", $"PollForAllocation (Attempt {pollCount})");
+                
                 cancellationToken.ThrowIfCancellationRequested();
                 response = await GetAllocationRequest();
+
+                Debug.Log("Response: " + response?.ipv4);
+                
                 if (!string.IsNullOrEmpty(response?.ipv4)) return response;
+                
                 await Task.Delay(pollInterval * 1000, cancellationToken);
                 elapsed += pollInterval;
+                
             } while (elapsed < timeoutSeconds);
-
-            Debug.LogError("Polling timed out.");
+            
             return null;
         }
         

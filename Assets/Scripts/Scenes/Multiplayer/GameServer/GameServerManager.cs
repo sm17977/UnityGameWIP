@@ -11,7 +11,9 @@ namespace Multiplayer {
         private void Awake() {
             // This code is critical, if we don't set the target frame rate it will introduce sync issues which
             // are very noticeable when players cast projectiles
+
             #if UNITY_SERVER
+                Debug.Log("Game Server Manager Awake");
                 QualitySettings.vSyncCount = 0;
                 Application.targetFrameRate = 60;
            

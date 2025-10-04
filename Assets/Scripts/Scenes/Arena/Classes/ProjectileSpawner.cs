@@ -110,7 +110,7 @@ public class ProjectileSpawner : MonoBehaviour
         Vector3 spawnPos = new Vector3(randomPoint.x, ability.spawnHeight, randomPoint.z);
         SetDirectionToPlayer(spawnPos);
 
-        GameObject projectile = Instantiate(ability.missilePrefab, spawnPos, Quaternion.LookRotation(direction, Vector3.up));
+        GameObject projectile = Instantiate(ability.spawnPrefab, spawnPos, Quaternion.LookRotation(direction, Vector3.up));
 
         playerController.projectiles.Add(projectile);
 

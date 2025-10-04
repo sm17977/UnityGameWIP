@@ -150,14 +150,10 @@ public class LuxPlayerController : LuxController {
         Abilities["Q"].buff = new Buff(new RootEffect(), "Q", 3, 0);
         Abilities["E"].buff = new Buff(new SlowEffect(), "E", 2f, 0.02f);
         
-        ICastingStrategy castingStrategy = new SinglePlayerCastingStrategy(this);
-
-        if (GlobalState.IsMultiplayer) {
-            castingStrategy = new MultiplayerCastingStrategy(gameObject, _rpc);
-        }
-
+        // Set the ability caster depending on game mode
         foreach (var ability in Abilities.Values) {
-            ability.SetCastingStrategy(castingStrategy);
+            var abilityCaster = AbilityCasterFactory.Get(ability, this, GlobalState.IsMultiplayer);
+            ability.SetCaster(abilityCaster);
         }
     }
     
