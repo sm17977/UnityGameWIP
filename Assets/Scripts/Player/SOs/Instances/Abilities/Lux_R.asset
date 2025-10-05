@@ -32,7 +32,7 @@ MonoBehaviour:
     type: 3}
   hitPrefab: {fileID: 0}
   spellIndicatorPrefab: {fileID: 0}
-  spawnHeight: 0
+  spawnHeight: 1
   hitboxRadius: 0
   spawnScript: {fileID: 11500000, guid: 03c9648a9f9640708fe0858f0ae70d24, type: 3}
   hitScript: {fileID: 0}
