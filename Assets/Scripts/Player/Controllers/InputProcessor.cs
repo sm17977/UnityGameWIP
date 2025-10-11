@@ -240,8 +240,8 @@ public class InputProcessor : NetworkBehaviour {
                 // Check cooldown before casting
                 if (!networkCooldown) {
                     
-                    // Spell indicator isn't already showing, show it and don't cast
-                    if (!_showSpellIndicator) {
+                    // Spell indicator isn't yet showing, show it and don't cast
+                    if (!_showSpellIndicator && spellIndicatorPrefab != null) {
                         _showSpellIndicator = true;
                         ShowSpellIndicator(ability); 
                     }
@@ -302,6 +302,7 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private void HideSpellIndicator() {
+        if(spellIndicatorPrefab == null) return;
         _showSpellIndicator = false;
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }

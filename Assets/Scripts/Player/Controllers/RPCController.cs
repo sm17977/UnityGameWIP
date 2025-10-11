@@ -207,20 +207,20 @@ public class RPCController : NetworkBehaviour {
     /// Add ability cooldown on the server
     /// </summary>
     /// <param name="clientId"></param>
-    /// <param name="abilityData"></param>
+    /// <param name="abilityId"></param>
     [Rpc(SendTo.Server)]
-    public void AddCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
-        NetworkCooldownManager.Instance.StartCooldown(clientId, abilityData);
+    public void AddCooldownRpc(ulong clientId, int abilityId, double maxCooldownSeconds) {
+        NetworkCooldownManager.Instance.StartCooldown(clientId, abilityId, maxCooldownSeconds);
     }
     
     /// <summary>
     /// Check ability cooldown on the server
     /// </summary>
     /// <param name="clientId"></param>
-    /// <param name="abilityData"></param>
+    /// <param name="abilityId"></param>
     [Rpc(SendTo.Server)]
-    public void IsAbilityOnCooldownRpc(ulong clientId, NetworkAbilityData abilityData) {
-        var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(clientId, abilityData);
+    public void IsAbilityOnCooldownRpc(ulong clientId, int abilityId) {
+        var cd = NetworkCooldownManager.Instance.IsAbilityOnCooldown(clientId, abilityId);
         UpdateCooldownRpc(cd);
     }
     

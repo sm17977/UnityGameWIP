@@ -118,7 +118,7 @@ namespace CustomElements {
             var center = rect.center;
             var radius = Mathf.Sqrt(rect.width * rect.width + rect.height * rect.height) * 0.5f;
             
-            // Multiply the cooldown color’s alpha by _cooldownFade so it gradually fades.
+            // Multiply the cooldown color’s alpha by _cooldownFade so it gradually fades
             Color fadedColor = new Color(_cooldownColor.r, _cooldownColor.g, _cooldownColor.b, _cooldownColor.a * _cooldownFade);
 
             painter2D.fillColor = fadedColor;

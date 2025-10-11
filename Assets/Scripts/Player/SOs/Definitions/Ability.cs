@@ -10,6 +10,7 @@ public class Ability : ScriptableObject {
     public string abilityDescription;
     public Champion champion;
     public string key;
+    public int id;
 
     [Header("Ability Properties")] 
     public AbilityArchetype archetype;
@@ -84,9 +85,7 @@ public class Ability : ScriptableObject {
     public void PutOnCooldown_Net(GameObject player) {
         var rpcController = player.GetComponent<RPCController>();
         var clientId = NetworkManager.Singleton.LocalClientId;
-        
-        NetworkAbilityData abilityData = new NetworkAbilityData(this);
-        rpcController.AddCooldownRpc(clientId, abilityData);
+        rpcController.AddCooldownRpc(clientId, id, maxCooldown);
     }
 
     public bool OnCooldown(){
@@ -102,9 +101,7 @@ public class Ability : ScriptableObject {
     public void OnCooldown_Net(GameObject player, Action<bool> onCooldownReceived){
         var rpcController = player.GetComponent<RPCController>();
         var clientId = NetworkManager.Singleton.LocalClientId;
-        NetworkAbilityData abilityData = new NetworkAbilityData(this);
-        
-        rpcController.IsAbilityOnCooldownRpc(clientId, abilityData);
+        rpcController.IsAbilityOnCooldownRpc(clientId, id);
         rpcController.OnCooldownReceived += onCooldownReceived;
     }
 }
