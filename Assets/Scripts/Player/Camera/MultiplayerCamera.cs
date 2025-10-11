@@ -66,9 +66,7 @@ public class MultiplayerCamera : NetworkBehaviour {
         if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         if(_inputProcessor.isTyping) return;
         var scrollDelta = context.ReadValue<float>();
-
-        Debug.Log("Scroll Delta: " + scrollDelta);
-        Debug.Log("Current Camera Size: " + _currentCameraSize);
+        
         if(_currentCameraSize <= 1 && scrollDelta > 0) return; 
         _currentCameraSize -= scrollDelta/2;
         cam.orthographicSize = _currentCameraSize;
