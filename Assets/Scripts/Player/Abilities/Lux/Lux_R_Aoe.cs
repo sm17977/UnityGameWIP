@@ -27,7 +27,9 @@ public class Lux_R_Aoe : ClientAbilityBehaviour {
     }
 
     public override void ResetVFX() {
-        _aoeVfx.Stop();
-        _aoeVfx.Reinit();
+        if (_aoePrefab != null) {
+            _aoeVfx.Stop();
+            _aoeVfx.Reinit();
+        }
     }
 }

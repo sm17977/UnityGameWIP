@@ -36,33 +36,10 @@ public class Lux_R_Aoe_Net : NetworkAbilityBehaviour {
 
         Debug.Log("Lux R AOE hit player: " + collision.gameObject.name);
         
-        var prefabNetworkObjectId = GetComponent<NetworkObject>().NetworkObjectId;
-        var playerNetworkObject = collision.gameObject.GetComponent<NetworkObject>();
         var target = collision.gameObject.GetComponent<LuxPlayerController>();
-        
         HasHit = true;
         target.health.TakeDamage(Ability.damage);
         _canHit = false;
         
-        TriggerCollisionClientRpc(prefabNetworkObjectId, playerNetworkObject.NetworkObjectId, Ability.key);
-    }
-    
-    [Rpc(SendTo.ClientsAndHost)]
-    private void TriggerCollisionClientRpc(ulong prefabNetworkObjectId, ulong collisionNetworkObjectId, string abilityKey) {
-        
-        // Get the prefab that collided
-        var clientPrefab = GetClientPrefab(prefabNetworkObjectId);
-        if (clientPrefab == null) return;
-
-        // Get player that was hit
-        var player = GetHitPlayer(collisionNetworkObjectId);
-        if(player == null) return;
-        
-        var playerScript = player.GetComponent<LuxPlayerController>();
-        var ability = playerScript.Abilities[abilityKey];
-        
-        // Deactivate the projectile
-        ClientObjectPool.Instance.ReturnObjectToPool(ability, AbilityPrefabType.Spawn, clientPrefab);
-        ClientPrefabManager.Instance.UnregisterPrefab(prefabNetworkObjectId);
     }
 }

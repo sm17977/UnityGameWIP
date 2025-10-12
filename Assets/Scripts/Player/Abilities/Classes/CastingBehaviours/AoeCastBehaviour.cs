@@ -15,10 +15,10 @@ public class AoeCastBehaviour : ICastBehaviour {
 
         // Set the position and rotation of the projectile
         newProjectile.transform.position = ctx.SpawnPos;
-        Debug.Log("ctx direction " + ctx.Direction);
-        Debug.Log("y rotation " + Quaternion.LookRotation(ctx.Direction, Vector3.up).eulerAngles.y);
-        Quaternion lookRotation = Quaternion.LookRotation(ctx.Direction, Vector3.up);
-        newProjectile.transform.rotation = Quaternion.Euler(0, lookRotation.eulerAngles.y - 90, 0);
+        // Quaternion lookRotation = Quaternion.LookRotation(ctx.Direction, Vector3.up);
+        // newProjectile.transform.rotation = Quaternion.Euler(0, lookRotation.eulerAngles.y - 90, 0);
+        newProjectile.transform.rotation = Quaternion.LookRotation(ctx.Direction, Vector3.up);
+
 
         // Activate the projectile
         newProjectile.SetActive(true);
