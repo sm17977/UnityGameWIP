@@ -16,6 +16,7 @@ MonoBehaviour:
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: E
+  id: 2
   archetype: 0
   damage: 80
   currentCooldown: 0
@@ -25,6 +26,7 @@ MonoBehaviour:
   lingeringLifetime: 4
   hasRecast: 1
   canRecast: 0
+  lifetime: 0
   spawnPrefab: {fileID: 7768291782423510599, guid: ba05f37d1d1d21549b0e29a5bd159bbb,
     type: 3}
   networkSpawnPrefab: {fileID: 7768291782423510599, guid: 28775094b70f6cf45baf0152e5e8791b,

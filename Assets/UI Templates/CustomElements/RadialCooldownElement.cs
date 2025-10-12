@@ -173,7 +173,11 @@ namespace CustomElements {
             Debug.Log("Start Cooldown");
             
             _cooldownSchedule?.Pause();
+            _cooldownSchedule = null;
+            
             _fadeSchedule?.Pause();
+            _fadeSchedule = null;
+            
             ShimmerEffect();
 
             _duration = duration;
@@ -203,32 +207,50 @@ namespace CustomElements {
         }
         
         private void UpdateCooldown() {
-            if (_timeLeft > 0) {
+            if (_timeLeft > 0f) {
                 _timeLeft -= Time.deltaTime;
                 Progress = (_duration - _timeLeft) / _duration * 100f;
 
-                if (_timeLeft <= 0) {
-                    _timeLeft = 0;
+                if (_timeLeft <= 0f) {
+                    _timeLeft = 0f;
                     Progress = 100f;
-                    _timerLabel.text = _key;
-                    
-                    if (_fadeSchedule == null) {
-                        float fadeDuration = 0.3f; 
-                        _fadeSchedule = schedule.Execute(() => {
-                            _cooldownFade -= Time.deltaTime / fadeDuration;
-                            if (_cooldownFade <= 0f) {
-                                _cooldownFade = 0f;
-                                _fadeSchedule.Pause();
-                                _fadeSchedule = null;
-                            }
+
+                    _timerLabel.text = "";
+
+                    _fadeSchedule?.Pause();
+                    _fadeSchedule = null;
+
+                    float fadeDuration = 0.3f;
+                    _fadeSchedule = schedule.Execute(() => {
+                        _cooldownFade -= Time.deltaTime / fadeDuration;
+                        if (_cooldownFade <= 0f) {
+                            _cooldownFade = 0f;
+
+                            // clean up schedulers
+                            _fadeSchedule?.Pause();
+                            _fadeSchedule = null;
+
+                            _cooldownSchedule?.Pause();
+                            _cooldownSchedule = null;
+
+                            Progress = 0f;
                             MarkDirtyRepaint();
-                        }).Every(16);
-                    }
+                            return;
+                        }
+                        MarkDirtyRepaint();
+                    }).Every(16);
                 }
 
                 UpdateTimerLabel();
+                return;
+            }
+            
+            if (_fadeSchedule == null && _cooldownSchedule != null) {
+                _cooldownSchedule.Pause();
+                _cooldownSchedule = null;
             }
         }
+
 
         private void UpdateTimerLabel() {
             if (_timeLeft <= 0)
