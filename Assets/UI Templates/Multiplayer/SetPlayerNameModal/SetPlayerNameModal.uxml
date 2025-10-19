@@ -25,7 +25,7 @@
                             </ui:VisualElement>
                         
                             <ui:VisualElement name="modal-input-container" class="modal-input-container">
-                                <custom:BlinkingTextField name="player-name-input" class="modal-input-field" placeholder-text="Enter your name here" value="" />
+                                <custom:BlinkingTextField name="player-name-input" class="modal-input-field" caret-color="#9a3b3b" placeholder-text="Enter your name here" value="" />
                             </ui:VisualElement>
                         
                     </ui:VisualElement>

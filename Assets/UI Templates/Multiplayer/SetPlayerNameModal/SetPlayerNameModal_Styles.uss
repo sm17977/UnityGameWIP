@@ -167,8 +167,8 @@ OuterGlow {
     background-color: #9a3b3b;
 }
 
-.cursor-default{
-    --unity-cursor-color: white;
+.cursor-default-black{
+    --unity-cursor-color: black;
 }
 
 .cursor-transparent{

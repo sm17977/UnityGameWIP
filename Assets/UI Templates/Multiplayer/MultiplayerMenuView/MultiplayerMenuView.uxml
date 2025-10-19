@@ -10,11 +10,15 @@
     <!-- Multiplayer Menu Buttons-->
     <ui:VisualElement name="multiplayer-menu" class="menu-container">
         
+        <!-- Player ID -->
+        <ui:VisualElement name="player-id-container" class="player-id-container">
+            <ui:Label text="" name="player-id" class="player-id"/>
+        </ui:VisualElement>
+        
         <!-- Multiplayer Heading -->
         <ui:VisualElement name="title-container" class="title-container">
             <ui:Label text="Multiplayer" class="title-label"/>
         </ui:VisualElement>
-        
         
         <!-- Menu Container -->
         <ui:VisualElement name="menu-list-container" class="menu-list-container">

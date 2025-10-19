@@ -15,24 +15,26 @@
     color: white;
 }
 
-.champion-stat{
+.champion-stat {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    justify-content: flex-start; 
+    flex-wrap: nowrap; 
     padding: 3px;
     -unity-text-align: middle-center;
 }
 
-.stats-left, .stats-right{
+.stats-left, .stats-right {
     width: 50%;
+    min-width: 0;
 }
 
-.champion-stat Label{
+.champion-stat Label {
     margin: 0;
     padding: 0;
     padding-left: 3px;
+    flex-shrink: 0;
 }
 
 .stat-icon{

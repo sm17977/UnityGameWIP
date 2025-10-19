@@ -59,8 +59,17 @@ namespace Multiplayer.UI {
             _createLobbyBtn.clicked += OnClickCreateLobbyBtn;
             _cancelLobbyBtn.clicked += OnClickCancelBtn;
             
-            _lobbyNameInput.RegisterCallback<KeyDownEvent>(evt => {
-                if (evt.keyCode == KeyCode.Return)OnClickCreateLobbyBtn();
+            Template.RegisterCallback<KeyUpEvent>(evt => {
+                if (evt.keyCode == KeyCode.Return) {
+                    Debug.Log("Return key pressed - creating lobby");
+                    evt.StopPropagation();
+                    OnClickCreateLobbyBtn();
+                }
+                if (evt.keyCode == KeyCode.Escape) {
+                    Debug.Log("Escape key pressed - closing Create Lobby Modal");
+                    evt.StopPropagation();
+                    OnClickCancelBtn();
+                }
             });
             
             Loader = Template.Q<VisualElement>("lobby-loader");

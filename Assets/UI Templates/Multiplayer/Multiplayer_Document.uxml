@@ -26,12 +26,6 @@
     <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/TopBar_Styles.uss" />
     <Style src="project://database/Assets/UI Templates/Multiplayer/GameView/Stylesheets/DamageNumber_Styles.uss" />
     
-    
-    <!-- Player ID -->
-    <ui:VisualElement name="player-id-container" class="player-id-container">
-        <ui:Label text="" name="player-id" class="player-id"/>
-    </ui:VisualElement>
-    
     <!-- View Container -->
     <ui:VisualElement name="view-container" class="view-container">
     </ui:VisualElement>

@@ -27,6 +27,7 @@ namespace Multiplayer.UI {
 
         private void InitializeElements() {
             _buttonsList = Template.Query<Button>("btn").ToList();
+            _playerIdLabel = Template.Query<Label>("player-id");
             
             // Multiplayer Menu Buttons
             foreach (var button in _buttonsList){
@@ -86,6 +87,11 @@ namespace Multiplayer.UI {
             ValidateButtons();
             RunLobbyCheck();
         }
+
+        public override void Hide() {
+            HidePlayerId();
+            base.Hide();
+        }
         
         public override void Update() {
             ValidateButtons();
@@ -98,8 +104,12 @@ namespace Multiplayer.UI {
         private void Placeholder() {
             
         }
-        public void DisplayPlayerId(string clientId, Label label) {
-            label.text = "Unity Services Player ID: " + clientId;
+        public void DisplayPlayerId(string clientId) {
+            _playerIdLabel.text = "Unity Services Player ID: " + clientId;
+        }
+
+        public void HidePlayerId() {
+            _playerIdLabel.text = "";
         }
     }
 }

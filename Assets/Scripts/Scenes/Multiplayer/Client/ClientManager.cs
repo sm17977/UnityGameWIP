@@ -61,7 +61,12 @@ namespace Multiplayer {
         /// Update the player's connection status
         /// </summary>
         public async Task Disconnect() {
-            NetworkManager.Singleton.Shutdown();
+            if (NetworkManager.Singleton != null) {
+                NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler("PlayerStatusMessage");
+                NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler("HostLeaving");
+                NetworkManager.Singleton.Shutdown();
+            }
+
             Client.IsConnectedToServer = false;
             await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(Client.IsConnectedToServer);
         }
@@ -100,6 +105,8 @@ namespace Multiplayer {
         /// <returns>boolean</returns>
         public bool StartClient() {
 
+            if (NetworkManager.Singleton.IsClient) return false;
+
             if (Client.ServerIP == null || Client.Port == null) return false;
        
             try {
@@ -109,16 +116,16 @@ namespace Multiplayer {
                 NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("PlayerStatusMessage",
                     OnPlayerStatusMessage);
                 if (!Client.IsLobbyHost) {
+                    NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler("HostLeaving");
                     NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
                 }
                 Client.IsConnectedToServer = true;
                 return true;
             }
             catch (OperationCanceledException) {
-           
+                Client.IsConnectedToServer = false;
+                return false;
             }
-            Client.IsConnectedToServer = false;
-            return false;
         }
         
         /// <summary>

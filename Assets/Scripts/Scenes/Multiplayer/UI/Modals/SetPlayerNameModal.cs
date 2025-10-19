@@ -37,10 +37,16 @@ namespace Multiplayer.UI {
             _confirmNameBtn.clicked += OnClickConfirmPlayerNameBtn;
             _cancelNameBtn.clicked += OnClickCancelPlayerNameBtn;
             
-            _playerNameInput.RegisterCallback<KeyDownEvent>(evt => {
-                if(evt.keyCode == KeyCode.Return)OnClickConfirmPlayerNameBtn();
+            _playerNameInput.RegisterCallback<KeyUpEvent>(evt => {
+                if (evt.keyCode == KeyCode.Return) {
+                    evt.StopPropagation();
+                    OnClickConfirmPlayerNameBtn();
+                }
+                if (evt.keyCode == KeyCode.Escape) {
+                    evt.StopPropagation();
+                    OnClickCancelPlayerNameBtn();
+                }
             });
-            
         }
         
         public override async void ShowModal() {

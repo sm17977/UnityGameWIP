@@ -317,8 +317,7 @@ public class MultiplayerUIController : MonoBehaviour {
             _clientManager.Client.ID = clientId;
             await Task.Delay(500);
             _viewManager.CloseModal();
-            var playerIdLabel = uiDocument.rootVisualElement.Q<Label>("player-id");
-            _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID, playerIdLabel);
+            _multiplayerMenuView.DisplayPlayerId(_clientManager.Client.ID);
             await Task.Delay(250);
             if (_playerNameRequired) _viewManager.OpenModal(_setPlayerNameModal);
         }

@@ -9,13 +9,25 @@ namespace CustomElements {
     public partial class BlinkingTextField : TextField {
         
         private readonly IVisualElementScheduledItem _blink;
-
+        
+        private Color _caretColor = Color.white;
+        private StyleSheet _defaultStyle;
+        
         private long _blinkInterval = 500;
         private bool _isBlinkEnabled = true;
         private string _blinkStyle = "cursor-transparent";
-        private string _defaultStyle = "cursor-default";
         private readonly string _defaultText = "Press Enter to Chat";
-        
+
+        [UxmlAttribute("caret-color")]
+        public Color CaretColor {
+            get => _caretColor;
+            set {
+                _caretColor = value;
+                UpdateCaretColor();
+            }
+        }
+
+
         /// <summary>
         /// Caret blink interval in ms.
         /// </summary>
@@ -66,7 +78,6 @@ namespace CustomElements {
 
         public BlinkingTextField() {
             textEdition.placeholder = _defaultText;
-            AddToClassList(_defaultStyle);
             RegisterCallback<FocusEvent>(OnFocus);
             RegisterCallback<BlurEvent>(OnInputEnded);
 
@@ -78,7 +89,18 @@ namespace CustomElements {
             }).Every(_blinkInterval);
 
             _blink.Pause();
+            
         }
+        
+        protected override void ExecuteDefaultAction(EventBase evt) {
+            if ((evt is KeyDownEvent keyEvent && keyEvent.keyCode == KeyCode.Return)
+                || (evt is KeyUpEvent keyUpEvent && keyUpEvent.keyCode == KeyCode.Return)) {
+                return;
+            }
+        
+            base.ExecuteDefaultAction(evt);
+        }
+
 
         private void OnFocus(FocusEvent evt) {
 
@@ -95,6 +117,10 @@ namespace CustomElements {
             parent.MarkDirtyRepaint();
             textEdition.placeholder = _defaultText;
             _blink.Pause();
+        }
+
+        private void UpdateCaretColor() {
+            textSelection.cursorColor = _caretColor;
         }
     }
 }
