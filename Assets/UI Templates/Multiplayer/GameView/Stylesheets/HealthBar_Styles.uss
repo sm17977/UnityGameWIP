@@ -12,9 +12,12 @@
 
 /* Health bar */
 .health-bar{
+    display: flex;
+    flex-direction: row;
     height: 18px;
     background-color: rgb(255, 0, 0);
     transition: width 0.05s;
+    
 }
 
 .health-bar-section{

@@ -76,9 +76,6 @@ public class FloatingUIManager {
             if(i < HealthBarSections - 1) {
                 section.AddToClassList("border-right");
             }
-            else {
-                section.AddToClassList("border-left");
-            }
             healthBar.Add(section);
         }
 
