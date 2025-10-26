@@ -16,8 +16,7 @@ public class NetworkCooldownManager : NetworkBehaviour {
             ? NetworkManager.ServerTime.Time
             : Time.unscaledTimeAsDouble;
     
-    // Dictionary to map each player's GameObject to their list of abilities on cooldown
-    //private Dictionary<ulong, List<NetworkAbilityData>> _cooldowns = new();
+
     public override void OnNetworkSpawn() {
         
         base.OnNetworkSpawn();
@@ -60,7 +59,7 @@ public class NetworkCooldownManager : NetworkBehaviour {
         if (!map.TryGetValue(abilityId, out var expiry)) return false;
 
         var now = ServerNow;
-        if (expiry > now) return true;
+        if (expiry >= now) return true;
 
         map.Remove(abilityId);
         if (map.Count == 0) _cooldowns.Remove(playerId);

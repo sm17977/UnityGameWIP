@@ -208,6 +208,7 @@ public class RPCController : NetworkBehaviour {
     /// </summary>
     /// <param name="clientId"></param>
     /// <param name="abilityId"></param>
+    /// <param name="maxCooldownSeconds"></param>
     [Rpc(SendTo.Server)]
     public void AddCooldownRpc(ulong clientId, int abilityId, double maxCooldownSeconds) {
         NetworkCooldownManager.Instance.StartCooldown(clientId, abilityId, maxCooldownSeconds);
