@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 public class Lux_R_Aoe_Net : NetworkAbilityBehaviour {
 
     // The hit detection time window
     private const float HitWindowStart = 0.7f;
+    private const float HitWindowEnd = 0.9f;
+    private bool _hasProcessedHits;
+    private HashSet<GameObject> _potentialTargets = new HashSet<GameObject>();
+
+    
     private bool _canHit;
     private float _lifetime;
 
@@ -21,25 +27,32 @@ public class Lux_R_Aoe_Net : NetworkAbilityBehaviour {
         }
         
         _lifetime += Time.deltaTime;
-        if (!_canHit && _lifetime >= HitWindowStart) {
-            _canHit = true;
-            
-            if(!HasHit && IsColliding && ActiveCollision != null) {
-                HandleServerCollision(ActiveCollision);
-            }
+        if (!_hasProcessedHits && _lifetime >= HitWindowStart && _lifetime <= HitWindowEnd) {
+            _hasProcessedHits = true;
+            ProcessAllHits();
         }
     }
     
-    protected override void HandleServerCollision(Collision collision) {
+    private void ProcessAllHits() {
+        foreach (var target in _potentialTargets) {
+            if (target == null) continue;
+            
+            Debug.Log("Lux R AOE hit player: " + target.name);
+            
+            var playerController = target.GetComponent<LuxPlayerController>();
+            if (playerController != null) {
+                playerController.health.TakeDamage(Ability.damage);
+            }
+        }
         
-        if(!_canHit) return;
-
-        Debug.Log("Lux R AOE hit player: " + collision.gameObject.name);
-        
-        var target = collision.gameObject.GetComponent<LuxPlayerController>();
+        _potentialTargets.Clear();
         HasHit = true;
-        target.health.TakeDamage(Ability.damage);
-        _canHit = false;
-        
+    }
+    
+    protected override void HandleServerCollision(Collision collision) {
+        if (!_hasProcessedHits) {
+            _potentialTargets.Add(collision.gameObject);
+            Debug.Log($"Added potential target: {collision.gameObject.name} at time {_lifetime}");
+        }
     }
 }

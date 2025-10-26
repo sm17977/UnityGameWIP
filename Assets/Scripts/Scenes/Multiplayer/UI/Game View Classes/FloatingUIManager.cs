@@ -62,13 +62,17 @@ public class FloatingUIManager {
     private VisualElement CreateHealthBarContainer() {
         var healthBarContainer = new VisualElement();
         var healthBar = new VisualElement();
+        var underlay = new VisualElement();
             
         healthBarContainer.AddToClassList("health-bar-container");
         healthBar.AddToClassList("health-bar");
-        healthBar.AddToClassList("health-bar-borders");
         healthBar.name = "health-bar";
         healthBar.style.width = new Length(HealthBarDefaultWidth, LengthUnit.Pixel);
         healthBarContainer.Add(healthBar);
+        
+        underlay.name = "underlay";
+        underlay.AddToClassList("underlay");
+        healthBar.Add(underlay);
         
         for(var i = 0; i < HealthBarSections; i++) {
             var section = new VisualElement();
@@ -132,6 +136,7 @@ public class FloatingUIManager {
         if (_playerUIComponents.ContainsKey(playerScript)) {
             var healthBarContainer = _playerUIComponents[playerScript][UIComponent.HealthBar];
             var healthBar = healthBarContainer.Q<VisualElement>("health-bar");
+            var underlay =  healthBarContainer.Q<VisualElement>("underlay");
 
             var damageTextLabelContainer = _playerUIComponents[playerScript][UIComponent.PlayerDamageText];
             var damageTextLabel = damageTextLabelContainer.Q<Label>("damage-number-label");
@@ -141,11 +146,7 @@ public class FloatingUIManager {
                 float healthPercentage = currentHealth / maxHealth;
                 float containerWidth = HealthBarDefaultWidth;
                 float newWidth = healthPercentage * containerWidth;
-
-                if (currentHealth == 0) {
-                    healthBar.RemoveFromClassList("health-bar-borders");
-                }
-                healthBar.style.width = new Length(newWidth, LengthUnit.Pixel);
+                underlay.style.width = new Length(newWidth, LengthUnit.Pixel);
             }
         }
     }
