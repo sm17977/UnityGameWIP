@@ -16,6 +16,7 @@ namespace Multiplayer {
 
         #if UNITY_SERVER
             private IServerQueryHandler _serverQueryHandler;
+            private bool _serverStarted;
         #endif
 
         private static ServerManager _instance = null;
@@ -69,22 +70,6 @@ namespace Multiplayer {
                         await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)4, "MyServerName", "Arena", "89133",
                             "map");
 
-                    var serverConfig = MultiplayService.Instance.ServerConfig;
-                    if (serverConfig.AllocationId != "") {
-                        OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
-                            serverConfig.AllocationId));
-                    }
-                #endif
-            }
-            else {
-                #if UNITY_SERVER
-                    Debug.Log("UNITY_SERVER LOBBY - ALREADY INITIALIZED");
-
-                    var serverConfig = MultiplayService.Instance.ServerConfig;
-                    if (serverConfig.AllocationId != "") {
-                        OnAllocate(new MultiplayAllocation("", serverConfig.ServerId,
-                            serverConfig.AllocationId));
-                    }
                 #endif
             }
         }
@@ -96,6 +81,12 @@ namespace Multiplayer {
 
         #if UNITY_SERVER
             private void OnAllocate(MultiplayAllocation allocation) {
+
+                    if(_serverStarted){
+                        Debug.Log("Server already started");    
+                    }
+
+                    _serverStarted = true;
                
                     Debug.Log("UNITY_SERVER OnAllocate");
                     
