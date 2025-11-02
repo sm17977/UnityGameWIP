@@ -34,7 +34,7 @@ public class CastingState : State {
         
         if (GlobalState.IsMultiplayer) {
             _ability.PutOnCooldown_Net(_playerObj);
-            _player.networkAnimator.SetTrigger(_ability.animationTrigger);
+            _player.SetAnimTrigger(_ability.animationTrigger);
         }
     }
 

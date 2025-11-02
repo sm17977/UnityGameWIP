@@ -7,7 +7,7 @@
     
     public override void Enter() {
         _playerController.animator.SetTrigger("isDead");
-        _playerController.networkAnimator.SetTrigger("isDead");
+        _playerController.SetAnimTrigger("isDead");
     }
 
     public override void Execute() {

@@ -85,7 +85,7 @@ public class BarebonesPlayerController : LuxController {
     /// Initialise the state manager
     /// </summary>
     private void InitStateManager() {
-        StateManager = StateManager.Instance;
+        StateManager = new StateManager();
         _idleState = new IdleState();
         TransitionToIdle();
     }

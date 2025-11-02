@@ -37,7 +37,7 @@ public class AttackingState : State {
     public override void Enter() {
         if (_attackTimer == 0) {
             // _player.animator.SetTrigger("isAttacking");
-            _player.networkAnimator.SetTrigger("isAttacking");
+            _player.SetAnimTrigger("isAttacking");
             _input.canAA = true;
         }
         var enemyController = _player.currentAATarget.GetComponent<LuxPlayerController>();

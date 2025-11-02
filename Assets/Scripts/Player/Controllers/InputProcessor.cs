@@ -235,6 +235,8 @@ public class InputProcessor : NetworkBehaviour {
         if (_player.Abilities.TryGetValue(key, out Ability ability)) {
             
             spellIndicatorPrefab = ability.spellIndicatorPrefab;
+
+            Debug.Log("First call to OnCooldown_Net: " + NetworkManager.ServerTime.Time);
             
             ability.OnCooldown_Net(gameObject, (bool networkCooldown) => {
                 // Check cooldown before casting

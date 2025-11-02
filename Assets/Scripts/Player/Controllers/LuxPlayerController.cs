@@ -161,7 +161,7 @@ public class LuxPlayerController : LuxController {
     /// Initialise the state manager
     /// </summary>
     private void InitStateManager() {
-        StateManager = StateManager.Instance;
+        StateManager = new StateManager();
         _idleState = new IdleState(this);
         TransitionToIdle();
     }
@@ -213,6 +213,18 @@ public class LuxPlayerController : LuxController {
     /// <param name="buff"></param>
     public void RemoveBuff(Buff buff) {
         buff.Effect.RemoveEffect(this, buff.EffectStrength);
+    }
+    
+    public void SetAnimTrigger(string name) {
+    #if !UNITY_SERVER
+        networkAnimator?.SetTrigger(name);
+    #endif
+    }
+
+    public void ResetAnimTrigger(string name) {
+    #if !UNITY_SERVER
+        networkAnimator?.ResetTrigger(name);
+    #endif
     }
     
     private void OnDisable() {

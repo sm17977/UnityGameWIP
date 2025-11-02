@@ -1,20 +1,9 @@
 using UnityEngine;
 
-public sealed class StateManager {
-    
-    private static StateManager _instance = null;
-    private static readonly object Padlock = new object();
+public class StateManager {
+
     private State _currentState;
     
-    public static StateManager Instance {
-        get {
-            lock (Padlock) {
-                _instance ??= new StateManager();
-                return _instance;
-            }
-        }
-    }
-
     /// <summary>
     /// Change player state
     /// </summary>
