@@ -54,6 +54,7 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
         _ring = transform.GetChild(3).gameObject;
         _ringVfx = _ring.GetComponent<VisualEffect>();
         _ringVfx.SetFloat("lifetime", Ability.lingeringLifetime);
+        _ringVfx.SetBool("forceFade", false);
 
         _particlesIn = transform.GetChild(4).gameObject;
         _particlesInVfx = _particlesIn.GetComponent<VisualEffect>();
@@ -87,7 +88,7 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
             }
 
             if(_currentLingeringLifetime <= 0 && _canPlayExplosionVfx){
-                Detonate();
+                Detonate(false);
             }
 
             if(_currentLingeringLifetime <= -0.5){
@@ -103,7 +104,12 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
         }
     }
     
-    public void Detonate() {
+    public void Detonate(bool recast) {
+
+        if (recast) {
+            _ringVfx.SetFloat("lifetime", 0.01f);
+        }
+
         // Turn off pinch distortion
         _distortionQuad.SetActive(false);
         // Turn on shockwave distortion
@@ -135,6 +141,8 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
 
     public override void Recast() {
         _currentLingeringLifetime = 0;
+        _ringVfx.SetBool("forceFade", true);
+        Detonate(true);
     }
 
     protected override void Move() {
