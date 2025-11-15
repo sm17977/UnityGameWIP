@@ -59,6 +59,9 @@ public class NetworkCooldownManager : NetworkBehaviour {
         if (!map.TryGetValue(abilityId, out var expiry)) return false;
 
         var now = ServerNow;
+        
+        Debug.Log("IsAbilityOnCooldown, expiry: " + expiry + " now: " + now);
+        
         if (expiry >= now) return true;
 
         map.Remove(abilityId);

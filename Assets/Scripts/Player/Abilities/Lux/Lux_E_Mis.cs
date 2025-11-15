@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -41,24 +42,27 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
         _particles = transform.GetChild(1).gameObject;
         _particlesVfx = _particles.GetComponent<VisualEffect>();
         _particlesVfx.SetFloat("lifetime", _totalLifetime);
+        _particlesVfx.ResetOverride("particleRate");
         _particlesVfx.Play();
 
         _orb = transform.GetChild(2).gameObject;
         _orbVfx = _orb.GetComponent<VisualEffect>();
         _orbVfx.SetFloat("lifetime", _totalLifetime);
+        _orbVfx.ResetOverride("particleCount");
         _orbVfx.Play();
 
         _distortionQuad = transform.GetChild(0).gameObject;
         _shockwaveQuad = transform.GetChild(6).gameObject;
 
-        _ring = transform.GetChild(3).gameObject;
+        _ring = transform.GetChild(4).gameObject;
         _ringVfx = _ring.GetComponent<VisualEffect>();
         _ringVfx.SetFloat("lifetime", Ability.lingeringLifetime);
         _ringVfx.SetBool("forceFade", false);
 
-        _particlesIn = transform.GetChild(4).gameObject;
+        _particlesIn = transform.GetChild(3).gameObject;
         _particlesInVfx = _particlesIn.GetComponent<VisualEffect>();
         _particlesInVfx.SetFloat("lifetime", Ability.lingeringLifetime);
+        _particlesInVfx.ResetOverride("particleRate");
          
         _explosion = transform.GetChild(5).gameObject;
         _explosionVfx = _explosion.GetComponent<VisualEffect>();
@@ -72,25 +76,20 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
             
             if (isRecast) {
                 Recast();
-                isRecast = false;
                 return;
             }
 
             if(_canPlayRingVfx){
-
                 // Play the E Ring and Particles VFX now the projectile has landed
                 _ringVfx.Play();
                 _particlesInVfx.Play();
                 _canPlayRingVfx = false;
             }
-            else{
-                _currentLingeringLifetime -= Time.deltaTime;
-            }
+            else _currentLingeringLifetime -= Time.deltaTime;
+            
 
-            if(_currentLingeringLifetime <= 0 && _canPlayExplosionVfx){
-                Detonate(false);
-            }
-
+            if(_currentLingeringLifetime <= 0 && _canPlayExplosionVfx) Detonate();
+            
             if(_currentLingeringLifetime <= -0.5){
                 // Turn off shockwave distortion
                 _shockwaveQuad.SetActive(false);
@@ -104,18 +103,16 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
         }
     }
     
-    public void Detonate(bool recast) {
+    public void Detonate() {
 
-        if (recast) {
-            _ringVfx.SetFloat("lifetime", 0.01f);
-        }
-
+        
         // Turn off pinch distortion
         _distortionQuad.SetActive(false);
         // Turn on shockwave distortion
         _shockwaveQuad.SetActive(true);
         _explosionVfx.Play();
         _canPlayExplosionVfx = false;
+        
     }
     
     public override void ResetVFX() {
@@ -140,9 +137,25 @@ public class Lux_E_Mis : ClientAbilityBehaviour {
     }
 
     public override void Recast() {
+        
+        // On re-cast we need to end most of the vfx assets early
+        
         _currentLingeringLifetime = 0;
+        
+        _particlesInVfx.SetFloat("lifetime", 0);
+        _particlesInVfx.SetFloat("particleRate", 0);
+        
+        _orbVfx.SetFloat("lifetime", 0);
+        _orbVfx.SetFloat("particleCount", 0);
+        
+        _particlesVfx.SetFloat("lifetime", 0);
+        _particlesVfx.SetFloat("particleRate", 0);
+        
         _ringVfx.SetBool("forceFade", true);
-        Detonate(true);
+        
+        Detonate();
+        
+        isRecast = false;
     }
 
     protected override void Move() {
