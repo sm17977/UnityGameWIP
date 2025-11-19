@@ -1,10 +1,13 @@
 using System;
 using CustomElements;
+using Mono.CSharp;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MultiplayerCamera : NetworkBehaviour {
+    
+    
     public Transform playerTransform;
     private InputProcessor _inputProcessor;
     public float heightOffset = 0f;
@@ -23,7 +26,12 @@ public class MultiplayerCamera : NetworkBehaviour {
     public float minimapSmoothTime = 0.01f;
 
     private readonly float _defaultCameraSize = 7;
+    private readonly float _minCameraSize = 2f;
     private float _currentCameraSize;
+    private readonly float _minCamXPos = -5;
+    private readonly float _maxCamXPos = 5;
+    private readonly float _minCamZPos = -10;
+    private readonly float _maxCamZPos = 10;
 
     public void Start() {
         cam.orthographicSize = _defaultCameraSize;
@@ -67,7 +75,9 @@ public class MultiplayerCamera : NetworkBehaviour {
         if(_inputProcessor.isTyping) return;
         var scrollDelta = context.ReadValue<float>();
         
-        if(_currentCameraSize <= 1 && scrollDelta > 0) return; 
+        if(_currentCameraSize <= _minCameraSize && scrollDelta > 0) return; 
+        if(_currentCameraSize >= _defaultCameraSize && scrollDelta < 0) return;
+        
         _currentCameraSize -= scrollDelta/2;
         cam.orthographicSize = _currentCameraSize;
     }
@@ -112,7 +122,8 @@ public class MultiplayerCamera : NetworkBehaviour {
         if (_isMiddleMouseDragging) {
             var currentPoint = GetWorldPointAtCameraHeight(Mouse.current.position.ReadValue());
             var dragMovement = _dragOrigin - currentPoint;
-            cam.transform.position += dragMovement;
+            
+            cam.transform.position = GetClampedPosition(cam.transform.position + dragMovement);
 
             if (_minimap != null)
                 _minimap.UpdateViewPortIndicatorFromCamera(cam.transform.position);
@@ -130,21 +141,26 @@ public class MultiplayerCamera : NetworkBehaviour {
             var delta = currentMinimapPos - _minimapDragOrigin;
             var worldDelta = ConvertMinimapDeltaToWorldDelta(delta, _minimap.contentRect);
             var desiredCameraPos = _cameraPosAtMinimapDragStart + worldDelta;
-            cam.transform.position = Vector3.SmoothDamp(cam.transform.position, desiredCameraPos, ref _cameraVelocity,
-                minimapSmoothTime);
+            var smoothPos = Vector3.SmoothDamp(cam.transform.position, desiredCameraPos, ref _cameraVelocity, minimapSmoothTime);
+            cam.transform.position = GetClampedPosition(smoothPos);
         }
         else {
             _isMinimapDragging = false;
         }
     }
 
+    private Vector3 GetClampedPosition(Vector3 targetPosition) {
+        float x = Mathf.Clamp(targetPosition.x, _minCamXPos, _maxCamXPos);
+        float z = Mathf.Clamp(targetPosition.z, _minCamZPos, _maxCamZPos);
+        return new Vector3(x, targetPosition.y, z);
+    }
+
     /// <summary>
-    /// Converts a minimap delta (in local minimap pixels) to a world-space delta.
-    /// Adjust the Y inversion so that dragging up moves the camera up.
+    /// Converts a minimap delta (in local minimap pixels) to a world-space delta
+    /// Adjust the Y inversion so that dragging up moves the camera up
     /// </summary>
     private Vector3 ConvertMinimapDeltaToWorldDelta(Vector2 minimapDelta, Rect minimapRect) {
         var normX = minimapDelta.x / minimapRect.width;
-        // Invert the Y delta if necessary. Experiment with sign.
         var normY = -minimapDelta.y / minimapRect.height;
         var worldWidth = _minimap.WorldMax.x - _minimap.WorldMin.x;
         var worldHeight = _minimap.WorldMax.y - _minimap.WorldMin.y;

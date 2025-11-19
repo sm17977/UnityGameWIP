@@ -259,6 +259,7 @@ public class InputProcessor : NetworkBehaviour {
                 }
                 // If ability is on CD and it's re-castable
                 else if (ability.hasRecast && ability.canRecast) {
+                    _showSpellIndicator = false;
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
                     ability.canRecast = false;
                 }
