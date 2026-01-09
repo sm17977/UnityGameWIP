@@ -1,6 +1,6 @@
 
 # Unity Game 🎮
-A LoL like battle arena game using Unity 6000.0.40f
+A LoL Arena like battle arena game using Unity 6000.0.40f
 
 ## In progress...
 - [ ] In-Game UI
@@ -11,7 +11,7 @@ A LoL like battle arena game using Unity 6000.0.40f
       - [ ] Bind values   
     - [ ] Mini-map
       - [ ] Add background texture 
-    - [ ] FPS counter
+    - [x] FPS counter
     - [ ] In-Game Chat
       - [x] Network Logic
       - [x] Enable/Disable via keyboard input
@@ -20,11 +20,11 @@ A LoL like battle arena game using Unity 6000.0.40f
         - [ ] Player Disconnected
         - [ ] Game Mode Events (?)
       - [ ] Timestamps
-    - [ ] Health/Mana bars
+    - [x] Health/Mana bars
       - [ ] Bind values   
 - [ ] VFX
     - [ ] W ability
-    - [ ] R ability
+    - [x] R ability
     - [ ] Status effects on players
 
 ## Gamemodes
@@ -35,7 +35,7 @@ A LoL like battle arena game using Unity 6000.0.40f
  
 ## Multiplayer Architecture  
 - Unity's Netcode for Game Objects
-- Dedicated server hosted by Unity Game Server Hosting
+- Dedicated server hosted by Unity Game Server Hosting (needs migrating Q4 2026)
 - Server authoritative
 - Client side prediction (server reconciliation WIP)
 - Linux x86 server build
