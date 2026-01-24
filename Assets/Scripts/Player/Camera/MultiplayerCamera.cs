@@ -7,8 +7,8 @@ using UnityEngine.InputSystem;
 
 public class MultiplayerCamera : NetworkBehaviour {
     
-    
     public Transform playerTransform;
+    public GameObject terrain;
     private InputProcessor _inputProcessor;
     public float heightOffset = 0f;
     public float depthOffset = 0f;
@@ -28,14 +28,54 @@ public class MultiplayerCamera : NetworkBehaviour {
     private readonly float _defaultCameraSize = 7;
     private readonly float _minCameraSize = 2f;
     private float _currentCameraSize;
-    private readonly float _minCamXPos = -5;
-    private readonly float _maxCamXPos = 5;
-    private readonly float _minCamZPos = -10;
-    private readonly float _maxCamZPos = 10;
+
+    public float boundsPadding = 0f;
+    private Vector2 _minCamPos;
+    private Vector2 _maxCamPos;
+    
+    
+    private float _recenterHeight;
 
     public void Start() {
         cam.orthographicSize = _defaultCameraSize;
         _currentCameraSize = _defaultCameraSize;
+        _recenterHeight = transform.position.y;
+        RecalculateBounds();
+    }
+
+    private void RecalculateBounds() {
+        var groundPlane = new Plane(Vector3.up, Vector3.zero);
+        var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+
+        if (groundPlane.Raycast(ray, out var enter)) {
+            var hitPoint = ray.GetPoint(enter);
+            var offset = transform.position - hitPoint;
+            var centerCamPos = Vector3.zero + offset;
+
+            float horizExtent = cam.orthographicSize * cam.aspect;
+
+            var topRay = cam.ViewportPointToRay(new Vector3(0.5f, 1f, 0));
+            var bottomRay = cam.ViewportPointToRay(new Vector3(0.5f, 0f, 0));
+            
+            groundPlane.Raycast(topRay, out var topDist);
+            groundPlane.Raycast(bottomRay, out var bottomDist);
+
+            Vector3 topHit = topRay.GetPoint(topDist);
+            Vector3 bottomHit = bottomRay.GetPoint(bottomDist);
+
+            float verticalExtentOnGround = (topHit.z - bottomHit.z) / 2f;
+
+            var halfWidth = (terrain.transform.lossyScale.x / 2f) - horizExtent + boundsPadding;
+            var halfDepth = (terrain.transform.lossyScale.z / 2f) - verticalExtentOnGround + boundsPadding;
+
+            halfWidth = Mathf.Max(0, halfWidth);
+            halfDepth = Mathf.Max(0, halfDepth);
+
+            _minCamPos = new Vector2(centerCamPos.x - halfWidth, centerCamPos.z - halfDepth);
+            _maxCamPos = new Vector2(centerCamPos.x + halfWidth, centerCamPos.z + halfDepth);
+
+            Debug.Log("Min vam pos:  " + _minCamPos + "m Max vam pos:  " + _maxCamPos);
+        }
     }
 
     public void SetMinimap(MinimapElement minimapElement) {
@@ -98,10 +138,18 @@ public class MultiplayerCamera : NetworkBehaviour {
     private void OnSpacebarDown(InputAction.CallbackContext context) {
         if (GlobalState.GameModeManager.CurrentGameMode.CountdownActive || GlobalState.Paused) return;
         if(_inputProcessor.isTyping) return;
-        var cameraPosition = playerTransform.position;
-        cameraPosition -= Vector3.forward * depthOffset;
-        cameraPosition += Vector3.up * heightOffset;
+
+        Vector3 forward = transform.forward;
+        
+        float t = (playerTransform.position.y - _recenterHeight) / forward.y;
+        Vector3 cameraPosition = playerTransform.position - forward * t;
+        
+        cameraPosition -= forward * depthOffset;     
+        cameraPosition += Vector3.up * heightOffset; 
+        cameraPosition = GetClampedPosition(cameraPosition);
+
         transform.position = cameraPosition;
+        
         if (_minimap != null)
             _minimap.UpdateViewPortIndicatorFromCamera(cam.transform.position);
     }
@@ -150,8 +198,8 @@ public class MultiplayerCamera : NetworkBehaviour {
     }
 
     private Vector3 GetClampedPosition(Vector3 targetPosition) {
-        float x = Mathf.Clamp(targetPosition.x, _minCamXPos, _maxCamXPos);
-        float z = Mathf.Clamp(targetPosition.z, _minCamZPos, _maxCamZPos);
+        float x = Mathf.Clamp(targetPosition.x, _minCamPos.x, _maxCamPos.x);
+        float z = Mathf.Clamp(targetPosition.z, _minCamPos.y, _maxCamPos.y); 
         return new Vector3(x, targetPosition.y, z);
     }
 

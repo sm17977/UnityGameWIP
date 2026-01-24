@@ -249,6 +249,7 @@ public class InputProcessor : NetworkBehaviour {
                     }
                     // Otherwise remove it and cast
                     else {
+                        _showSpellIndicator = false;
                         HideSpellIndicator();
                         NotifyUICooldown?.Invoke(key, ability.maxCooldown);
                         GetCastingTargetPosition();
@@ -259,7 +260,7 @@ public class InputProcessor : NetworkBehaviour {
                 }
                 // If ability is on CD and it's re-castable
                 else if (ability.hasRecast && ability.canRecast) {
-                    _showSpellIndicator = false;
+                    Debug.Log("_showSpellIndicator (in recast branch): " + _showSpellIndicator);
                     _player.StateManager.ChangeState(new CastingState(gameObject, ability, true));
                     ability.canRecast = false;
                 }
@@ -306,7 +307,6 @@ public class InputProcessor : NetworkBehaviour {
 
     private void HideSpellIndicator() {
         if(spellIndicatorPrefab == null) return;
-        _showSpellIndicator = false;
         if (_spellIndicator != null) Destroy(_spellIndicator);
     }
     

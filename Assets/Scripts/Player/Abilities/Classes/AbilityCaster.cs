@@ -24,6 +24,6 @@ public class AbilityCaster {
     }
 
     public void Recast(GameObject activeObject, string key) {
-        _execution.Recast(null, activeObject, _behavior);
+        _execution.Recast(key, activeObject, _behavior);
     }
 }

@@ -19,9 +19,9 @@ public class NetcodeExecution : IExecutionStrategy {
         _rpcController.SpawnProjectileServerRpc(ctx.Direction, ctx.SpawnPos, ctx.TargetPos, localClientId, data.key);
     }
 
-    public void Recast(Ability data, GameObject activeObject, ICastBehaviour behavior) {
-        behavior.Recast(data, activeObject);
-        _rpcController.RecastAbilityServerRpc(data.key);
+    public void Recast(string abilityKey, GameObject activeObject, ICastBehaviour behavior) {
+        behavior.Recast(activeObject);
+        _rpcController.RecastAbilityServerRpc(abilityKey);
     }
 }
 

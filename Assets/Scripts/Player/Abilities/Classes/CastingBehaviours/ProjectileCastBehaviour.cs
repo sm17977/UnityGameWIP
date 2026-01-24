@@ -30,7 +30,7 @@ public class ProjectileCastBehaviour : ICastBehaviour {
         else Debug.Log("ProjectileAbility component is missing on the projectile");
     }
 
-    public void Recast(Ability data, GameObject projectile) {
+    public void Recast(GameObject projectile) {
         var projectileScript = projectile.GetComponent<ClientAbilityBehaviour>();
         projectileScript.isRecast = true;
     }

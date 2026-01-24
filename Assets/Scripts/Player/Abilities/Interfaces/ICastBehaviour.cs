@@ -4,5 +4,5 @@
 
 public interface ICastBehaviour {
     void Cast(Ability data, CastContext context, LuxPlayerController playerController);
-    void Recast(Ability data, GameObject prefab);
+    void Recast(GameObject prefab);
 }

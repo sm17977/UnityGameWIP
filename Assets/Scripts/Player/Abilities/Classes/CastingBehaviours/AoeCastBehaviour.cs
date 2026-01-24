@@ -32,5 +32,5 @@ public class AoeCastBehaviour : ICastBehaviour {
         else Debug.Log("ProjectileAbility component is missing on the projectile");
     }
 
-    public void Recast(Ability data, GameObject activeObject) {}
+    public void Recast(GameObject activeObject) {}
 }

@@ -7,6 +7,6 @@ public class SinglePlayerExecution : IExecutionStrategy {
     public void Execute(Ability data, CastContext ctx, ICastBehaviour behavior)
         => behavior.Cast(data, ctx, _playerController);
 
-    public void Recast(Ability data, GameObject activeObject, ICastBehaviour behavior)
-        => behavior.Recast(data, activeObject);
+    public void Recast(string abilityKey, GameObject activeObject, ICastBehaviour behavior)
+        => behavior.Recast(activeObject);
 }

@@ -2,5 +2,5 @@
 
 public interface IExecutionStrategy {
     void Execute(Ability data, CastContext ctx, ICastBehaviour behavior);
-    void Recast(Ability data, GameObject activeObject, ICastBehaviour behavior);
+    void Recast(string abilityKey, GameObject activeObject, ICastBehaviour behavior);
 }
