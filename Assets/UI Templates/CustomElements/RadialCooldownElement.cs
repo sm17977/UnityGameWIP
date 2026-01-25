@@ -170,7 +170,8 @@ namespace CustomElements {
         }
 
         public void StartCooldown(float duration) {
-            Debug.Log("Start Cooldown");
+
+            duration -= 1;
             
             _cooldownSchedule?.Pause();
             _cooldownSchedule = null;
