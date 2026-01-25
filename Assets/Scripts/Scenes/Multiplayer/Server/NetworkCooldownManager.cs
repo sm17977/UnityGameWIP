@@ -10,12 +10,8 @@ public class NetworkCooldownManager : NetworkBehaviour {
     public static NetworkCooldownManager Instance;
 
     private readonly Dictionary<ulong, Dictionary<int, double>> _cooldowns = new();
-    
-    private double ServerNow => 
-        NetworkManager != null
-            ? NetworkManager.ServerTime.Time
-            : Time.unscaledTimeAsDouble;
-    
+
+    private double ServerNow => NetworkManager.ServerTime.Time;
 
     public override void OnNetworkSpawn() {
         
@@ -43,7 +39,7 @@ public class NetworkCooldownManager : NetworkBehaviour {
             _cooldowns[playerId] = map;
         }
 
-        var expiry = ServerNow + Math.Max(0d, maxCooldownSeconds);
+        var expiry = ServerNow + maxCooldownSeconds;
         map[abilityId] = expiry;
     }
 
