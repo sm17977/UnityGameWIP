@@ -2,8 +2,7 @@
 using UnityEngine;
 using System.Threading;
 using System.Threading.Tasks;
-using Multiplayer.UI;
-using QFSW.QC;
+using Scenes.Multiplayer.EdgeGapAPI;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -13,6 +12,7 @@ namespace Multiplayer {
     public delegate void OnRePaintLobbyView(); 
     public delegate void OnHostDisconnection(); 
     public class ClientManager : MonoBehaviour {
+        
         public event OnUpdateServerData UpdateServerData;
         public event OnRePaintLobbyView RePaintLobbyView;
         public event OnHostDisconnection HostDisconnection;
@@ -22,6 +22,7 @@ namespace Multiplayer {
         private CancellationTokenSource _cancellationTokenSource;
         private WebServicesAPI _webServicesAPI;
         private GameLobbyManager _gameLobbyManager;
+        private EdgeGapClient _edgeGapApi;
         
         private void Awake() {
             
@@ -40,6 +41,7 @@ namespace Multiplayer {
             Client = Client.Instance;
             _gameLobbyManager = GameLobbyManager.Instance;
             _webServicesAPI = new WebServicesAPI();
+            _edgeGapApi = new EdgeGapClient();
         }
 
         private void Start() {
@@ -47,17 +49,17 @@ namespace Multiplayer {
         }
         
         /// <summary>
-        /// Allocate and provision a multiplay server, share the connection details with the lobby
+        /// Deploy a new EdgeGap server 
         /// </summary>
         public async Task StartServer() {
             _cancellationTokenSource = new CancellationTokenSource();
             if (Client.IsLobbyHost) {
-                await ProvisionServer(_cancellationTokenSource.Token);
+                await CreateServer();
             }
         }
 
         /// <summary>
-        /// Disconnect the client form the multiplay server
+        /// Disconnect the client from the EdgeGap server
         /// Update the player's connection status
         /// </summary>
         public async Task Disconnect() {
@@ -70,30 +72,101 @@ namespace Multiplayer {
             Client.IsConnectedToServer = false;
             await _gameLobbyManager.UpdatePlayerDataWithConnectionStatus(Client.IsConnectedToServer);
         }
-        
+
+
         /// <summary>
-        /// Queues a server allocation request and waits till server connection info has been returned.
-        /// Once returned, updates the lobby with the connection info required to join the server.
+        ///  Deploys an EdgeGap server and updates lobby clients with connection info
         /// </summary>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <returns></returns>
-        private async Task ProvisionServer(CancellationToken cancellationToken) {
+        private async Task CreateServer() {
 
             try {
-                var clientConnectionInfo = await GetClientConnectionInfo(cancellationToken, _webServicesAPI);
-                
-                if (clientConnectionInfo.IP != null || clientConnectionInfo.IP != "") {
+                // Send the deployment request
+                var requestId = await InitDeployment();
+                GetDeploymentResponse activeDeployment = null;
+
+                // Poll the deployment till the server is running, should take less than 2 mins usually
+                if (!string.IsNullOrEmpty(requestId)) {
+                    var deployment = await GetDeployment(requestId);
+                    if (!deployment.running) {
+                        activeDeployment = await PollForDeployment(requestId, 60 * 5);
+                    }
+                }
+
+                // Once the server is running, we get the necessary connection info for clients to join
+                if (activeDeployment != null) {
+                    var host = activeDeployment.fqdn;
+                    var port = activeDeployment.ports.gameport.external.ToString(); 
+
                     _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Provisioned;
-                    UpdateServerInfoForLobbyHost(clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    await _gameLobbyManager.UpdateLobbyWithServerInfo(Client.ServerStatus, clientConnectionInfo.IP, clientConnectionInfo.Port.ToString());
-                    
-                    return;
+                    UpdateServerInfoForLobbyHost(host, port);
+                    await _gameLobbyManager.UpdateLobbyWithServerInfo(Client.ServerStatus, host, port);
                 }
             }
             catch (OperationCanceledException) {
-           
+                _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Failed;
             }
-            _gameLobbyManager.currentServerProvisionState = ServerProvisionState.Failed;
+        }
+
+        /// <summary>
+        /// Sends the deployment request
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string> InitDeployment() {
+            
+            var requestId = "";
+            
+            // Get the lobby host's IP to pass into the EdgeGap deployment request
+            var ipAddress = await _edgeGapApi.GetIPAddress();
+            
+            var users = new[]
+            {
+                new User
+                {
+                    user_type = "ip_address",
+                    user_data = new UserData
+                    {
+                        ip_address = ipAddress
+                    }
+                }
+            };
+            
+            try {
+                requestId = await _edgeGapApi.Deploy(users);
+                Client.RequestId = requestId;
+            }
+            catch (Exception ex) {
+                Debug.Log("Error trying to deploy: " + ex.Message);
+            }
+
+            return requestId;
+        }
+
+        private async Task<GetDeploymentResponse> GetDeployment(string requestId) {
+            var deployment = await _edgeGapApi.GetDeploymentStatus(requestId);
+            return deployment;
+        }
+
+        private async Task<GetDeploymentResponse> PollForDeployment(string requestId, int timeout) {
+
+            var elapsed = 0;
+            const int pollInterval = 5;
+            
+            do {
+                var deployment = await GetDeployment(requestId);
+                var status = deployment.current_status;
+                await _gameLobbyManager.UpdateLobbyWithServerInfo(status, "", "");
+                UpdateServerStatusForLobbyHost(status);
+                
+                if (deployment.running) {
+                    return deployment;
+                }
+
+                await Task.Delay(pollInterval * 1000);
+                elapsed += pollInterval;
+
+            } while (elapsed < timeout);
+
+            return null;
         }
         
         /// <summary>
@@ -104,11 +177,10 @@ namespace Multiplayer {
         /// </summary>
         /// <returns>boolean</returns>
         public bool StartClient() {
-
+            
             if (NetworkManager.Singleton.IsClient) return false;
-
             if (Client.ServerIP == null || Client.Port == null) return false;
-       
+            
             try {
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(Client.ServerIP, (ushort)int.Parse(Client.Port));
                 SendPlayerIdWithConnectionRequest();
@@ -123,77 +195,12 @@ namespace Multiplayer {
                 return true;
             }
             catch (OperationCanceledException) {
+                Debug.Log("error");
                 Client.IsConnectedToServer = false;
                 return false;
             }
         }
         
-        /// <summary>
-        /// Request a server allocation and return the connection information required to join the server.
-        /// While the server allocation request is in process, the current status of the machine hosting the
-        /// server is stored and the lobby UI is updated.
-        /// </summary>
-        /// <param name="cancellationToken">Cancellation Token</param>
-        /// <param name="webServicesAPI">WebServicesAPI</param>
-        /// <returns>The server's IP and Port inside a ClientConnectionInfo object</returns>
-        private async Task<ClientConnectionInfo> GetClientConnectionInfo(CancellationToken cancellationToken, WebServicesAPI webServicesAPI) {
-            
-           // Queue allocation request for a game server
-           var result = await webServicesAPI.QueueAllocationRequest();
-           if(!result) {
-               Debug.LogError("Failed to queue allocation request.");
-               return new ClientConnectionInfo { IP = "", Port = 0 };
-           }
-           
-           // Check for an active machine
-           var status  = await webServicesAPI.GetMachineStatus();
-           Debug.Log("Initial Machine Status: " + status);
-           
-           // If no machine is found yet, keep polling until one is
-           if (status != MachineStatus.Online) {
-               var machines = await webServicesAPI.PollForMachine(60 * 5, cancellationToken);
-               
-               if (machines.Length == 0) {
-                   Debug.LogError("No machines found after polling.");
-                   return new ClientConnectionInfo { IP = "", Port = 0 };
-               }
-               
-               var maxRetries = 120;
-               var retryCount = 0;
-               
-               // Once a machine is found, poll for its status until it's online
-               while (retryCount < maxRetries) {
-                   //Debug.Log("Polling Machine Status");
-                   var newStatus = await webServicesAPI.GetMachineStatus();
-                   Debug.Log("New Status: " + newStatus);
-                   Debug.Log("Retry count: " + retryCount);
-                   if (status != newStatus) {
-                       Debug.Log("Machine Status Change: " + newStatus);
-                       status = newStatus;
-                       await _gameLobbyManager.UpdateLobbyWithServerInfo(status, "", "");
-                       UpdateServerStatusForLobbyHost(status);
-                       if (status == MachineStatus.Online) {
-                           Debug.Log("BREAK!");
-                           break;
-                       }
-                   }
-                   retryCount++;
-                   await Task.Delay(5000, cancellationToken);
-               }
-           }
-           else {
-               await _gameLobbyManager.UpdateLobbyWithServerInfo(status, "", "");
-               UpdateServerStatusForLobbyHost(status);
-           }
-           
-           UpdateServerStatusForLobbyHost(status);
-           // Now the machine is online, poll for the IP and Port of allocated game server
-           var response = await webServicesAPI.PollForAllocation(60 * 5, cancellationToken);
-           return response != null
-               ? new ClientConnectionInfo { IP = response.ipv4, Port = response.gamePort }
-               : new ClientConnectionInfo { IP = "", Port = 0 }; 
-        }
-
         /// <summary>
         /// Update the server status in the Lobby Host View 
         /// </summary>
@@ -273,12 +280,9 @@ namespace Multiplayer {
         /// Remove any server allocations and stop the game server
         /// </summary>
         public async void StopServer() {
-            //await _webServicesAPI.RemoveAllocation(); TODO: Remove this?
-            Debug.Log("IP: " + Client.ServerIP);
-            var server = await _webServicesAPI.GetServer(Client.ServerIP, Int32.Parse(Client.Port));
-            if (server != null) {
-                await _webServicesAPI.TriggerServerAction(ServerAction.STOP, server);
-            }
+            if(Client.RequestId == null) return;
+            await _edgeGapApi.StopDeployment(Client.RequestId);
+            Client.ServerStatus = "REQUESTED_TERMINATION";
             ResetClient();
         }
 
@@ -287,6 +291,12 @@ namespace Multiplayer {
         /// </summary>
         public void ResetClient() {
             Client.ClearConnectionData();
+        }
+
+        private void OnApplicationQuit() {
+            if (Client.IsLobbyHost && Client.ServerStatus != "REQUESTED_TERMINATION") {
+                StopServer();
+            }
         }
     }
 }

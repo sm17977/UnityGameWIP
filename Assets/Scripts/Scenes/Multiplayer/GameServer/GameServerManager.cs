@@ -41,6 +41,7 @@ namespace Multiplayer {
 
         private async void Start() {
             await _serverManager.InitializeUnityAuth();
+            _serverManager.StartServer();
         }
 
         private void Update() {
@@ -48,13 +49,4 @@ namespace Multiplayer {
         }
     }
 }
-#endif
-
-#if PLATFORM_STANDALONE_WIN
-using UnityEngine;
-public class GameServerManager : MonoBehaviour {
-    
- 
-}
-
 #endif

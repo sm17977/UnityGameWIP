@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using QFSW.QC;
 using Unity.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
-using Unity.Services.Multiplay;
 using UnityEngine;
 using Unity.Services.Multiplayer;
 
@@ -15,7 +15,6 @@ namespace Multiplayer {
     public sealed class ServerManager {
 
         #if UNITY_SERVER
-            private IServerQueryHandler _serverQueryHandler;
             private bool _serverStarted;
         #endif
 
@@ -57,19 +56,8 @@ namespace Multiplayer {
                     
                     Debug.Log("UNITY_SERVER LOBBY - INITIALIZING");
 
-                    MultiplayEventCallbacks multiplayEventCallbacks = new();
-                    multiplayEventCallbacks.Allocate += OnAllocate;
-                    multiplayEventCallbacks.Deallocate += OnDeallocate;
-                    multiplayEventCallbacks.Error += OnError;
-                    multiplayEventCallbacks.SubscriptionStateChanged += OnSubscriptionStateChanged;
-                    
-                    var serverEvents =
-     await MultiplayService.Instance.SubscribeToServerEventsAsync(multiplayEventCallbacks);
-
-                    _serverQueryHandler =
-                        await MultiplayService.Instance.StartServerQueryHandlerAsync((ushort)4, "MyServerName", "Arena", "89133",
-                            "map");
-
+                
+                
                 #endif
             }
         }
@@ -80,47 +68,31 @@ namespace Multiplayer {
         /// </summary>
 
         #if UNITY_SERVER
-            private void OnAllocate(MultiplayAllocation allocation) {
+            private void OnAllocate( ) {
 
-                    if(_serverStarted){
-                        Debug.Log("Server already started");    
-                    }
-
-                    _serverStarted = true;
-               
-                    Debug.Log("UNITY_SERVER OnAllocate");
-                    
-                    var serverConfig = MultiplayService.Instance.ServerConfig;
-                    Debug.Log($"Server ID[{serverConfig.ServerId}]");
-                    Debug.Log($"AllocationID[{serverConfig.AllocationId}]");
-                    Debug.Log($"Port[{serverConfig.Port}]");
-                    Debug.Log($"QueryPort[{serverConfig.QueryPort}");
-                    Debug.Log($"LogDirectory[{serverConfig.ServerLogDirectory}]");
-                    
-                    var port = serverConfig.Port;
-                    NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("0.0.0.0", port, "0.0.0.0");
-                    StartServer();
-                    NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
             }
         #endif
 
         #if UNITY_SERVER
-            private void OnDeallocate(MultiplayDeallocation deallocation) {}
+            private void OnDeallocate( ) {}
         #endif
 
         #if UNITY_SERVER
-            private void OnError(MultiplayError error) {}
+            private void OnError( ) {}
         #endif
 
         #if UNITY_SERVER
-            private void OnSubscriptionStateChanged(MultiplayServerSubscriptionState stateChanged) {}
+            private void OnSubscriptionStateChanged( ) {}
         #endif
 
         /// <summary>
         /// Subscribe to the Network Manager event and start the server
         /// </summary>
-        private async void StartServer() {
+        public void StartServer() {
             #if UNITY_SERVER
+            
+                    Debug.Log("Start Server t1");
+            
                     NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
                     NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
                     
@@ -130,8 +102,20 @@ namespace Multiplayer {
                     NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
                     NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
                     
-                    NetworkManager.Singleton.StartServer();
-                    await MultiplayService.Instance.ReadyServerForPlayersAsync();
+                    Debug.Log("Start Server t2");
+                    
+            
+                    NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
+                        "0.0.0.0",  // The IP address is a string
+                        (ushort)7777, // The port number is an unsigned short
+                        "0.0.0.0" // The server listen address is a string.
+                    );
+
+                    Debug.Log("Start Server t3");
+                    
+                    var result = NetworkManager.Singleton.StartServer();
+                    
+                    Debug.Log("Start Server t4, result: " +  result);
             #endif
         }
 
@@ -211,9 +195,7 @@ namespace Multiplayer {
         /// </summary>
         public void UpdateServer() {
             #if UNITY_SERVER
-                if (_serverQueryHandler != null) {
-                    _serverQueryHandler.UpdateServerCheck();
-                }
+       
             #endif
         }
 

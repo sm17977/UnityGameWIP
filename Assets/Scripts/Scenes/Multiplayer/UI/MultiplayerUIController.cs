@@ -121,7 +121,7 @@ public class MultiplayerUIController : MonoBehaviour {
         // the modal will close
         _clientManager.UpdateServerData += (client) => {
             _messageModal.UpdateBodyLabel(client.ServerStatus);
-            if (client.ServerStatus == MachineStatus.Online) {
+            if (client.ServerStatus == "Status.READY") {
                 _viewManager.CloseModal();
                 _lobbyHostView.RePaint();
             }

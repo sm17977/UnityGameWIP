@@ -5,47 +5,24 @@ namespace Multiplayer {
         
         private static Client _instance = null;
         private static readonly object Padlock = new object();
-        
-        private string _id;
+
         private string _name;
         private string _lobbyId;
-        private bool _isLobbyHost;
-        private bool _isConnectedToServer;
-        
-        private string _serverIp;
-        private string _port;
-        private string _serverStatus = "INACTIVE";
 
-        public string ID {
-            get => _id;
-            set => _id = value;
-        }
+        public string ID { get; set; }
 
-        public bool IsLobbyHost {
-            get => _isLobbyHost;
-            set => _isLobbyHost = value;
-        }
+        public bool IsLobbyHost { get; set; }
 
-        public string ServerIP {
-            get => _serverIp;
-            set => _serverIp = value;
-        }
+        public string ServerIP { get; set; }
 
-        public string Port {
-            get => _port;
-            set => _port = value;
-        }
+        public string Port { get; set; }
 
-        public string ServerStatus {
-            get => _serverStatus;
-            set => _serverStatus = value;
-        }
+        public string ServerStatus { get; set; } = "INACTIVE";
 
-        public bool IsConnectedToServer {
-            get => _isConnectedToServer;
-            set => _isConnectedToServer = value;
-        }
-        
+        public bool IsConnectedToServer { get; set; }
+
+        public string RequestId { get; set; }
+
         public static Client Instance {
             get {
                 lock (Padlock) {
@@ -59,10 +36,10 @@ namespace Multiplayer {
         /// Make the client null to ensure next access creates a new client
         /// </summary>
         public void ClearConnectionData() {
-            _serverIp = "";
-            _port = "";
-            _serverStatus = "INACTIVE";
-            _isConnectedToServer = false;
+            ServerIP = "";
+            Port = "";
+            ServerStatus = "INACTIVE";
+            IsConnectedToServer = false;
         }
     }
 }
