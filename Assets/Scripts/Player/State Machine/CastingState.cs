@@ -30,10 +30,11 @@ public class CastingState : State {
         
         _ability.PutOnCooldown();
         _input.canCast = true;
-        _player.animator.SetTrigger(_ability.animationTrigger);
+        //_player.animator.SetTrigger(_ability.animationTrigger);
         
         if (GlobalState.IsMultiplayer) {
             _ability.PutOnCooldown_Net(_playerObj);
+            Debug.Log("SetAnimTrigger");
             _player.SetAnimTrigger(_ability.animationTrigger);
         }
     }
@@ -65,6 +66,9 @@ public class CastingState : State {
         }
         
         if(_castingFinished){
+            
+            _player.networkAnimator.ResetTrigger(_ability.animationTrigger);
+            
             // Finish any incomplete movement commands
             if(_input.incompleteMovement){
                 _player.TransitionToMove();
