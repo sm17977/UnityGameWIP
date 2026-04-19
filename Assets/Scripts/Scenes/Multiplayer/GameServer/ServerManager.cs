@@ -13,11 +13,8 @@ using Unity.Services.Multiplayer;
 
 namespace Multiplayer {
     public sealed class ServerManager {
-
-        #if UNITY_SERVER
-            private bool _serverStarted;
-        #endif
-
+        
+        private bool _serverStarted;
         private static ServerManager _instance = null;
         private static readonly object Padlock = new object();
         private Dictionary<ulong, PlayerData> _playerDataDictionary = new Dictionary<ulong, PlayerData>();
@@ -34,7 +31,7 @@ namespace Multiplayer {
             }
         }
 
-        public void Initialize(GameObject spawnPointsParent) {
+        private void Initialize(GameObject spawnPointsParent) {
             _spawnPointsList = new List<Transform>();
             _spawnPointsParent = spawnPointsParent;
             foreach (Transform child in _spawnPointsParent.transform) {
@@ -49,74 +46,38 @@ namespace Multiplayer {
         public async Task InitializeUnityAuth() {
             if (UnityServices.State != ServicesInitializationState.Initialized) {
                 var initializationOptions = new InitializationOptions();
-
-                #if UNITY_SERVER
-                    await UnityServices.InitializeAsync();
-                    
-                    
-                    Debug.Log("UNITY_SERVER LOBBY - INITIALIZING");
-
-                
-                
-                #endif
+                await UnityServices.InitializeAsync();
+                Debug.Log("UNITY_SERVER LOBBY - INITIALIZING");
+              
             }
         }
-
-        /// <summary>
-        /// When a server is allocated, set the Network Manager's connection data and start the server
-        /// Register a custom messaging manager to notify when the lobby host leaves
-        /// </summary>
-
-        #if UNITY_SERVER
-            private void OnAllocate( ) {
-
-            }
-        #endif
-
-        #if UNITY_SERVER
-            private void OnDeallocate( ) {}
-        #endif
-
-        #if UNITY_SERVER
-            private void OnError( ) {}
-        #endif
-
-        #if UNITY_SERVER
-            private void OnSubscriptionStateChanged( ) {}
-        #endif
+        
 
         /// <summary>
         /// Subscribe to the Network Manager event and start the server
         /// </summary>
         public void StartServer() {
-            #if UNITY_SERVER
             
-                    Debug.Log("Start Server t1");
+                NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
+                NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
+                
+                NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+                NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+                
+                NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+                NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+                
+                
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
+                    "0.0.0.0",  
+                    (ushort)7777, 
+                    "0.0.0.0" 
+                );
+                
+                var result = NetworkManager.Singleton.StartServer();
+                NetworkManager.Singleton.CustomMessagingManager.
+                    RegisterNamedMessageHandler("HostLeaving", OnHostLeavingMessageReceived);
             
-                    NetworkManager.Singleton.ConnectionApprovalCallback -= OnConnectionApproval;
-                    NetworkManager.Singleton.ConnectionApprovalCallback += OnConnectionApproval;
-                    
-                    NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-                    NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-                    
-                    NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-                    NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-                    
-                    Debug.Log("Start Server t2");
-                    
-            
-                    NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
-                        "0.0.0.0",  // The IP address is a string
-                        (ushort)7777, // The port number is an unsigned short
-                        "0.0.0.0" // The server listen address is a string.
-                    );
-
-                    Debug.Log("Start Server t3");
-                    
-                    var result = NetworkManager.Singleton.StartServer();
-                    
-                    Debug.Log("Start Server t4, result: " +  result);
-            #endif
         }
 
         /// <summary>
@@ -134,32 +95,26 @@ namespace Multiplayer {
         /// <param name="response">Client connection response</param>
         private void OnConnectionApproval(NetworkManager.ConnectionApprovalRequest request,
             NetworkManager.ConnectionApprovalResponse response) {
-
-                #if UNITY_SERVER
-
-                    Debug.Log("Approving new client connection... ClientNetworkId: " + request.ClientNetworkId);
-                    
-                    response.CreatePlayerObject = true;
-                    response.Position = GetSpawnPoint();
-                    response.Approved = true;
-
-                    Debug.Log("response.Position: " + response.Position);
-
-                    PlayerData playerData;
-                    using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
-                        try {
-                            reader.ReadNetworkSerializable(out playerData);
-                        }
-                        catch (Exception ex) {
-                            Debug.LogError($"Error reading player data: {ex.Message}");
-                            return;
-                        }
+            
+                Debug.Log("Approving new client connection... ClientNetworkId: " + request.ClientNetworkId);
+                
+                response.CreatePlayerObject = true;
+                response.Position = GetSpawnPoint();
+                response.Approved = true;
+                
+                PlayerData playerData;
+                using (var reader = new FastBufferReader(request.Payload, Allocator.Temp)) {
+                    try {
+                        reader.ReadNetworkSerializable(out playerData);
                     }
+                    catch (Exception ex) {
+                        Debug.LogError($"Error reading player data: {ex.Message}");
+                        return;
+                    }
+                }
 
-                    _playerDataDictionary[request.ClientNetworkId] = playerData;
-                    response.Pending = false;
-
-                #endif
+                _playerDataDictionary[request.ClientNetworkId] = playerData;
+                response.Pending = false;
         }
 
         /// <summary>
@@ -168,7 +123,6 @@ namespace Multiplayer {
         /// <param name="clientId">Client ID</param>
         private void OnClientConnected(ulong clientId) {
             Debug.Log($"New client connected: {clientId}");
-            //SpawnPlayer(clientId);
             PlayerData playerData = _playerDataDictionary[clientId];
             NotifyClientsOfPlayerStatus(playerData, true);
             if (NetworkBuffManager.Instance == null) {
@@ -189,16 +143,7 @@ namespace Multiplayer {
             _playerDataDictionary.Remove(clientId);
             NetworkBuffManager.Instance.RemovePlayerFromBuffStore(clientId);
         }
-
-        /// <summary>
-        /// Update the multiplay server to keep it alive
-        /// </summary>
-        public void UpdateServer() {
-            #if UNITY_SERVER
-       
-            #endif
-        }
-
+        
         /// <summary>
         /// Notify all other clients when a player connects or disconnects from the multiplay server
         /// </summary>
@@ -223,19 +168,14 @@ namespace Multiplayer {
         /// <param name="clientId">Client ID</param>
         /// <param name="reader">reader</param>
         private async void OnHostLeavingMessageReceived(ulong clientId, FastBufferReader reader) {
-            #if UNITY_SERVER
-                foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
-                    Debug.Log("Sending host leaving notification to client: " + client.ClientId);
-                    NetworkManager.Singleton.SendHostLeavingMessageToClient(client.ClientId, new HostLeavingMessage());
-                }
-            #endif
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList) {
+                Debug.Log("Sending host leaving notification to client: " + client.ClientId);
+                NetworkManager.Singleton.SendHostLeavingMessageToClient(client.ClientId, new HostLeavingMessage());
+            }
         }
 
         private Vector3 GetSpawnPoint() {
-            if (_spawnPointsList.Count == 0) {
-                Initialize(_spawnPointsParent);
-            }
-
+            if (_spawnPointsList.Count == 0) Initialize(_spawnPointsParent);
             var spawnPoint = _spawnPointsList[0];
             _spawnPointsList.RemoveAt(0);
             return spawnPoint.position;
