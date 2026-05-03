@@ -148,7 +148,7 @@ public class InputProcessor : NetworkBehaviour {
     }
 
     private bool IsAttackClick() {
-        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
         if (Physics.Raycast(ray, out var hit)) {
             var obj = hit.transform.gameObject;
@@ -374,7 +374,7 @@ public class InputProcessor : NetworkBehaviour {
         if (!IsLocalPlayer) return; 
         if (_player?.currentAATarget != null) return;
         
-        var ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
      
         if (Physics.Raycast(ray, out var hit)) {
             var hitObj = hit.transform.gameObject;
