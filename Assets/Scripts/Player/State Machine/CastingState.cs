@@ -85,5 +85,6 @@ public class CastingState : State {
     }
     
     public override void Exit() {
+        _player.networkAnimator.ResetTrigger(_ability.animationTrigger);
     }
 }

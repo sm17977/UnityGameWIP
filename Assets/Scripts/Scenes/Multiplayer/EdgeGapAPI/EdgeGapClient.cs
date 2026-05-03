@@ -12,7 +12,7 @@ namespace Scenes.Multiplayer.EdgeGapAPI {
         private const string ApiPath = "api.edgegap.com";
         private const string Scheme = "https";
         private const string AppName = "leaguetoolv2";
-        private const string Version = "v0.0.1";
+        private const string Version = "v0.0.3";
         
 
         public EdgeGapClient() {

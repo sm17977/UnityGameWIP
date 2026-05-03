@@ -9,6 +9,7 @@ public class FloatingUIManager {
 
     private VisualElement _template;
     private Dictionary<LuxPlayerController, Dictionary<UIComponent, VisualElement>> _playerUIComponents;
+    private readonly Dictionary<Label, IVisualElementScheduledItem> _damageAnimations = new();
     private const float HealthBarDefaultYOffset = -60f;
     private const float HealthBarDefaultWidth = 142f;
     private const int HealthBarSections = 10;
@@ -116,7 +117,7 @@ public class FloatingUIManager {
             
         playerDamageTextContainer.AddToClassList("damage-number-container");
         playerDamageTextLabel.AddToClassList("damage-number-label");
-
+        
         playerDamageTextLabel.name = "damage-number-label";
         playerDamageTextLabel.text = "56";
         playerDamageTextContainer.Add(playerDamageTextLabel);
@@ -152,15 +153,67 @@ public class FloatingUIManager {
     }
 
     private void ShowDamageNumberLabel(Label label, float damageAmount) {
-        
-        label.text = damageAmount.ToString();
-        label.AddToClassList("damage-number-label-active");
-        
-        label.schedule
-            .Execute(() => {
-                label.RemoveFromClassList("damage-number-label-active");
-            })
-            .StartingIn(1000);    
+        if (label == null) return;
+
+        label.text = Mathf.RoundToInt(damageAmount).ToString();
+
+        // Stop any existing animation on this label
+        if (_damageAnimations.TryGetValue(label, out var existingAnimation)) {
+            existingAnimation.Pause();
+            _damageAnimations.Remove(label);
+        }
+
+        // Randomise values
+        var randomSide = Random.value < 0.5f ? -1f : 1f;   
+        var horizontalDistance = Random.Range(35f, 70f) * randomSide;
+        var arcHeight = Random.Range(55f, 90f);           
+        var endDrop = Random.Range(20f, 45f);              
+        var startScale = Random.Range(1f, 1.2f);
+        var endScale = Random.Range(1.5f, 1.7f);
+        var durationMs = Random.Range(700, 950);
+
+        // Reset to start state
+        label.style.opacity = 0f;
+        label.style.translate = new StyleTranslate(new Translate(0, 10, 0));
+        label.style.scale = new StyleScale(new Scale(new Vector3(startScale, startScale, 1f)));
+
+        var elapsedMs = 0f;
+        const int tickMs = 16;
+
+        var animation = label.schedule.Execute(() =>
+        {
+            elapsedMs += tickMs;
+            var t = Mathf.Clamp01(elapsedMs / durationMs);
+            var x = Mathf.Lerp(0f, horizontalDistance, t);
+            var y = Mathf.Lerp(10f, endDrop, t) - (4f * arcHeight * t * (1f - t));
+
+            float opacity;
+            if (t < 0.15f)
+                opacity = Mathf.InverseLerp(0f, 0.15f, t);
+            else if (t < 0.65f)
+                opacity = 1f;
+            else
+                opacity = Mathf.InverseLerp(1f, 0.65f, t);
+            
+            float scale = Mathf.Lerp(startScale, endScale, Mathf.SmoothStep(0f, 1f, t));
+
+            label.style.opacity = opacity;
+            label.style.translate = new StyleTranslate(new Translate(x, y, 0));
+            label.style.scale = new StyleScale(new Scale(new Vector3(scale, scale, 1f)));
+
+            if (t >= 1f) {
+                label.style.opacity = 0f;
+                label.style.translate = new StyleTranslate(new Translate(0, 0, 0));
+                label.style.scale = new StyleScale(new Scale(Vector3.one));
+
+                if (_damageAnimations.TryGetValue(label, out var scheduled)) {
+                    scheduled.Pause();
+                    _damageAnimations.Remove(label);
+                }
+            }
+        }).Every(tickMs);
+
+        _damageAnimations[label] = animation;
     }
     
 
@@ -211,7 +264,7 @@ public class FloatingUIManager {
             
             healthBar.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y, 0));
             playerName.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y + -30, 0));
-            playerDamageText.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y + 100, 0));
+            playerDamageText.style.translate = new StyleTranslate(new Translate(newPosition.x, newPosition.y + 125, 0));
             
             //healthBar.MarkDirtyRepaint();
         }

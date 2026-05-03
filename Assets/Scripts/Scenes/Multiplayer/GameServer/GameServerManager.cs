@@ -45,7 +45,6 @@ namespace Multiplayer {
         }
 
         private void Update() {
-            _serverManager.UpdateServer();
         }
     }
 }

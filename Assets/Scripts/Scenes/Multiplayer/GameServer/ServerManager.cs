@@ -31,7 +31,7 @@ namespace Multiplayer {
             }
         }
 
-        private void Initialize(GameObject spawnPointsParent) {
+        public void Initialize(GameObject spawnPointsParent) {
             _spawnPointsList = new List<Transform>();
             _spawnPointsParent = spawnPointsParent;
             foreach (Transform child in _spawnPointsParent.transform) {
