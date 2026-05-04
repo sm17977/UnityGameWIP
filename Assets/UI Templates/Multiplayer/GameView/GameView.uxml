@@ -106,9 +106,9 @@
             
             <!-- Resource Bars -->
             <engine:VisualElement class="resource-bars">
-                <engine:VisualElement class="resource-bar-container">
-                    <engine:Label text="100/100" class="resource-bar-label"/>
-                    <engine:VisualElement class="resource-bar health"/>
+                <engine:VisualElement name="center-health-container" class="resource-bar-container">
+                    <engine:Label name="center-health-label" text="100/100" class="resource-bar-label"/>
+                    <engine:VisualElement name="center-health-bar" class="resource-bar health"/>
                 </engine:VisualElement>
                 <engine:VisualElement class="resource-bar-container">
                     <engine:Label text="100/100" class="resource-bar-label"/>

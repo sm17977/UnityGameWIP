@@ -149,10 +149,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 206841937268976223}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 1
-  m_AngularDrag: 0.05
+  m_LinearDamping: 1
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -234,8 +234,14 @@ MonoBehaviour:
   champion: {fileID: 0}
   globalState: {fileID: 0}
   canMove:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   movementSpeed:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   playerName: 
   projectiles: []
@@ -306,7 +312,7 @@ MonoBehaviour:
     type: 3}
   aaRangeIndicatorPrefab: {fileID: 5475580677785024963, guid: cdfca3dbd036ece479fa058999410afa,
     type: 3}
-  projectileTargetPosition: {x: 0, y: 0, z: 0}
+  abilityTargetPosition: {x: 0, y: 0, z: 0}
   lastClickPosition: {x: 0, y: 0, z: 0}
   projectileAATargetPosition: {x: 0, y: 0, z: 0}
   isAttackClick: 0
@@ -343,6 +349,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   currentHealth:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
   maxHealth: 100
 --- !u!114 &9115143384317293223
@@ -358,6 +367,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  NetworkAnimatorExpanded: 0
+  AuthorityMode: 0
+  m_Animator: {fileID: 6881271443565087466}
   TransitionStateInfoList:
   - IsCrossFadeExit: 0
     Layer: 0
@@ -471,7 +483,49 @@ MonoBehaviour:
     TransitionDuration: 0.25
     TriggerNameHash: 1276664872
     TransitionIndex: 6
-  m_Animator: {fileID: 6881271443565087466}
+  AnimatorParameterEntries:
+    ParameterEntries:
+    - name: isQCast
+      NameHash: -1740011896
+      Synchronize: 1
+      ParameterType: 4
+    - name: attackVariant
+      NameHash: -1065424594
+      Synchronize: 1
+      ParameterType: 3
+    - name: qAbility
+      NameHash: 1657161401
+      Synchronize: 1
+      ParameterType: 9
+    - name: wAbility
+      NameHash: -1532408002
+      Synchronize: 1
+      ParameterType: 9
+    - name: eAbility
+      NameHash: -1707640472
+      Synchronize: 1
+      ParameterType: 9
+    - name: rAbility
+      NameHash: -330743462
+      Synchronize: 1
+      ParameterType: 9
+    - name: isAttacking
+      NameHash: 973584577
+      Synchronize: 1
+      ParameterType: 9
+    - name: isDead
+      NameHash: 1276664872
+      Synchronize: 1
+      ParameterType: 9
+    - name: isIdle
+      NameHash: 2098831385
+      Synchronize: 1
+      ParameterType: 9
+    - name: isRunning
+      NameHash: 1239866031
+      Synchronize: 1
+      ParameterType: 4
+  AnimatorParametersExpanded: 0
 --- !u!114 &5952103161160890641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,6 +540,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkTransformExpanded: 1
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 1
+  RotationInterpolationType: 1
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
   AuthorityMode: 0
   TickSyncChildren: 1
   UseUnreliableDeltas: 0
@@ -921,6 +985,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1971053207 &4716081777564896128
 SpriteShapeRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -939,6 +1004,8 @@ SpriteShapeRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
@@ -961,11 +1028,12 @@ SpriteShapeRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_MaskInteraction: 0
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_ShapeTexture: {fileID: 0}
   m_Sprites: []
   m_LocalAABB:
@@ -2409,6 +2477,8 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2431,9 +2501,11 @@ SkinnedMeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0

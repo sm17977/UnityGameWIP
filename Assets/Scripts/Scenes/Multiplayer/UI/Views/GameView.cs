@@ -13,18 +13,24 @@ public delegate void StartDuelCountdown();
 
 namespace Multiplayer.UI {
     public class GameView : View {
+        
+        public ChatBoxElement Chat;
+        public static event StartDuelCountdown OnStartGameModeCountdown;
+        public MinimapElement Minimap;
+        
+        private readonly float _pingUpdateInterval = 2f;
+        private readonly FloatingUIManager _floatingUIManager;
         private CountdownTimerElement _countdownTimerElement;
         private Label _gameTimerLabel;
         private Label _pingLabel;
         private List<GameObject> _playerGameObjects;
-        private readonly FloatingUIManager _floatingUIManager;
         private PanelSettings _panelSettings;
-        public ChatBoxElement Chat;
         private BlinkingTextField _chatInput;
-        public MinimapElement Minimap;
-        public static event StartDuelCountdown OnStartGameModeCountdown;
-        private float _timeSinceLastPingUpdate = 0f;
-        private readonly float _pingUpdateInterval = 2f;
+        private float _timeSinceLastPingUpdate;
+        
+        private VisualElement _centerHealthBar;
+        private Label _centerHealthBarLabel;
+   
         
         public GameView(VisualElement parentContainer, VisualTreeAsset vta, PanelSettings panelSettings) {
             Template = vta.Instantiate().Children().FirstOrDefault();
@@ -35,12 +41,19 @@ namespace Multiplayer.UI {
         }
 
         private void BindUIElements() {
+            Minimap = Template.Q<MinimapElement>("minimap");
+            Chat = Template.Q<ChatBoxElement>("chat");
             _countdownTimerElement = Template.Q<CountdownTimerElement>("countdown-timer");
             _gameTimerLabel = Template.Q<Label>("game-timer-label");
             _pingLabel = Template.Q<Label>("ping-label");
-            Chat = Template.Q<ChatBoxElement>("chat");
             _chatInput = Chat.ChatInputField;
-            Minimap = Template.Q<MinimapElement>("minimap");
+            
+            var centerHealthBarContainer = Template.Q<VisualElement>("center-health-container");
+            _centerHealthBar = centerHealthBarContainer.Q<VisualElement>("center-health-bar");
+            _centerHealthBarLabel = centerHealthBarContainer.Q<Label>("center-health-label");
+
+            Health.OnHealthChanged += UpdateCenterHealthBar;
+
         }
 
         public override void Show() {
@@ -170,6 +183,16 @@ namespace Multiplayer.UI {
                     _chatInput.Focus();
                 }).StartingIn(100);
             }
+        }
+
+        private void UpdateCenterHealthBar(LuxPlayerController controller, float currentHealth, float maxHealth, float damage) {
+            if(controller == null) return;
+            if(!controller.IsLocalPlayer) return;
+            
+            var scale = maxHealth / currentHealth;
+            var newBarWidth = 100 /  scale;
+            _centerHealthBar.style.width = new Length(newBarWidth, LengthUnit.Percent);
+            _centerHealthBarLabel.text = currentHealth + "/" + maxHealth;
         }
     }
 }
