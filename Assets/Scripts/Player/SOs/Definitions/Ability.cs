@@ -11,12 +11,14 @@ public class Ability : ScriptableObject {
     public Champion champion;
     public string key;
     public int id;
+    
+    [Header("Cooldown")]
+    public float currentCooldown = 0;
+    public float maxCooldown;
 
     [Header("Ability Properties")] 
     public AbilityArchetype archetype;
     public float damage;
-    public float currentCooldown = 0;
-    public float maxCooldown;
     public float range;
     public float speed;
     public float lingeringLifetime;
@@ -24,12 +26,17 @@ public class Ability : ScriptableObject {
     public bool canRecast;
     public float lifetime;
 
+    public enum TargetType {
+        Location,
+        Direction,
+        Unit
+    }
+
     public enum AbilityArchetype {
         Projectile,
         Aoe
     };
     
-
     [Header("Buffs/Debuffs")]
     public Buff buff;
 
@@ -56,8 +63,8 @@ public class Ability : ScriptableObject {
         _caster = caster;
     }
 
-    public void Cast(Vector3 direction, Vector3 targetPos, Vector3 abilitySpawnPos) {
-        _caster.Cast(this, direction, targetPos, abilitySpawnPos);
+    public void Cast(CastContext ctx) {
+        _caster.Cast(this, ctx);
     }
 
     public void Recast(GameObject projectile) {

@@ -152,7 +152,7 @@ public class LuxPlayerController : LuxController {
         
         // Set the ability caster depending on game mode
         foreach (var ability in Abilities.Values) {
-            var abilityCaster = AbilityCasterFactory.Get(ability, this, GlobalState.IsMultiplayer);
+            var abilityCaster = AbilityCasterFactory.Get(this, GlobalState.IsMultiplayer);
             ability.SetCaster(abilityCaster);
         }
     }
