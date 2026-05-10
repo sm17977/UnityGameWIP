@@ -17,7 +17,7 @@ public class Ability : ScriptableObject {
     public float maxCooldown;
 
     [Header("Ability Properties")] 
-    public AbilityArchetype archetype;
+    public TargetType targetType;
     public float damage;
     public float range;
     public float speed;
@@ -25,17 +25,14 @@ public class Ability : ScriptableObject {
     public bool hasRecast;
     public bool canRecast;
     public float lifetime;
+    public bool isMobile;
 
     public enum TargetType {
         Location,
         Direction,
-        Unit
+        Unit,
+        Self
     }
-
-    public enum AbilityArchetype {
-        Projectile,
-        Aoe
-    };
     
     [Header("Buffs/Debuffs")]
     public Buff buff;
@@ -72,9 +69,8 @@ public class Ability : ScriptableObject {
     }
  
     public float GetLifetime(){
-        if (archetype == AbilityArchetype.Projectile) return range / speed;
-        if (archetype == AbilityArchetype.Aoe) return lifetime;
-        return 0;
+        if (isMobile) return range / speed;
+        return lifetime;
     }
 
     public float GetTotalLifetime(){

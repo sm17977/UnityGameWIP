@@ -51,8 +51,7 @@ public class LuxPlayerController : LuxController {
     public Dictionary<string, Ability> Abilities;
     public Dictionary<string, GameObject> ActiveAbilityPrefabs;
     
-    // Health
-    public Health health;
+    // Health bar
     public GameObject healthBarAnchor;
     
     // Camera
@@ -147,7 +146,8 @@ public class LuxPlayerController : LuxController {
         };
 
         // Assign buffs/de-buffs
-        Abilities["Q"].buff = new Buff(new RootEffect(), "Q", 3, 0);
+        Abilities["Q"].buff = new Buff(new RootEffect(), "Q", 3f, 0f);
+        Abilities["W"].buff = new Buff(new ShieldEffect(), "W", 3f, 100f);
         Abilities["E"].buff = new Buff(new SlowEffect(), "E", 2f, 0.02f);
         
         // Set the ability caster depending on game mode

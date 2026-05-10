@@ -17,16 +17,17 @@ MonoBehaviour:
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: R
   id: 3
-  archetype: 1
-  damage: 200
   currentCooldown: 0
   maxCooldown: 5
+  targetType: 1
+  damage: 200
   range: 0
   speed: 0
   lingeringLifetime: 0
   hasRecast: 0
   canRecast: 0
   lifetime: 3
+  isMobile: 0
   spawnPrefab: {fileID: 8546719537712807869, guid: a56752fa405bbdf4584f93124917ae5b,
     type: 3}
   networkSpawnPrefab: {fileID: 8546719537712807869, guid: 7c4bcb051783a824c90ccda8df87f64b,

@@ -16,15 +16,18 @@ MonoBehaviour:
   abilityDescription: 
   champion: {fileID: 11400000, guid: f5be0b2a1e8ff844d9a28b0fb69bb90f, type: 2}
   key: Q
-  archetype: 0
-  damage: 80
+  id: 0
   currentCooldown: 0
   maxCooldown: 4
+  targetType: 1
+  damage: 80
   range: 9
   speed: 5
   lingeringLifetime: 0
   hasRecast: 0
   canRecast: 0
+  lifetime: 0
+  isMobile: 1
   spawnPrefab: {fileID: 1894600549252798281, guid: e8807b08c249c6b4e8e380b8977f7d94,
     type: 3}
   networkSpawnPrefab: {fileID: 1894600549252798281, guid: 319ddb0bcd5a53746909506ceaf1f84e,

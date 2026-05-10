@@ -13,6 +13,7 @@ public class LuxController : NetworkBehaviour {
     public ClientBuffManager ClientBuffManager;
     public GlobalState globalState;
     
+    public Health health;
     public NetworkVariable<bool> canMove = new NetworkVariable<bool>();
     public NetworkVariable<float> movementSpeed = new NetworkVariable<float>();
     public string playerName;
