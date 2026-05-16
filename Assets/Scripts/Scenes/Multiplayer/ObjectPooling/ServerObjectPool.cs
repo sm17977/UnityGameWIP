@@ -50,13 +50,33 @@ public class ServerObjectPool : MonoBehaviour {
             for (var i = 0; i < poolSize; i++) {
 
                 Debug.Log("Instantiating ability " + ability.key);
-
+                
+                if(ability.key == "W") Debug.Log("t1");
+                
                 var abilityPrefab = Instantiate(ability.networkSpawnPrefab, transform);
+                
+                if(ability.key == "W") Debug.Log("t2");
+                
                 abilityPrefab.SetActive(false);
-                abilityPrefab.name = abilityPrefab.transform.GetInstanceID().ToString();
-                abilityPrefab.GetComponent<Rigidbody>().isKinematic = false;
+                
+                if(ability.key == "W") Debug.Log("t3");
 
+                abilityPrefab.name = abilityPrefab.transform.GetInstanceID().ToString();
+                
+                if(ability.key == "W") Debug.Log("t4");
+                
+                var rb = abilityPrefab.GetComponent<Rigidbody>();
+                
+                if(ability.key == "W") Debug.Log("t5");
+
+                if(rb != null) abilityPrefab.GetComponent<Rigidbody>().isKinematic = false;
+                
+                if(ability.key == "W") Debug.Log("t6");
+                
                 _pool[ability][AbilityPrefabType.Spawn].Enqueue(abilityPrefab);
+                
+                if(ability.key == "W") Debug.Log("t7");
+
             }
         }
         InitAAPrefabs();

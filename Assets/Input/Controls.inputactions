@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "Controls",
     "maps": [
         {
@@ -27,7 +28,7 @@
                     "name": "A",
                     "type": "Button",
                     "id": "a9925828-57d4-40a4-8773-7032f1e369ee",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -72,6 +73,15 @@
                     "name": "R",
                     "type": "Button",
                     "id": "534c289a-fca4-4ada-a72e-c6e26a6ab0dc",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "W",
+                    "type": "Button",
+                    "id": "2857d65a-aeb7-4cbd-8460-0c5dc4433248",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -164,6 +174,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "R",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "66b0ed70-a47f-4f4e-8e3b-c86fd6f4d7f6",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "W",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

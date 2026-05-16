@@ -114,7 +114,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""A"",
                     ""type"": ""Button"",
                     ""id"": ""a9925828-57d4-40a4-8773-7032f1e369ee"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -159,6 +159,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""name"": ""R"",
                     ""type"": ""Button"",
                     ""id"": ""534c289a-fca4-4ada-a72e-c6e26a6ab0dc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""W"",
+                    ""type"": ""Button"",
+                    ""id"": ""2857d65a-aeb7-4cbd-8460-0c5dc4433248"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -251,6 +260,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""R"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""66b0ed70-a47f-4f4e-8e3b-c86fd6f4d7f6"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""W"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -417,6 +437,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_E = m_Player.FindAction("E", throwIfNotFound: true);
         m_Player_MouseScroll = m_Player.FindAction("MouseScroll", throwIfNotFound: true);
         m_Player_R = m_Player.FindAction("R", throwIfNotFound: true);
+        m_Player_W = m_Player.FindAction("W", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Q = m_UI.FindAction("Q", throwIfNotFound: true);
@@ -515,6 +536,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_E;
     private readonly InputAction m_Player_MouseScroll;
     private readonly InputAction m_Player_R;
+    private readonly InputAction m_Player_W;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -558,6 +580,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/R".
         /// </summary>
         public InputAction @R => m_Wrapper.m_Player_R;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/W".
+        /// </summary>
+        public InputAction @W => m_Wrapper.m_Player_W;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -608,6 +634,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @R.started += instance.OnR;
             @R.performed += instance.OnR;
             @R.canceled += instance.OnR;
+            @W.started += instance.OnW;
+            @W.performed += instance.OnW;
+            @W.canceled += instance.OnW;
         }
 
         /// <summary>
@@ -643,6 +672,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @R.started -= instance.OnR;
             @R.performed -= instance.OnR;
             @R.canceled -= instance.OnR;
+            @W.started -= instance.OnW;
+            @W.performed -= instance.OnW;
+            @W.canceled -= instance.OnW;
         }
 
         /// <summary>
@@ -901,6 +933,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnR(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "W" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnW(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

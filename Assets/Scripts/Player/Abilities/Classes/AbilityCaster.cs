@@ -20,6 +20,8 @@ public class AbilityCaster {
 
         if (!_isMultiplayer) return;
 
+        Debug.Log("Ability casted: " + ability.key);
+
         var player = ctx.PlayerController.gameObject;
         _rpcController = player.GetComponent<RPCController>();
 
